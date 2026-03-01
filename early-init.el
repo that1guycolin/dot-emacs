@@ -34,11 +34,6 @@
 (setq kept-old-versions 4)
 (setq delete-old-versions t)
 
-;; Load Paths
-(add-to-list 'load-path (expand-file-name "init.el.d" user-emacs-directory))
-(add-to-list 'custom-theme-load-path
-             (expand-file-name "themes" user-emacs-directory))
-
 ;; Early UI optimizations
 (setq-default cursor-type 'bar)
 (when (fboundp 'tool-bar-mode)
