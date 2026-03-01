@@ -21,9 +21,10 @@
 (setenv "LSP_USE_PLISTS" "true")
 
 ;; Configure autosaves and backups.
-(setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
+(setq backup-directory-alist
+      '(("." . (expand-file-name "backups" user-emacs-directory))))
 (setq auto-save-file-name-transforms
-      '((".*" "~/.emacs.d/auto-saves/" t)))
+      '((".*" (expand-file-name "auto-saves" user-emacs-directory) t)))
 (setq auth-sources '("~/.authinfo.gpg"))
 (make-directory "~/.emacs.d/backups/" t)
 (make-directory "~/.emacs.d/auto-saves/" t)
@@ -34,7 +35,7 @@
 (setq delete-old-versions t)
 
 ;; Load Paths
-(add-to-list 'load-path "~/.emacs.d/init.el.d")
+(add-to-list 'load-path (expand-file-name "init.el.d" user-emacs-directory))
 (add-to-list 'custom-theme-load-path
              (expand-file-name "themes" user-emacs-directory))
 
