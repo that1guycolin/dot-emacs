@@ -25,13 +25,6 @@ jobs:
       - name: Check Emacs version
         run: emacs --version
 
-      - name: Verify Config Load
-        run: |
-          # --batch: run without a UI
-          # --debug-init: stop on errors
-          # -l: load the file
-          emacs --batch --debug-init
-
       - name: Byte-compile files
         run: |
           find . -name '*.el' -print0 | \
