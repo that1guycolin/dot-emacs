@@ -40,10 +40,14 @@
 
 ;; Early UI optimizations
 (setq-default cursor-type 'bar)
-(tool-bar-mode -1)
-(scroll-bar-mode -1)
-(tooltip-mode -1)
-(flymake-mode -1)
+(when (fboundp 'tool-bar-mode)
+  (tool-bar-mode -1))
+(when (fboundp 'scroll-bar-mode)
+  (scroll-bar-mode -1))
+(when (fboundp 'tooltip-mode)
+  (tooltip-mode -1))
+(when (fboundp 'flymake-mode)
+  (flymake-mode -1))
 
 ;; Other
 (setq inhibit-startup-message t)
