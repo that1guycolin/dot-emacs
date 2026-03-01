@@ -47,7 +47,7 @@
 
 ;;; Code:
 ;; Load 'elpaca' and 'auto-compile' first
-(require 'load-first)
+(require 'initial-packages)
 
 ;; 'projectile', 'treemacs' etc...
 (require 'project-support-configs)
