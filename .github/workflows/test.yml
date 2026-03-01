@@ -33,12 +33,12 @@ jobs:
           emacs --batch --debug-init \
           --load early-init.el \
           --load init.el \
-          --load initial-packages.el \
-          --load project-support-configs.el \
-          --load language-specific-configs.el \
-          --load user-interface-config.el \
-          --load external-connections.el \
-          --load user-functions.el
+          --load init.el.d/initial-packages.el \
+          --load init.el.d/project-support-configs.el \
+          --load init.el.d/language-specific-configs.el \
+          --load init.el.d/user-interface-config.el \
+          --load init.el.d/external-connections.el \
+          --load init.el.d/user-functions.el
 
       - name: Byte-compile files
         run: |
