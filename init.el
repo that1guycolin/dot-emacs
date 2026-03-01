@@ -46,8 +46,13 @@
 ;; which-key, yasnippet
 
 ;;; Code:
+;; Load Paths
+(add-to-list 'load-path (expand-file-name "init.el.d" user-emacs-directory))
+(add-to-list 'custom-theme-load-path
+             (expand-file-name "themes" user-emacs-directory))
+
 ;; Load 'elpaca' and 'auto-compile' first
-(require 'load-first)
+(require 'initial-packages)
 
 ;; 'projectile', 'treemacs' etc...
 (require 'project-support-configs)

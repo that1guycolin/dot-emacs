@@ -21,9 +21,10 @@
 (setenv "LSP_USE_PLISTS" "true")
 
 ;; Configure autosaves and backups.
-(setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
+(setq backup-directory-alist
+      '(("." . (expand-file-name "backups" user-emacs-directory))))
 (setq auto-save-file-name-transforms
-      '((".*" "~/.emacs.d/auto-saves/" t)))
+      '((".*" (expand-file-name "auto-saves" user-emacs-directory) t)))
 (setq auth-sources '("~/.authinfo.gpg"))
 (make-directory "~/.emacs.d/backups/" t)
 (make-directory "~/.emacs.d/auto-saves/" t)
@@ -33,17 +34,16 @@
 (setq kept-old-versions 4)
 (setq delete-old-versions t)
 
-;; Load Paths
-(add-to-list 'load-path "~/.emacs.d/init.el.d")
-(add-to-list 'custom-theme-load-path
-             (expand-file-name "themes" user-emacs-directory))
-
 ;; Early UI optimizations
 (setq-default cursor-type 'bar)
-(tool-bar-mode -1)
-(scroll-bar-mode -1)
-(tooltip-mode -1)
-(flymake-mode -1)
+(when (fboundp 'tool-bar-mode)
+  (tool-bar-mode -1))
+(when (fboundp 'scroll-bar-mode)
+  (scroll-bar-mode -1))
+(when (fboundp 'tooltip-mode)
+  (tooltip-mode -1))
+(when (fboundp 'flymake-mode)
+  (flymake-mode -1))
 
 ;; Other
 (setq inhibit-startup-message t)

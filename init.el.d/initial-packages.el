@@ -1,4 +1,4 @@
-;;; load-first.el --- Initial packages -*- lexical-binding: t; -*-
+;;; initial-packages.el --- Initial packages -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 ;; Load packages which will affect the rest of the startup process.
@@ -90,5 +90,5 @@
   (exec-path-from-shell-copy-env "SSH_AGENT_PID")
   (exec-path-from-shell-copy-env "SSH_AUTH_SOCK"))
 
-(provide 'load-first)
-;;; load-first.el ends here
+(provide 'initial-packages)
+;;; initial-packages.el ends here

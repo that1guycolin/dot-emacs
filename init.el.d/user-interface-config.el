@@ -17,8 +17,6 @@
 ;;; Code:
 ;; Basic look & feel. Theme: 'weyland-yutani', font: 'CommitMonoNerdFontMonos'
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
-(add-to-list 'custom-theme-load-path
-             (expand-file-name "themes" user-emacs-directory))
 (setq custom-safe-themes t)
 
 (load-theme 'weyland-yutani t)

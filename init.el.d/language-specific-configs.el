@@ -21,7 +21,35 @@
 (use-package treesit
   :ensure nil
   :no-require t
-  :demand t)
+  :demand t
+  :custom
+  (treesit-language-source-alist
+   '((bash "https://github.com/tree-sitter/tree-sitter-bash")
+     (cmake "https://github.com/uyha/tree-sitter-cmake")
+     (css "https://github.com/tree-sitter/tree-sitter-css")
+     (fish "https://github.com/ram02z/tree-sitter-fish")
+     (emacs-lisp "https://github.com/Wilfred/tree-sitter-elisp")
+     (go "https://github.com/tree-sitter/tree-sitter-go")
+     (html "https://github.com/tree-sitter/tree-sitter-html")
+     (javascript "https://github.com/tree-sitter/tree-sitter-javascript"
+		 "master" "src")
+     (json "https://github.com/tree-sitter/tree-sitter-json")
+     (lua "https://github.com/MunifTanjim/tree-sitter-lua")
+     (make "https://github.com/alemuller/tree-sitter-make")
+     (markdown "https://github.com/tree-sitter-grammars/tree-sitter-markdown"
+	       "split_parser" "tree-sitter-markdown/src")
+     (markdown-inline
+      "https://github.com/tree-sitter-grammars/tree-sitter-markdown"
+      "split_parser" "tree-sitter-markdown-inline/src")
+     (powershell "https://github.com/airbus-cert/tree-sitter-powershell")
+     (python "https://github.com/tree-sitter/tree-sitter-python")
+     (rust "https://github.com/tree-sitter/tree-sitter-rust")
+     (toml "https://github.com/ikatyang/tree-sitter-toml")
+     (tsx "https://github.com/tree-sitter/tree-sitter-typescript"
+	  "master" "tsx/src")
+     (typescript "https://github.com/tree-sitter/tree-sitter-typescript"
+		 "master" "typescript/src")
+     (yaml "https://github.com/ikatyang/tree-sitter-yaml"))))
 
 (use-package treesit-langs
   :ensure nil
@@ -46,12 +74,12 @@
   :functions global-flycheck-mode
   :custom
   (flycheck-emacs-lisp-load-path 'inherit)
-  (flycheck-disabled-checkers '((emacs-lisp-elsa
-                                 sh-bash
-                                 yaml-jsyaml
-                                 yaml-ruby)))
+  (flycheck-disabled-checkers '(emacs-lisp-elsa
+                                sh-bash
+                                yaml-jsyaml
+                                yaml-ruby))
   :config
-  (global-flycheck-mode))
+  (global-flycheck-mode 1))
 
 ;; Use 'flycheck' with 'flycheck-inline' & 'flycheck-color-mode-line'.
 (use-package flycheck-inline
@@ -112,8 +140,11 @@
   :custom
   (dap-auto-configure-features '(sessions locals controls tooltip))
   (dap-lldb-dbug-program '("/usr/bin/lldb-dap"))
-  (dap-python-debugger 'debugpy)
-  (require 'dap-python))
+  (dap-python-debugger 'debugpy))
+
+(use-package dap-python
+  :after (dap-mode python)
+  :demand t)
 
 ;;; 'Apheleia' formatters:
 ;; bash: 'shfmt' (pacman -S shfmt)
@@ -133,11 +164,12 @@
   :demand t
   :functions apheleia-global-mode apheleia-format-buffer
   :config
-  (setf (alist-get 'shfmt apheleia-formatters) '("shfmt" "-i" "4" "-ci"))
+  (setf (alist-get 'shfmt apheleia-formatters)
+	'("shfmt" "-i" "4" "-ci" "-"))
   (setf (alist-get 'neocmakelsp apheleia-formatters)
         '("neocmakelsp" "format" "-"))
   (setf (alist-get 'ruff apheleia-formatters)
-        '("ruff" "format"))
+        '("ruff" "format" "-"))
   (setf (alist-get 'tombi apheleia-formatters)
         '("tombi" "fmt" "-"))
   (setf (alist-get 'xmlstarlet apheleia-formatters)
@@ -301,7 +333,7 @@
 (use-package live-py-mode
   :after python
   :bind (:map python-ts-mode-map
-              ("C-c p l" . live-py-mode)))
+	      ("C-c p l" . live-py-mode)))
 
 (use-package uv-mode
   :hook ((python-mode python-ts-mode). uv-mode-auto-activate-hook))
