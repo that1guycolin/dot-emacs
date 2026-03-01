@@ -60,7 +60,7 @@
   :demand t
   :functions global-treesit-auto-mode
   :config
-  (global-treesit-auto-mode))
+  (global-treesit-auto-mode 1))
 
 ;;; Flycheck linters:
 ;; bash: 'shellcheck' (pacman -S shellcheck)
@@ -74,12 +74,12 @@
   :functions global-flycheck-mode
   :custom
   (flycheck-emacs-lisp-load-path 'inherit)
-  (flycheck-disabled-checkers '((emacs-lisp-elsa
-                                 sh-bash
-                                 yaml-jsyaml
-                                 yaml-ruby)))
+  (flycheck-disabled-checkers '(emacs-lisp-elsa
+                                sh-bash
+                                yaml-jsyaml
+                                yaml-ruby))
   :config
-  (global-flycheck-mode))
+  (global-flycheck-mode 1))
 
 ;; Use 'flycheck' with 'flycheck-inline' & 'flycheck-color-mode-line'.
 (use-package flycheck-inline
@@ -140,8 +140,11 @@
   :custom
   (dap-auto-configure-features '(sessions locals controls tooltip))
   (dap-lldb-dbug-program '("/usr/bin/lldb-dap"))
-  (dap-python-debugger 'debugpy)
-  (require 'dap-python))
+  (dap-python-debugger 'debugpy))
+
+(use-package dap-python
+  :after (dap-mode python)
+  :demand t)
 
 ;;; 'Apheleia' formatters:
 ;; bash: 'shfmt' (pacman -S shfmt)
@@ -161,11 +164,12 @@
   :demand t
   :functions apheleia-global-mode apheleia-format-buffer
   :config
-  (setf (alist-get 'shfmt apheleia-formatters) '("shfmt" "-i" "4" "-ci"))
+  (setf (alist-get 'shfmt apheleia-formatters)
+	'("shfmt" "-i" "4" "-ci" "-"))
   (setf (alist-get 'neocmakelsp apheleia-formatters)
         '("neocmakelsp" "format" "-"))
   (setf (alist-get 'ruff apheleia-formatters)
-        '("ruff" "format"))
+        '("ruff" "format" "-"))
   (setf (alist-get 'tombi apheleia-formatters)
         '("tombi" "fmt" "-"))
   (setf (alist-get 'xmlstarlet apheleia-formatters)
@@ -329,7 +333,7 @@
 (use-package live-py-mode
   :after python
   :bind (:map python-ts-mode-map
-              ("C-c p l" . live-py-mode)))
+	      ("C-c p l" . live-py-mode)))
 
 (use-package uv-mode
   :hook ((python-mode python-ts-mode). uv-mode-auto-activate-hook))

@@ -34,4 +34,5 @@ jobs:
 
       - name: Byte-compile files
         run: |
-          emacs --batch -Q -f batch-byte-compile *.el
+          find . -name '*.el' -print0 | \
+          xargs -0 emacs --batch -Q -f batch-byte-compile
