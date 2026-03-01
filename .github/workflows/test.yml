@@ -30,15 +30,7 @@ jobs:
           # --batch: run without a UI
           # --debug-init: stop on errors
           # -l: load the file
-          emacs --batch --debug-init \
-          --load early-init.el \
-          --load init.el \
-          --load init.el.d/initial-packages.el \
-          --load init.el.d/project-support-configs.el \
-          --load init.el.d/language-specific-configs.el \
-          --load init.el.d/user-interface-config.el \
-          --load init.el.d/external-connections.el \
-          --load init.el.d/user-functions.el
+          emacs --batch --debug-init
 
       - name: Byte-compile files
         run: |
