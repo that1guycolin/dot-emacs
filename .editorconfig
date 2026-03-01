@@ -1,0 +1,11 @@
+# Sometimes, if I've broken my Emacs config, I use VSCode *gasp*!
+root = true
+
+[*]
+indent_style = space
+indent_size = 2
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = false
+max_line_length = 80

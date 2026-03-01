@@ -1,0 +1,13 @@
+# -*- mode: snippet -*-
+# name: basic emacs config file
+# key:  config
+# --
+;;; ${1:filename}.el --- ${2:brief-description} -*- lexical-binding: t; -*-
+
+;;; Commentary:
+;; $0
+
+;;; Code:
+
+(provide '${1})
+;;; ${1}.el ends here
