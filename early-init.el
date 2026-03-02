@@ -6,14 +6,14 @@
 ;; and applies early UI optimizations before the main config loads.
 
 ;;; Code:
+;; Debug on error (uncomment to activate)
+;; (setq debug-on-error t)
+
 ;;Prefer loading newest file
 (setq load-prefer-newer t)
 
 ;; Disable package.el
 (setq package-enable-at-startup nil)
-
-;; Debug on error
-(setq debug-on-error t)
 
 ;; Environment variables
 (setenv "CC" "gcc")
@@ -22,12 +22,9 @@
 
 ;; Configure autosaves and backups.
 (setq backup-directory-alist
-      '(("." . (expand-file-name "backups" user-emacs-directory))))
-(setq auto-save-file-name-transforms
-      '((".*" (expand-file-name "auto-saves" user-emacs-directory) t)))
+      '(("." . "~/.backups")))
 (setq auth-sources '("~/.authinfo.gpg"))
 (make-directory "~/.emacs.d/backups/" t)
-(make-directory "~/.emacs.d/auto-saves/" t)
 
 (setq version-control t)
 (setq kept-new-versions 4)
@@ -61,7 +58,6 @@
 (setq vc-follow-symlinks t)
 (setq use-short-answers t)
 (setq dired-kill-when-opening-new-dired-buffer t)
-
 
 (provide 'early-init)
 ;;; early-init.el ends here

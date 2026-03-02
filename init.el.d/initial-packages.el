@@ -60,7 +60,6 @@
   (elpaca-use-package-mode))
 
 (setq use-package-always-ensure t)
-(setq use-package-always-defer t)
 
 ;; 'auto-compile' (trigger auto-compile if .el is newer than .eln)
 (use-package auto-compile

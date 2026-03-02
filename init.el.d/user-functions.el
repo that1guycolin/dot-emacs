@@ -106,9 +106,22 @@
                         :weight 'regular)
     (message "Font set to %s" font)))
 
+(defun user/major-ts-mode-fallback ()
+  "Set major-modes to *-ts-mode if treesit-auto fails to activate."
+  (setq major-mode-remap-alist
+	'((bash-mode   . bash-ts-mode)
+	  (cmake-mode  . cmake-ts-mode)
+	  (json-mode   . json-ts-mode)
+	  (json5-mode  . json-ts-mode)
+	  (python-mode . python-ts-mode)
+	  (toml-mode   . toml-ts-mode)
+	  (yaml-mode   . yaml-ts-mode))))
+
 (keymap-global-set "C-c u c" #'user/cycle-themes)
 (keymap-global-set "C-c u t" #'user/select-theme)
 (keymap-global-set "C-c u f" #'user/switch-font)
+(keymap-global-set "C-c u s" #'user/major-ts-mode-fallback)
+
 
 (provide 'user-functions)
 ;;; user-functions.el ends here

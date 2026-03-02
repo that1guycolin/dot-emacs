@@ -1,21 +1,22 @@
-;;; user-interface-config.el --- Emacs user configuration for dashboard & other visual settings -*- lexical-binding: t; -*-
+;;; user-interface-config.el --- Emacs configuration for visual settings -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 ;; Configuration for the Emacs user workspace, including the startup screen
-;; (dashboard), file navigation (ranger, treemacs), completion UI
-;; (corfu, vertico, orderless, marginalia), snippets (yasnippet),
-;; terminal emulator (mistty), and Dired extensions.
+;; (dashboard), file navigation (ranger, treemacs, Dired extensions),
+;; completion UI (corfu, vertico, orderless, marginalia), snippets (yasnippet),
+;; & terminal emulator (mistty).
 
 ;;; Packages included:
 ;; adjust-parens, auto-complete, buffer-terminator, cape, corfu, dashboard,
 ;; dired-efap, diredfl, dired-narrow, dired-quick-sort, dired-rsync,
-;; dired-rsync-transient, dired-video-thumbnail, editorconfig, marginalia,
-;; mistty, nerd-icons, nerd-icons-dired, orderless, rainbow-delimiters, ranger,
-;; savehist, transient-dwim, vertico, which-key, yasnippet, yasnippet-capf,
+;; dired-rsync-transient, dired-video-thumbnail, editorconfig, emacs, marginalia,
+;; mistty, nerd-icons, nerd-icons-corfu, nerd-icons-dired, orderless,
+;; rainbow-delimiters, ranger, savehist, tab-line-nerd-icons, transient-dwim,
+;; treemacs-nerd-icons, vertico, which-key, yasnippet, yasnippet-capf,
 ;; yasnippet-snippets
 
 ;;; Code:
-;; Basic look & feel. Theme: 'weyland-yutani', font: 'CommitMonoNerdFontMonos'
+;; Basic look & feel. Theme: 'weyland-yutani', font: 'CommitMonoNerdFontMono'
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 (setq custom-safe-themes t)
 
@@ -28,12 +29,15 @@
                     :height 110
                     :width 'normal)
 
-(use-package nerd-icons
-  :demand t)
+(use-package nerd-icons)
+
+(use-package treemacs-nerd-icons
+  :after (nerd-icons treemacs))
+
+(use-package tab-line-nerd-icons)
 
 (use-package dashboard
   :ensure (:repo "that1guycolin/emacs-dashboard" :branch elpaca-integration)
-  :demand t
   :functions dashboard-setup-startup-hook
   :custom
   (dashboard-projects-backend 'projectile)
@@ -59,8 +63,7 @@
   :bind ("M-=" . transient-dwim-dispatch))
 
 ;; Dired as 'ranger' (file explorer) w/ extensions.
-(use-package ranger
-  :demand t)
+(use-package ranger)
 
 (use-package nerd-icons-dired
   :hook (dired-mode . nerd-icons-dired-mode))
@@ -89,7 +92,6 @@
   :commands (dired-narrow dired-narrow-regexp dired-narrow-fuzzy))
 
 (use-package dired-quick-sort
-  :demand t
   :functions dired-quick-sort-setup
   :config
   (dired-quick-sort-setup))
@@ -103,7 +105,6 @@
 ;; 'savehist' (history across sessions), 'orderless' (fuzzy matching),
 ;; 'marginalia' - rich annotations.
 (use-package corfu
-  :demand t
   :functions (global-corfu-mode corfu-history-mode corfu-popupinfo-mode)
   :custom
   (corfu-cycle t)
@@ -114,8 +115,10 @@
   (corfu-history-mode)
   (corfu-popupinfo-mode))
 
+(use-package nerd-icons-corfu
+  :after (corfu nerd-icons))
+
 (use-package cape
-  :demand t
   :bind ("C-c p" . cape-prefix-map)
   :functions (cape-dabbrev cape-file cape-elisp-block cape-history)
   :init
@@ -125,7 +128,6 @@
   (add-hook 'completion-at-point-functions #'cape-history))
 
 (use-package vertico
-  :demand t
   :functions vertico-mode
   :init
   (vertico-mode)
@@ -134,15 +136,13 @@
   (vertico-cycle t))
 
 (use-package orderless
-  :demand t
   :custom
   (completion-styles '(orderless basic))
   (completion-category-overrides '((file (styles basic partial-completion))))
   (completion-category-defaults nil))
 
 (use-package savehist
-  :ensure nil
-  :demand t)
+  :ensure nil)
 
 (use-package marginalia
   :bind
@@ -158,7 +158,6 @@
 ;; 'yasnippet' (functions), 'yasnippet-snippets' (library),
 ;; 'yasnippet-capf' (completions)
 (use-package yasnippet
-  :demand t
   :functions (yas-global-mode yas-reload-all)
   :custom
   (add-to-list 'yasnippet-snippets-dirs
@@ -167,12 +166,10 @@
   (yas-global-mode 1))
 
 (use-package yasnippet-snippets
-  :after yasnippet
-  :demand t)
+  :after yasnippet)
 
 (use-package yasnippet-capf
   :after (cape yasnippet)
-  :demand t
   :functions yasnippet-capf
   :config
   (add-to-list 'completion-at-point-functions #'yasnippet-capf))
@@ -191,17 +188,15 @@
   :hook (projectile-mode . editorconfig-mode))
 
 (use-package which-key
-  :hook (elpaca-after-init . which-key-mode))
+  :config
+  (which-key-mode 1))
 
-(use-package auto-complete
-  :demand t)
+(use-package auto-complete)
 
 (use-package adjust-parens
   :bind ("C-c M-p" . adjust-parens-mode))
 
 (use-package buffer-terminator
-  :ensure t
-  :demand t
   :custom
   (buffer-terminator-verbose nil)
   ;; Time in seconds, modify middle number (minutes).
@@ -231,7 +226,6 @@
   (read-extended-command-predicate #'command-completion-default-include-p)
   (minibuffer-prompt-properties
    '(read-only t cursor-intangible t face minibuffer-prompt)))
-
 
 (provide 'user-interface-config)
 ;;; user-interface-config.el ends here

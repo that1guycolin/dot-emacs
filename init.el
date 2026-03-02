@@ -40,34 +40,36 @@
 ;; See init.el.d/*.el for package declarations. Core packages include:
 ;; adjust-parens, apheleia, auto-compile, auto-complete, cape, corfu, dap-mode,
 ;; dashboard, deadgrep, dired-*, eask-mode, editorconfig, elisp-def, elpaca,
-;; emms, envrc, fish-mode, flycheck, forge, gcmh, lsp-mode, magit, marginalia,
-;; markdown-ts-mode, mistty, nerd-icons, orderless, org, projectile, python,
-;; ranger, savehist, sly, suggest, treemacs, treesit, uv-mode, vertico,
+;; emms, envrc, fish-mode, flycheck, forge, gcmh, lsp-mode, mason, magit,
+;; marginalia, markdown-ts-mode, mistty, nerd-icons, orderless, org, projectile,
+;; python, ranger, savehist, sly, suggest, treemacs, treesit, uv-mode, vertico,
 ;; which-key, yasnippet
 
 ;;; Code:
 ;; Load Paths
-(add-to-list 'load-path (expand-file-name "init.el.d" user-emacs-directory))
+(defvar user-init-directory (expand-file-name "init.el.d" user-emacs-directory)
+  "Directory from which init files are loaded.")
+
 (add-to-list 'custom-theme-load-path
              (expand-file-name "themes" user-emacs-directory))
 
 ;; Load 'elpaca' and 'auto-compile' first
-(require 'initial-packages)
+(load (expand-file-name "initial-packages.el" user-init-directory))
 
 ;; 'projectile', 'treemacs' etc...
-(require 'project-support-configs)
+(load (expand-file-name "project-support-configs.el" user-init-directory))
 
 ;; Define & configure languages
-(require 'language-specific-configs)
+(load (expand-file-name "language-specific-configs" user-init-directory))
 
 ;; Completions, buffers, etc...
-(require 'user-interface-config)
+(load (expand-file-name "user-interface-config" user-init-directory))
 
 ;; Emacs OS ;-)
-(require 'external-connections)
+(load (expand-file-name "external-connections" user-init-directory))
 
 ;; Define & configure custom functions
-(require 'user-functions)
+(load (expand-file-name "user-functions" user-init-directory))
 
 (provide 'init)
 ;;; init.el ends here

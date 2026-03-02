@@ -6,14 +6,12 @@
 ;;; Packages included:
 ;; deadgrep, disproject, envrc, forge, license-templates, magit,
 ;; magit-git-toolbelt, magit-pre-commit, projectile, transient, treemacs,
-;; treemacs-magit, treemacs-nerd-icons, treemacs-projectile
+;; treemacs-magit, treemacs-projectile
 
 ;;; Code:
 ;; 'magit' (straight git integration); 'forge' (specific online code repo);
-;; Additional extensions for help with
-
-(use-package transient
-  :demand t)
+;; Additional extensions for help with commits.
+(use-package transient)
 
 (use-package magit
   :bind
@@ -26,28 +24,28 @@
   (magit-save-repository-properties t))
 
 (use-package forge
-  :after magit
-  :demand t)
+  :after magit)
 
 (use-package license-templates
   :commands (license-templates-new-file license-templates-insert))
 
 (use-package magit-git-toolbelt
-  :commands magit-git-toolbelt
-  :after magit)
+  :after magit
+  :bind (:map magit-mode-map
+	      ("/" . magit-git-toolbelt)))
 
 (use-package magit-pre-commit
-  :commands magit-pre-commit-mode
-  :after magit)
+  :after magit
+  :bind (:map magit-mode-map
+	      ("@" . magit-pre-commit-mode)))
 
 (use-package envrc
-  :commands envrc-global-mode)
+  :bind ("C-c v" . envrc-global-mode))
 
 ;; 'projectile' (project manager); 'treemacs' (project navigation)
 ;; Additional extensions for both.
 (keymap-global-unset "C-x p")
 (use-package projectile
-  :demand t
   :functions projectile-mode
   :custom
   (projectile-project-search-path '("~/projects/" "~/scripts/" "~/.emacs.d"))
@@ -63,8 +61,9 @@
   (projectile-mode +1))
 
 (use-package disproject
-  :bind ( :map ctl-x-map
-          ("p" . disproject-dispatch)))
+  :after projectile
+  :bind (:map ctl-x-map
+              ("p" . disproject-dispatch)))
 
 (use-package deadgrep
   :bind ("<f5>" . deadgrep))
@@ -78,38 +77,19 @@
          ("C-x p f"   . treemacs-project-follow-mode)
          ("h"           . user/treemacs-show-files-toggle)
          ("<backspace>" . treemacs-root-up)))
-  :functions (treemacs-toggle-show-dotfiles
-              treemacs-hide-gitignored-files-mode
-              treemacs-git-commit-diff-mode)
+  :functions (treemacs-git-commit-diff-mode)
   :custom
   (treemacs-width 35)
   (treemacs-is-never-other-window t)
-  (treemacs-filewatch-mode t)
+  (treemacs-filewatch-mode 1)
   (treemacs-git-mode 'deferred)
-  :config
-  (treemacs-git-commit-diff-mode)
-  (treemacs-toggle-show-dotfiles)
-  (treemacs-hide-gitignored-files-mode)
-  (defun user/treemacs-show-files-toggle ()
-    "Toggle showing dotfiles and gitignored files in treemacs buffer."
-    (interactive)
-    (treemacs-toggle-show-dotfiles)
-    (if treemacs-hide-gitignored-files-mode
-        (setq treemacs-hide-gitignored-files-mode nil)
-      (setq treemacs-hide-gitignored-files-mode t)))
-  (keymap-global-set "M-o" #'user/treemacs-show-files-toggle))
+  (treemacs-git-commit-diff-mode 1))
 
 (use-package treemacs-magit
-  :after (magit treemacs)
-  :demand t)
+  :after (magit treemacs))
 
 (use-package treemacs-projectile
-  :after (projectile treemacs)
-  :demand t)
-
-(use-package treemacs-nerd-icons
-  :after (treemacs nerd-icons)
-  :demand t)
+  :after (projectile treemacs))
 
 (provide 'project-support-configs)
 ;;; project-support-configs.el ends here

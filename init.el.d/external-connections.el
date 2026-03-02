@@ -14,7 +14,6 @@
            :repo "https://git.savannah.gnu.org/git/emacs/org-mode.git"
            :branch "main"
 	   :build (:not elpaca--compile-info))
-  :demand t
   :mode ("\\.org\\'" . org-mode)
   :config
   (keymap-global-set "C-c o" #'org-mode)
@@ -23,12 +22,6 @@
   (keymap-global-set "C-c c" #'org-capture))
 
 ;; Emms
-(defun user/hook-for-emms ()
-  "Setup emms for video playback with mpv."
-  (require' emms-setup)
-  (emms-all)
-  (emms-default-players))
-
 (defun user/seek-backward-med ()
   "Seek backward 30 seconds in Emms."
   (emms-seek -30))
@@ -48,8 +41,7 @@
 (use-package emms
   :bind-keymap ("C-c v" . emms-playlist-mode-map)
   :bind (("<f6>" . emms-browser)
-         ("<f7>" . emms-playlist-mode-go)
-         ("<f8>" . emms-playlist-mode-go-popup)
+         ("<f7>" . emms-playlist-mode)
          (:map emms-playlist-mode-map
                ("<space>" . emms-pause)
                ("m" . emms-next)
@@ -70,13 +62,11 @@
                ("l" . emms-sort)
                ("y". emms-playlist-mode-yank)
                ("C-p" . emms-playlist-mode-go-popup)))
-  :hook ((emms-browser-mode emms-playlist-mode) . user/hook-for-emms)
   :functions (emms-all emms-default-players emms-seek)
   :defines emms-playlist-mode-map
   :custom
   (emms-player-list '(emms-player-mpv))
   (emms-player-mpv-parameters '("--force-window=yes")))
-
 
 (provide 'external-connections)
 ;;; external-connections.el ends here
