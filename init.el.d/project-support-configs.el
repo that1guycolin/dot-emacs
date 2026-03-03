@@ -40,7 +40,7 @@
 	      ("@" . magit-pre-commit-mode)))
 
 (use-package envrc
-  :bind ("C-c v" . envrc-global-mode))
+  :bind ("C-c C-v" . envrc-global-mode))
 
 ;; 'projectile' (project manager); 'treemacs' (project navigation)
 ;; Additional extensions for both.
@@ -75,12 +75,14 @@
    (:map treemacs-mode-map
          ("C-x p e"   . treemacs-add-and-display-current-project-exclusively)
          ("C-x p f"   . treemacs-project-follow-mode)
-         ("h"           . user/treemacs-show-files-toggle)
          ("<backspace>" . treemacs-root-up)))
-  :functions (treemacs-git-commit-diff-mode)
+  :functions (treemacs-filewatch-mode
+	      treemacs-git-mode
+	      treemacs-git-commit-diff-mode)
   :custom
   (treemacs-width 35)
   (treemacs-is-never-other-window t)
+  :config
   (treemacs-filewatch-mode 1)
   (treemacs-git-mode 'deferred)
   (treemacs-git-commit-diff-mode 1))

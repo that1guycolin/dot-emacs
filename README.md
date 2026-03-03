@@ -1,8 +1,9 @@
 # dot-emacs (.emacs.d)
 
-<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
+<!-- markdown-toc start - Don't edit this section.
+Run M-x markdown-toc-refresh-toc -->
 
-**Table of Contents**
+"Table of Contents"
 
 - [dot-emacs (.emacs.d)](#dot-emacs-emacsd)
   - [Packages Included:](#packages-included)
@@ -25,7 +26,7 @@ Personal Emacs configuration for that1guycolin. Please modify as much as you'd
 like for your own use, and definitely share any modifications you make
 (I'm sure this configuration could be much better)!
 
-## Packages Included:
+## Packages Included
 
 ### Core / Package Management
 
@@ -37,7 +38,7 @@ like for your own use, and definitely share any modifications you make
 
 - [corfu](https://github.com/minad/corfu)
 - [cape](https://github.com/minad/cape)
-- [yasnippet-capf](https://github.com/elpd/yasnippet-capf)
+- [yasnippet-capf](https://github.com/elken/yasnippet-capf)
 - [vertico](https://github.com/minad/vertico)
 - [orderless](https://github.com/oantolin/orderless)
 - [marginalia](https://github.com/minad/marginalia)
@@ -104,7 +105,6 @@ like for your own use, and definitely share any modifications you make
 - [slime](https://github.com/slime/slime)
 - [flycheck-eask](https://github.com/emacs-eask/flycheck-eask)
 - [lisp-semantic-hl](https://github.com/Lindydancer/lisp-semantic-highlight)
-- [json5-ts-mode](https://github.com/AndreasRihsmanel/json5-mode)
 - [markdown-mode](https://github.com/jrblevin/markdown-mode)
 - [python-x](https://github.com/pythonic-emacs/python-x)
 - [uv-mode](https://github.com/z80dev/uv-mode)

@@ -123,6 +123,5 @@
 (keymap-global-set "C-c u f" #'user/switch-font)
 (keymap-global-set "C-c u s" #'user/major-ts-mode-fallback)
 
-
 (provide 'user-functions)
 ;;; user-functions.el ends here

@@ -49,29 +49,26 @@
   :config
   (require 'emms-playlist-mode)
   (with-eval-after-load 'emms-playlist-mode
-    (defvar-keymap user/emms-playlist-mode-map
-      :doc "User binds for interacting with playlists in Emms."
-      :parent emms-playlist-mode-map
-      :name "playlist-mode-map"
-      "<SPACE>" #'emms-pause
-      "m" #'emms-next
-      "n" #'emms-previous
-      "s" #'emms-playlist-shuffle
-      "j" #'emms-seek-backward
-      "k" #'emms-seek-forward
-      "J" #'user/seek-backward-med
-      "K" #'user/seek-forward-med
-      "M-j" #'user/seek-backward-long
-      "M-k" #'user/seek-forward-long
-      "p" #'emms-play-playlist
-      "f" #'emms-play-file
-      "d" #'emms-play-find
-      "C-s" #'emms-playlist-save
-      "C-x n" #'emms-playlist-new
-      "i" #'emms-show
-      "l" #'emms-sort
-      "y"#'emms-playlist-mode-yank
-      "C-p" #'emms-playlist-mode-go-popup)))
+    (define-key emms-playlist-mode-map (kbd "<SPACE>") #'emms-pause)
+    (define-key emms-playlist-mode-map (kbd "m") #'emms-next)
+    (define-key emms-playlist-mode-map (kbd "n") #'emms-previous)
+    (define-key emms-playlist-mode-map (kbd "s") #'emms-playlist-shuffle)
+    (define-key emms-playlist-mode-map (kbd "j") #'emms-seek-backward)
+    (define-key emms-playlist-mode-map (kbd "k") #'emms-seek-forward)
+    (define-key emms-playlist-mode-map (kbd "J") #'user/seek-backward-med)
+    (define-key emms-playlist-mode-map (kbd "K") #'user/seek-forward-med)
+    (define-key emms-playlist-mode-map (kbd "M-j") #'user/seek-backward-long)
+    (define-key emms-playlist-mode-map (kbd "M-k") #'user/seek-forward-long)
+    (define-key emms-playlist-mode-map (kbd "p") #'emms-play-playlist)
+    (define-key emms-playlist-mode-map (kbd "f") #'emms-play-file)
+    (define-key emms-playlist-mode-map (kbd "d") #'emms-play-find)
+    (define-key emms-playlist-mode-map (kbd "C-s") #'emms-playlist-save)
+    (define-key emms-playlist-mode-map (kbd "C-x n") #'emms-playlist-new)
+    (define-key emms-playlist-mode-map (kbd "i") #'emms-show)
+    (define-key emms-playlist-mode-map (kbd "l") #'emms-sort)
+    (define-key emms-playlist-mode-map (kbd "y") #'emms-playlist-mode-yank)
+    (define-key emms-playlist-mode-map (kbd "C-p")
+		#'emms-playlist-mode-go-popup)))
 
 (provide 'external-connections)
 ;;; external-connections.el ends here

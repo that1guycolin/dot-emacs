@@ -36,8 +36,8 @@ tab-separated values."
   (with-temp-buffer
     (insert-file-contents (concat (roswell-configdir) "config"))
     (goto-char (point-min))
-    (re-search-forward (concat "^" var "\t[^\t]+\t\\(.*\\)$"))
-    (match-string 1)))
+    (when (re-search-forward (concat "^" var "\t[^\t]+\t\\(.*\\)$") nil t)
+      (match-string 1))))
 
 (defun roswell-directory (type)
   "Construct a full path to the specified Roswell LISP file based on its TYPE.

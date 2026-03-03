@@ -68,10 +68,10 @@
   :functions (mason-installed-p mason-install)
   :config
   (mason-setup
-    (dolist (pkg '("debugpy" "fish-lsp" "jsonlint" "marksman" "neocmakelsp"
-		   "ruff" "shellcheck" "shfmt" "tombi" "ty" "yamllint"))
-      (unless (mason-installed-p pkg)
-   	(ignore-errors (mason-install pkg))))))
+   (dolist (pkg '("debugpy" "fish-lsp" "jsonlint" "marksman" "neocmakelsp"
+		  "ruff" "shellcheck" "shfmt" "tombi" "ty" "yamllint"))
+     (unless (mason-installed-p pkg)
+       (ignore-errors (mason-install pkg))))))
 
 ;;; Flycheck linters:
 ;; bash: 'shellcheck' (pacman -S shellcheck)*
@@ -232,7 +232,7 @@
   (setf (alist-get 'conf-toml-mode apheleia-mode-alist) 'tombi)
   (setf (alist-get 'nxml-mode apheleia-mode-alist) 'xmlstarlet)
   (apheleia-global-mode +1)
-  (keymap-global-set "C-c C-f" #'apheleia-format-buffer))
+  (keymap-global-set "C-c f" #'apheleia-format-buffer))
 
 ;; Semantic hightlighting for common and emacs lisp flavors.
 (use-package lisp-semantic-hl
@@ -337,10 +337,10 @@
 ;;; ***MARKDOWN***
 (use-package markdown-mode
   :mode ("README\\.md\\'" . gfm-mode)
-  :init (if (memq major-mode '(gfm-mode))
-	    (setq markdown-command "cmark-gfm")
-	  (setq markdown-command "cmark"))
+  :init (setq markdown-command "cmark")
   :config
+  (when (memq major-mode '(gfm-mode))
+    (setq markdown-command "cmark-gfm"))
   (with-eval-after-load 'flycheck
     (flycheck-define-checker markdown-mado
       "A fast Markdown linter written in Rust.

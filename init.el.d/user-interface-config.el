@@ -28,7 +28,8 @@
                     :height 110
                     :width 'normal)
 
-(use-package nerd-icons)
+(use-package nerd-icons
+  :demand t)
 
 (use-package treemacs-nerd-icons
   :after (nerd-icons treemacs))
@@ -141,7 +142,9 @@
   (completion-category-defaults nil))
 
 (use-package savehist
-  :ensure nil)
+  :ensure nil
+  :config
+  (savehist-mode 1))
 
 (use-package marginalia
   :bind
@@ -175,12 +178,13 @@
 
 ;; Use shell: 'MisTTY'
 (use-package mistty
-  :bind (("C-c C-s" . mistty)
-         (:map mistty-prompt-map
-               ("M-<up>" . mistty-send-key)
-               ("M-<down>" . mistty-send-key)
-               ("M-<left>" . mistty-send-key)
-               ("M-<right>" . mistty-send-key))))
+  :bind ("C-c C-s" . mistty)
+  :functions mistty-send-key
+  :config
+  (define-key mistty-prompt-map (kbd "M-<up>") #'mistty-send-key)
+  (define-key mistty-prompt-map (kbd "M-<down>") #'mistty-send-key)
+  (define-key mistty-prompt-map (kbd "M-<left>") #'mistty-send-key)
+  (define-key mistty-prompt-map (kbd "M-<right>") #'mistty-send-key))
 
 ;; Basic
 (use-package editorconfig

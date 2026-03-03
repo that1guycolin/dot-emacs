@@ -27,7 +27,6 @@
 (setq auth-sources '("~/.authinfo.gpg"))
 (make-directory "~/.backups" t)
 (make-directory "~/.auto-saves" t)
-(setq auth-sources '("~/.authinfo.gpg"))
 
 (setq version-control t)
 (setq kept-new-versions 4)
