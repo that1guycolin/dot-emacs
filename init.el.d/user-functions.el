@@ -112,7 +112,6 @@
   (dolist (pair '((bash-mode   . bash-ts-mode)
 		  (cmake-mode  . cmake-ts-mode)
 		  (json-mode   . json-ts-mode)
-		  (json5-mode  . json5-ts-mode)
 		  (python-mode . python-ts-mode)
 		  (toml-mode   . toml-ts-mode)
 		  (yaml-mode   . yaml-ts-mode)))

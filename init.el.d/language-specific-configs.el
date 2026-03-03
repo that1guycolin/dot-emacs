@@ -268,7 +268,8 @@
       :server-id 'neocmakelsp))))
 
 ;;; ***COMMON-LISP***
-(defvar user-ros-directory (expand-file-name "init.el.d" user-emacs-directory))
+(defvar user-init-directory (expand-file-name "init.el.d" user-emacs-directory)
+  "Directory from which init files are loaded.")
 (use-package lisp-mode
   :ensure nil
   :mode (("\\.lisp\\'" . lisp-mode)
@@ -278,7 +279,7 @@
   :config
   (add-hook 'lisp-mode-hook
 	    (lambda () (load (expand-file-name
-			      "roswell-lisp-setup.el" user-ros-directory)))))
+			      "roswell-lisp-setup.el" user-init-directory)))))
 (use-package slime
   :after lisp-mode)
 

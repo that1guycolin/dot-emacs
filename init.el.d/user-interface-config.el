@@ -161,10 +161,9 @@
 ;; 'yasnippet-capf' (completions)
 (use-package yasnippet
   :functions (yas-global-mode yas-reload-all)
-  :custom
-  (add-to-list 'yasnippet-snippets-dirs
-               '(expand-file-name "snippets" user-emacs-directory))
   :config
+  (add-to-list 'yas-snippet-dirs
+               '(expand-file-name "snippets" user-emacs-directory))
   (yas-global-mode 1))
 
 (use-package yasnippet-snippets
@@ -220,7 +219,7 @@
    ("C-c ("   . check-parens)
    ("C-c n"   . display-line-numbers-mode)
    ("C-c C-n" . global-display-line-numbers-mode)
-   ("C-c r"   . restart-emacs))
+   ("C-c C-r"   . restart-emacs))
   :custom
   (tab-always-indent 'complete)
   (text-mode-ispell-word-completion nil)

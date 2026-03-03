@@ -24,18 +24,22 @@
 ;; Emms
 (defun user/seek-backward-med ()
   "Seek backward 30 seconds in Emms."
+  (interactive)
   (emms-seek -30))
 
 (defun user/seek-forward-med ()
   "Seek forward 30 seconds in Emms."
+  (interactive)
   (emms-seek 30))
 
 (defun user/seek-backward-long ()
-  "Seek background 2 minutes in Emms."
+  "Seek backwards 2 minutes in Emms."
+  (interactive)
   (emms-seek '(* -2 60)))
 
 (defun user/seek-forward-long ()
   "Seek forward 2 minutes in Emms."
+  (interactive)
   (emms-seek '(* 2 60)))
 
 (use-package emms

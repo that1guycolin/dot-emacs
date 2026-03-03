@@ -6,8 +6,8 @@
 ;;; Code:
 (defun roswell-configdir ()
   "Return the configuration directory used by Roswell."
-  (substring (shell-command-to-string
-	      "ros roswell-internal-use version confdir") 0 -1))
+  (string-trim
+   (shell-command-to-string "ros roswell-internal-use version confdir")))
 
 (defun roswell-load (system)
   "Load the Roswell configuration for a specified SBCL-based ROS system.
@@ -18,12 +18,13 @@ Parameters:
 - SYSTEM: A string representing either '/usr/local/sbcl/bin' or another valid
           roswell installation prefix."
   
-  (let ((result (substring (shell-command-to-string
-                            (concat
-			     "ros -L sbcl-bin -e \"(format t \\\"~A~%\\\"
+  (let ((result (string-trim
+                 (shell-command-to-string
+                  (concat
+                   "ros -L sbcl-bin -e \"(format t \\\"~A~%\\\"
 (uiop:native-namestring (ql:where-is-system \\\""
-                             system
-                             "\\\")))\"")) 0 -1)))
+                   system
+                   "\\\")))\"")))))
     (unless (equal "NIL" result)
       (load (concat result "roswell/elisp/init.el")))))
 
@@ -58,20 +59,24 @@ calling roswell-opt."
 (defvar slime-path)
 (defvar inferior-lisp-program)
 (declare-function slime-setup "slime")
-
-(let ((type (or (ignore-errors (roswell-opt "emacs.type")) "slime")))
-  (cond ((equal type "slime")
-         (let ((slime-directory (roswell-directory type)))
-           (add-to-list 'load-path slime-directory)
-           (require 'slime-autoloads)
-           (setq slime-backend (expand-file-name "swank-loader.lisp"
-                                                 slime-directory))
-           (setq slime-path slime-directory)
-           (slime-setup roswell-slime-contribs)))
-        ((equal type "sly")
-         (add-to-list 'load-path (roswell-directory type))
-         (require 'sly-autoloads))))
-(setq inferior-lisp-program "ros run")
+(when (executable-find "ros")
+  (let ((type (or (ignore-errors (roswell-opt "emacs.type")) "slime")))
+    (cond
+     ((equal type "slime")
+      (let ((slime-directory (roswell-directory type)))
+        (when (file-directory-p slime-directory)
+          (add-to-list 'load-path slime-directory)
+          (require 'slime-autoloads nil t)
+          (setq slime-backend
+		(expand-file-name "swank-loader.lisp" slime-directory))
+          (setq slime-path slime-directory)
+          (slime-setup roswell-slime-contribs))))
+     ((equal type "sly")
+      (let ((sly-directory (roswell-directory type)))
+        (when (file-directory-p sly-directory)
+          (add-to-list 'load-path sly-directory)
+          (require 'sly-autoloads nil t)))))
+    (setq inferior-lisp-program "ros run")))
 
 (provide 'roswell-lisp-setup)
 ;;; roswell-lisp-setup.el ends here
