@@ -108,14 +108,15 @@
 
 (defun user/major-ts-mode-fallback ()
   "Set major-modes to *-ts-mode if treesit-auto fails to activate."
-  (setq major-mode-remap-alist
-	'((bash-mode   . bash-ts-mode)
-	  (cmake-mode  . cmake-ts-mode)
-	  (json-mode   . json-ts-mode)
-	  (json5-mode  . json-ts-mode)
-	  (python-mode . python-ts-mode)
-	  (toml-mode   . toml-ts-mode)
-	  (yaml-mode   . yaml-ts-mode))))
+  (interactive)
+  (dolist (pair '((bash-mode   . bash-ts-mode)
+		  (cmake-mode  . cmake-ts-mode)
+		  (json-mode   . json-ts-mode)
+		  (json5-mode  . json5-ts-mode)
+		  (python-mode . python-ts-mode)
+		  (toml-mode   . toml-ts-mode)
+		  (yaml-mode   . yaml-ts-mode)))
+    (setf (alist-get (car pair) major-mode-remap-alist) (cdr pair))))
 
 (keymap-global-set "C-c u c" #'user/cycle-themes)
 (keymap-global-set "C-c u t" #'user/select-theme)

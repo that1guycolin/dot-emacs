@@ -39,34 +39,39 @@
   (emms-seek '(* 2 60)))
 
 (use-package emms
-  :bind-keymap ("C-c v" . emms-playlist-mode-map)
+  :defer t
   :bind (("<f6>" . emms-browser)
-         ("<f7>" . emms-playlist-mode)
-         (:map emms-playlist-mode-map
-               ("<space>" . emms-pause)
-               ("m" . emms-next)
-               ("n" . emms-previous)
-               ("s" . emms-playlist-shuffle)
-               ("j" . emms-seek-backward)
-               ("k" . emms-seek-forward)
-               ("J" . user/seek-backward-med)
-               ("K" . user/seek-forward-med)
-               ("M-j" . user/seek-backward-long)
-               ("M-k" . user/seek-forward-long)
-               ("p" . emms-play-playlist)
-               ("f" . emms-play-file)
-               ("d" . emms-play-find)
-               ("C-s" . emms-playlist-save)
-               ("C-x n" . emms-playlist-new)
-               ("i" . emms-show)
-               ("l" . emms-sort)
-               ("y". emms-playlist-mode-yank)
-               ("C-p" . emms-playlist-mode-go-popup)))
+         ("<f7>" . emms-playlist-mode-go))
   :functions (emms-all emms-default-players emms-seek)
-  :defines emms-playlist-mode-map
   :custom
   (emms-player-list '(emms-player-mpv))
-  (emms-player-mpv-parameters '("--force-window=yes")))
+  (emms-player-mpv-parameters '("--force-window=yes"))
+  :config
+  (require 'emms-playlist-mode)
+  (with-eval-after-load 'emms-playlist-mode
+    (defvar-keymap user/emms-playlist-mode-map
+      :doc "User binds for interacting with playlists in Emms."
+      :parent emms-playlist-mode-map
+      :name "playlist-mode-map"
+      "<SPACE>" #'emms-pause
+      "m" #'emms-next
+      "n" #'emms-previous
+      "s" #'emms-playlist-shuffle
+      "j" #'emms-seek-backward
+      "k" #'emms-seek-forward
+      "J" #'user/seek-backward-med
+      "K" #'user/seek-forward-med
+      "M-j" #'user/seek-backward-long
+      "M-k" #'user/seek-forward-long
+      "p" #'emms-play-playlist
+      "f" #'emms-play-file
+      "d" #'emms-play-find
+      "C-s" #'emms-playlist-save
+      "C-x n" #'emms-playlist-new
+      "i" #'emms-show
+      "l" #'emms-sort
+      "y"#'emms-playlist-mode-yank
+      "C-p" #'emms-playlist-mode-go-popup)))
 
 (provide 'external-connections)
 ;;; external-connections.el ends here

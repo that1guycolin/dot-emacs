@@ -21,10 +21,13 @@
 (setenv "LSP_USE_PLISTS" "true")
 
 ;; Configure autosaves and backups.
-(setq backup-directory-alist
-      '(("." . "~/.backups")))
+(setq backup-directory-alist '(("." . "~/.backups")))
+(setq auto-save-file-name-transforms
+      '((".*" "~/.auto-saves" t)))
 (setq auth-sources '("~/.authinfo.gpg"))
-(make-directory "~/.emacs.d/backups/" t)
+(make-directory "~/.backups" t)
+(make-directory "~/.auto-saves" t)
+(setq auth-sources '("~/.authinfo.gpg"))
 
 (setq version-control t)
 (setq kept-new-versions 4)

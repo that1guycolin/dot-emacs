@@ -38,11 +38,12 @@
 
 ;;; Packages included:
 ;; See init.el.d/*.el for package declarations. Core packages include:
-;; adjust-parens, apheleia, auto-compile, auto-complete, cape, corfu, dap-mode,
-;; dashboard, deadgrep, dired-*, eask-mode, editorconfig, elisp-def, elpaca,
-;; emms, envrc, fish-mode, flycheck, forge, gcmh, lsp-mode, mason, magit,
-;; marginalia, markdown-ts-mode, mistty, nerd-icons, orderless, org, projectile,
-;; python, ranger, savehist, sly, suggest, treemacs, treesit, uv-mode, vertico,
+;; 
+;; adjust-parens, apheleia, auto-compile, cape, corfu, dap-mode, dashboard,
+;; deadgrep, dired-*, eask-mode, editorconfig, elisp-def, elpaca, emms, envrc,
+;; fish-mode, flycheck, forge, gcmh, lsp-mode, mason, magit, marginalia,
+;; markdown-ts-mode, mistty, nerd-icons, orderless, org, projectile, python
+;; ranger, savehist, sly, suggest, treemacs, treesit, uv-mode, vertico,
 ;; which-key, yasnippet
 
 ;;; Code:

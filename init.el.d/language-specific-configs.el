@@ -13,12 +13,12 @@
 ;; eask-mode, elisp-def, emacs-lisp-mode, fish-mode, flycheck,
 ;; flycheck-color-mode-line, flycheck-eask, flyover, ielm, json-mode, lisp-mode,
 ;; lisp-semantic-hl, live-py-mode, lsp-mode, lsp-treemacs, lsp-ui,
-;; markdown-ts-mode, mason, modern-sh, nxml-mode, python, python-x, suggest,
+;; markdown-mode, mason, modern-sh, nxml-mode, python, python-x, suggest,
 ;; test-simple, toml, treesit, treesit-auto, uv-mode, yaml
 
 ;;; Code:
 ;; Tree-sitter support ('treesit' 'treesit-auto')
-(defvar treesit-language-source-alist
+(defvar treesit-language-source-alist nil
   "List of online treesitter repositories for various languages.")
 
 (use-package treesit
@@ -29,6 +29,7 @@
 	'((bash "https://github.com/tree-sitter/tree-sitter-bash")
 	  (cmake "https://github.com/uyha/tree-sitter-cmake")
 	  (css "https://github.com/tree-sitter/tree-sitter-css")
+	  (cpp "https://github.com/tree-sitter/tree-sitter-cpp")
 	  (fish "https://github.com/ram02z/tree-sitter-fish")
 	  (emacs-lisp "https://github.com/Wilfred/tree-sitter-elisp")
 	  (go "https://github.com/tree-sitter/tree-sitter-go")
@@ -76,6 +77,7 @@
 ;; bash: 'shellcheck' (pacman -S shellcheck)*
 ;; emacs-lisp: 'emacs-lisp' (built-in)
 ;; json: 'jsonlint' (npm install -g jsonlint)*
+;; markdown: 'mado' (pacman -S mado)
 ;; xml: 'xmlstarlet' (pacman -S xmlstarlet)
 ;; yaml: 'yamllint' (pacman -S yamllint)*
 
@@ -83,8 +85,10 @@
   :hook ((bash-ts-mode    . flycheck-mode)
 	 (emacs-lisp-mode . flycheck-mode)
 	 (json-ts-mode    . flycheck-mode)
+	 (markdown-mode   . flycheck-mode)
 	 (nxml-mode       . flycheck-mode)
 	 (yaml-ts-mode    . flycheck-mode))
+  :functions flycheck-select-checker
   :custom
   (flycheck-emacs-lisp-load-path 'inherit)
   (flycheck-disabled-checkers '(emacs-lisp-elsa sh-bash yaml-jsyaml yaml-ruby)))
@@ -145,20 +149,19 @@
 ;;; LSP servers:
 ;; cmake: 'neocmakelsp' (cargo install neocmakelsp)*
 ;; fish: 'fish-lsp' (npm install -g fish-lsp)*
-;; markdown: 'marksman' (pacman -S marksman)
 ;; python: 'ty' (uv tool install ty); 'ruff' (uv tool install ruff)*
 ;; toml: 'tombi' (uv tool install tombi)*
+;; [OPTIONAL] markdown: 'marksman' (pacman -S marksman)
 
 (use-package lsp-mode
   :hook ((cmake-ts-mode    . lsp-deferred)
 	 (fish-mode        . lsp-deferred)
-	 (markdown-ts-mode . lsp-deferred)
 	 (python-ts-mode   . lsp-deferred)
 	 (toml-ts-mode     . lsp-deferred))
-  :bind-keymap ("C-c l" . lsp-mode-map)
+  :bind-keymap ("C-c C-l" . lsp-mode-map)
   :functions (lsp-register-client make-lsp--client lsp-stdio-connection)
   :bind (:map lsp-mode-map
-	      ("C-c l f" . lsp-format-buffer))
+	      ("f" . lsp-format-buffer))
   :custom
   (lsp-use-plists t)
   (lsp-enable-which-key-integration)
@@ -184,11 +187,13 @@
 
 (use-package dap-mode
   :commands (dap-debug dap-debug-edit-template dap-auto-configure-mode)
+  :defines dap-python-debugger
   :custom
   (dap-auto-configure-features '(sessions locals controls tooltip))
-  (dap-lldb-dbug-program '("/usr/bin/lldb-dap"))
+  (dap-lldb-dbug-program "/usr/bin/lldb-dap")
+  :config
   (require 'dap-python)
-  (dap-python-debugger 'debugpy))
+  (setq dap-python-debugger 'debugpy))
 
 ;;; 'Apheleia' formatters:
 ;; bash: 'shfmt' (pacman -S shfmt)*
@@ -227,7 +232,7 @@
   (setf (alist-get 'conf-toml-mode apheleia-mode-alist) 'tombi)
   (setf (alist-get 'nxml-mode apheleia-mode-alist) 'xmlstarlet)
   (apheleia-global-mode +1)
-  (keymap-global-set "C-c f" #'apheleia-format-buffer))
+  (keymap-global-set "C-c C-f" #'apheleia-format-buffer))
 
 ;; Semantic hightlighting for common and emacs lisp flavors.
 (use-package lisp-semantic-hl
@@ -263,77 +268,7 @@
       :server-id 'neocmakelsp))))
 
 ;;; ***COMMON-LISP***
-(defun roswell-configdir ()
-  "Return the configuration directory used by Roswell."
-  (substring (shell-command-to-string
-	      "ros roswell-internal-use version confdir") 0 -1))
-
-(defun roswell-load (system)
-  "Load the Roswell configuration for a specified SBCL-based ROS system.
-This function retrieves and prints the location of the sbcl-bin directory
-for the given SYSTEM, then attempts to load an init file located at that path.
-
-Parameters:
-- SYSTEM: A string representing either '/usr/local/sbcl/bin' or another valid
-          roswell installation prefix."
-  
-  (let ((result (substring (shell-command-to-string
-                            (concat
-			     "ros -L sbcl-bin -e \"(format t \\\"~A~%\\\"
-(uiop:native-namestring (ql:where-is-system \\\""
-                             system
-                             "\\\")))\"")) 0 -1)))
-    (unless (equal "NIL" result)
-      (load (concat result "roswell/elisp/init.el")))))
-
-(defun roswell-opt (var)
-  "Retrieve the value of an option specified by VAR from Roswell configuration.
-This function reads a temporary buffer containing ROS's config file content,
-searches for lines starting with VAR, and returns its corresponding
-tab-separated values."
-  
-  (with-temp-buffer
-    (insert-file-contents (concat (roswell-configdir) "config"))
-    (goto-char (point-min))
-    (re-search-forward (concat "^" var "\t[^\t]+\t\\(.*\\)$"))
-    (match-string 1)))
-
-(defun roswell-directory (type)
-  "Construct a full path to the specified Roswell LISP file based on its TYPE.
-This function combines several components: ROS configuration directory,
-subdirectories for different Lisp versions, and additional metadata retrieved by
-calling roswell-opt."
-
-  (concat
-   (roswell-configdir)
-   "lisp/"
-   type
-   "/"
-   (roswell-opt (concat type ".version"))
-   "/"))
-
-(defvar roswell-slime-contribs '(slime-fancy))
-(defvar slime-backend)
-(defvar slime-path)
-(defvar inferior-lisp-program)
-
-(defun user/activate-ros-for-mode-lisp ()
-  "Script provided by Roswell to setup \"lisp-mode\" integration."
-  (let ((type (or (ignore-errors (roswell-opt "emacs.type")) "slime")))
-    (cond ((equal type "slime")
-           (let ((slime-directory (roswell-directory type)))
-             (add-to-list 'load-path slime-directory)
-             (require 'slime-autoloads)
-             (setq slime-backend (expand-file-name "swank-loader.lisp"
-                                                   slime-directory))
-             (setq slime-path slime-directory)
-             (slime-setup roswell-slime-contribs)))
-          ((equal type "sly")
-           (add-to-list 'load-path (roswell-directory type))
-           (require 'sly-autoloads))))
-  (setq inferior-lisp-program "ros run"))
-
-
+(defvar user-ros-directory (expand-file-name "init.el.d" user-emacs-directory))
 (use-package lisp-mode
   :ensure nil
   :mode (("\\.lisp\\'" . lisp-mode)
@@ -341,8 +276,9 @@ calling roswell-opt."
          ("\\.asd\\'"  . lisp-mode))
   :interpreter ("ros"  . lisp-mode)
   :config
-  (add-hook 'lisp-mode-hook #'user/activate-ros-for-mode-lisp))
-
+  (add-hook 'lisp-mode-hook
+	    (lambda () (load (expand-file-name
+			      "roswell-lisp-setup.el" user-ros-directory)))))
 (use-package slime
   :after lisp-mode)
 
@@ -350,27 +286,27 @@ calling roswell-opt."
 (use-package emacs-lisp-mode
   :ensure nil
   :no-require t
-  :bind-keymap ("C-c e" . emacs-lisp-mode-map)
   :mode ("\\.el\\'" . emacs-lisp-mode))
 
 (use-package elisp-def
   :bind (:map emacs-lisp-mode-map
-	      ("C-c e d" . elisp-def)
-	      ("C-c e C-d" . elisp-def-mode))
-  :hook ((emacs-lisp-mode ielm) . elisp-def-mode))
+	      ("C-c C-d" . elisp-def)
+	      ("C-c C-D" . elisp-def-mode))
+  :hook ((emacs-lisp-mode . elisp-def-mode)
+	 (ielm . elisp-def-mode)))
 
 (use-package suggest
   :bind (:map emacs-lisp-mode-map
-	      ("C-c e s" . suggest)))
+	      ("C-c C-s" . suggest)))
 
 (use-package test-simple
   :bind (:map emacs-lisp-mode-map
-	      ("C-c e t" . test-simple-start)))
+	      ("C-c C-t" . test-simple-start)))
 
 (use-package ielm
   :ensure nil
   :bind (:map emacs-lisp-mode-map
-	      ("C-c e e" . ielm)))
+	      ("C-c e" . ielm)))
 
 (use-package eask-mode
   :mode ("Eask" . eask-mode))
@@ -399,14 +335,59 @@ calling roswell-opt."
          ("\\.jsonc\\'" . json-ts-mode)))
 
 ;;; ***MARKDOWN***
-(use-package markdown-ts-mode
-  :mode (("\\.md\\'" . markdown-ts-mode)
-         ("README" . markdown-ts-mode)
-         ("INSTALL" . markdown-ts-mode))
+(use-package markdown-mode
+  :mode ("README\\.md\\'" . gfm-mode)
+  :init (if (memq major-mode '(gfm-mode))
+	    (setq markdown-command "cmark-gfm")
+	  (setq markdown-command "cmark"))
   :config
-  (with-eval-after-load 'lsp-mode
-    (add-to-list 'lsp-language-id-configuration
-		 '(markdown-ts-mode . "markdown"))))
+  (with-eval-after-load 'flycheck
+    (flycheck-define-checker markdown-mado
+      "A fast Markdown linter written in Rust.
+See URL `https://github.com/akiomik/mado`."
+      :command ("mado" "check" source)
+      :error-patterns
+      ((error line-start (file-name)
+	      ":" line ":" column ": "
+	      (id (one-or-more (not (any " ")))) " " (message) line-end))
+      :modes (markdown-mode gfm-mode))
+    (add-to-list 'flycheck-checkers 'markdown-mado)
+    (when (memq major-mode '(markdown-mode gfm-mode))
+      (flycheck-select-checker 'markdown-mado)))
+  (define-key markdown-mode-command-map (kbd "C-l") #'lsp-deferred))
+
+(use-package markdown-toc
+  :after (:any markdown-mode gfm-mode)
+  :functions (markdown-toc-follow-link-at-point
+	      markdown-toc-generate-or-refresh-toc
+	      markdown-toc-delete-toc
+	      markdown-toc-version)
+  :config
+  (define-key markdown-mode-command-map (kbd "C-.")
+	      #'markdown-toc-follow-link-at-point)
+  (define-key markdown-mode-command-map (kbd "C-t")
+	      #'markdown-toc-generate-or-refresh-toc)
+  (define-key markdown-mode-command-map (kbd "C-d") #'markdown-toc-delete-toc)
+  (define-key markdown-mode-command-map (kbd "C-v") #'markdown-toc-version))
+
+(use-package grip-mode
+  :ensure (:package "grip-mode" :source "MELPA" :protocol https
+		    :inherit t :depth nil :repo "seagle0128/grip-mode"
+		    :fetcher github
+		    :files ("*.el" "*.el.in" "dir" "*.info" "*.texi"
+			    "*.texinfo" "doc/dir" "doc/*.info" "doc/*.texi"
+			    "doc/*.texinfo" "lisp/*.el" "docs/dir"
+			    "docs/*.info" "docs/*.texi" "docs/*.texinfo"
+			    (:exclude ".dir-locals.el" "test.el" "tests.el"
+				      "*-test.el" "*-tests.el" "LICENSE"
+				      "README*" "*-pkg.el")))
+  :after gfm-mode
+  :functions grip-mode
+  :defines grip-command
+  :config
+  (define-key markdown-mode-command-map (kbd "g") #'grip-mode)
+  (setq grip-command 'auto))
+
 
 ;;; ***PYTHON***
 ;; 'python' (Emacs native), 'python-x' (general enhancements),
@@ -414,7 +395,6 @@ calling roswell-opt."
 ;; 'auto-virtualev' (additional venv support)
 
 (use-package python
-  :bind ("C-c p" . python-ts-mode-map)
   :mode ("\\.py\\'" . python-ts-mode)
   :interpreter ("uv" . python-ts-mode)
   :custom
@@ -428,7 +408,7 @@ calling roswell-opt."
 
 (use-package live-py-mode
   :bind (:map python-ts-mode-map
-	      ("C-c p l" . live-py-mode)))
+	      ("C-c C-l" . live-py-mode)))
 
 (use-package uv-mode
   :hook (python-ts-mode . uv-mode-auto-activate-hook))

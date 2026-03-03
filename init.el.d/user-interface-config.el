@@ -7,13 +7,12 @@
 ;; & terminal emulator (mistty).
 
 ;;; Packages included:
-;; adjust-parens, auto-complete, buffer-terminator, cape, corfu, dashboard,
-;; dired-efap, diredfl, dired-narrow, dired-quick-sort, dired-rsync,
-;; dired-rsync-transient, dired-video-thumbnail, editorconfig, emacs, marginalia,
-;; mistty, nerd-icons, nerd-icons-corfu, nerd-icons-dired, orderless,
-;; rainbow-delimiters, ranger, savehist, tab-line-nerd-icons, transient-dwim,
-;; treemacs-nerd-icons, vertico, which-key, yasnippet, yasnippet-capf,
-;; yasnippet-snippets
+;; adjust-parens, buffer-terminator, cape, corfu, dashboard, dired-efap, diredfl,
+;; dired-narrow, dired-quick-sort, dired-rsync, dired-rsync-transient,
+;; dired-video-thumbnail, editorconfig, emacs, marginalia, mistty, nerd-icons,
+;; nerd-icons-corfu, nerd-icons-dired, orderless, rainbow-delimiters, ranger,
+;; savehist, tab-line-nerd-icons, transient-dwim, treemacs-nerd-icons, vertico,
+;; which-key, yasnippet, yasnippet-capf, yasnippet-snippets
 
 ;;; Code:
 ;; Basic look & feel. Theme: 'weyland-yutani', font: 'CommitMonoNerdFontMono'
@@ -55,11 +54,11 @@
                      (recents  . 7)
                      (projects . 5)))
   :config
-  (dashboard-setup-startup-hook))
+  (dashboard-setup-startup-hook)
+  (add-to-list 'after-make-frame-functions #'dashboard-open))
 
 ;; 'transient-dwim' (transient buffer by context)
 (use-package transient-dwim
-  :ensure t
   :bind ("M-=" . transient-dwim-dispatch))
 
 ;; Dired as 'ranger' (file explorer) w/ extensions.
@@ -78,15 +77,15 @@
 
 (use-package dired-rsync
   :bind (:map dired-mode-map
-              ("C-c C-r" . dired-rsync)))
+              ("C-c r" . dired-rsync)))
 
 (use-package dired-rsync-transient
   :bind (:map dired-mode-map
-              ("C-c C-x" . dired-rsync-transient)))
+              ("C-c x" . dired-rsync-transient)))
 
 (use-package dired-video-thumbnail
   :bind (:map dired-mode-map
-              ("C-t v" . dired-video-thumbnail)))
+              ("C-c v" . dired-video-thumbnail)))
 
 (use-package dired-narrow
   :commands (dired-narrow dired-narrow-regexp dired-narrow-fuzzy))
@@ -119,7 +118,7 @@
   :after (corfu nerd-icons))
 
 (use-package cape
-  :bind ("C-c p" . cape-prefix-map)
+  :bind ("C-c C-p" . cape-prefix-map)
   :functions (cape-dabbrev cape-file cape-elisp-block cape-history)
   :init
   (add-hook 'completion-at-point-functions #'cape-dabbrev)
@@ -176,7 +175,7 @@
 
 ;; Use shell: 'MisTTY'
 (use-package mistty
-  :bind (("C-c s" . mistty)
+  :bind (("C-c C-s" . mistty)
          (:map mistty-prompt-map
                ("M-<up>" . mistty-send-key)
                ("M-<down>" . mistty-send-key)
@@ -191,12 +190,11 @@
   :config
   (which-key-mode 1))
 
-(use-package auto-complete)
-
 (use-package adjust-parens
   :bind ("C-c M-p" . adjust-parens-mode))
 
 (use-package buffer-terminator
+  :functions buffer-terminator-mode
   :custom
   (buffer-terminator-verbose nil)
   ;; Time in seconds, modify middle number (minutes).
@@ -204,6 +202,7 @@
   (buffer-terminator-inactivity-timeout (* 3 60))
   ;; Freqency of sweeps.
   (buffer-terminator-interval (* 5 60))
+  :config
   (buffer-terminator-mode 1))
 
 ;; Helpful changes to emacs (suggested by 'corfu' and 'verigo').

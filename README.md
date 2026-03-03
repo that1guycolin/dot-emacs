@@ -1,10 +1,31 @@
 # dot-emacs (.emacs.d)
 
+<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
+
+**Table of Contents**
+
+- [dot-emacs (.emacs.d)](#dot-emacs-emacsd)
+  - [Packages Included:](#packages-included)
+    - [Core / Package Management](#core--package-management)
+    - [Completion](#completion)
+    - [UI](#ui)
+    - [Directory Navigation](#directory-navigation)
+    - [Project / File Management](#project--file-management)
+    - [General Language & Coding Support](#general-language--coding-support)
+    - [Specific Language Support](#specific-language-support)
+    - [Reference / Utilities](#reference--utilities)
+  - [Custom Themes](#custom-themes)
+  - [Todo](#todo)
+  - [License](#license)
+  - [Version](#version)
+
+<!-- markdown-toc end -->
+
 Personal Emacs configuration for that1guycolin. Please modify as much as you'd
 like for your own use, and definitely share any modifications you make
 (I'm sure this configuration could be much better)!
 
-I use the following packages:
+## Packages Included:
 
 ### Core / Package Management
 
@@ -12,31 +33,35 @@ I use the following packages:
 - [use-package](https://github.com/jwiegley/use-package)
 - [auto-compile](https://github.com/emacs-auto/auto-compile)
 
-### UI / Completion
+### Completion
 
 - [corfu](https://github.com/minad/corfu)
 - [cape](https://github.com/minad/cape)
+- [yasnippet-capf](https://github.com/elpd/yasnippet-capf)
 - [vertico](https://github.com/minad/vertico)
 - [orderless](https://github.com/oantolin/orderless)
 - [marginalia](https://github.com/minad/marginalia)
-- [nerd-icons](https://github.com/rainstormstudio/nerd-icons.el)
-- [nerd-icons-corfu](https://github.com/rainstormstudio/nerd-icons.el)
-- [nerd-icons-dired](https://github.com/rainstormstudio/nerd-icons.el)
-- [tab-line-nerd-icons](https://github.com/rainstormstudio/nerd-icons.el)
 - [savehist](https://www.gnu.org/software/emacs/manual/html_node/emacs/Savehist.html)
+
+### UI
+
+- [nerd-icons](https://github.com/rainstormstudio/nerd-icons.el)
+- [nerd-icons-corfu](https://github.com/LuigiPiucco/nerd-icons-corfu)
+- [nerd-icons-dired](https://github.com/rainstormstudio/nerd-icons-dired.el)
+- [tab-line-nerd-icons](https://github.com/lucius-martius/tab-line-nerd-icons)
 - [treemacs](https://github.com/Alexander-Miller/treemacs)
-- [treemacs-projectile](https://github.com/Alexander-Miller/treemacs-projectile)
+- [treemacs-projectile](https://github.com/Alexander-Miller/treemacs/blob/master/src/extra/treemacs-projectile.el)
 - [treemacs-nerd-icons](https://github.com/Alexander-Miller/treemacs)
-- [which-key](https://github.com/justbur/emacs-which-key)
-- [rainbow-delimiters](https://github.com/Fanael/rainbow-delimiters)
-- [auto-complete](https://github.com/auto-complete/auto-complete)
 - [dashboard](https://github.com/emacs-dashboard/emacs-dashboard)
+
+### Directory Navigation
+
 - [ranger](https://github.com/ralesi/ranger)
 - [diredfl](https://github.com/purcell/diredfl)
 - [dired-efap](https://github.com/cpitclaudel/dired-efap)
 - [dired-rsync](https://github.com/hrs/dired-rsync)
 - [dired-rsync-transient](https://github.com/hrs/dired-rsync)
-- [dired-video-thumbnail](https://github.com/k对它1guycolin/dired-video-thumbnail)
+- [dired-video-thumbnail](https://github.com/captainflasmr/dired-video-thumbnail)
 - [dired-narrow](https://github.com/vapniks/dired-narrow)
 - [dired-quick-sort](https://github.com/mpasternak/dired-quick-sort)
 
@@ -49,11 +74,10 @@ I use the following packages:
 - [magit-git-toolbelt](https://github.com/thisisrc/magit-git-toolbelt)
 - [magit-pre-commit](https://github.com/sigma/magit-pre-commit)
 - [treemacs-magit](https://github.com/Alexander-Miller/treemacs)
-- [deadgrep](https://github.com/Wilfred/deadgrep)
 - [envrc](https://github.com/purcell/envrc)
 - [license-templates](https://github.com/iqbalansari/license-templates.el)
 - [transient](https://github.com/magit/transient)
-- [transient-dwim](https://github.com/that1guycolin/transient-dwim)
+- [transient-dwim](https://github.com/conao3/transient-dwim)
 
 ### General Language & Coding Support
 
@@ -63,25 +87,27 @@ I use the following packages:
 - [lsp-ui](https://github.com/emacs-lsp/lsp-ui)
 - [lsp-treemacs](https://github.com/emacs-lsp/lsp-treemacs)
 - [dap-mode](https://github.com/emacs-lsp/dap-mode)
-- [dap-python](https://github.com/emacs-lsp/dap-python)
 - [flycheck](https://www.flycheck.org/)
 - [flyover](https://github.com/pashinin/flyover)
 - [flycheck-inline](https://github.com/flycheck/flycheck-inline)
 - [flycheck-color-mode-line](https://github.com/flycheck/flycheck-color-mode-line)
-- [flycheck-eask](https://github.com/emacs-eask/flycheck-eask)
 - [apheleia](https://github.com/radian-software/apheleia)
+- [yasnippet](https://github.com/joaotavora/yasnippet)
+- [yasnippet-snippets](https://github.com/AndreaCrotti/yasnippet-snippets)
+- [editorconfig](https://github.com/editorconfig/editorconfig-emacs)
 
 ### Specific Language Support
 
 - [fish-mode](https://github.com/wwwjfy/emacs-fish-mode)
 - [modern-sh](https://github.com/wyuenho/modern-sh)
-- [cmake-mode](https://github.com/Kitware/CMake)
-- [sly](https://github.com/joaotavora/sly)
+- [cmake-mode](https://github.com/Kitware/CMake/blob/master/Auxiliary/cmake-mode.el)
+- [slime](https://github.com/slime/slime)
+- [flycheck-eask](https://github.com/emacs-eask/flycheck-eask)
 - [lisp-semantic-hl](https://github.com/Lindydancer/lisp-semantic-highlight)
 - [json5-ts-mode](https://github.com/AndreasRihsmanel/json5-mode)
-- [markdown-ts-mode](https://github.com/AlphaYuan/Emacs-Markdown-Mode)
+- [markdown-mode](https://github.com/jrblevin/markdown-mode)
 - [python-x](https://github.com/pythonic-emacs/python-x)
-- [uv-mode](https://github.comz80dev/uv-mode)
+- [uv-mode](https://github.com/z80dev/uv-mode)
 - [auto-virtualenv](https://github.com/that1guycolin/auto-virtualenv)
 - [live-py-mode](https://github.com/andyjeffries/live-py-mode)
 - [eask-mode](https://github.com/emacs-eask/eask-mode)
@@ -93,14 +119,13 @@ I use the following packages:
 ### Reference / Utilities
 
 - [gcmh](https://github.com/emacscollective/gcmh)
+- [which-key](https://github.com/justbur/emacs-which-key)
+- [rainbow-delimiters](https://github.com/Fanael/rainbow-delimiters)
 - [exec-path-from-shell](https://github.com/purcell/exec-path-from-shell)
-- [yasnippet](https://github.com/joaotavora/yasnippet)
-- [yasnippet-snippets](https://github.com/AndreaCrotti/yasnippet-snippets)
-- [yasnippet-capf](https://github.com/elpd/yasnippet-capf)
-- [editorconfig](https://github.com/editorconfig/editorconfig-emacs)
 - [mistty](https://github.com/mistty/mistty)
 - [buffer-terminator](https://github.com/cleesmith/buffer-terminator)
 - [adjust-parens](https://github.com/Fanael/adjust-parens)
+- [deadgrep](https://github.com/Wilfred/deadgrep)
 - [emms](https://www.gnu.org/software/emms/)
 
 ## Custom Themes
