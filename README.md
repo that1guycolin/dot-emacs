@@ -90,7 +90,6 @@ like for your own use, and definitely share any modifications you make
 - [dap-mode](https://github.com/emacs-lsp/dap-mode)
 - [flycheck](https://www.flycheck.org/)
 - [flyover](https://github.com/pashinin/flyover)
-- [flycheck-inline](https://github.com/flycheck/flycheck-inline)
 - [flycheck-color-mode-line](https://github.com/flycheck/flycheck-color-mode-line)
 - [apheleia](https://github.com/radian-software/apheleia)
 - [yasnippet](https://github.com/joaotavora/yasnippet)
