@@ -115,8 +115,12 @@
 		  (python-mode . python-ts-mode)
 		  (toml-mode   . toml-ts-mode)
 		  (yaml-mode   . yaml-ts-mode)))
-    (setf (alist-get (car pair) major-mode-remap-alist) (cdr pair))))
+    (when (fboundp (cdr pair))
+      (setf (alist-get (car pair) major-mode-remap-alist) (cdr pair)))))
 
+(declare-function transient-define-prefix "transient")
+(defvar user/custom-functions-dispatch nil
+  "Transient with information about custom user functions.")
 (with-eval-after-load 'transient
   (transient-define-prefix user/custom-functions-dispatch ()
     "Display functions defined by the user."

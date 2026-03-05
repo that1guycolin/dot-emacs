@@ -74,10 +74,10 @@
 
 (defun user/mason-install-required-programs ()
   "Leverages mason to install required programs if not installed."
-  (mason-setup
-    (dolist (program user/required-mason-programs)
-      (unless (mason-installed-p program)
-	(ignore-errors (mason-install program))))))
+  (mason-setup)
+  (dolist (program user/required-mason-programs)
+    (unless (mason-installed-p program)
+      (ignore-errors (mason-install program)))))
 
 (defvar user/optional-mason-programs
   '("bash-language-server" "json-language-server" "lemminx" "marksman"
@@ -139,6 +139,7 @@ Installation options come from the list \"user/optional-mason-programs\"."
   :custom
   (flycheck-emacs-lisp-load-path 'inherit)
   (flycheck-disabled-checkers '(emacs-lisp-elsa sh-bash yaml-jsyaml yaml-ruby))
+  :config
   (flycheck-define-checker markdown-mado
     "A fast Markdown linter written in Rust.
 See URL `https://github.com/akiomik/mado`."
@@ -263,7 +264,7 @@ See URL `https://github.com/akiomik/mado`."
   :defines dap-python-debugger
   :custom
   (dap-auto-configure-features '(sessions locals controls tooltip))
-  (dap-lldb-dbug-program "/usr/bin/lldb-dap")
+  (dap-lldb-debug-program "/usr/bin/lldb-dap")
   :config
   (require 'dap-python)
   (setq dap-python-debugger 'debugpy))
@@ -426,17 +427,22 @@ See URL `https://github.com/akiomik/mado`."
          ("\\.asd\\'"  . lisp-mode))
   :interpreter ("ros"  . lisp-mode)
   :config
-  (add-hook 'lisp-mode-hook
-	    (lambda () (load (expand-file-name
-			      "roswell-lisp-setup.el" user-init-directory)))))
+  (let ((roswell-setup (expand-file-name
+                        "roswell-lisp-setup.el" user-init-directory)))
+    (add-hook 'lisp-mode-hook
+              (lambda () (load roswell-setup t)))))
 
 (use-package slime)
 
 
 ;; =======  MARKDOWN  =======
 (use-package markdown-mode
+  :init
+  (setq markdown-command "cmark")
+  (add-hook 'gfm-mode-hook (lambda ()
+                             (setq markdown-commmand "cmark-gfm")))
   :mode ("README\\.md\\'" . gfm-mode)
-  :init (setq markdown-command "cmark-gfm")
+  :defines
   :config
   (when (memq major-mode '(markdown-mode))
     (setq markdown-command "cmark"))
@@ -459,7 +465,7 @@ See URL `https://github.com/akiomik/mado`."
    ("C-v" . markdown-toc-version)))
 
 (use-package grip-mode
-  :after gfm-mode
+  :after markdown-mode
   :functions grip-mode
   :defines grip-command
   :config
