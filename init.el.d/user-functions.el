@@ -16,7 +16,7 @@
                    oblivion obsidian overcast vs-dark))
 (defvar user/theme-index 0)
 
-(defun user/cycle-themes()
+(defun user/cycle-themes ()
   "Cycle through themes in user/theme-list."
   (interactive)
   (disable-theme (nth user/theme-index user/theme-list))
@@ -117,10 +117,15 @@
 		  (yaml-mode   . yaml-ts-mode)))
     (setf (alist-get (car pair) major-mode-remap-alist) (cdr pair))))
 
-(keymap-global-set "C-c u c" #'user/cycle-themes)
-(keymap-global-set "C-c u t" #'user/select-theme)
-(keymap-global-set "C-c u f" #'user/switch-font)
-(keymap-global-set "C-c u s" #'user/major-ts-mode-fallback)
+(with-eval-after-load 'transient
+  (transient-define-prefix user/custom-functions-dispatch ()
+    "Display functions defined by the user."
+    [["Custom Functions"
+      ("c" "Cycle Themes" user/cycle-themes)
+      ("t" "Select Theme" user/select-theme)
+      ("f" "Switch Font" user/switch-font)
+      ("s" "Major -ts-mode fallback" user/major-ts-mode-fallback)]])
+  (bind-keys ("C-c u" . user/custom-functions-dispatch)))
 
 (provide 'user-functions)
 ;;; user-functions.el ends here

@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: config file header
+# key: configh
+# --
+;; =======  ${1:header}  =======
+;; $0
+;; =========${2:char_match_=}=========

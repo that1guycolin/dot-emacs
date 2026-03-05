@@ -3,14 +3,13 @@
 <!-- markdown-toc start - Don't edit this section.
 Run M-x markdown-toc-refresh-toc -->
 
-"Table of Contents"
+**"Table of Contents"**
 
 - [dot-emacs (.emacs.d)](#dot-emacs-emacsd)
-  - [Packages Included:](#packages-included)
+  - [Packages Included](#packages-included)
     - [Core / Package Management](#core--package-management)
     - [Completion](#completion)
     - [UI](#ui)
-    - [Directory Navigation](#directory-navigation)
     - [Project / File Management](#project--file-management)
     - [General Language & Coding Support](#general-language--coding-support)
     - [Specific Language Support](#specific-language-support)
@@ -54,17 +53,9 @@ like for your own use, and definitely share any modifications you make
 - [treemacs-projectile](https://github.com/Alexander-Miller/treemacs/blob/master/src/extra/treemacs-projectile.el)
 - [treemacs-nerd-icons](https://github.com/Alexander-Miller/treemacs)
 - [dashboard](https://github.com/emacs-dashboard/emacs-dashboard)
-
-### Directory Navigation
-
-- [ranger](https://github.com/ralesi/ranger)
+- [dirvish](https://github.com/alexluigit/dirvish)
 - [diredfl](https://github.com/purcell/diredfl)
-- [dired-efap](https://github.com/cpitclaudel/dired-efap)
-- [dired-rsync](https://github.com/hrs/dired-rsync)
-- [dired-rsync-transient](https://github.com/hrs/dired-rsync)
 - [dired-video-thumbnail](https://github.com/captainflasmr/dired-video-thumbnail)
-- [dired-narrow](https://github.com/vapniks/dired-narrow)
-- [dired-quick-sort](https://github.com/mpasternak/dired-quick-sort)
 
 ### Project / File Management
 
@@ -95,12 +86,12 @@ like for your own use, and definitely share any modifications you make
 - [yasnippet](https://github.com/joaotavora/yasnippet)
 - [yasnippet-snippets](https://github.com/AndreaCrotti/yasnippet-snippets)
 - [editorconfig](https://github.com/editorconfig/editorconfig-emacs)
+- [smartparens](https://github.com/Fuco1/smartparens)
 
 ### Specific Language Support
 
 - [fish-mode](https://github.com/wwwjfy/emacs-fish-mode)
 - [modern-sh](https://github.com/wyuenho/modern-sh)
-- [cmake-mode](https://github.com/Kitware/CMake/blob/master/Auxiliary/cmake-mode.el)
 - [slime](https://github.com/slime/slime)
 - [flycheck-eask](https://github.com/emacs-eask/flycheck-eask)
 - [lisp-semantic-hl](https://github.com/Lindydancer/lisp-semantic-highlight)
@@ -113,17 +104,16 @@ like for your own use, and definitely share any modifications you make
 - [auto-rename-tag](https://github.com/minad/auto-rename-tag)
 - [elisp-def](https://github.com/Wilfred/elisp-def)
 - [suggest](https://github.com/Wilfred/suggest)
-- [test-simple](https://github.com/rocky/emacs-test-simple)
+- [yaml-pro](https://github.com/zkry/yaml-pro)
+- [adjust-parens](https://github.com/Fanael/adjust-parens)
 
 ### Reference / Utilities
 
 - [gcmh](https://github.com/emacscollective/gcmh)
 - [which-key](https://github.com/justbur/emacs-which-key)
-- [rainbow-delimiters](https://github.com/Fanael/rainbow-delimiters)
 - [exec-path-from-shell](https://github.com/purcell/exec-path-from-shell)
 - [mistty](https://github.com/mistty/mistty)
 - [buffer-terminator](https://github.com/cleesmith/buffer-terminator)
-- [adjust-parens](https://github.com/Fanael/adjust-parens)
 - [deadgrep](https://github.com/Wilfred/deadgrep)
 - [emms](https://www.gnu.org/software/emms/)
 

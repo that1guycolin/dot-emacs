@@ -8,22 +8,24 @@
 ;; org, emms
 
 ;;; Code:
-;; Org-mode
+;; =======  ORG  =======
 (use-package org
   :elpaca (org
            :repo "https://git.savannah.gnu.org/git/emacs/org-mode.git"
            :branch "main"
 	   :build (:not elpaca--compile-info))
-  :mode ("\\.org\\'" . org-mode)
-  :config
-  (keymap-global-set "C-c o" #'org-mode)
-  (keymap-global-set "C-c C-l" #'org-store-link)
-  (keymap-global-set "C-c a" #'org-agenda)
-  (keymap-global-set "C-c c" #'org-capture))
+  :bind
+  ("C-c o" . org-mode)
+  ("C-c C-l" . org-store-link)
+  ("C-c a" . org-agenda)
+  ("C-c c" . org-capture)
+  :mode ("\\.org\\'" . org-mode))
 
-;; Emms
+
+
+;; =======  EMMS  =======
 (defun user/seek-backward-med ()
-  "Seek backward 30 seconds in Emms."
+  "Seek backwards 30 seconds in Emms."
   (interactive)
   (emms-seek -30))
 
@@ -35,44 +37,50 @@
 (defun user/seek-backward-long ()
   "Seek backwards 2 minutes in Emms."
   (interactive)
-  (emms-seek '(* -2 60)))
+  (emms-seek (* -2 60)))
 
 (defun user/seek-forward-long ()
   "Seek forward 2 minutes in Emms."
   (interactive)
-  (emms-seek '(* 2 60)))
+  (emms-seek (* 2 60)))
 
+(declare-function defhydra "hydra")
 (use-package emms
   :defer t
   :bind (("<f6>" . emms-browser)
          ("<f7>" . emms-playlist-mode-go))
-  :functions (emms-all emms-default-players emms-seek)
-  :custom
-  (emms-player-list '(emms-player-mpv))
-  (emms-player-mpv-parameters '("--force-window=yes"))
+  :functions (emms-all
+	      emms-default-players
+	      emms-seek
+	      user/emms-playlist-map)
+  :defines user-playlist-cmd
   :config
   (require 'emms-playlist-mode)
-  (with-eval-after-load 'emms-playlist-mode
-    (define-key emms-playlist-mode-map (kbd "<SPACE>") #'emms-pause)
-    (define-key emms-playlist-mode-map (kbd "m") #'emms-next)
-    (define-key emms-playlist-mode-map (kbd "n") #'emms-previous)
-    (define-key emms-playlist-mode-map (kbd "s") #'emms-playlist-shuffle)
-    (define-key emms-playlist-mode-map (kbd "j") #'emms-seek-backward)
-    (define-key emms-playlist-mode-map (kbd "k") #'emms-seek-forward)
-    (define-key emms-playlist-mode-map (kbd "J") #'user/seek-backward-med)
-    (define-key emms-playlist-mode-map (kbd "K") #'user/seek-forward-med)
-    (define-key emms-playlist-mode-map (kbd "M-j") #'user/seek-backward-long)
-    (define-key emms-playlist-mode-map (kbd "M-k") #'user/seek-forward-long)
-    (define-key emms-playlist-mode-map (kbd "p") #'emms-play-playlist)
-    (define-key emms-playlist-mode-map (kbd "f") #'emms-play-file)
-    (define-key emms-playlist-mode-map (kbd "d") #'emms-play-find)
-    (define-key emms-playlist-mode-map (kbd "C-s") #'emms-playlist-save)
-    (define-key emms-playlist-mode-map (kbd "C-x n") #'emms-playlist-new)
-    (define-key emms-playlist-mode-map (kbd "i") #'emms-show)
-    (define-key emms-playlist-mode-map (kbd "l") #'emms-sort)
-    (define-key emms-playlist-mode-map (kbd "y") #'emms-playlist-mode-yank)
-    (define-key emms-playlist-mode-map (kbd "C-p")
-		#'emms-playlist-mode-go-popup)))
+  (emms-player-list '(emms-player-mpv))
+  (emms-player-mpv-parameters '("--force-window=yes"))
+  (defhydra user-playlist-cmd (:hint nil :color pink)
+    "Custom hydra for user-preferred keybindings in Emms playlist mode."
+    ("SPC" emms-pause)
+    ("m" emms-next )
+    ("n" emms-previous)
+    ("s" emms-playlist-shuffle)
+    ("j" emms-seek-backward)
+    ("k" emms-seek-forward)
+    ("J" user/seek-backward-med)
+    ("K" user/seek-forward-med)
+    ("M-j" user/seek-backward-long)
+    ("M-k" user/seek-forward-long)
+    ("p" emms-play-playlist :exit t)
+    ("f" emms-play-file :exit t)
+    ("d" emms-play-find :exit t)
+    ("C-s" emms-playlist-save :exit t)
+    ("C-x n" emms-playlist-new :exit t)
+    ("i" emms-show)
+    ("l" emms-sort)
+    ("y" emms-playlist-mode-yank)
+    ("C-p" emms-playlist-mode-go-popup))
+  (bind-keys :map emms-playlist-mode-map
+	     ("<space>" . user-playlist-cmd/body)))
 
 (provide 'external-connections)
 ;;; external-connections.el ends here

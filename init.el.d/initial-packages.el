@@ -4,18 +4,24 @@
 ;; Load packages which will affect the rest of the startup process.
 
 ;;; Packages included:
-;; auto-compile, elpaca, exec-path-from-shell, gcmh, use-package
+;; elpaca, exec-path-from-shell, transient
 
 ;;; Code:
 ;; Start 'elpaca' (from github:progfolio/elpaca)
+(declare-function elpaca-generate-autoloads "elpaca")
+(declare-function elpaca-process-queues "elpaca")
+(declare-function elpaca "elpaca")
+(declare-function elpaca-manager "elpaca")
+(declare-function elpaca-use-package-mode "elpaca-use-package")
+(defvar elpaca-use-package)
+(defvar use-package-always-ensure)
 (defvar elpaca-installer-version 0.11)
 (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
 (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
 (defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
                               :ref nil :depth 1 :inherit ignore
-                              :files (:defaults "elpaca-test.el"
-						(:exclude "extensions"))
+                              :files (:defaults "elpaca-test.el" (:exclude "extensions"))
                               :build (:not elpaca--activate-package)))
 (let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
        (build (expand-file-name "elpaca/" elpaca-builds-directory))
@@ -27,22 +33,15 @@
     (when (<= emacs-major-version 28) (require 'subr-x))
     (condition-case-unless-debug err
         (if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
-                  ((zerop (apply #'call-process
-				 `("git" nil ,buffer t "clone"
-                                   ,@(when-let*
-					 ((depth
-					   (plist-get order :depth)))
-                                       (list
-					(format "--depth=%d" depth)
-					"--no-single-branch"))
-                                   ,(plist-get order :repo) ,repo))))
+                  ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
+                                                  ,@(when-let* ((depth (plist-get order :depth)))
+                                                      (list (format "--depth=%d" depth) "--no-single-branch"))
+                                                  ,(plist-get order :repo) ,repo))))
                   ((zerop (call-process "git" nil buffer t "checkout"
                                         (or (plist-get order :ref) "--"))))
                   (emacs (concat invocation-directory invocation-name))
-                  ((zerop
-		    (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
-                                  "--eval"
-				  "(byte-recompile-directory \".\" 0 'force)")))
+                  ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+                                        "--eval" "(byte-recompile-directory \".\" 0 'force)")))
                   ((require 'elpaca))
                   ((elpaca-generate-autoloads "elpaca" repo)))
             (progn (message "%s" (buffer-string)) (kill-buffer buffer))
@@ -54,40 +53,20 @@
     (let ((load-source-file-function nil)) (load "./elpaca-autoloads"))))
 (add-hook 'after-init-hook #'elpaca-process-queues)
 (elpaca `(,@elpaca-order))
+(keymap-global-set "C-c M-c" #'elpaca-manager)
 
-;; use 'use-package' with 'elpaca'
 (elpaca elpaca-use-package
   (elpaca-use-package-mode))
-
 (setq use-package-always-ensure t)
 
-;; 'auto-compile' (trigger auto-compile if .el is newer than .eln)
-(use-package auto-compile
-  :demand t
-  :functions (auto-compile-on-load-mode auto-compile-on-save-mode)
-  :config
-  (auto-compile-on-load-mode)
-  (auto-compile-on-save-mode))
-
-;; garbage collection
-(use-package gcmh
-  :demand t
-  :functions gcmh-mode
-  :preface
-  :config
-  ;;  (setopt garbage-collection-messages t)
-  (setopt gcmh-high-cons-threshold (* 256 256 256))
-  (setopt gcmh-low-cons-threshold (* 8 100 1000))
-  (setopt gcmh-idle-delay 3)
-  (setopt gc-cons-percentage 0.1)
-  (add-hook 'elpaca-after-init-hook #'gcmh-mode))
-
 (use-package exec-path-from-shell
-  :demand t
   :functions exec-path-from-shell-copy-env
   :config
   (exec-path-from-shell-copy-env "SSH_AGENT_PID")
   (exec-path-from-shell-copy-env "SSH_AUTH_SOCK"))
+
+(use-package transient
+  :defer t)
 
 (provide 'initial-packages)
 ;;; initial-packages.el ends here

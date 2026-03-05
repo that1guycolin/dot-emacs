@@ -1,21 +1,19 @@
 ;;; user-interface-config.el --- Emacs configuration for visual settings -*- lexical-binding: t; -*-
 
 ;;; Commentary:
-;; Configuration for the Emacs user workspace, including the startup screen
-;; (dashboard), file navigation (ranger, treemacs, Dired extensions),
-;; completion UI (corfu, vertico, orderless, marginalia), snippets (yasnippet),
-;; & terminal emulator (mistty).
+;; Configuration for the Emacs user workspace, including the theme, font,
+;; startup screen (dashboard), and completion UI
+;; (corfu, vertico, orderless, marginalia).
 
 ;;; Packages included:
-;; adjust-parens, buffer-terminator, cape, corfu, dashboard, dired-efap, diredfl,
-;; dired-narrow, dired-quick-sort, dired-rsync, dired-rsync-transient,
-;; dired-video-thumbnail, editorconfig, emacs, marginalia, mistty, nerd-icons,
-;; nerd-icons-corfu, nerd-icons-dired, orderless, rainbow-delimiters, ranger,
-;; savehist, tab-line-nerd-icons, transient-dwim, treemacs-nerd-icons, vertico,
-;; which-key, yasnippet, yasnippet-capf, yasnippet-snippets
+;; cape, corfu, dashboard, emacs, marginalia, nerd-icons, nerd-icons-corfu,
+;; orderless, savehist, tab-line-nerd-icons, vertico
 
 ;;; Code:
-;; Basic look & feel. Theme: 'weyland-yutani', font: 'CommitMonoNerdFontMono'
+;; =======  LOOK & FEEL  =======
+;; Theme: 'weyland-yutani'
+;; font: 'CommitMonoNerdFontMono'
+;; =============================
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 (setq custom-safe-themes t)
 
@@ -29,16 +27,24 @@
                     :width 'normal)
 
 (use-package nerd-icons
-  :demand t)
+  :demand t
+  :functions nerd-icons-install-fonts
+  :config
+  (unless (file-exists-p "~/.local/share/fonts/NFM.ttf")
+    (nerd-icons-install-fonts)))
 
-(use-package treemacs-nerd-icons
-  :after (nerd-icons treemacs))
 
-(use-package tab-line-nerd-icons)
+;; =======  WINDOWS/FRAMES  =======
+;; 'dashboard' (startup buffer)
+;; ================================
+(use-package tab-line-nerd-icons
+  :hook (elpaca-after-init . tab-line-nerd-icons-global-mode))
 
 (use-package dashboard
-  :ensure (:repo "that1guycolin/emacs-dashboard" :branch elpaca-integration)
-  :functions dashboard-setup-startup-hook
+  :functions (dashboard-setup-startup-hook
+	      dashboard-insert-startupify-lists
+	      dashboard-initialize
+	      dashboard-open)
   :custom
   (dashboard-projects-backend 'projectile)
   (dashboard-startup-banner 'logo)
@@ -55,55 +61,21 @@
                      (recents  . 7)
                      (projects . 5)))
   :config
+  (add-hook 'elpaca-after-init-hook #'dashboard-insert-startupify-lists)
+  (add-hook 'elpaca-after-init-hook #'dashboard-initialize)
   (dashboard-setup-startup-hook)
-  (add-to-list 'after-make-frame-functions #'dashboard-open))
+  (add-hook 'before-make-frame-hook #'dashboard-open)
+  (add-hook 'after-make-frame-functions (lambda (&rest _)
+					  (switch-to-buffer "*dashboard*"))))
 
-;; 'transient-dwim' (transient buffer by context)
-(use-package transient-dwim
-  :bind ("M-=" . transient-dwim-dispatch))
 
-;; Dired as 'ranger' (file explorer) w/ extensions.
-(use-package ranger)
-
-(use-package nerd-icons-dired
-  :hook (dired-mode . nerd-icons-dired-mode))
-
-(use-package diredfl
-  :hook (dired-mode . diredfl-mode))
-
-(use-package dired-efap
-  :bind (:map dired-mode-map
-	      ("<f2>" . dired-efap)
-	      ("<down-mouse-1>" . dired-efap-click)))
-
-(use-package dired-rsync
-  :bind (:map dired-mode-map
-              ("C-c r" . dired-rsync)))
-
-(use-package dired-rsync-transient
-  :bind (:map dired-mode-map
-              ("C-c x" . dired-rsync-transient)))
-
-(use-package dired-video-thumbnail
-  :bind (:map dired-mode-map
-              ("C-c v" . dired-video-thumbnail)))
-
-(use-package dired-narrow
-  :commands (dired-narrow dired-narrow-regexp dired-narrow-fuzzy))
-
-(use-package dired-quick-sort
-  :functions dired-quick-sort-setup
-  :config
-  (dired-quick-sort-setup))
-
-;; Colored bracket support
-(use-package rainbow-delimiters
-  :hook (elpaca-after-init . rainbow-delimiters-mode))
-
-;; Completions:
-;; 'corfu' (inline completion), 'vertigo' (minibuffer completions),
-;; 'savehist' (history across sessions), 'orderless' (fuzzy matching),
-;; 'marginalia' - rich annotations.
+;; =======  COMPLETIONS  =======
+;; 'corfu' (inline completion)
+;; 'vertigo' (minibuffer completions)
+;; 'savehist' (history across sessions)
+;; 'orderless' (fuzzy matching)
+;; 'marginalia' (rich annotations)
+;; =============================
 (use-package corfu
   :functions (global-corfu-mode corfu-history-mode corfu-popupinfo-mode)
   :custom
@@ -111,15 +83,15 @@
   (corfu-quit-at-boundary nil)
   (corfu-on-exact-match 'insert)
   :init
-  (global-corfu-mode)
-  (corfu-history-mode)
-  (corfu-popupinfo-mode))
+  (global-corfu-mode 1)
+  (corfu-history-mode 1)
+  (corfu-popupinfo-mode 1))
 
 (use-package nerd-icons-corfu
-  :after (corfu nerd-icons))
+  :hook (global-corfu-mode . nerd-icons-corfu-formatter))
 
 (use-package cape
-  :bind ("C-c C-p" . cape-prefix-map)
+  :bind ("C-c TAB" . cape-prefix-map)
   :functions (cape-dabbrev cape-file cape-elisp-block cape-history)
   :init
   (add-hook 'completion-at-point-functions #'cape-dabbrev)
@@ -130,7 +102,7 @@
 (use-package vertico
   :functions vertico-mode
   :init
-  (vertico-mode)
+  (vertico-mode 1)
   :custom
   (vertico-resize t)
   (vertico-cycle t))
@@ -154,80 +126,28 @@
          ("M-A" . marginalia-cycle)))
   :functions marginalia-mode
   :init
-  (marginalia-mode))
-
-;; Snippets
-;; 'yasnippet' (functions), 'yasnippet-snippets' (library),
-;; 'yasnippet-capf' (completions)
-(use-package yasnippet
-  :functions (yas-global-mode yas-reload-all)
-  :config
-  (add-to-list 'yas-snippet-dirs
-               '(expand-file-name "snippets" user-emacs-directory))
-  (yas-global-mode 1))
-
-(use-package yasnippet-snippets
-  :after yasnippet)
-
-(use-package yasnippet-capf
-  :after (cape yasnippet)
-  :functions yasnippet-capf
-  :config
-  (add-to-list 'completion-at-point-functions #'yasnippet-capf))
-
-;; Use shell: 'MisTTY'
-(use-package mistty
-  :bind ("C-c C-s" . mistty)
-  :functions mistty-send-key
-  :config
-  (define-key mistty-prompt-map (kbd "M-<up>") #'mistty-send-key)
-  (define-key mistty-prompt-map (kbd "M-<down>") #'mistty-send-key)
-  (define-key mistty-prompt-map (kbd "M-<left>") #'mistty-send-key)
-  (define-key mistty-prompt-map (kbd "M-<right>") #'mistty-send-key))
-
-;; Basic
-(use-package editorconfig
-  :hook (projectile-mode . editorconfig-mode))
-
-(use-package which-key
-  :config
-  (which-key-mode 1))
-
-(use-package adjust-parens
-  :bind ("C-c M-p" . adjust-parens-mode))
-
-(use-package buffer-terminator
-  :functions buffer-terminator-mode
-  :custom
-  (buffer-terminator-verbose nil)
-  ;; Time in seconds, modify middle number (minutes).
-  ;; Time buffer needs to be inactive to trigger close.
-  (buffer-terminator-inactivity-timeout (* 3 60))
-  ;; Freqency of sweeps.
-  (buffer-terminator-interval (* 5 60))
-  :config
-  (buffer-terminator-mode 1))
+  (marginalia-mode 1))
 
 ;; Helpful changes to emacs (suggested by 'corfu' and 'verigo').
 (keymap-global-unset "C-z")
-(keymap-global-unset "C-c C-f")
 (use-package emacs
   :ensure nil
   :bind
-  (("C-z"     . shell)
-   ("C-c x"   . toggle-frame-maximized)
-   ("C-c ("   . check-parens)
-   ("C-c n"   . display-line-numbers-mode)
-   ("C-c C-n" . global-display-line-numbers-mode)
-   ("C-c C-r"   . restart-emacs))
+  (("C-z"   . shell)
+   ("C-c x" . toggle-frame-maximized)
+   ("C-c (" . check-parens)
+   ("C-c n" . display-line-numbers-mode)
+   ("C-c N" . global-display-line-numbers-mode)
+   ("C-c r" . restart-emacs))
   :custom
   (tab-always-indent 'complete)
   (text-mode-ispell-word-completion nil)
-  (context-menu-mode t)
   (enable-recursive-minibuffers t)
   (read-extended-command-predicate #'command-completion-default-include-p)
   (minibuffer-prompt-properties
-   '(read-only t cursor-intangible t face minibuffer-prompt)))
+   '(read-only t cursor-intangible t face minibuffer-prompt))
+  :config
+  (context-menu-mode t))
 
 (provide 'user-interface-config)
 ;;; user-interface-config.el ends here

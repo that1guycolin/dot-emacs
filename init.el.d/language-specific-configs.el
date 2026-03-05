@@ -5,25 +5,25 @@
 ;; flycheck, lsp-mode, dap-mode, apheleia) are configured first, followed
 ;; by language-specific settings in alphabetical order.
 ;;
-;; Languages: bash, cmake, common-lisp, emacs-lisp, fish, json, markdown,
-;; python, toml, xml, yaml
+;; Languages: Bash, Cmake,  Emacs-Lisp, Fish, JSON, Lisp, Markdown, Python, TOML,
+;; XML, YAML
 
 ;;; Packages included:
-;; apheleia, auto-rename-tag, auto-virtualenv, bash, cmake-mode, dap-mode,
-;; eask-mode, elisp-def, emacs-lisp-mode, fish-mode, flycheck,
-;; flycheck-color-mode-line, flycheck-eask, flyover, ielm, json-mode, lisp-mode,
-;; lisp-semantic-hl, live-py-mode, lsp-mode, lsp-treemacs, lsp-ui,
-;; markdown-mode, mason, modern-sh, nxml-mode, python, python-x, suggest,
-;; test-simple, toml, treesit, treesit-auto, uv-mode, yaml
+;; adjust-parens, apheleia, auto-rename-tag, auto-virtualenv, bash, cmake-mode,
+;; dap-mode, eask-mode, elisp-def, emacs-lisp-mode, fish-mode, flycheck,
+;; flycheck-color-mode-line, flycheck-eask, flyover, grip-mode, ielm, json-mode,
+;; lisp-mode, lisp-semantic-hl, live-py-mode, lsp-mode, lsp-treemacs, lsp-ui,
+;; markdown-mode, markdown-toc, mason, modern-sh, nxml-mode, python, python-x,
+;; slime, suggest, toml, treesit, treesit-auto, uv-mode, yaml, yaml-pro,
+;; yasnippet, yasnippet-capf, yasnippet-snippets
 
 ;;; Code:
-;; Tree-sitter support ('treesit' 'treesit-auto')
+;; =======  TREESIT  =======
 (defvar treesit-language-source-alist nil
   "List of online treesitter repositories for various languages.")
 
 (use-package treesit
   :ensure nil
-  :no-require t
   :config
   (setq treesit-language-source-alist
 	'((bash "https://github.com/tree-sitter/tree-sitter-bash")
@@ -60,108 +60,158 @@
   :custom
   (treesit-auto-install 'prompt)
   :config
-  (treesit-auto-add-to-auto-mode-alist 'all)
-  (global-treesit-auto-mode))
+  (global-treesit-auto-mode 1)
+  (treesit-auto-add-to-auto-mode-alist 'all))
 
-;; 'mason' (external package installer - linters, formatters, & lsps, oh my!)
-(use-package mason
-  :functions (mason-installed-p mason-install)
-  :config
+
+;; =======  MASON  =======
+;; external package installer
+;; =======================
+(defvar user/required-mason-programs
+  '("debugpy" "fish-lsp" "jsonlint" "marksman" "neocmakelsp" "prettier" "ruff"
+    "shellcheck" "shfmt" "tombi" "ty" "yamllint")
+  "List of programs required by this setup that mason is able to install.")
+
+(defun user/mason-install-required-programs ()
+  "Leverages mason to install required programs if not installed."
   (mason-setup
-   (dolist (pkg '("debugpy" "fish-lsp" "jsonlint" "marksman" "neocmakelsp"
-		  "ruff" "shellcheck" "shfmt" "tombi" "ty" "yamllint"))
-     (unless (mason-installed-p pkg)
-       (ignore-errors (mason-install pkg))))))
+    (dolist (program user/required-mason-programs)
+      (unless (mason-installed-p program)
+	(ignore-errors (mason-install program))))))
 
-;;; Flycheck linters:
+(defvar user/optional-mason-programs
+  '("bash-language-server" "json-language-server" "lemminx" "marksman"
+    "yaml-language-server")
+  "List of optional programs for this setup that mason is able to install.")
+
+(defun user/mason-install-optional-program (program)
+  "Use mason to install an optional PROGRAM.
+Installation options come from the list \"user/optional-mason-programs\"."
+  (interactive
+   (list (completing-read "Select program: "
+			  user/optional-mason-programs nil t)))
+  (if (mason-installed-p program)
+      (message "%s is already installed." program)
+    (progn
+      (message "Installing %s ..." program)
+      (ignore-errors (mason-install program)))))
+
+(defun user/mason-install-optional-programs ()
+  "Use mason to install all optional programs."
+  (interactive)
+  (dolist (program user/optional-mason-programs)
+    (unless (mason-installed-p program)
+      (ignore-errors (mason-install program)))))
+
+(use-package mason
+  :commands mason-setup
+  :hook (elpaca-after-init . user/mason-install-required-programs)
+  :init
+  (setq mason-dir (expand-file-name "~/.local"))
+  :functions
+  (mason-installed-p
+   mason-install
+   mason-manager)
+  :config
+  (bind-keys
+   ("C-c m o" . user/mason-install-optional-program)
+   ("C-c m a" . user/mason-install-optional-programs)
+   ("C-c m m" . mason-manager)))
+
+
+;; =======  FLYCHECK  =======
 ;; bash: 'shellcheck' (pacman -S shellcheck)*
 ;; emacs-lisp: 'emacs-lisp' (built-in)
 ;; json: 'jsonlint' (npm install -g jsonlint)*
 ;; markdown: 'mado' (pacman -S mado)
-;; xml: 'xmlstarlet' (pacman -S xmlstarlet)
+;; xml: 'xmllint' (pacman -S libxml2)
 ;; yaml: 'yamllint' (pacman -S yamllint)*
-
+;; ==========================
 (use-package flycheck
-  :hook ((bash-ts-mode    . flycheck-mode)
-	 (emacs-lisp-mode . flycheck-mode)
-	 (json-ts-mode    . flycheck-mode)
-	 (markdown-mode   . flycheck-mode)
-	 (nxml-mode       . flycheck-mode)
-	 (yaml-ts-mode    . flycheck-mode))
+  :hook
+  ((bash-ts-mode    . flycheck-mode)
+   (emacs-lisp-mode . flycheck-mode)
+   (json-ts-mode    . flycheck-mode)
+   (markdown-mode   . flycheck-mode)
+   (nxml-mode       . flycheck-mode)
+   (yaml-ts-mode    . flycheck-mode))
   :functions flycheck-select-checker
   :custom
   (flycheck-emacs-lisp-load-path 'inherit)
-  (flycheck-disabled-checkers '(emacs-lisp-elsa sh-bash yaml-jsyaml yaml-ruby)))
+  (flycheck-disabled-checkers '(emacs-lisp-elsa sh-bash yaml-jsyaml yaml-ruby))
+  (flycheck-define-checker markdown-mado
+    "A fast Markdown linter written in Rust.
+See URL `https://github.com/akiomik/mado`."
+    :command ("mado" "check" source)
+    :error-patterns
+    ((error line-start (file-name)
+	    ":" line ":" column ": "
+	    (id (one-or-more (not (any " ")))) " " (message) line-end))
+    :modes (markdown-mode gfm-mode))
+  (add-to-list 'flycheck-checkers 'markdown-mado)
+  (when (memq major-mode '(markdown-mode gfm-mode))
+    (flycheck-select-checker 'markdown-mado)))
 
-;; Use 'flycheck' with 'flycheck-inline' & 'flycheck-color-mode-line'.
+;; Use 'flycheck' with 'flyover' & 'flycheck-color-mode-line'.
 (use-package flyover
   :hook (flycheck-mode . flyover-mode)
+  :init
+  (setq flyover-checkers '(flycheck))
   :custom
-  (flyover-checkers '(flycheck))
   (flyover-levels '(error warning info))
-
-  ;; Appearance
   (flyover-use-theme-colors t)
   (flyover-background-lightness 45)
-
-  ;; Text tinting
   (flyover-text-tint 'lighter)
   (flyover-text-tint-percent 50)
-
-  ;; Icon tinting (foreground and background)
   (flyover-icon-tint 'lighter)
   (flyover-icon-tint-percent 50)
   (flyover-icon-background-tint 'darker)
   (flyover-icon-background-tint-percent 50)
-
-  ;; Icons
-  (flyover-info-icon " ")
-  (flyover-warning-icon " ")
-  (flyover-error-icon " ")
-
-  ;; Border styles: none, pill, arrow, slant, slant-inv, flames, pixels
-  (flyover-border-style 'pill)
+  (flyover-border-style 'arrow)
   (flyover-border-match-icon t)
-
-  ;; Display settings
-  (flyover-hide-checker-name t)
+  (flyover-hide-checker-name nil)
+  (flyover-show-error-id t)
   (flyover-show-virtual-line t)
-  (flyover-virtual-line-type 'curved-dotted-arrow)
+  (flyover-virtual-line-type 'dotted-arrow)
   (flyover-line-position-offset 1)
-
-  ;; Message wrapping
   (flyover-wrap-messages t)
   (flyover-max-line-length 80)
-
-  ;; Performance
-  (flyover-debounce-interval 0.2)
-  (flyover-cursor-debounce-interval 0.3)
-
-  ;; Display mode (controls cursor-based visibility)
-  (flyover-display-mode 'always)
-
-  ;; Completion integration
-  (flyover-hide-during-completion t))
+  (flyover-debounce-interval 0.1)
+  (flyover-cursor-debounce-interval 0.2)
+  (flyover-display-mode 'hide-on-same-line)
+  (flyover-hide-during-completion t)
+  (bind-keys
+   :map flycheck-mode-map
+   ("C-c M-f" . flyover-toggle)))
 
 (use-package flycheck-color-mode-line
   :hook (flycheck-mode . flycheck-color-mode-line-mode))
 
-;;; LSP servers:
+
+;; =======  LSP-MODE  =======
 ;; cmake: 'neocmakelsp' (cargo install neocmakelsp)*
 ;; fish: 'fish-lsp' (npm install -g fish-lsp)*
-;; python: 'ty' (uv tool install ty); 'ruff' (uv tool install ruff)*
+;; python: 'ty' (uv tool install ty)
+;; python: 'ruff' (uv tool install ruff)*
 ;; toml: 'tombi' (uv tool install tombi)*
-;; [OPTIONAL] markdown: 'marksman' (pacman -S marksman)
-
+;; -------  OPTIONAL  -------
+;; [OPTIONAL] bash: 'bash-language-server' (pacman -S bash-language-server)*
+;; [OPTIONAL] json: 'json-language-server' (pacman -S json-language-server)*
+;; [OPTIONAL] markdown: 'marksman' (pacman -S marksman)*
+;; [OPTIONAL] xml: 'lemminx'*
+;; [OPTIONAL] yaml: 'yaml-language-server' (pacman -S yaml-language-server)*
+;; =====================*****
 (use-package lsp-mode
-  :hook ((cmake-ts-mode    . lsp-deferred)
-	 (fish-mode        . lsp-deferred)
-	 (python-ts-mode   . lsp-deferred)
-	 (toml-ts-mode     . lsp-deferred))
-  :bind-keymap ("C-c C-l" . lsp-mode-map)
-  :functions (lsp-register-client make-lsp--client lsp-stdio-connection)
-  :bind (:map lsp-mode-map
-	      ("f" . lsp-format-buffer))
+  :hook
+  ((cmake-ts-mode  . lsp-deferred)
+   (fish-mode      . lsp-deferred)
+   (python-ts-mode . lsp-deferred)
+   (toml-ts-mode   . lsp-deferred))
+  :functions
+  (lsp-register-client
+   make-lsp--client
+   lsp-stdio-connection
+   lsp-format-buffer)
   :custom
   (lsp-use-plists t)
   (lsp-enable-which-key-integration)
@@ -174,18 +224,41 @@
   (lsp-disabled-clients '(cmake-language-server
                           pylsp
                           pyright
-                          taplo)))
+                          taplo))
+  :config
+  (lsp-register-client
+   (make-lsp--client
+    :new-connection (lsp-stdio-connection '("neocmakelsp" "stdio"))
+    :major-modes '(cmake-ts-mode)
+    :server-id 'neocmakelsp))
+  (add-to-list 'lsp-language-id-configuration '(fish-mode . "fish"))
+  (lsp-register-client
+   (make-lsp--client
+    :new-connection (lsp-stdio-connection '("fish-lsp" "start"))
+    :major-modes '(fish-mode)
+    :server-id 'fish-ls))
+  (lsp-register-client
+   (make-lsp--client
+    :new-connection (lsp-stdio-connection '("tombi" "lsp"))
+    :major-modes '(toml-ts-mode)
+    :server-id 'tombi-ls))
+  (bind-keys
+   :map lsp-mode-map
+   ("C-c F" lsp-format-buffer)))
 
 (use-package lsp-ui
-  :after lsp-mode)
+  :hook (lsp-mode . lsp-ui-mode))
 
 (use-package lsp-treemacs
-  :after (lsp-mode treemacs))
+  :hook (lsp-mode . lsp-treemacs-sync-mode)
+  :after treemacs)
 
-;;; Dap-mode debuggers:
+
+;; =======  DAP-MODE  =======
 ;; python: 'debugpy' (uv tool install debugpy)*
-
+;; ==========================
 (use-package dap-mode
+  :defer t
   :commands (dap-debug dap-debug-edit-template dap-auto-configure-mode)
   :defines dap-python-debugger
   :custom
@@ -195,7 +268,8 @@
   (require 'dap-python)
   (setq dap-python-debugger 'debugpy))
 
-;;; 'Apheleia' formatters:
+
+;; =======  APHELEIA  =======
 ;; bash: 'shfmt' (pacman -S shfmt)*
 ;; cmake: 'neocmakelsp' (uv tool install neocmakelsp)*
 ;; fish: 'fish_indent' (bundled with fish shell)
@@ -206,7 +280,7 @@
 ;; toml: 'tombi' (pacman -S tombi)*
 ;; xml: 'xmlstarlet' (pacman -S xmlstarlet)
 ;; yaml: 'prettier'* (npm install --save-dev --save-exact prettier)*
-
+;; ==========================
 (use-package apheleia
   :functions apheleia-global-mode apheleia-format-buffer
   :config
@@ -220,54 +294,129 @@
         '("tombi" "fmt" "-"))
   (setf (alist-get 'xmlstarlet apheleia-formatters)
         '("xml" "fo" "--indent-spaces" "2" "-"))
-  (setf (alist-get 'cmake-mode apheleia-mode-alist) 'neocmakelsp)
   (setf (alist-get 'cmake-ts-mode apheleia-mode-alist) 'neocmakelsp)
   (setf (alist-get 'eask-mode apheleia-mode-alist) 'lisp-indent)
   (setf (alist-get 'fish-mode apheleia-mode-alist) 'fish-indent)
   (setf (alist-get 'markdown-mode apheleia-mode-alist) 'prettier)
-  (setf (alist-get 'markdown-ts-mode apheleia-mode-alist) 'prettier)
-  (setf (alist-get 'python-mode apheleia-mode-alist) 'ruff)
   (setf (alist-get 'python-ts-mode apheleia-mode-alist) 'ruff)
   (setf (alist-get 'toml-ts-mode apheleia-mode-alist) 'tombi)
   (setf (alist-get 'conf-toml-mode apheleia-mode-alist) 'tombi)
   (setf (alist-get 'nxml-mode apheleia-mode-alist) 'xmlstarlet)
   (apheleia-global-mode +1)
-  (keymap-global-set "C-c f" #'apheleia-format-buffer))
+  (bind-keys ("C-c f" . apheleia-format-buffer)))
 
-;; Semantic hightlighting for common and emacs lisp flavors.
-(use-package lisp-semantic-hl
-  :hook ((emacs-lisp-mode lisp-mode) . lisp-semantic-hl-mode))
 
-;;; ****************************************************************************
-;;;                BEGIN LANGUAGE SPECIFIC CONFIGURATIONS
-;;; ****************************************************************************
+;; =======  SNIPPETS  =======
+;; 'yasnippet' (functions), 'yasnippet-snippets' (library),
+;; 'yasnippet-capf' (completions)
+;; ==========================
+(use-package yasnippet
+  :functions (yas-global-mode yas-reload-all)
+  :config
+  (add-to-list 'yas-snippet-dirs
+	       (expand-file-name "snippets" user-emacs-directory))
+  (yas-global-mode 1))
 
-;;; ***BASH***
-(use-package bash
+(use-package yasnippet-snippets
+  :hook (yas-global-mode . yasnippet-snippets-initialize))
+
+(use-package yasnippet-capf
+  :functions yasnippet-capf
+  :config
+  (add-to-list 'completion-at-point-functions #'yasnippet-capf))
+
+
+;;; ============================================================================
+;;;                    BEGIN LANGUAGE SPECIFIC CONFIGURATIONS
+;;; ============================================================================
+
+;; =======  BASH  =======
+(use-package bash-ts-mode
   :ensure nil
-  :no-require t
   :mode ("\\.bash\\'" . bash-ts-mode)
-  :interpreter ("bash" . bash-ts-mode))
+  :interpreter ("bash" . bash-ts-mode)
+  :defines bash-ts-mode-map
+  :config
+  (bind-keys
+   :map bash-ts-mode-map
+   ("C-c C-l" . lsp-deferred)))
 
 (use-package modern-sh
   :hook (bash-ts-mode . modern-sh-mode)
-  :bind (:map bash-ts-mode-map
-	      ("<f8>" . modern-sh-menu)))
-;;; ***CMAKE***
-;; Emacs configuration for cmake-mode.  Add neocmakelsp as lsp server
-
-(use-package cmake-mode
-  :mode (("\\.cmake\\'" . cmake-ts-mode)
-	 ("CmakeLists.txt" . cmake-ts-mode))
+  :functions modern-sh-menu
   :config
-  (with-eval-after-load 'lsp-mode
-    (lsp-register-client
-     (make-lsp--client
-      :new-connection (lsp-stdio-connection '("neocmakelsp" "stdio"))
-      :major-modes '(cmake-mode cmake-ts-mode)
-      :server-id 'neocmakelsp))))
+  (bind-keys
+   :map bash-ts-mode-map
+   ("<f8>" . modern-sh-menu)))
 
-;;; ***COMMON-LISP***
+
+;; =======  CMAKE  =======
+(use-package cmake-ts-mode
+  :ensure nil
+  :mode
+  (("\\.cmake\\'" . cmake-ts-mode)
+   ("CmakeLists.txt" . cmake-ts-mode)))
+
+
+;; =======  BOTH-LISP-TYPES  =======
+(use-package lisp-semantic-hl
+  :hook
+  ((emacs-lisp-mode . lisp-semantic-hl-mode)
+   (lisp-mode . lisp-semantic-hl-mode)))
+
+(use-package adjust-parens
+  :hook
+  ((emacs-lisp-mode . adjust-parens-mode)
+   (lisp-mode . adjust-parens-mode)))
+
+
+;; =======  EMACS-LISP  =======
+(use-package emacs-lisp-mode
+  :ensure nil
+  :mode ("\\.el\\'" . emacs-lisp-mode))
+
+(use-package elisp-def
+  :hook
+  ((emacs-lisp-mode . elisp-def-mode)
+   (ielm . elisp-def-mode)))
+
+(use-package suggest
+  :bind (:map emacs-lisp-mode-map
+	      ("C-c S" . suggest)))
+
+(use-package ielm
+  :ensure nil
+  :bind (:map emacs-lisp-mode-map
+	      ("C-c I" . ielm)))
+
+(use-package eask-mode
+  :mode ("Eask" . eask-mode))
+
+(use-package flycheck-eask
+  :hook (eask-mode . flycheck-eask-setup))
+
+
+;; =======  FISH  =======
+(use-package fish-mode
+  :mode ("\\.fish\\'" . fish-mode)
+  :interpreter ("fish" . fish-mode)
+  :config
+  (setq fish-enable-auto-indent t))
+
+
+;; =======  JSON  =======
+(use-package json-ts-mode
+  :ensure nil
+  :mode
+  (("\\.json\\'" . json-ts-mode)
+   ("\\.jsonc\\'" . json-ts-mode))
+  :config
+  (bind-keys
+   :map json-ts-mode-map
+   ("C-c C-l" . lsp-deferred)))
+
+
+;; =======  LISP  =======
 (defvar user-init-directory (expand-file-name "init.el.d" user-emacs-directory)
   "Directory from which init files are loaded.")
 (use-package lisp-mode
@@ -280,82 +429,20 @@
   (add-hook 'lisp-mode-hook
 	    (lambda () (load (expand-file-name
 			      "roswell-lisp-setup.el" user-init-directory)))))
-(use-package slime
-  :after lisp-mode)
 
-;;; ***EMACS-LISP***
-(use-package emacs-lisp-mode
-  :ensure nil
-  :no-require t
-  :mode ("\\.el\\'" . emacs-lisp-mode))
+(use-package slime)
 
-(use-package elisp-def
-  :bind (:map emacs-lisp-mode-map
-	      ("C-c C-d" . elisp-def)
-	      ("C-c C-D" . elisp-def-mode))
-  :hook ((emacs-lisp-mode . elisp-def-mode)
-	 (ielm . elisp-def-mode)))
 
-(use-package suggest
-  :bind (:map emacs-lisp-mode-map
-	      ("C-c C-s" . suggest)))
-
-(use-package test-simple
-  :bind (:map emacs-lisp-mode-map
-	      ("C-c C-t" . test-simple-start)))
-
-(use-package ielm
-  :ensure nil
-  :bind (:map emacs-lisp-mode-map
-	      ("C-c e" . ielm)))
-
-(use-package eask-mode
-  :mode ("Eask" . eask-mode))
-
-(use-package flycheck-eask
-  :hook (eask-mode . flycheck-eask-setup))
-
-;;; ***FISH***
-(use-package fish-mode
-  :mode ("\\.fish\\'" . fish-mode)
-  :interpreter ("fish" . fish-mode)
-  :custom
-  (fish-enable-auto-indent t)
-  :config
-  (with-eval-after-load 'lsp-mode
-    (add-to-list 'lsp-language-id-configuration '(fish-mode . "fish"))
-    (lsp-register-client
-     (make-lsp--client
-      :new-connection (lsp-stdio-connection '("fish-lsp" "start"))
-      :major-modes '(fish-mode fish-ts-mode)
-      :server-id 'fish-ls))))
-
-;;; ***JSON***
-(use-package json-mode
-  :mode (("\\.json\\'" . json-ts-mode)
-         ("\\.jsonc\\'" . json-ts-mode)))
-
-;;; ***MARKDOWN***
+;; =======  MARKDOWN  =======
 (use-package markdown-mode
   :mode ("README\\.md\\'" . gfm-mode)
-  :init (setq markdown-command "cmark")
+  :init (setq markdown-command "cmark-gfm")
   :config
-  (when (memq major-mode '(gfm-mode))
-    (setq markdown-command "cmark-gfm"))
-  (with-eval-after-load 'flycheck
-    (flycheck-define-checker markdown-mado
-      "A fast Markdown linter written in Rust.
-See URL `https://github.com/akiomik/mado`."
-      :command ("mado" "check" source)
-      :error-patterns
-      ((error line-start (file-name)
-	      ":" line ":" column ": "
-	      (id (one-or-more (not (any " ")))) " " (message) line-end))
-      :modes (markdown-mode gfm-mode))
-    (add-to-list 'flycheck-checkers 'markdown-mado)
-    (when (memq major-mode '(markdown-mode gfm-mode))
-      (flycheck-select-checker 'markdown-mado)))
-  (define-key markdown-mode-command-map (kbd "C-l") #'lsp-deferred))
+  (when (memq major-mode '(markdown-mode))
+    (setq markdown-command "cmark"))
+  (bind-keys
+   :map markdown-mode-command-map
+   ("C-l" . lsp-deferred)))
 
 (use-package markdown-toc
   :after (:any markdown-mode gfm-mode)
@@ -364,52 +451,52 @@ See URL `https://github.com/akiomik/mado`."
 	      markdown-toc-delete-toc
 	      markdown-toc-version)
   :config
-  (define-key markdown-mode-command-map (kbd "C-.")
-	      #'markdown-toc-follow-link-at-point)
-  (define-key markdown-mode-command-map (kbd "C-t")
-	      #'markdown-toc-generate-or-refresh-toc)
-  (define-key markdown-mode-command-map (kbd "C-d") #'markdown-toc-delete-toc)
-  (define-key markdown-mode-command-map (kbd "C-v") #'markdown-toc-version))
+  (bind-keys
+   :map markdown-mode-command-map
+   ("C-." . markdown-toc-follow-link-at-point)
+   ("C-t" . markdown-toc-generate-or-refresh-toc)
+   ("C-d" . markdown-toc-delete-toc)
+   ("C-v" . markdown-toc-version)))
 
 (use-package grip-mode
-  :ensure (:package "grip-mode" :source "MELPA" :protocol https
-		    :inherit t :depth nil :repo "seagle0128/grip-mode"
-		    :fetcher github
-		    :files ("*.el" "*.el.in" "dir" "*.info" "*.texi"
-			    "*.texinfo" "doc/dir" "doc/*.info" "doc/*.texi"
-			    "doc/*.texinfo" "lisp/*.el" "docs/dir"
-			    "docs/*.info" "docs/*.texi" "docs/*.texinfo"
-			    (:exclude ".dir-locals.el" "test.el" "tests.el"
-				      "*-test.el" "*-tests.el" "LICENSE"
-				      "README*" "*-pkg.el")))
   :after gfm-mode
   :functions grip-mode
   :defines grip-command
   :config
-  (define-key markdown-mode-command-map (kbd "g") #'grip-mode)
+  (bind-keys
+   :map markdown-mode-command-map
+   ("g" . grip-mode))
   (setq grip-command 'auto))
 
 
-;;; ***PYTHON***
+;; =======  PYTHON  =======
 ;; 'python' (Emacs native), 'python-x' (general enhancements),
 ;; 'live-py-mode' (live coding), 'uv-mode' (uv support - includes venvs)
 ;; 'auto-virtualev' (additional venv support)
-
-(use-package python
+;; ========================
+(use-package python-ts-mode
+  :ensure nil
   :mode ("\\.py\\'" . python-ts-mode)
-  :interpreter ("uv" . python-ts-mode)
+  :interpreter (("uv" . python-ts-mode)
+		("python3" . python-ts-mode))
+  :defines
+  (python-indent-guess-indent-offset
+   python-ts-mode-map)
   :custom
   (lsp-python-vulture-enabled nil)
   (python-shell-interpreter "python3")
   :config
-  (setq python-indent-offset 4))
+  (bind-keys
+   :map python-ts-mode-map
+   ("C-c l" . lsp-deferred))
+  (setq python-indent-guess-indent-offset nil))
 
 (use-package python-x
   :hook (python-ts-mode . python-x-setup))
 
 (use-package live-py-mode
   :bind (:map python-ts-mode-map
-	      ("C-c C-l" . live-py-mode)))
+              ("C-c L" . live-py-mode)))
 
 (use-package uv-mode
   :hook (python-ts-mode . uv-mode-auto-activate-hook))
@@ -417,21 +504,16 @@ See URL `https://github.com/akiomik/mado`."
 (use-package auto-virtualenv
   :hook (python-ts-mode . auto-virtualenv-setup))
 
-;;; ***TOML***
-(use-package toml
-  :mode ("\\.toml\\'" . toml-ts-mode)
-  :config
-  (with-eval-after-load 'lsp-mode
-    (lsp-register-client
-     (make-lsp--client
-      :new-connection (lsp-stdio-connection '("tombi" "lsp"))
-      :major-modes '(toml-mode toml-ts-mode)
-      :server-id 'tombi-ls))))
 
-;;; ***XML***
+;; =======  TOML  =======
+(use-package toml-ts-mode
+  :ensure nil
+  :mode ("\\.toml\\'" . toml-ts-mode))
+
+
+;; =======  XML  =======
 (use-package nxml-mode
   :ensure nil
-  :no-require t
   :mode (("\\.xml\\'"  . nxml-mode)
          ("\\.xsd\\'"  . nxml-mode)
          ("\\.xslt\\'" . nxml-mode)
@@ -441,15 +523,29 @@ See URL `https://github.com/akiomik/mado`."
   :custom
   (nxml-child-indent 2)
   (nxml-attribute-indent 2)
-  (nxml-slash-auto-complete-flag t))
+  (nxml-slash-auto-complete-flag t)
+  :config
+  (bind-keys
+   :map nxml-mode-map
+   ("C-c C-l" . lsp-deferred)))
 
 (use-package auto-rename-tag
   :hook (nxml-mode . auto-rename-tag-mode))
 
-;;; ***YAML***
-(use-package yaml
+
+;; =======  YAML  =======
+(use-package yaml-ts-mode
+  :ensure nil
   :mode (("\\.yml\\'" . yaml-ts-mode)
-	 ("\\.yaml\\'" . yaml-ts-mode)))
+	 ("\\.yaml\\'" . yaml-ts-mode))
+  :config
+  (bind-keys
+   :map yaml-ts-mode-map
+   ("C-c C-l" . lsp-deferred)))
+
+(use-package yaml-pro
+  :hook (yaml-ts-mode . yaml-pro-mode))
+
 
 (provide 'language-specific-configs)
 ;;; language-specific-configs.el ends here
