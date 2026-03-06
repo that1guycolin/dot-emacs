@@ -121,6 +121,8 @@ mason installs it."
   (defun user/mason-install-optional-programs ()
     "Use mason to install all optional programs."
     (interactive)
+    (require 'mason)
+    (mason-setup)
     (dolist (program user/optional-mason-programs)
       (user/mason--install-program program)))
 
@@ -243,7 +245,7 @@ See URL `https://github.com/akiomik/mado`."
                           pyright
                           taplo))
   :config
-  (lsp-enable-which-key-integration)
+  (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration)
   (lsp-register-client
    (make-lsp--client
     :new-connection (lsp-stdio-connection '("neocmakelsp" "stdio"))
@@ -336,7 +338,10 @@ See URL `https://github.com/akiomik/mado`."
   (yas-global-mode 1))
 
 (use-package yasnippet-snippets
-  :hook (yas-global-mode . yasnippet-snippets-initialize))
+  :after yasnippet
+  :functions yasnippet-snippets-initialize
+  :config
+  (yasnippet-snippets-initialize))
 
 (use-package yasnippet-capf
   :functions yasnippet-capf
@@ -435,6 +440,9 @@ See URL `https://github.com/akiomik/mado`."
 
 
 ;; =======  LISP  =======
+;; This \"redundant\" `user-init-directory'
+;; definition silences a flycheck error.
+;; ======================
 (defvar user-init-directory (expand-file-name "init.el.d" user-emacs-directory)
   "Directory from which init files are loaded.")
 (use-package lisp-mode
@@ -448,8 +456,6 @@ See URL `https://github.com/akiomik/mado`."
                         "roswell-lisp-setup.el" user-init-directory)))
     (add-hook 'lisp-mode-hook
               (lambda () (load roswell-setup t)))))
-
-(use-package slime)
 
 
 ;; =======  MARKDOWN  =======
