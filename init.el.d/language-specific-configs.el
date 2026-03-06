@@ -378,7 +378,7 @@ See URL `https://github.com/akiomik/mado`."
   :ensure nil
   :mode
   (("\\.cmake\\'" . cmake-ts-mode)
-   ("CMakeLists.txt" . cmake-ts-mode)))
+   ("CMakeLists\\.txt\\'" . cmake-ts-mode)))
 
 
 ;; =======  BOTH-LISP-TYPES  =======
