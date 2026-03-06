@@ -90,6 +90,8 @@ Installation options come from the list \"user/optional-mason-programs\"."
   (interactive
    (list (completing-read "Select program: "
 			  user/optional-mason-programs nil t)))
+  (require 'mason)
+  (mason-setup)
   (if (mason-installed-p program)
       (message "%s is already installed." program)
     (progn
@@ -99,6 +101,8 @@ Installation options come from the list \"user/optional-mason-programs\"."
 (defun user/mason-install-optional-programs ()
   "Use mason to install all optional programs."
   (interactive)
+  (require 'mason)
+  (mason-setup)
   (dolist (program user/optional-mason-programs)
     (unless (mason-installed-p program)
       (ignore-errors (mason-install program)))))
