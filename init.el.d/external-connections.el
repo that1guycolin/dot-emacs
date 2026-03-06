@@ -55,7 +55,8 @@
 	      user/emms-playlist-map)
   :defines user-playlist-cmd
   :config
-  (require 'emms-playlist-mode)
+  (require 'emms-setup)
+  (emms-all)
   (setq emms-player-list '(emms-player-mpv))
   (setq emms-player-mpv-parameters '("--force-window=yes"))
   (defhydra user-playlist-cmd (:hint nil :color pink)
