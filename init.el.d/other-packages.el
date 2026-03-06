@@ -15,8 +15,6 @@
 (use-package smartparens
   :hook
   ((prog-mode . smartparens-mode)
-   (text-mode . smartparens-mode)
-   (markdown-mode . smartparens-mode))
   :config
   (require 'smartparens-config))
 
