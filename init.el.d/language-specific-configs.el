@@ -154,10 +154,8 @@ See URL `https://github.com/akiomik/mado`."
 	    (id (one-or-more (not (any " ")))) " " (message) line-end))
     :modes (markdown-mode gfm-mode))
   (add-to-list 'flycheck-checkers 'markdown-mado)
-  (dolist (hook 'markdown-mode-hook)
-    (add-hook hook
-              (lambda ()
-                (flycheck-select-checker 'markdown-mado)))))
+  (add-hook 'markdown-mode-hook (lambda ()
+                                  (flycheck-select-checker 'markdown-mado))))
 
 (use-package flyover
   :hook (flycheck-mode . flyover-mode)
@@ -219,10 +217,10 @@ See URL `https://github.com/akiomik/mado`."
   (lsp-register-client
    make-lsp--client
    lsp-stdio-connection
-   lsp-format-buffer)
+   lsp-format-buffer
+   lsp-enable-which-key-integration)
   :custom
   (lsp-use-plists t)
-  (lsp-enable-which-key-integration)
   (lsp-idle-delay 0.5)
   (lsp-log-io nil)
   (lsp-enable-file-watchers nil)
@@ -234,6 +232,7 @@ See URL `https://github.com/akiomik/mado`."
                           pyright
                           taplo))
   :config
+  (lsp-enable-which-key-integration)
   (lsp-register-client
    (make-lsp--client
     :new-connection (lsp-stdio-connection '("neocmakelsp" "stdio"))
@@ -515,7 +514,19 @@ See URL `https://github.com/akiomik/mado`."
               ("C-c L" . live-py-mode)))
 
 (use-package uv-mode
-  :hook (python-ts-mode . uv-mode-auto-activate-hook))
+  :hook ((python-ts-mode . user/uv-mode-auto-activate)
+         (python-mode    . user/uv-mode-auto-activate))
+  :functions
+  (uv-mode-root
+   uv-mode
+   uv-mode-set)
+  :init
+  (defun user/uv-mode-auto-activate ()
+    "Enable uv-mode and activate the nearest project .venv (if any)."
+    (when (derived-mode-p 'python-base-mode)
+      (when (uv-mode-root)
+        (uv-mode 1)
+        (uv-mode-set)))))
 
 (use-package auto-virtualenv
   :hook (python-ts-mode . auto-virtualenv-setup))

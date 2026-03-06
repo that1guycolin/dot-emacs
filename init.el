@@ -50,32 +50,34 @@
 (defvar user-init-directory (expand-file-name "init.el.d" user-emacs-directory)
   "Directory from which init files are loaded.")
 
+(add-to-list 'load-path user-init-directory)
+
 (add-to-list 'custom-theme-load-path
              (expand-file-name "themes" user-emacs-directory))
 
 ;; Load 'elpaca' and 'auto-compile' first
-(load (expand-file-name "initial-packages.el" user-init-directory))
+(require 'initial-packages)
 
 ;; Completions, buffers, etc...
-(load (expand-file-name "user-interface-config.el" user-init-directory))
+(require 'user-interface-config)
 
 ;; 'projectile', 'treemacs' etc...
-(load (expand-file-name "project-support-configs.el" user-init-directory))
+(require 'project-support-configs)
 
 ;; Define & configure languages
-(load (expand-file-name "language-specific-configs.el" user-init-directory))
+(require 'language-specific-configs)
 
 ;; Emacs as file explorer
-(load (expand-file-name "directory-explorer-config.el" user-init-directory))
+(require 'directory-explorer-config)
 
 ;; Emacs OS ;-)
-(load (expand-file-name "external-connections.el" user-init-directory))
+(require 'external-connections)
 
 ;; Load last
-(load (expand-file-name "other-packages.el" user-init-directory))
+(require 'other-packages)
 
 ;; User functions
-(load (expand-file-name "user-functions.el" user-init-directory))
+(require 'user-functions)
 
 (declare-function profiler-stop "profiler.el")
 (declare-function profiler-report "profiler.el")
