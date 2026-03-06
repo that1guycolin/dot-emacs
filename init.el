@@ -1,9 +1,9 @@
 ;;; init.el --- that1guycolin's dot-Emacs -*- lexical-binding: t; -*-
-;; Copyright (C) 2026  Loeffler, Colin
-;; Created date 2026-02-28
+;; Copyright (C) 2026  Loeffler, Colin (that1guycolin)
+;; Created date: 2026-02-28
 
 ;; Author: Loeffler, Colin <that1guycolin@gmail.com>
-;; URL: https://github.com/that1guycolin/dot-emacs.git
+;; URL: https://github.com/that1guycolin/dot-emacs
 ;; Version: 0.1.0
 ;; Branch: main
 ;; Package-Requires: (emacs 30.2)

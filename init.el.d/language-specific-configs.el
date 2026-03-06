@@ -126,6 +126,10 @@ Installation options come from the list \"user/optional-mason-programs\"."
 ;; markdown: 'mado' (pacman -S mado)
 ;; xml: 'xmllint' (pacman -S libxml2)
 ;; yaml: 'yamllint' (pacman -S yamllint)*
+;; --------------------------
+;; Extensions:
+;; `flyover' (appear inline)
+;; `flycheck-color-mode-line'
 ;; ==========================
 (use-package flycheck
   :hook
@@ -150,12 +154,14 @@ See URL `https://github.com/akiomik/mado`."
 	    (id (one-or-more (not (any " ")))) " " (message) line-end))
     :modes (markdown-mode gfm-mode))
   (add-to-list 'flycheck-checkers 'markdown-mado)
-  (when (memq major-mode '(markdown-mode gfm-mode))
-    (flycheck-select-checker 'markdown-mado)))
+  (dolist (hook 'markdown-mode-hook)
+    (add-hook hook
+              (lambda ()
+                (flycheck-select-checker 'markdown-mado)))))
 
-;; Use 'flycheck' with 'flyover' & 'flycheck-color-mode-line'.
 (use-package flyover
   :hook (flycheck-mode . flyover-mode)
+  :functions flyover-toggle
   :init
   (setq flyover-checkers '(flycheck))
   :custom
@@ -173,7 +179,7 @@ See URL `https://github.com/akiomik/mado`."
   (flyover-hide-checker-name nil)
   (flyover-show-error-id t)
   (flyover-show-virtual-line t)
-  (flyover-virtual-line-type 'dotted-arrow)
+  (flyover-virtual-line-type 'curved-arrow)
   (flyover-line-position-offset 1)
   (flyover-wrap-messages t)
   (flyover-max-line-length 80)
@@ -181,6 +187,7 @@ See URL `https://github.com/akiomik/mado`."
   (flyover-cursor-debounce-interval 0.2)
   (flyover-display-mode 'hide-on-same-line)
   (flyover-hide-during-completion t)
+  :config
   (bind-keys
    :map flycheck-mode-map
    ("C-c M-f" . flyover-toggle)))
@@ -245,7 +252,7 @@ See URL `https://github.com/akiomik/mado`."
     :server-id 'tombi-ls))
   (bind-keys
    :map lsp-mode-map
-   ("C-c F" lsp-format-buffer)))
+   ("C-c F" . lsp-format-buffer)))
 
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode))
@@ -264,7 +271,7 @@ See URL `https://github.com/akiomik/mado`."
   :defines dap-python-debugger
   :custom
   (dap-auto-configure-features '(sessions locals controls tooltip))
-  (dap-lldb-debug-program "/usr/bin/lldb-dap")
+  (dap-lldb-debug-program '("/usr/bin/lldb-dap"))
   :config
   (require 'dap-python)
   (setq dap-python-debugger 'debugpy))
@@ -294,7 +301,7 @@ See URL `https://github.com/akiomik/mado`."
   (setf (alist-get 'tombi apheleia-formatters)
         '("tombi" "fmt" "-"))
   (setf (alist-get 'xmlstarlet apheleia-formatters)
-        '("xml" "fo" "--indent-spaces" "2" "-"))
+        '("xmlstarlet" "fo" "--indent-spaces" "2" "-"))
   (setf (alist-get 'cmake-ts-mode apheleia-mode-alist) 'neocmakelsp)
   (setf (alist-get 'eask-mode apheleia-mode-alist) 'lisp-indent)
   (setf (alist-get 'fish-mode apheleia-mode-alist) 'fish-indent)
@@ -356,7 +363,7 @@ See URL `https://github.com/akiomik/mado`."
   :ensure nil
   :mode
   (("\\.cmake\\'" . cmake-ts-mode)
-   ("CmakeLists.txt" . cmake-ts-mode)))
+   ("CMakeLists.txt" . cmake-ts-mode)))
 
 
 ;; =======  BOTH-LISP-TYPES  =======
@@ -437,21 +444,24 @@ See URL `https://github.com/akiomik/mado`."
 
 ;; =======  MARKDOWN  =======
 (use-package markdown-mode
+  :mode ("README\\.md\\'" . gfm-mode)
+  :functions user/switch-markdown-command
   :init
   (setq markdown-command "cmark")
-  (add-hook 'gfm-mode-hook (lambda ()
-                             (setq markdown-commmand "cmark-gfm")))
-  :mode ("README\\.md\\'" . gfm-mode)
-  :defines
   :config
-  (when (memq major-mode '(markdown-mode))
-    (setq markdown-command "cmark"))
+  (defun user/switch-markdown-command (command)
+    "Change the value of `markdown-command' to COMMAND."
+    (interactive
+     (list (completing-read "Select md backend: "
+                            '("cmark" "cmark-gfm" "pandoc") nil t)))
+    (setq markdown-command command))
   (bind-keys
    :map markdown-mode-command-map
-   ("C-l" . lsp-deferred)))
+   ("C-l" . lsp-deferred)
+   ("C-c" . user/switch-markdown-command)))
 
 (use-package markdown-toc
-  :after (:any markdown-mode gfm-mode)
+  :after markdown-mode
   :functions (markdown-toc-follow-link-at-point
 	      markdown-toc-generate-or-refresh-toc
 	      markdown-toc-delete-toc

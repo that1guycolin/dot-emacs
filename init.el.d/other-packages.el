@@ -43,7 +43,7 @@
   (buffer-terminator-verbose nil)
   ;; Time (in seconds), that buffer needs to be inactive to trigger close.
   (buffer-terminator-inactivity-timeout (* 5 60))
-  ;; Freqency of sweeps.
+  ;; Frequency of sweeps.
   (buffer-terminator-interval (* 3 60))
   :config
   (buffer-terminator-mode 1))

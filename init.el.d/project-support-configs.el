@@ -54,10 +54,10 @@
   (projectile-track-known-projects-automatically t)
   (projectile-enable-caching 'persistent)
   (projectile-indexing-method 'hybrid)
+  :config
   (add-to-list 'projectile-globally-ignored-directories "^node_modules$")
   (add-to-list 'projectile-globally-ignored-directories "^\\.venv$")
   (add-to-list 'projectile-globally-ignored-directories "^\\.uv$")
-  :config
   (projectile-mode +1)
   (add-hook 'project-find-functions #'project-projectile))
 
@@ -90,9 +90,13 @@
   (treemacs-filewatch-mode 1)
   (treemacs-git-mode 'deferred)
   (treemacs-git-commit-diff-mode 1)
-  (bind-keys :map treemacs-mode-map
-	     ("C-x p f" . treemacs-project-follow-mode)
-	     ("<backspace>" . treemacs-root-up)))
+  (bind-keys
+   ("C-c t" . user/projectile-treemacs-anywhere-dispatch)
+   ("M-0" . treemacs-select-window))
+  (bind-keys
+   :map treemacs-mode-map
+   ("C-x p f" . treemacs-project-follow-mode)
+   ("<backspace>" . treemacs-root-up)))
 
 
 (with-eval-after-load 'transient
@@ -139,10 +143,7 @@
       ("m" "MisTTY Buffer @ p root" mistty-in-project)
       ("C" "Clear known \'p\'s" projectile-clear-known-projects)
       ("R" "Reset known \'p\'s"
-       projectile-reset-known-projects)]])
-
-  (keymap-global-set "C-c t" #'user/projectile-treemacs-anywhere-dispatch)
-  (keymap-global-set "M-0" #'treemacs-select-window))
+       projectile-reset-known-projects)]]))
 
 (use-package treemacs-projectile
   :demand t

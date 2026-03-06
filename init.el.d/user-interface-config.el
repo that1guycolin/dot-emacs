@@ -11,27 +11,30 @@
 
 ;;; Code:
 ;; =======  LOOK & FEEL  =======
-;; Theme: 'weyland-yutani'
-;; font: 'CommitMonoNerdFontMono'
+;; Theme: `weyland-yutani'
+;; Font: `CommitMonoNerdFontMono'
+;; Icons: `NerdIcons'
 ;; =============================
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 (setq custom-safe-themes t)
 
 (load-theme 'weyland-yutani t)
-(set-face-attribute 'default nil
-                    :family "CommitMono Nerd Font Mono"
-                    :foundry "NerdFont"
-                    :slant 'normal
-                    :weight 'regular
-                    :height 110
-                    :width 'normal)
+(when (member "CommitMono Nerd Font Mono" (font-family-list))
+  (set-face-attribute 'default nil
+                      :family "CommitMono Nerd Font Mono"
+                      :foundry "NerdFont"
+                      :slant 'normal
+                      :weight 'regular
+                      :height 110
+                      :width 'normal))
 
 (use-package nerd-icons
-  :demand t
+  :defer t
   :functions nerd-icons-install-fonts
   :config
-  (unless (file-exists-p "~/.local/share/fonts/NFM.ttf")
-    (nerd-icons-install-fonts)))
+  (unless (member "Symbols Nerd Font Mono" (font-family-list))
+    (when (window-system)
+      (nerd-icons-install-fonts t))))
 
 
 ;; =======  WINDOWS/FRAMES  =======
@@ -88,7 +91,8 @@
   (corfu-popupinfo-mode 1))
 
 (use-package nerd-icons-corfu
-  :hook (global-corfu-mode . nerd-icons-corfu-formatter))
+  :config
+  (add-to-list 'corfu-margin-formatters 'nerd-icons-corfu-formatter))
 
 (use-package cape
   :bind ("C-c TAB" . cape-prefix-map)

@@ -119,8 +119,8 @@
       (setf (alist-get (car pair) major-mode-remap-alist) (cdr pair)))))
 
 (declare-function transient-define-prefix "transient")
-(defvar user/custom-functions-dispatch nil
-  "Transient with information about custom user functions.")
+(declare-function user/custom-functions-dispatch "user-functions")
+(defvar user/custom-functions-dispatch nil)
 (with-eval-after-load 'transient
   (transient-define-prefix user/custom-functions-dispatch ()
     "Display functions defined by the user."
@@ -128,8 +128,8 @@
       ("c" "Cycle Themes" user/cycle-themes)
       ("t" "Select Theme" user/select-theme)
       ("f" "Switch Font" user/switch-font)
-      ("s" "Major -ts-mode fallback" user/major-ts-mode-fallback)]])
-  (bind-keys ("C-c u" . user/custom-functions-dispatch)))
+      ("s" "Major -ts-mode fallback" user/major-ts-mode-fallback)]]))
+(bind-keys ("C-c u" . user/custom-functions-dispatch))
 
 (provide 'user-functions)
 ;;; user-functions.el ends here
