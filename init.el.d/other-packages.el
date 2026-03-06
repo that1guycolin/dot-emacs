@@ -57,8 +57,8 @@
   :hook (emacs-startup . gcmh-mode)
   :config
   ;;  (setopt garbage-collection-messages t)
-  (setopt gcmh-high-cons-threshold (* 100 256 256))
-  (setopt gcmh-low-cons-threshold (* 8 100 1000))
+  (setopt gcmh-high-cons-threshold (* 100 1024 1024))
+  (setopt gcmh-low-cons-threshold (* 8 1024 1024))
   (setopt gcmh-idle-delay 3)
   (setopt gc-cons-percentage 0.1))
 
