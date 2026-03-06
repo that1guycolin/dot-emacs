@@ -1,7 +1,7 @@
 ;;; other-packages.el --- Packages that defy categorization -*- lexical-binding: t; -*-
 
 ;;; Commentary:
-;; These packages either don't fall into an easily defineable category OR
+;; These packages either don't fall into an easily definable category OR
 ;; they benefit from loading towards the very end of the startup process.
 
 ;;; Packages included:
