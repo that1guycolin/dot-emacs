@@ -16,7 +16,7 @@
                    oblivion obsidian overcast vs-dark))
 (defvar user/theme-index 0)
 
-(defun user/cycle-themes()
+(defun user/cycle-themes ()
   "Cycle through themes in user/theme-list."
   (interactive)
   (disable-theme (nth user/theme-index user/theme-list))
@@ -106,9 +106,30 @@
                         :weight 'regular)
     (message "Font set to %s" font)))
 
-(keymap-global-set "C-c u c" #'user/cycle-themes)
-(keymap-global-set "C-c u t" #'user/select-theme)
-(keymap-global-set "C-c u f" #'user/switch-font)
+(defun user/major-ts-mode-fallback ()
+  "Set major-modes to *-ts-mode if treesit-auto fails to activate."
+  (interactive)
+  (dolist (pair '((bash-mode   . bash-ts-mode)
+		  (cmake-mode  . cmake-ts-mode)
+		  (json-mode   . json-ts-mode)
+		  (python-mode . python-ts-mode)
+		  (toml-mode   . toml-ts-mode)
+		  (yaml-mode   . yaml-ts-mode)))
+    (when (fboundp (cdr pair))
+      (setf (alist-get (car pair) major-mode-remap-alist) (cdr pair)))))
+
+(declare-function transient-define-prefix "transient")
+(declare-function user/custom-functions-dispatch "user-functions")
+(defvar user/custom-functions-dispatch nil)
+(with-eval-after-load 'transient
+  (transient-define-prefix user/custom-functions-dispatch ()
+    "Display functions defined by the user."
+    [["Custom Functions"
+      ("c" "Cycle Themes" user/cycle-themes)
+      ("t" "Select Theme" user/select-theme)
+      ("f" "Switch Font" user/switch-font)
+      ("s" "Major -ts-mode fallback" user/major-ts-mode-fallback)]]))
+(bind-keys ("C-c u" . user/custom-functions-dispatch))
 
 (provide 'user-functions)
 ;;; user-functions.el ends here

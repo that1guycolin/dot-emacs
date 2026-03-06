@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: basic emacs config file
-# key:  config
+# key:  configf
 # --
 ;;; ${1:filename}.el --- ${2:brief-description} -*- lexical-binding: t; -*-
 

@@ -1,4 +1,4 @@
-;;; Directory Local Variables            -*- no-byte-compile: t -*-
+;;; Directory Local Variables            -*- no-byte-compile: t; lexical-binding: t; -*-
 ;;; For more information see (info "(emacs) Directory Variables")
 
 ((nil . ((fill-column . 80)

@@ -6,14 +6,35 @@
 ;; and applies early UI optimizations before the main config loads.
 
 ;;; Code:
-;;Prefer loading newest file
-(setq load-prefer-newer t)
+(defvar user/profile-startup nil
+  "When non-nil, enable CPU profiling during startup.")
+(when user/profile-startup
+  (profiler-start 'cpu))
 
-;; Disable package.el
-(setq package-enable-at-startup nil)
+(defvar user/debug-on-error nil
+  "When non-nil, enable `debug-on-error'.")
+(when user/debug-on-error
+  (setq debug-on-error t))
 
-;; Debug on error
-(setq debug-on-error t)
+(setq
+ ;; No garbage collection during startup
+ gc-cons-threshold most-positive-fixnum
+ gc-cons-percentage 0.8
+
+ ;;Prefer loading newest file
+ load-prefer-newer t
+
+ ;; Disable package.el
+ package-enable-at-startup nil
+ package-quickstart nil)
+
+;; Ignore `tramp' and `compressed'/`archive' files during start
+(defvar user/file-name-handler-alist-backup file-name-handler-alist)
+(setq file-name-handler-alist nil)
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (setq file-name-handler-alist
+                  user/file-name-handler-alist-backup)))
 
 ;; Environment variables
 (setenv "CC" "gcc")
@@ -21,47 +42,49 @@
 (setenv "LSP_USE_PLISTS" "true")
 
 ;; Configure autosaves and backups.
-(setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
-(setq auto-save-file-name-transforms
-      '((".*" "~/.emacs.d/auto-saves/" t)))
-(setq auth-sources '("~/.authinfo.gpg"))
-(make-directory "~/.emacs.d/backups/" t)
-(make-directory "~/.emacs.d/auto-saves/" t)
+(make-directory "~/.backups" t)
+(make-directory "~/.auto-saves" t)
+(setq
+ backup-directory-alist '(("." . "~/.backups"))
+ auto-save-file-name-transforms '((".*" "~/.auto-saves" t))
+ auth-sources '("~/.authinfo.gpg")
 
-(setq version-control t)
-(setq kept-new-versions 4)
-(setq kept-old-versions 4)
-(setq delete-old-versions t)
-
-;; Load Paths
-(add-to-list 'load-path "~/.emacs.d/init.el.d")
-(add-to-list 'custom-theme-load-path
-             (expand-file-name "themes" user-emacs-directory))
+ version-control t
+ kept-new-versions 4
+ kept-old-versions 4
+ delete-old-versions t)
 
 ;; Early UI optimizations
 (setq-default cursor-type 'bar)
-(tool-bar-mode -1)
-(scroll-bar-mode -1)
-(tooltip-mode -1)
-(flymake-mode -1)
+(when (fboundp 'tool-bar-mode)
+  (tool-bar-mode -1))
+(when (fboundp 'scroll-bar-mode)
+  (scroll-bar-mode -1))
+(when (fboundp 'tooltip-mode)
+  (tooltip-mode -1))
 
 ;; Other
-(setq inhibit-startup-message t)
-(setq inhibit-startup-echo-area-message user-login-name)
-(setq inhibit-startup-screen t)
-(setq initial-scratch-message nil)
-(setq auto-mode-case-fold nil)
-(setq fast-but-imprecise-scrolling t)
-(setq frame-inhibit-implied-resize t)
-(setq inhibit-compacting-font-caches t)
-(setq redisplay-skip-fontification-on-input t)
-(setq command-line-x-option-alist nil)
-(setq select-active-regions 'only)
-(setq create-lockfiles nil)
-(setq vc-follow-symlinks t)
-(setq use-short-answers t)
-(setq dired-kill-when-opening-new-dired-buffer t)
-
+(setq
+ ;; Reduce startup "noise"
+ inhibit-startup-message t
+ inhibit-startup-echo-area-message user-login-name
+ inhibit-startup-screen t
+ initial-scratch-message nil
+ native-comp-async-report-warnings-errors nil
+ ;; Disable 2nd case-insensitive search for a major mode
+ auto-mode-case-fold nil
+ ffap-machine-p-known 'reject
+ frame-inhibit-implied-resize t
+ idle-update-delay 1.0
+ inhibit-compacting-font-caches t
+ read-process-output-max (* 1024 1024)
+ redisplay-skip-fontification-on-input t
+ command-line-x-option-alist nil
+ select-active-regions 'only
+ create-lockfiles nil
+ vc-follow-symlinks t
+ use-short-answers t
+ dired-kill-when-opening-new-dired-buffer t)
 
 (provide 'early-init)
 ;;; early-init.el ends here
