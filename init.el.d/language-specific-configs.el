@@ -67,56 +67,63 @@
 ;; =======  MASON  =======
 ;; external package installer
 ;; =======================
-(defvar user/required-mason-programs
-  '("debugpy" "fish-lsp" "jsonlint" "marksman" "neocmakelsp" "prettier" "ruff"
-    "shellcheck" "shfmt" "tombi" "ty" "yamllint")
-  "List of programs required by this setup that mason is able to install.")
-
-(defun user/mason-install-required-programs ()
-  "Leverages mason to install required programs if not installed."
-  (mason-setup)
-  (dolist (program user/required-mason-programs)
-    (unless (mason-installed-p program)
-      (ignore-errors (mason-install program)))))
-
-(defvar user/optional-mason-programs
-  '("bash-language-server" "json-language-server" "lemminx" "marksman"
-    "yaml-language-server")
-  "List of optional programs for this setup that mason is able to install.")
-
-(defun user/mason-install-optional-program (program)
-  "Use mason to install an optional PROGRAM.
-Installation options come from the list \"user/optional-mason-programs\"."
-  (interactive
-   (list (completing-read "Select program: "
-			  user/optional-mason-programs nil t)))
-  (require 'mason)
-  (mason-setup)
-  (if (mason-installed-p program)
-      (message "%s is already installed." program)
-    (progn
-      (message "Installing %s ..." program)
-      (ignore-errors (mason-install program)))))
-
-(defun user/mason-install-optional-programs ()
-  "Use mason to install all optional programs."
-  (interactive)
-  (require 'mason)
-  (mason-setup)
-  (dolist (program user/optional-mason-programs)
-    (unless (mason-installed-p program)
-      (ignore-errors (mason-install program)))))
-
 (use-package mason
-  :commands mason-setup
   :hook (elpaca-after-init . user/mason-install-required-programs)
+  :functions
+  mason-installed-p
+  mason-install
+  mason-manager
+  user/mason--install-program
+  user/mason-install-optional-program
+  user/mason-install-optional-programs
   :init
   (setq mason-dir (expand-file-name "~/.local"))
-  :functions
-  (mason-installed-p
-   mason-install
-   mason-manager)
+
+  (defun user/mason--install-program (program)
+    "Checks installation status of PROGRAM. If PROGRAM is not installed,
+mason installs it."
+    (condition-case err
+        (if (mason-installed-p program)
+            (message "%s is already installed." program)
+          (message "Installing %s ..." program)
+          (mason-install program))
+      (error
+       (message "Mason failed to install %s: %s"
+                program (error-message-string err)))))
+
+  (defvar user/required-mason-programs
+    '("debugpy" "fish-lsp" "jsonlint" "marksman" "neocmakelsp" "prettier" "ruff"
+      "shellcheck" "shfmt" "tombi" "ty" "yamllint")
+    "List of programs required in this setup that mason is able to install.")
+
+  (defun user/mason-install-required-programs ()
+    "Leverages mason to install required programs if not installed."
+    (mason-setup)
+    (dolist (program user/required-mason-programs)
+      (user/mason--install-program program)))
+
   :config
+  (defvar user/optional-mason-programs
+    '("bash-language-server" "json-language-server" "lemminx" "marksman"
+      "yaml-language-server")
+    "List of optional programs in this setup that mason is able to install.")
+
+  (defun user/mason-install-optional-program (program)
+    "Use mason to install an optional PROGRAM.
+ Installation options come from the list \"user/optional-mason-programs\"."
+    (interactive
+     (list (completing-read "Select program: "
+			    user/optional-mason-programs nil t)))
+    (require 'mason)
+    (mason-setup)
+    (user/mason--install-program program))
+
+  (defun user/mason-install-optional-programs ()
+    "Use mason to install all optional programs."
+    (interactive)
+    (dolist (program user/optional-mason-programs)
+      (user/mason--install-program program)))
+
   (bind-keys
    ("C-c m o" . user/mason-install-optional-program)
    ("C-c m a" . user/mason-install-optional-programs)
