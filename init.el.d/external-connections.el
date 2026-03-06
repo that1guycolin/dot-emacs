@@ -56,8 +56,8 @@
   :defines user-playlist-cmd
   :config
   (require 'emms-playlist-mode)
-  (emms-player-list '(emms-player-mpv))
-  (emms-player-mpv-parameters '("--force-window=yes"))
+  (setq emms-player-list '(emms-player-mpv))
+  (setq emms-player-mpv-parameters '("--force-window=yes"))
   (defhydra user-playlist-cmd (:hint nil :color pink)
     "Custom hydra for user-preferred keybindings in Emms playlist mode."
     ("SPC" emms-pause)

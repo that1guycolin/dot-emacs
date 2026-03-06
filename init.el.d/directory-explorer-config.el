@@ -8,9 +8,53 @@
 
 ;;; Code:
 (use-package dirvish
+  :functions
+  dirvish-override-dired-mode
+  dirvish-peek-mode
+  dirvish-dwim
+  dirvish-fd
+  dirvish-subtree-toggle-or-open
+  dired-mouse-find-file-other-window
+  dired-mouse-find-file
+  dirvish-quicksort
+  dirvish-ls-switches-menu
+  dirvish-yank-menu
+  dirvish-dispatch
+  dirvish-quit
+  dirvish-quick-access
+  dirvish-file-info-menu
+  dired-do-delete
+  dired-do-flagged-delete
+  user/dirvish-yank-dispatch
+  dirvish-subtree-toggle
+  dirvish-layout-toggle
+  dirvish-history-go-backward
+  dirvish-history-go-forward
+  dirvish-narrow
+  dirvish-mark-menu
+  dirvish-setup-menu
+  dirvish-emerge-menu
+
   :init
   (dirvish-override-dired-mode)
+
   :config
+  (require 'dirvish-yank)
+  (require 'dirvish-subtree)
+  (declare-function transient-define-prefix "transient")
+  (defvar user/dirvish-yank-dispatch)
+  (with-eval-after-load 'transient
+    (transient-define-prefix user/dirvish-yank-dispatch ()
+      "Create transient buffer for dirvish-yank functions."
+      [:description
+       (lambda () "File manipulation")
+       [("y" "yank" dirvish-yank)]
+       [("m" "move" dirvish-move)]
+       [("s" "symlink" dirvish-symlink)]
+       [("S" "relative symlink" dirvish-relative-symlink)]
+       [("h" "hardlink" dirvish-hardlink)]
+       [("r" "rsync" dirvish-rsync)]]))
+
   (dirvish-peek-mode)
   (setq dirvish-attributes
 	'(vc-state subtree-state file-modes nerd-icons collapse git-msg
@@ -19,13 +63,13 @@
 					 :right (vc-info yank index)))
   (setq dirvish-header-line-height '(25 . 35))
   (setq dirvish-header-line-format '(:left (path) :right (free-space)))
-  (setq dired-listing-switches
-	"-l --almost-all --ignore-backups --human-readable
---group-directories-first --no-group")
+  (setq dired-listing-switches "-l --almost-all --ignore-backups \
+--human-readable --group-directories-first --no-group")
+
   (bind-keys
    ("C-c d"   . dirvish-dwim)
    ("C-c C-d" . dirvish-fd)
-   :map 'dirvish-mode-map
+   :map dirvish-mode-map
    ;; left click for expand/collapse dir or open file
    ("<mouse-1>" . dirvish-subtree-toggle-or-open)
    ;; middle click for opening file / entering dir in other window
@@ -41,7 +85,7 @@
    ("f"   . dirvish-file-info-menu)
    ("x"   . dired-do-delete)
    ("X"   . dired-do-flagged-delete)
-   ("y"   . dirvish-yank-menu)
+   ("y"   . user/dirvish-yank-dispatch)
    ("s"   . dirvish-quicksort)
    ("TAB" . dirvish-subtree-toggle)
    ("M-t" . dirvish-layout-toggle)
@@ -51,18 +95,6 @@
    ("M-m" . dirvish-mark-menu)
    ("M-s" . dirvish-setup-menu)
    ("M-e" . dirvish-emerge-menu)))
-
-(with-eval-after-load 'transient
-  (transient-define-prefix user/dirvish-yank-dispatch ()
-    "Create transient buffer for dirvish-yank functions."
-    [:description
-     (lambda () "File manipulation")
-     [("y" "yank" dirvish-yank)]
-     [("m" "move" dirvish-move)]
-     [("s" "symlink" dirvish-symlink)]
-     [("S" "relative symlink" dirvish-relative-symlink)]
-     [("h" "hardlink" dirvish-hardlink)]
-     [("r" "rsync" dirvish-rsync)]]))
 
 (use-package diredfl
   :hook (dired-mode . diredfl-mode))

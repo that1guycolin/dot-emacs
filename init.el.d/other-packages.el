@@ -48,6 +48,10 @@
   :config
   (buffer-terminator-mode 1))
 
+(use-package hydra
+  :commands defhydra
+  :defer t)
+
 ;; garbage collection
 (use-package gcmh
   :hook (emacs-startup . gcmh-mode)

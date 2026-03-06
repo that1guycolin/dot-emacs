@@ -70,17 +70,14 @@
 ;; Emacs as file explorer
 (require 'directory-explorer-config)
 
+;; Not easily definable
+(require 'other-packages)
+
 ;; Emacs OS ;-)
 (require 'external-connections)
 
-;; Load last
-(require 'other-packages)
-
 ;; User functions
 (require 'user-functions)
-
-(declare-function profiler-stop "profiler.el")
-(declare-function profiler-report "profiler.el")
 
 (provide 'init)
 ;;; init.el ends here
