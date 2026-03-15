@@ -1,11 +1,10 @@
-;;; init.el --- that1guycolin's dot-Emacs -*- lexical-binding: t; -*-
+;;; init.el --- that1guycolin's dot-Emacs (new-org)
 ;; Copyright (C) 2026  Loeffler, Colin (that1guycolin)
-;; Created date: 2026-02-28
+;; Created date: 2026-03-09
 
 ;; Author: Loeffler, Colin <that1guycolin@gmail.com>
 ;; URL: https://github.com/that1guycolin/dot-emacs
-;; Version: 0.1.0
-;; Branch: main
+;; Version: 0.3.0
 ;; Package-Requires: (emacs 30.2)
 ;; Keywords: emacs config elisp emacs-lisp
 
@@ -25,59 +24,65 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-;; Main branch of that1guycolin's personal Emacs configuration.
-;; Uses Elpaca as the package manager.  This file is a wrapper that loads
-;; modular configuration files from {user-emacs-directory}/init.el.d/.
-
-;; The main and development branches prefer packages from MELPA,
-;; while the lite and lite-dev branches explicitly prefer native Emacs packages
-;; or packages from ELPA.
+;; New organizational branch of that1guycolin's personal Emacs configuration.
+;; Uses Elpaca as the package manager with optimized load order.
+;; Files are named with numeric prefixes to enforce load order.
 
 ;;; Languages configured:
 ;; Bash, Cmake,  Emacs-Lisp, Fish, JSON, Lisp, Markdown, Python, TOML, XML, YAML
 
 ;;; Packages included:
-;; See init.el.d/*.el for package declarations. Core packages include:
-;;
-;; adjust-parens, apheleia, cape, corfu, dap-mode, dashboard, deadgrep, dired-*,
-;; dirvish, eask-mode, editorconfig, elisp-def, elpaca, emms, envrc, fish-mode,
-;; flycheck, forge, gcmh, lsp-mode, mason, magit, marginalia, markdown-mode,
-;; mistty, nerd-icons, orderless, org, projectile, python savehist, slime,
-;; suggest, treemacs, treesit, uv-mode, vertico, which-key, yasnippet
+;; See 01-elpaca.el through 09-themes.el for package declarations.
 
 ;;; Code:
-;; Load Paths
+;; =======  LOAD PATHS  =======
 (defvar user-init-directory (expand-file-name "init.el.d" user-emacs-directory)
   "Directory from which init files are loaded.")
 
+(defvar user-projects-directory (expand-file-name "~/projects")
+  "Directory in which the user stores custom projects.")
+
 (add-to-list 'load-path user-init-directory)
 
-(add-to-list 'custom-theme-load-path
-             (expand-file-name "themes" user-emacs-directory))
 
-;; Load 'elpaca' and 'auto-compile' first
-(require 'initial-packages)
+;; =======  LOAD PACKAGES  =======
+;; Load startup and core packages
+(require '01-bootstrap-core)
 
-;; Completions, buffers, etc...
-(require 'user-interface-config)
+;; Completion stack
+(require '02-completion-setup)
 
-;; 'projectile', 'treemacs' etc...
-(require 'project-support-configs)
+;; Core UI configuration
+(require '03-visual-settings)
 
-;; Define & configure languages
-(require 'language-specific-configs)
+;; Enable tree-sitter support
+(require '04-tree-sitter-lang-config)
 
-;; Emacs as file explorer
-(require 'directory-explorer-config)
+;; Project management and file navigation
+(require '05-project-management)
 
-;; Not easily definable
-(require 'other-packages)
+;; Linting, formatting, & LSPs
+(require '06-code-assist)
 
-;; Emacs OS ;-)
-(require 'external-connections)
+;; Git(hub) integration & tooling
+(require '07-git-tools)
 
-;; User functions
-(require 'user-functions)
+;; Packages & settings for select languages
+(require '08-language-configs)
+
+;; File explorer functions
+(require '09-file-management)
+
+;; Configure Emacs to work with external programs
+(require '10-external-connections)
+
+;; Misc & Dashboard
+(require '11-misc-packages)
+
+;; Custom variables & functions
+(add-hook 'emacs-startup-hook (lambda ()
+				(require '12-user-functions)))
+
 
 (provide 'init)
 ;;; init.el ends here

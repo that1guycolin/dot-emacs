@@ -1,0 +1,99 @@
+;;; 11-misc-packages.el --- Misc & Dashboard -*- lexical-binding: t; -*-
+
+;;; Packages included:
+;; dashboard, emacs-everywhere, mistty, popper, vterm
+
+;;; Commentary:
+;; Packages that don't fit nicely into another category or, as is the case with
+;; dashboard, benefit from loading near the end of the startup process.
+
+;;; Code:
+;; =======  SHELLS  =======
+;; `mistty' (comit layer)
+;; `vterm' (fully functional terminal)
+;; ========================
+(use-package mistty
+  :bind ("C-c s" . mistty)
+  :functions mistty-send-key
+  :defines mistty-prompt-map
+  :config
+  (bind-keys
+   :map mistty-prompt-map
+   ("M-<up>" . mistty-send-key)
+   ("M-<down>" . mistty-send-key)
+   ("M-<left>" . mistty-send-key)
+   ("M-<right>" . mistty-send-key)))
+
+(use-package vterm
+  :defer t
+  :bind
+  (("C-c s v" . vterm)
+   ("C-c s V" . vterm-other-window)))
+
+
+;; =======  MISC  =======
+;; `popper' (toggle popups)
+;; `emacs-everywhere'
+;; =========================
+(keymap-global-unset "M-`")
+(defun user/activate-popper ()
+  "Activate popper-mode & popper-echo-mode."
+  (popper-mode +1)
+  (popper-echo-mode +1))
+
+(use-package popper
+  :defer t
+  :bind ("C-c P" . user/activate-popper)
+  :functions
+  popper-toggle
+  popper-cycle
+  popper-toggle-type
+  :custom
+  (popper-reference-buffers
+   '("\\*Messages\\*"
+     "Output\\*$"
+     "\\*Async Shell Command\\*"
+     help-mode
+     compilation-mode))
+  :config
+  (bind-keys
+   :map popper-mode-map
+   ("C-`"   . popper-toggle)
+   ("M-`"   . popper-cycle)
+   ("C-M-`" . popper-toggle-type)))
+
+;; Configuration is done primarly in DE.
+(use-package emacs-everywhere)
+
+
+;; =======  DASHBOARD  =======
+(use-package dashboard
+  :functions
+  dashboard-insert-startupify-lists
+  dashboard-initialize
+  dashboard-setup-startup-hook
+  :init
+  (add-hook 'elpaca-after-init-hook #'dashboard-insert-startupify-lists)
+  (add-hook 'elpaca-after-init-hook #'dashboard-initialize)
+  (dashboard-setup-startup-hook)
+  (add-hook 'server-after-make-frame-hook 'dashboard-open)
+  :custom
+  (dashboard-projects-backend 'projectile)
+  (dashboard-startup-banner 'logo)
+  (dashboard-display-icons-p t)
+  (dashboard-icon-type 'nerd-icons)
+  (dashboard-set-heading-icons t)
+  (dashboard-set-file-icons t)
+  (dashboard-startupify-list t)
+  (dashboard-navigation-cycle t)
+  (dashboard-center-content t)
+  (dashboard-vertically-center-content t)
+  (dashboard-banner-logo-title "Welcome back")
+  (dashboard-items '( (agenda   . 10)
+		      (projects . 5)
+                      (recents  . 5)))
+  :config
+  (setq initial-buffer-choice "*dashboard*"))
+
+(provide '11-misc-packages)
+;;; 11-misc-packages.el ends here

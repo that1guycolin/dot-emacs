@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: use-theme-package
+# key: use-package theme elpaca
+# --
+(use-package ${1:theme-name}-theme
+  :defer t)
+(add-to-list 'custom-theme-load-path
+  (expand-file-name "${1}-theme" elpaca-builds-directory))
+$0

@@ -1,0 +1,90 @@
+;;; 09-file-management.el --- File explorer functions -*- lexical-binding: t; -*-
+
+;;; Packages included:
+;; deadgrep, diredfl, dirvish
+
+;;; Commentary:
+;; Leverage `dirvish', along with some Dired built-in settings & extensions,
+;; to provide a functional file explorer inside Emacs.
+
+;;; Code:
+(use-package diredfl
+  :defer t
+  :hook (dired-mode . diredfl-mode))
+
+(use-package dirvish
+  :defer t
+  :commands dirvish
+  :functions
+  dirvish-override-dired-mode
+  dirvish-peek-mode
+  dirvish-dwim
+  dirvish-fd
+  dired-mouse-find-file-other-window
+  dired-mouse-find-file
+  dirvish-quicksort
+  dirvish-ls-switches-menu
+  dirvish-yank-menu
+  dirvish-dispatch
+  dirvish-quit
+  dirvish-quick-access
+  dirvish-file-info-menu
+  dired-do-delete
+  dired-do-flagged-delete
+  dirvish-yank
+  dirvish-subtree-toggle
+  dirvish-layout-toggle
+  dirvish-history-go-backward
+  dirvish-history-go-forward
+  dirvish-narrow
+  dirvish-mark-menu
+  dirvish-setup-menu
+  dirvish-emerge-menu
+  :init
+  (dirvish-override-dired-mode 1)
+  :custom
+  (dirvish-preview-dispatchers '(archive pdf))
+  (dirvish-attributes '(file-size file-time nerd-icons))
+  (dirvish-hide-details t)
+  (dirvish-reuse-session nil)
+  (dired-listing-switches "-l --almost-all --ignore-backups \
+--human-readable --group-directories-first --no-group")
+  :config
+  (dirvish-peek-mode nil)
+  (bind-keys
+   ("C-c d"   . dirvish-dwim)
+   ("C-c C-d" . dirvish-fd)
+   :map dirvish-mode-map
+   ;; left click for expand/collapse dir or open file
+   ("<mouse-1>" . dirvish-subtree-toggle)
+   ;; middle click for opening file / entering dir in other window
+   ("<mouse-2>" . dired-mouse-find-file-other-window)
+   ;; right click for opening file / entering dir
+   ("<mouse-3>" . dired-mouse-find-file)
+   ([remap dired-sort-toggle-or-edit] . dirvish-quicksort)
+   ([remap dired-do-redisplay] . dirvish-ls-switches-menu)
+   ([remap dired-do-copy] . dirvish-yank-menu)
+   ("?"   . dirvish-dispatch)
+   ("q"   . dirvish-quit)
+   ("a"   . dirvish-quick-access)
+   ("f"   . dirvish-file-info-menu)
+   ("x"   . dired-do-delete)
+   ("X"   . dired-do-flagged-delete)
+   ("y"   . dirvish-yank)
+   ("s"   . dirvish-quicksort)
+   ("TAB" . dirvish-subtree-toggle)
+   ("M-t" . dirvish-layout-toggle)
+   ("M-b" . dirvish-history-go-backward)
+   ("M-f" . dirvish-history-go-forward)
+   ("M-n" . dirvish-narrow)
+   ("M-m" . dirvish-mark-menu)
+   ("M-s" . dirvish-setup-menu)
+   ("M-e" . dirvish-emerge-menu)))
+
+(use-package deadgrep
+  :defer t
+  :bind ("<f5>" . deadgrep))
+
+
+(provide '09-file-management)
+;;; 09-file-management.el ends here

@@ -2,6 +2,6 @@
 # name: config file header
 # key: configh
 # --
-;; =======  ${1:header}  =======
+;; =======  ${1:title}  =======
 ;; $0
 ;; =========${2:char_match_=}=========

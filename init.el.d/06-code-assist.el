@@ -1,0 +1,271 @@
+;;; 06-code-assist.el --- Linting, formatting, & LSPs -*- lexical-binding: t; -*-
+
+;;; Packages included:
+;; adaptive-wrap, apheleia, dap-mode, flycheck, flycheck-color-mode-line,
+;; flyover, lsp-mode, lsp-treemacs, lsp-ui, smartparens, yasnippet,
+;; yasnippet-capf, yasnippet-snippets
+
+;;; Commentary:
+;; Call packages that support efficient & productive coding at a global scope.
+;; The packages called in this file help to make Emacs feel like a typical IDE.
+
+;;; Code:
+;; =======  TEXT MANIPULATION  =======
+;; `smartparens' (auto-close "", {}, [], ())
+;; `adaptive-wrap' (smart text wrapping)
+;; ===================================
+(use-package smartparens
+  :hook
+  ((prog-mode . smartparens-mode)
+   (text-mode . smartparens-mode))
+  :config
+  (require 'smartparens-config))
+
+(use-package adaptive-wrap
+  :hook
+  ((prog-mode . adaptive-wrap-prefix-mode)
+   (text-mode . adaptive-wrap-prefix-mode)))
+
+
+;; =======  FLYCHECK  =======
+;; bash: 'shellcheck' (pacman -S shellcheck)*
+;; emacs-lisp: 'emacs-lisp' (built-in)
+;; json: 'jsonlint' (npm install -g jsonlint)*
+;; markdown: 'rumdl' (pacman -S rumdl)*
+;; xml: 'xmllint' (pacman -S libxml2)
+;; yaml: 'yamllint' (pacman -S yamllint)*
+;; --------------------------
+;; Extensions:
+;; `flyover' (appear inline)
+;; `flycheck-color-mode-line'
+;; ==========================
+(use-package flycheck
+  :hook
+  ((prog-mode . flycheck-mode)
+   (text-mode . flycheck-mode))
+  :functions flycheck-select-checker
+  :custom
+  (flycheck-emacs-lisp-load-path 'inherit)
+  (flycheck-disabled-checkers
+   '(emacs-lisp-elsa sh-bash yaml-jsyaml yaml-ruby))
+  :config
+  (flycheck-define-checker markdown-rumdl
+    "A fast Markdown linter written in Rust.
+See URL `https://github.com/rvben/rumdl'."
+    :command ("rumdl" "check" "--watch" "--stdin" source)
+    :error-patterns
+    ((error line-start (file-name)
+	    ":" line ":" column ": "
+	    (id (one-or-more (not (any " ")))) " " (message) line-end))
+    :modes (markdown-mode gfm-mode))
+  (add-to-list 'flycheck-checkers 'markdown-rumdl)
+  (add-hook 'markdown-mode-hook (lambda ()
+                                  (flycheck-select-checker 'markdown-rumdl))))
+
+(use-package flyover
+  :after flycheck
+  :hook (flycheck-mode . flyover-mode)
+  :functions flyover-toggle
+  :init (setq flyover-checkers '(flycheck))
+  :custom
+  (flyover-levels '(error warning info))
+  (flyover-use-theme-colors t)
+  (flyover-background-lightness 45)
+  (flyover-text-tint 'lighter)
+  (flyover-text-tint-percent 50)
+  (flyover-icon-tint 'lighter)
+  (flyover-icon-tint-percent 50)
+  (flyover-icon-background-tint 'darker)
+  (flyover-icon-background-tint-percent 50)
+  (flyover-border-style 'arrow)
+  (flyover-border-match-icon t)
+  (flyover-hide-checker-name nil)
+  (flyover-show-error-id t)
+  (flyover-show-virtual-line t)
+  (flyover-virtual-line-type 'curved-arrow)
+  (flyover-line-position-offset 1)
+  (flyover-wrap-messages t)
+  (flyover-max-line-length 80)
+  (flyover-debounce-interval 0.1)
+  (flyover-cursor-debounce-interval 0.2)
+  (flyover-display-mode 'hide-on-same-line)
+  (flyover-hide-during-completion t)
+  :config
+  (bind-keys
+   :map flycheck-mode-map
+   ("C-c M-f" . flyover-toggle)))
+
+(use-package flycheck-color-mode-line
+  :after flycheck
+  :hook (flycheck-mode . flycheck-color-mode-line-mode))
+
+
+;; =======  LSP-MODE  =======
+;; cmake: 'neocmakelsp' (cargo install neocmakelsp)*
+;; fish: 'fish-lsp' (npm install -g fish-lsp)*
+;; markdown: 'rumdl' (pacman -S rumdl)*
+;; python: 'ty' (uv tool install ty)*
+;; python: 'ruff' (uv tool install ruff)*
+;; toml: 'tombi' (uv tool install tombi)*
+;; -------  OPTIONAL  -------
+;; [OPTIONAL] bash: 'bash-language-server' (pacman -S bash-language-server)*
+;; [OPTIONAL] json: 'json-language-server' (pacman -S json-language-server)*
+;; [OPTIONAL] xml: 'lemminx'*
+;; [OPTIONAL] yaml: 'yaml-language-server' (pacman -S yaml-language-server)*
+;; ==========================
+(use-package lsp-mode
+  :hook
+  ((cmake-ts-mode  . lsp-deferred)
+   (fish-mode      . lsp-deferred)
+   (markdown-mode  . lsp-deferred)
+   (python-ts-mode . lsp-deferred)
+   (toml-ts-mode   . lsp-deferred))
+  :commands lsp
+  :functions
+  lsp-register-client
+  make-lsp--client
+  lsp-stdio-connection
+  lsp-format-buffer
+  lsp-enable-which-key-integration
+  :defines lsp-language-id-configuration
+  :custom
+  (lsp-use-plists t)
+  (lsp-idle-delay 0.8)
+  (lsp-log-io nil)
+  (lsp-enable-file-watchers nil)
+  (lsp-headerline-breadcrumb-enable t)
+  (lsp-auto-guess-root t)
+  (lsp-enable-on-type-formatting nil)
+  (lsp-disabled-clients
+   '(cmake-language-server
+     marksman
+     pylsp
+     pyright
+     taplo))
+  :config
+  (lsp-register-client
+   (make-lsp--client
+    :new-connection (lsp-stdio-connection '("neocmakelsp" "stdio"))
+    :major-modes '(cmake-ts-mode)
+    :server-id 'neocmakelsp))
+  (add-to-list 'lsp-language-id-configuration '(fish-mode . "fish"))
+  (lsp-register-client
+   (make-lsp--client
+    :new-connection (lsp-stdio-connection '("fish-lsp" "start"))
+    :major-modes '(fish-mode)
+    :server-id 'fish-ls))
+  (lsp-register-client
+   (make-lsp--client
+    :new-connection (lsp-stdio-connection '("rumdl" "server" "--stdio"))
+    :major-modes '(markdown-mode gfm-mode)
+    :server-id 'rumdl-ls))
+  (lsp-register-client
+   (make-lsp--client
+    :new-connection (lsp-stdio-connection '("tombi" "lsp"))
+    :major-modes '(toml-ts-mode)
+    :server-id 'tombi-ls))
+  (bind-keys
+   :map lsp-mode-map
+   ("C-c F" . lsp-format-buffer)))
+
+(use-package lsp-ui
+  :after lsp-mode)
+
+(use-package lsp-treemacs
+  :after (lsp-mode treemacs))
+
+
+;; =======  FORMATTING  =======
+;; bash: 'shfmt' (pacman -S shfmt)*
+;; cmake: 'neocmakelsp' (cargo install neocmakelsp)*
+;; fish: 'fish_indent' (bundled with fish shell)
+;; emacs-lisp: 'indent' (built-in)
+;; json: 'prettier'* (npm install --save-dev --save-exact prettier)*
+;; markdown: 'rumdl'* (pacman -S rumdl)*
+;; python: 'ruff' (uv tool install ruff)*
+;; toml: 'tombi' (pacman -S tombi)*
+;; xml: 'xmlstarlet' (pacman -S xmlstarlet)
+;; yaml: 'prettier'* (npm install --save-dev --save-exact prettier)*
+;; ============================
+(use-package apheleia
+  :bind ("C-c f" . apheleia-format-buffer)
+  :hook
+  ((prog-mode . apheleia-mode)
+   (markdown-mode . apheleia-mode))
+  :config
+  (setf (alist-get 'shfmt apheleia-formatters)
+	'("shfmt" "-i" "4" "-ci" "-"))
+  (setf (alist-get 'neocmakelsp apheleia-formatters)
+        '("neocmakelsp" "format" "-"))
+  (setf (alist-get 'prettier-json apheleia-formatters)
+        '("prettier" "--stdin-filepath" filepath "--parser=json"
+          (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+  (setf (alist-get 'prettier-yaml apheleia-formatters)
+        '("prettier" "--stdin-filepath" filepath "--parser=yaml"
+          (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+  (setf (alist-get 'ruff apheleia-formatters)
+        '("ruff" "format" "-"))
+  (setf (alist-get 'rumdl apheleia-formatters)
+	'("rumdl" "fmt" "--stdin" "-"))
+  (setf (alist-get 'tombi apheleia-formatters)
+        '("tombi" "fmt" "-"))
+  (setf (alist-get 'xmlstarlet apheleia-formatters)
+        '("xmlstarlet" "fo" "--indent-spaces" "2" "-"))
+  (setf (alist-get 'cmake-ts-mode apheleia-mode-alist) 'neocmakelsp)
+  (setf (alist-get 'eask-mode apheleia-mode-alist) 'lisp-indent)
+  (setf (alist-get 'fish-mode apheleia-mode-alist) 'fish-indent)
+  (setf (alist-get 'markdown-mode apheleia-mode-alist) 'rumdl)
+  (setf (alist-get 'gfm-mode apheleia-mode-alist) 'rumdl)
+  (setf (alist-get 'python-ts-mode apheleia-mode-alist) 'ruff)
+  (setf (alist-get 'toml-ts-mode apheleia-mode-alist) 'tombi)
+  (setf (alist-get 'conf-toml-mode apheleia-mode-alist) 'tombi)
+  (setf (alist-get 'nxml-mode apheleia-mode-alist) 'xmlstarlet))
+
+
+;; =======  DAP-MODE  =======
+;; python: 'debugpy' (uv tool install debugpy)*
+;; ==========================
+(use-package dap-mode
+  :defer t
+  :commands
+  dap-debug
+  dap-debug-edit-template
+  dap-auto-configure-mode
+  :defines dap-python-debugger
+  :custom
+  (dap-auto-configure-features '(sessions locals controls tooltip))
+  (dap-lldb-debug-program "/usr/bin/lldb-dap")
+  :config
+  (require 'dap-python)
+  (setq dap-python-debugger 'debugpy))
+
+
+;; =======  SNIPPETS  =======
+;; 'yasnippet' (functions)
+;; 'yasnippet-snippets' (library)
+;; 'yasnippet-capf' (completions)
+;; ==========================
+(use-package yasnippet
+  :hook
+  ((prog-mode . yas-minor-mode)
+   (markdown-mode . yas-minor-mode))
+  yas-reload-all
+  :config
+  (add-to-list 'yas-snippet-dirs
+	       (expand-file-name "snippets" user-emacs-directory)))
+
+(use-package yasnippet-snippets
+  :after yasnippet
+  :functions yasnippet-snippets-initialize
+  :init
+  (yasnippet-snippets-initialize))
+
+(use-package yasnippet-capf
+  :after (yasnippet cape)
+  :functions yasnippet-capf
+  :config
+  (add-to-list 'completion-at-point-functions #'yasnippet-capf))
+
+
+(provide '06-code-assist)
+;;; 06-code-assist.el ends here

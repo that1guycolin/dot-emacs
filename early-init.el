@@ -6,15 +6,10 @@
 ;; and applies early UI optimizations before the main config loads.
 
 ;;; Code:
+;;(profiler-start 'cpu)
 (defvar user/profile-startup nil
   "When non-nil, enable CPU profiling during startup.")
-(when user/profile-startup
-  (profiler-start 'cpu))
-
-(defvar user/debug-on-error nil
-  "When non-nil, enable `debug-on-error'.")
-(when user/debug-on-error
-  (setq debug-on-error t))
+;; (setq debug-on-error t)
 
 (setq
  ;; No garbage collection during startup
@@ -37,16 +32,14 @@
                   user/file-name-handler-alist-backup)))
 
 ;; Environment variables
-(setenv "CC" "gcc")
-(setenv "CXX" "g++")
 (setenv "LSP_USE_PLISTS" "true")
 
 ;; Configure autosaves and backups.
-(make-directory "~/.backups" t)
-(make-directory "~/.auto-saves" t)
+(make-directory "~/backups" t)
+(make-directory "~/auto-saves" t)
 (setq
- backup-directory-alist '(("." . "~/.backups"))
- auto-save-file-name-transforms '((".*" "~/.auto-saves" t))
+ backup-directory-alist `((".*" . "~/backups"))
+ auto-save-file-name-transforms `((".*" "~/auto-saves" t))
  auth-sources '("~/.authinfo.gpg")
 
  version-control t

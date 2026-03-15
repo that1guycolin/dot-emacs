@@ -1,13 +1,16 @@
-;;; initial-packages.el --- Initial packages -*- lexical-binding: t; -*-
-
-;;; Commentary:
-;; Load packages which will affect the rest of the startup process.
+;;; 01-bootstrap.el --- Load startup and core packages -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; elpaca, exec-path-from-shell, transient
+;; bind-key, elpaca, elpaca-use-package, envrc, exec-path-from-shell, gcmh, org
+
+;;; Commentary:
+;; Elpaca package manager bootstrap and packages that must load first because
+;; they have a major inpact on startup.
 
 ;;; Code:
-;; Start 'elpaca' (from github:progfolio/elpaca)
+;; =======  ELPACA  =======
+;; (from github:progfolio/elpaca)
+;; ========================
 (declare-function elpaca-generate-autoloads "elpaca")
 (declare-function elpaca-process-queues "elpaca")
 (declare-function elpaca "elpaca")
@@ -15,15 +18,15 @@
 (declare-function elpaca-use-package-mode "elpaca-use-package")
 (defvar elpaca-use-package)
 (defvar use-package-always-ensure)
-(defvar elpaca-installer-version 0.11)
+(defvar elpaca-installer-version 0.12)
 (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
-(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
+(defvar elpaca-sources-directory (expand-file-name "sources/" elpaca-directory))
 (defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
                               :ref nil :depth 1 :inherit ignore
                               :files (:defaults "elpaca-test.el" (:exclude "extensions"))
-                              :build (:not elpaca--activate-package)))
-(let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
+                              :build (:not elpaca-activate)))
+(let* ((repo  (expand-file-name "elpaca/" elpaca-sources-directory))
        (build (expand-file-name "elpaca/" elpaca-builds-directory))
        (order (cdr elpaca-order))
        (default-directory repo))
@@ -56,16 +59,81 @@
 (keymap-global-set "C-c M-c" #'elpaca-manager)
 
 (elpaca elpaca-use-package
-  (elpaca-use-package-mode))
+  (elpaca-use-package-mode 1))
 (setq use-package-always-ensure t)
 
-(use-package exec-path-from-shell
-  :functions exec-path-from-shell-copy-env
+(declare-function elpaca-wait "elpaca")
+(elpaca-wait)
+
+
+;; =======  OTHER BOOTSTRAPS  =======
+;; `gcmh' (smart garbage collection)
+;; `exec-path-from-shell' `envrc' (environment)
+;; `bind-key' (add "(bind-keys ...) macro)
+;; `org' (Latest org-mode)
+;; ==================================
+(use-package gcmh
+  :demand t
+  :functions gcmh-mode
+  :init
+  (gcmh-mode 1)
+  (setopt gcmh-high-cons-threshold most-positive-fixnum
+          gcmh-low-cons-threshold (* 8 1024 1024)
+          gcmh-idle-delay 'auto
+          gc-cons-percentage 0.8)
   :config
-  (exec-path-from-shell-copy-env "SSH_AGENT_PID")
-  (exec-path-from-shell-copy-env "SSH_AUTH_SOCK"))
+  (add-hook 'emacs-startup-hook (lambda ()
+				  (setopt
+				   gcmh-high-cons-threshold (* 100 1024 1024)
+				   gc-cons-percentage 0.1))))
 
-(use-package transient)
+(use-package exec-path-from-shell
+  :demand t
+  :functions exec-path-from-shell-initialize
+  :config
+  (dolist (var '("CC" "CXX" "PKG_CONFIG_PATH"
+		 "SSH_AGENT_PID" "SSH_AUTH_SOCK" "LSP_USE_PLISTS"))
+    (add-to-list 'exec-path-from-shell-variables var))
+  (exec-path-from-shell-initialize))
 
-(provide 'initial-packages)
-;;; initial-packages.el ends here
+(use-package envrc
+  :demand t
+  :functions envrc-global-mode
+  :config
+  (envrc-global-mode 1))
+
+(use-package org
+  :ensure (
+	   :package "org"
+	   :source "Org"
+	   :protocol https
+	   :inherit t
+	   :depth 1
+	   :pre-build (progn (require 'elpaca-menu-org)
+			     (setq elpaca-menu-org-make-manual nil)
+			     (elpaca-menu-org--build))
+	   :host github
+	   :repo "emacsmirror/org"
+	   :autoloads "org-loaddefs.el"
+	   :build (:not elpaca--generate-autoloads-async)
+	   :files (:defaults ("etc/styles/" "etc/styles/*" "doc/*.texi"))
+	   :wait t)
+  :demand t
+  :mode
+  (("\\.org\\'" . org-mode)
+   ("\\.notes\\'" . org-mode))
+  :init
+  (setq org-directory (expand-file-name "~/org"))
+  :custom
+  (org-default-notes-file (expand-file-name ".notes" org-directory))
+  :config
+  (add-to-list 'org-agenda-files org-directory)
+  (bind-keys
+   ("C-c o"   . org-mode)
+   ("C-c C-l" . org-store-link)
+   ("C-c a"   . org-agenda)
+   ("C-c c"   . org-capture)))
+
+
+(provide '01-bootstrap-core)
+;;; 01-bootstrap-core.el ends here

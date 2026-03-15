@@ -1,0 +1,117 @@
+;;; 02-completion-setup.el --- Completion stack -*- lexical-binding: t; -*-
+
+;;; Packages included:
+;; cape, corfu, marginalia, orderless, savehist, vertico
+
+;;; Commentary:
+;; Completion UI stack; this needs to load early because many other packages
+;; depend on these.  Also, Emacs UI can get real weird the first time you call
+;; these functions unless loaded early in startup process.
+
+;;; Code:
+;; =======  COMPLETIONS  =======
+;; `savehist' (history across sessions)
+;; `orderless' (fuzzy matching)
+;; `vertigo' (minibuffer completions)
+;; `marginalia' (rich annotations)
+;; `corfu' (inline completion)
+;; `helpful' (better help)
+;; =============================
+(use-package savehist
+  :ensure nil
+  :init
+  (savehist-mode 1))
+
+(use-package orderless
+  :init
+  (setq completion-styles '(orderless basic)
+        completion-category-overrides '((file (styles basic partial-completion)))
+        completion-category-defaults nil))
+
+(use-package vertico
+  :functions vertico-mode
+  :init
+  (vertico-mode 1)
+  :custom
+  (vertico-resize t)
+  (vertico-cycle t))
+
+(use-package marginalia
+  :functions
+  marginalia-mode
+  marginalia-cycle
+  :init
+  (marginalia-mode 1)
+  :config
+  (bind-keys
+   :map minibuffer-local-map
+   ("M-A" . marginalia-cycle))
+  (bind-keys
+   :map completion-list-mode-map
+   ("M-A" . marginalia-cycle)))
+
+(use-package corfu
+  :functions
+  global-corfu-mode
+  corfu-history-mode
+  corfu-popupinfo-mode
+  :custom
+  (corfu-cycle t)
+  (corfu-quit-at-boundary nil)
+  (corfu-on-exact-match 'insert)
+  :init
+  (global-corfu-mode 1)
+  (corfu-history-mode 1)
+  (corfu-popupinfo-mode 1))
+
+(use-package cape
+  :bind ("C-c TAB" . cape-prefix-map)
+  :functions
+  cape-dabbrev
+  cape-file
+  cape-elisp-block
+  cape-history
+  :init
+  (add-hook 'completion-at-point-functions #'cape-dabbrev)
+  (add-hook 'completion-at-point-functions #'cape-file)
+  (add-hook 'completion-at-point-functions #'cape-elisp-block)
+  (add-hook 'completion-at-point-functions #'cape-history))
+
+(keymap-global-unset "C-h f")
+(keymap-global-unset "C-h v")
+(keymap-global-unset "C-h k")
+(keymap-global-unset "C-h x")
+(keymap-global-unset "C-h F")
+(use-package helpful
+  :config
+  (bind-keys
+   ("C-h f" . helpful-callable)
+   ("C-h v" . helpful-variable)
+   ("C-h k" . helpful-key)
+   ("C-h x" . helpful-command)
+   ("C-h ;" . helpful-at-point)
+   ("C-h F" . helpful-function)))
+
+(keymap-global-unset "C-z")
+(use-package emacs
+  :ensure nil
+  :bind
+  (("C-z"   . shell)
+   ("C-c x" . toggle-frame-maximized)
+   ("C-c (" . check-parens)
+   ("C-c n" . display-line-numbers-mode)
+   ("C-c N" . global-display-line-numbers-mode)
+   ("C-c r" . restart-emacs))
+  :custom
+  (tab-always-indent 'complete)
+  (text-mode-ispell-word-completion nil)
+  (enable-recursive-minibuffers t)
+  (read-extended-command-predicate #'command-completion-default-include-p)
+  (minibuffer-prompt-properties
+   '(read-only t cursor-intangible t face minibuffer-prompt))
+  :config
+  (context-menu-mode t))
+
+
+(provide '02-completion-setup)
+;;; 02-completion-setup.el ends here
