@@ -7,10 +7,11 @@
 ;;; Code:
 (use-package emms
   :defer t
-  :bind ("<f6>" . emms-browser)
+  :bind
+  (("<f6>"    . emms-smart-browse)
+   ("C-c C-p" . emms-smart-browse))
 
   :functions
-  emms-all
   emms-seek
   emms-player-mpv-pause
   emms-player-mpv-resume
@@ -38,14 +39,18 @@
   :defines
   emms-info-functions
   emms-playlist-mode-map
+  emms-player-mpv-command-name
+  emms-player-mpv-parameters
 
-  :custom
-  (emms-info-functions )
-  :config
+  :init
   (require 'emms-setup)
+  
+  :config
   (emms-all)
-  (require 'emms-player-mpv)
+  (setq emms-info-functions '(emms-info-native emms-info-exiftool))
   (setq emms-player-list '(emms-player-mpv))
+  (setq emms-player-mpv-command-name "mpv")
+  (setq emms-player-mpv-parameters '("--force-window=yes"))
 
   (defun user/seek-backward-med ()
     "Seek backwards 30 seconds in Emms."
@@ -105,10 +110,14 @@
 (use-package emms-info-mediainfo
   :ensure (emms-info-mediainfo
 	   :host github
-	   :repo "that1guycolin/emms-info-mediainfo")
+	   :repo "that1guycolin/emms-info-mediainfo"
+	   :files (:defaults)
+	   :method https)
   :after emms
   :config
-  (setq emms-info-backends '(emms-info-mediainfo)))
+  (setq user/temp-info-functions emms-info-functions)
+  (setq emms-info-functions '(emms-info-mediainfo))
+  (append emms-info-functions user/temp-info-functions))
 
 
 (provide '12-media-player)
