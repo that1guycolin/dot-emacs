@@ -1,4 +1,4 @@
-;;; 11-llm-integration.el --- Configure Emacs to work with external programs -*- lexical-binding: t; -*-
+;;; 11-llm-integration.el --- LLM Integration -*- lexical-binding: t; -*-
 
 ;;; Packages included:
 ;; elisp-dev-mcp, emms, gptel, gptel-commit, gptel-forge-prs,
@@ -81,24 +81,27 @@ to the user's device.")
   gptel-make-openai
   gptel-get-backend
 
+  :defines
+  gptel-backend
+
   :config
   (user/ensure-ollama-system-service)
   (setq
    gptel-backend (gptel-make-ollama "Ollama"
-				    :host "localhost:11434"
-				    :stream t
-				    :models user/ollama-alist)
+		   :host "localhost:11434"
+		   :stream t
+		   :models user/ollama-alist)
    gptel-model 'llama3.2:3b)
 
   (gptel-make-openai "OpenRouter"
-		     :host "openrouter.ai"
-		     :endpoint "/api/v1/chat/completions"
-		     :stream t
-		     :key (lambda ()
-			    (auth-source-pick-first-password
-			     :host "openrouter.ai"
-			     :user "apikey"))
-		     :models user/openrouter-alist)
+    :host "openrouter.ai"
+    :endpoint "/api/v1/chat/completions"
+    :stream t
+    :key (lambda ()
+	   (auth-source-pick-first-password
+	    :host "openrouter.ai"
+	    :user "apikey"))
+    :models user/openrouter-alist)
 
   (defvar user/gptel--backend-map
     '(("Ollama"      . (name "Ollama"      models user/ollama-alist))
@@ -176,7 +179,7 @@ doubles as a model-switcher."
    ("g b" "Chat buffer" gptel)
    ("g s" "Switch backend" user/gptel-switch-backend)])
 (declare-function user/llm-dispatch "11-llm-integration")
-(bind-keys ("C-c C-a" . user/llm-dispatch))
+(bind-keys ("C-c a" . user/llm-dispatch))
 
 
 (provide '11-llm-integration)

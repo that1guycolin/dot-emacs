@@ -91,7 +91,10 @@
 ;; Extensions for Org-mode
 (require '10-org-mode-extensions)
 
-;; Configure Emacs to work with llms
+;; Configure Emacs to work with LLMs
+(require '11-llm-integration)
+
+;; Listen to music & watch videos
 (require '12-media-player)
 
 ;; Misc & Dashboard
