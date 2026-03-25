@@ -30,12 +30,7 @@
   :custom
   (forge-pull-notifications t))
 
-(use-package with-editor
-  :hook
-  ((shell-mode  . with-editor-export-editor)
-   (eshell-mode . with-editor-export-editor)
-   (vterm-mode  . with-editor-export-editor)
-   (term-exec   . with-editor-export-editor)))
+
 
 (use-package git-modes
   :mode ("\\.dockerignore\\'" . gitignore-mode))

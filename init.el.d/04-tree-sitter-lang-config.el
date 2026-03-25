@@ -51,24 +51,17 @@
   :custom
   (treesit-auto-install 'prompt)
   :config
-  (global-treesit-auto-mode 1)
-  (treesit-auto-add-to-auto-mode-alist 'all))
+  ;;  (treesit-auto-add-to-auto-mode-alist 'all)
+  (global-treesit-auto-mode 1))
 
 
 ;; =======  MODE CONFIGURATIONS  =======
-(declare-function lsp "lsp-mode")
 (use-package bash-ts-mode
   :defer t
   :ensure nil
   :mode
-  (("\\.bash\\'" . bash-ts-mode)
-   ("\\.sh\\'" . bash-ts-mode))
-  :interpreter ("bash" . bash-ts-mode)
-  :defines bash-ts-mode-map
-  :config
-  (bind-keys
-   :map bash-ts-mode-map
-   ("C-c C-l" . lsp)))
+  ("\\.bash\\'" . bash-ts-mode)
+  :interpreter ("bash" . bash-ts-mode))
 
 (use-package cmake-ts-mode
   :defer t
@@ -85,19 +78,14 @@
 (use-package ielm
   :defer t
   :ensure nil
-  :bind (:map emacs-lisp-mode-map
-	      ("C-c I" . ielm)))
+  :bind ("C-c I" . ielm))
 
 (use-package json-ts-mode
   :defer t
   :ensure nil
   :mode
   (("\\.json\\'" . json-ts-mode)
-   ("\\.jsonc\\'". json-ts-mode))
-  :config
-  (bind-keys
-   :map json-ts-mode-map
-   ("C-c C-l" . lsp)))
+   ("\\.jsonc\\'". json-ts-mode)))
 
 (use-package lisp-mode
   :defer t
@@ -108,6 +96,13 @@
    ("\\.asd\\'"  . lisp-mode))
   :interpreter ("ros"  . lisp-mode))
 
+(use-package lua-ts-mode
+  :defer t
+  :ensure nil
+  :mode ("\\.lua\\'" . lua-ts-mode)
+  :custom
+  (lua-ts-inferior-lua "luajit"))
+
 (use-package python-ts-mode
   :defer t
   :ensure nil
@@ -115,18 +110,24 @@
   :interpreter
   (("uv" . python-ts-mode)
    ("python3" . python-ts-mode))
+
   :defines
   python-indent-offset
   python-indent-guess-indent-offset
   python-ts-mode-map
+
   :custom
   (lsp-python-vulture-enabled nil)
   (python-shell-interpreter "python3")
+
   :config
-  (with-eval-after-load 'python-ts-mode
-    (setq
-     python-indent-offset 4
-     python-indent-guess-indent-offset nil)))
+  (setq
+   python-indent-offset 4
+   python-indent-guess-indent-offset nil))
+
+(use-package sh-mode
+  :ensure nil
+  :interpreter ("sh" . sh-mode))
 
 (use-package toml-ts-mode
   :defer t
@@ -146,22 +147,14 @@
   :custom
   (nxml-child-indent 2)
   (nxml-attribute-indent 2)
-  (nxml-slash-auto-complete-flag t)
-  :config
-  (bind-keys
-   :map nxml-mode-map
-   ("C-c C-l" . lsp)))
+  (nxml-slash-auto-complete-flag t))
 
 (use-package yaml-ts-mode
   :defer t
   :ensure nil
   :mode
   (("\\.yml\\'" . yaml-ts-mode)
-   ("\\.yaml\\'" . yaml-ts-mode))
-  :config
-  (bind-keys
-   :map yaml-ts-mode-map
-   ("C-c C-l" . lsp)))
+   ("\\.yaml\\'" . yaml-ts-mode)))
 
 
 (provide '04-tree-sitter-lang-config)

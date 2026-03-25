@@ -63,36 +63,41 @@
 (setq use-package-always-ensure t)
 
 (declare-function elpaca-wait "elpaca")
-(elpaca-wait)
 
 
 ;; =======  OTHER BOOTSTRAPS  =======
 ;; `gcmh' (smart garbage collection)
 ;; `exec-path-from-shell' `envrc' (environment)
-;; `bind-key' (add "(bind-keys ...) macro)
-;; `org' (Latest org-mode)
+;; `transient' `org'
+;; (load latest early, override built-in)
 ;; ==================================
 (use-package gcmh
   :demand t
-  :functions gcmh-mode
-  :init
+  :functions
+  gcmh-mode
+  user/restore-sane-gcmh-values
+  :config
   (gcmh-mode 1)
   (setopt gcmh-high-cons-threshold most-positive-fixnum
           gcmh-low-cons-threshold (* 8 1024 1024)
           gcmh-idle-delay 'auto
           gc-cons-percentage 0.8)
-  :config
-  (add-hook 'emacs-startup-hook (lambda ()
-				  (setopt
-				   gcmh-high-cons-threshold (* 100 1024 1024)
-				   gc-cons-percentage 0.1))))
+
+  (defun user/restore-sane-gcmh-values ()
+    "Set gcmh values back to something reasonable.  Useful after startup."
+    (interactive)
+    (setopt
+     gcmh-high-cons-threshold (* 100 1024 1024)
+     gc-cons-percentage 0.1))
+  
+  (add-hook 'emacs-startup-hook #'user/restore-sane-gcmh-values))
 
 (use-package exec-path-from-shell
   :demand t
   :functions exec-path-from-shell-initialize
   :config
-  (dolist (var '("CC" "CXX" "PKG_CONFIG_PATH"
-		 "SSH_AGENT_PID" "SSH_AUTH_SOCK" "LSP_USE_PLISTS"))
+  (dolist (var '("CC" "CXX" "PKG_CONFIG_PATH" "SSH_AGENT_PID" "SSH_AUTH_SOCK"
+		 "LSP_USE_PLISTS"))
     (add-to-list 'exec-path-from-shell-variables var))
   (exec-path-from-shell-initialize))
 
@@ -101,6 +106,9 @@
   :functions envrc-global-mode
   :config
   (envrc-global-mode 1))
+
+(use-package transient
+  :demand t)
 
 (use-package org
   :ensure (
@@ -121,18 +129,20 @@
   :demand t
   :mode
   (("\\.org\\'" . org-mode)
+   ("\\`todo\\'" . org-mode)
    ("\\.notes\\'" . org-mode))
   :init
   (setq org-directory (expand-file-name "~/org"))
   :custom
   (org-default-notes-file (expand-file-name ".notes" org-directory))
+  (org-insert-mode-line-in-empty-file t)
   :config
-  (add-to-list 'org-agenda-files org-directory)
+  (setq org-agenda-files (list (expand-file-name "inbox.org" org-directory)))
   (bind-keys
-   ("C-c o"   . org-mode)
-   ("C-c C-l" . org-store-link)
-   ("C-c a"   . org-agenda)
-   ("C-c c"   . org-capture)))
+   ("C-c o o" . org-mode)
+   ("C-c o l" . org-store-link)
+   ("C-c o a" . org-agenda)
+   ("C-c o c" . org-capture)))
 
 
 (provide '01-bootstrap-core)

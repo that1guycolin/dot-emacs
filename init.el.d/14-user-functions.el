@@ -1,10 +1,9 @@
-;;; 12-user-functions.el --- Custom variables & functions -*- lexical-binding: t; -*-
-
-;;; Packages included: transient
+;;; 14-user-functions.el --- Custom variables & functions -*- lexical-binding: t; -*-
 
 ;;; Commentary:
-;; Variables and functions defined by the user with no natural home elsewhere in
-;; the configuration.  These should load last.
+;; Variables, functions, and transient dispatches defined by the user.
+;; Items in this file either have no natural home elsewhere in the configuration,
+;; or, more likely, need to be loaded last.
 
 ;;; Code:
 ;; =======  THEME  =======
@@ -29,6 +28,7 @@
 			     (lambda (a b)
 			       (string< (symbol-name a) (symbol-name b)))))
       (setq user/theme-list (append user/theme-list new-themes)))))
+
 (user/populate-theme-list)
 
 ;; Install themes
@@ -86,13 +86,12 @@
   "Switch to a THEME from user/theme-list."
   (interactive
    (list (intern (completing-read "Select theme: "
-				  (mapcar #'symbol-name user/theme-list)
-				  nil t))))
+				  user/theme-list nil t))))
   (let ((new-index (seq-position user/theme-list theme)))
     (when new-index
       (disable-theme (nth user/theme-index user/theme-list))
       (setq user/theme-index new-index)
-      (setq user/theme-dir-name (concat (symbol-name user/theme-name) "-theme"))
+      (setq user/theme-dir-name (concat (symbol-name theme) "-theme"))
       (add-to-list 'custom-theme-load-path
 		   (expand-file-name user/theme-dir-name
 				     elpaca-builds-directory))
@@ -184,31 +183,51 @@
       (setf (alist-get (car pair) major-mode-remap-alist) (cdr pair)))))
 
 
-;; =======  GARBAGE COLLECTION  =======
-(defun user/sane-gcmh ()
-  "Restore sane gcmh values."
-  (setopt
-   gcmh-high-cons-threshold (* 100 1024 1024)
-   gc-cons-percentage 0.1))
+;; =======  ELPACA  =======
+(declare-function elpaca-update-menus "elpaca")
+(declare-function feature-file "savehist")
+(declare-function async-start "async")
+(defvar elpaca-installer-version)
+(defun user/update-elpaca-menus ()
+  "Asynchronously update all Elpaca menus."
+  (interactive)
+  (let ((menus '(elpaca-menu-extensions
+                 elpaca-menu-lock-file
+                 elpaca-menu-org
+                 elpaca-menu-gnu-elpa
+                 elpaca-menu-nongnu-elpa
+                 elpaca-menu-melpa))
+	(elpaca-path (file-name-directory (feature-file 'elpaca))))
+    (message "Updating Elpaca menus in the background...")
+    (async-start
+     `(lambda ()
+	(defvar elpaca-installer-version ,elpaca-installer-version)
+	(add-to-list 'load-path ,elpaca-path)
+        (require 'elpaca-autoloads nil t)
+        (dolist (menu ',menus)
+          (elpaca-update-menus menu))
+        "All menus updated!")
+     (lambda (result)
+       (message result)))))
 
 
 ;; =======  TRANSIENT  =======
 (declare-function transient-define-prefix "transient")
 (defvar user/custom-functions-dispatch nil)
 (transient-define-prefix
- user/custom-functions-dispatch ()
- "Display functions defined by the user."
- [["Custom Functions"
-   ("f" "Switch Font" user/switch-font)]
-  [("c" "Cycle Themes" user/cycle-themes)
-   ("t" "Select Theme" user/select-theme)]
-  [("i" "Install single theme" user/install-theme)
-   ("I" "Install all themes" user/install-themes)]
-  [("g" "Sane GCMH" user/sane-gcmh)
-   ("s" "Major -ts-mode fallback" user/major-ts-mode-fallback)]])
-(declare-function user/custom-functions-dispatch "transient")
-(bind-keys ("C-c u"   . user/custom-functions-dispatch))
+  user/custom-functions-dispatch ()
+  "Display functions defined by the user."
+  [["Custom Functions"
+    ("f" "Switch Font" user/switch-font)]
+   [("c" "Cycle Themes" user/cycle-themes)
+    ("t" "Select Theme" user/select-theme)]
+   [("i" "Install single theme" user/install-theme)
+    ("I" "Install all themes" user/install-themes)]
+   [("E" "Update elpaca menus" user/update-elpaca-menus)
+    ("s" "Major -ts-mode fallback" user/major-ts-mode-fallback)]])
+(declare-function user/custom-functions-dispatch "14-user-functions")
+(bind-keys ("C-c u" . user/custom-functions-dispatch))
 
 
-(provide '12-user-functions)
-;;; 12-user-functions.el ends here
+(provide '14-user-functions)
+;;; 14-user-functions.el ends here

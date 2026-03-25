@@ -1,0 +1,30 @@
+# -*- mode: snippet -*-
+# name: argparse getopt
+# key: argparse
+# --
+
+PARSED=$(getopt -o ${1:short-flags} -l ${2:long-flags} -- "$@") || {
+    usage
+    exit 1
+}
+eval set -- "$PARSED"
+
+while true; do
+    case "\$1" in
+        $0
+
+        -h | --help)
+	    usage
+	    exit 0
+	    ;;
+	--)
+	    shift
+	    break
+	    ;;
+	*)
+	    echo "ERROR: Invalid option: \$1" >&2
+	    usage
+	    exit 1
+	    ;;
+    esac
+done

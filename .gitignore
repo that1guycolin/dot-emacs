@@ -1,6 +1,8 @@
+.aider*
 auto-save-list/
 %backup%~
 backups/
+bookmarks
 .cache/
 .dap-breakpoints
 dirvish/
@@ -20,11 +22,13 @@ ielm-history.eld
 .lsp-session-v1
 mason
 .org-generic-id-locations
+.org-id-locations
 projectile-bookmarks.eld
 .projectile-cache.eld
 *projects
 recentf*
 .rumdl_cache
+tools
 tramp*
 transient/
 tree-sitter/
@@ -32,4 +36,3 @@ tutorial/
 url/
 .vscode/
 wip/
-.aider*

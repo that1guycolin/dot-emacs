@@ -65,13 +65,14 @@
 (defvar user/theme-list nil
   "A list of themes in \='elpaca-builds-directory\=' available to be loaded.")
 (use-package weyland-yutani-theme)
-(add-to-list 'custom-theme-load-path
-             (expand-file-name "weyland-yutani-theme" elpaca-builds-directory))
 (add-hook 'elpaca-after-init-hook
 	  (lambda ()
 	    (setq custom-safe-themes t)
 	    (load-theme 'weyland-yutani t)
-	    (add-to-list 'user/theme-list 'weyland-yutani)))
+	    (setq user/theme-list (list 'weyland-yutani))))
+
+(add-hook 'prog-mode-hook #'display-fill-column-indicator-mode)
+(add-hook 'text-mode-hook #'display-fill-column-indicator-mode)
 
 
 (provide '03-visual-settings)

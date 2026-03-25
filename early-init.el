@@ -35,11 +35,17 @@
 (setenv "LSP_USE_PLISTS" "true")
 
 ;; Configure autosaves and backups.
-(make-directory "~/backups" t)
-(make-directory "~/auto-saves" t)
+(let ((backup-dir (expand-file-name "~/backups/"))
+      (autosave-dir (expand-file-name "~/auto-saves/")))
+  (unless (file-exists-p backup-dir)
+    (make-directory backup-dir t))
+  (unless (file-exists-p autosave-dir)
+    (make-directory autosave-dir t))
+
+  (setq backup-directory-alist `(("." . ,backup-dir))
+        auto-save-file-name-transforms `((".*" ,autosave-dir t))))
+
 (setq
- backup-directory-alist `((".*" . "~/backups"))
- auto-save-file-name-transforms `((".*" "~/auto-saves" t))
  auth-sources '("~/.authinfo.gpg")
 
  version-control t
@@ -48,7 +54,9 @@
  delete-old-versions t)
 
 ;; Early UI optimizations
-(setq-default cursor-type 'bar)
+(setq-default
+ cursor-type 'bar
+ fill-column 80)
 (when (fboundp 'tool-bar-mode)
   (tool-bar-mode -1))
 (when (fboundp 'scroll-bar-mode)
@@ -80,4 +88,5 @@
  dired-kill-when-opening-new-dired-buffer t)
 
 (provide 'early-init)
+
 ;;; early-init.el ends here

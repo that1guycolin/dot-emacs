@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: todo-today
+# key: do2day
+# --
+** TODO ${1:task-name}
+DEADLINE: <`(format-time-string "%Y-%m-%d %a")`>
+$0

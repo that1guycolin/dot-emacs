@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: argparse-flag-only
+# key: soloflag
+# --
+
+-${1:short-option} | --${2:long-option})
+    ${3:variable}=true
+    shift
+    ;;
+$0

@@ -11,11 +11,23 @@
 ;; scripting, & coding languages.
 
 ;;; Code:
+(defun user/smart-set-fill-column (value)
+  "Set `fill-column' to VALUE only if it hasn't been changed by a local config."
+  (when (eq fill-column (default-value 'fill-column))
+    (setq fill-column value))
+  (turn-on-auto-fill))
+
 ;; =======  PYTHON  =======
 ;; `python-x' (enhance built-in python(-ts)-mode)
 ;; `live-py-mode' (live coding)
-;; `uv-mode' (virtual env support w/ uv)
+;; `auto-virtualenv' (virtual env support)
 ;; ========================
+(add-hook 'python-ts-mode-hook
+          (lambda ()
+            (add-hook 'hack-local-variables-hook
+                      (lambda () (user/smart-set-fill-column 72))
+                      nil t)))
+
 (use-package python-x
   :defer t
   :hook (python-ts-mode . python-x-setup))
@@ -25,21 +37,26 @@
   :bind (:map python-ts-mode-map
               ("C-c L" . live-py-mode)))
 
-(use-package uv-mode
-  :defer t
-  :hook ((python-ts-mode . user/uv-mode-auto-activate)
-         (python-mode    . user/uv-mode-auto-activate))
-  :functions
-  uv-mode-root
-  uv-mode
-  uv-mode-set
-  :init
-  (defun user/uv-mode-auto-activate ()
-    "Enable uv-mode and activate the nearest project .venv (if any)."
-    (when (derived-mode-p 'python-base-mode)
-      (when (uv-mode-root)
-        (uv-mode 1)
-        (uv-mode-set)))))
+(use-package auto-virtualenv
+  :hook (python-ts-mode . auto-virtualenv-setup)
+  :custom
+  (auto-virtualenv-verbose t))
+
+;;(Use-Package uv-mode
+;;  :defer t
+;;  :hook ((python-ts-mode . user/uv-mode-auto-activate)
+;;         (python-mode    . user/uv-mode-auto-activate))
+;;  :functions
+;;  uv-mode-root
+;;  uv-mode
+;;  uv-mode-set
+;;  :init
+;;  (defun user/uv-mode-auto-activate ()
+;;    "Enable uv-mode and activate the nearest project .venv (if any)."
+;;    (when (derived-mode-p 'python-base-mode)
+;;      (when (uv-mode-root) <==NO SUCH THING AS uv-mode-root
+;;        (uv-mode 1)
+;;        (uv-mode-set)))))
 
 
 ;; =======  SHELL SCRIPTS  =======
@@ -74,6 +91,14 @@
 ;; `auto-rename-tag' (xml tag assistant)
 ;; `yaml-pro' (enhanced .yaml support)
 ;; ===============================
+(use-package ini-mode
+  :defer t
+  :mode
+  (("\\.ini\\'"     . ini-mode)
+   ("\\.desktop\\'" . ini-mode)
+   ("\\.hook\\'"    . ini-mode))
+  :bind ("C-c i" . ini-mode))
+
 (use-package kdl-mode
   :defer t
   :mode ("\\.kdl\\'"))
@@ -91,6 +116,13 @@
      (list (completing-read "Select md backend: "
                             '("cmark" "cmark-gfm" "pandoc") nil t)))
     (setq markdown-command command))
+
+  (add-hook 'markdown-mode-hook
+            (lambda ()
+              (add-hook 'hack-local-variables-hook
+			(lambda () (user/smart-set-fill-column 100))
+			nil t)))
+  
   (bind-keys
    :map markdown-mode-command-map
    ("C-c" . user/switch-markdown-command)))
@@ -134,15 +166,16 @@
 ;; =======  (E)LISP  =======
 ;; ALL:
 ;; `lisp-semantic-hl'
-;; `adjust-parens' (smart ())
+;; `adjust-parens' (smart '()')
 ;; -------------------------
 ;; EMACS LISP
 ;; `checkdoc' (style checker)
 ;; `elisp-def' (go directly to symbol def)
+;; `morlock' (additional font hl)
+;; `eros' (see function results in buffer)
 ;; `suggest' (find function to accomplish X)
 ;; `macrostep' (interactive macro stepper)
-;; `eros' (see results in buffer)
-;; `morlock' (additional font hl)
+;; `lispxmp' (see results in buffer)
 ;; -------------------------
 ;; SBCL (ros)
 ;; `sly' (modern slime)
@@ -171,6 +204,14 @@
   ((emacs-lisp-mode . elisp-def-mode)
    (ielm-mode . elisp-def-mode)))
 
+(use-package morlock
+  :defer t
+  :hook (emacs-lisp-mode . morlock-mode))
+
+(use-package eros
+  :defer t
+  :hook (emacs-lisp-mode . eros-mode))
+
 (use-package suggest
   :defer t
   :bind (:map emacs-lisp-mode-map
@@ -179,11 +220,7 @@
 (use-package macrostep
   :defer t
   :bind (:map emacs-lisp-mode-map
-              ("C-c e" . macrostep-expand)))
-
-(use-package eros
-  :defer t
-  :hook (emacs-lisp-mode . eros-mode))
+              ("C-c m" . macrostep-expand)))
 
 (use-package sly
   :defer t
@@ -199,8 +236,8 @@
 
 
 ;; =======  EASK  =======
-;; `eask-mode' `flycheck-eask'
-;; (Language support for Eask files)
+;; `eask-mode' (syntax for Eask files)
+;; `flycheck-eask' (linting Eask files)
 ;; ======================
 (use-package eask-mode
   :defer t

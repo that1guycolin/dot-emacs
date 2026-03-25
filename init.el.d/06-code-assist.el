@@ -13,6 +13,7 @@
 ;; =======  TEXT MANIPULATION  =======
 ;; `smartparens' (auto-close "", {}, [], ())
 ;; `adaptive-wrap' (smart text wrapping)
+;; `docstr' (composing/formatting DocStrings)
 ;; ===================================
 (use-package smartparens
   :hook
@@ -25,6 +26,25 @@
   :hook
   ((prog-mode . adaptive-wrap-prefix-mode)
    (text-mode . adaptive-wrap-prefix-mode)))
+
+(use-package docstr
+  :functions
+  docstr-major-modes
+  docstr-mode
+  user/docstr-mode-hooks
+  :config
+
+  (defun user/docstr-mode-hooks ()
+
+    "Trigger `docstr-mode' for major modes in which it is available.
+Run docstr-major-modes for an up-to-date list of modes in which docstr works.
+For each mode on that list, add `docstr-mode' to its hook."
+    
+    (dolist (mode (docstr-major-modes))
+      (add-hook (intern (concat (symbol-name mode) "-hook"))
+		#'docstr-mode)))
+  
+  (user/docstr-mode-hooks))
 
 
 ;; =======  FLYCHECK  =======
@@ -43,12 +63,40 @@
   :hook
   ((prog-mode . flycheck-mode)
    (text-mode . flycheck-mode))
+
   :functions flycheck-select-checker
+
   :custom
   (flycheck-emacs-lisp-load-path 'inherit)
   (flycheck-disabled-checkers
-   '(emacs-lisp-elsa sh-bash yaml-jsyaml yaml-ruby))
+   '(emacs-lisp-elsa lua-luacheck lua sh-bash yaml-jsyaml yaml-ruby))
+
   :config
+  (flycheck-define-checker fish-self
+    "The shell for the 90's built-in syntax checker."
+    :command ("fish" "-n" source)
+    :error-patterns
+    ((error line-start (file-name) " (line " line "): " (message) line-end))
+    :modes (fish-mode))
+  (add-to-list 'flycheck-checkers 'fish-self)
+  (add-hook 'fish-mode-hook (lambda ()
+			      (flycheck-select-checker 'fish-self)))
+
+  (flycheck-define-checker lua-selene
+    "Write correct & idiomatic lua code."
+    :command ("selene" "--quiet" "-" source )
+    :error-patterns
+    ((error line-start
+            (file-name) ":" line ":" column ": "
+            (or "error" "warning" "info")
+            "[" (id (one-or-more (not (any "]")))) "]: "
+            (message)
+            line-end))
+    :modes (lua-ts-mode))
+  (add-to-list 'flycheck-checkers 'lua-selene)
+  (add-hook 'lua-ts-mode-hook (lambda ()
+                                (flycheck-select-checker 'lua-selene)))
+  
   (flycheck-define-checker markdown-rumdl
     "A fast Markdown linter written in Rust.
 See URL `https://github.com/rvben/rumdl'."
@@ -62,11 +110,19 @@ See URL `https://github.com/rvben/rumdl'."
   (add-hook 'markdown-mode-hook (lambda ()
                                   (flycheck-select-checker 'markdown-rumdl))))
 
+(defun user/no-flyover-if-lsp ()
+  "If `lsp-mode' is not nil, disable `flyover-mode'."
+  (if (fboundp 'lsp-mode)
+      (flyover-mode -1)
+    (flyover-mode 1)))
+
 (use-package flyover
   :after flycheck
-  :hook (flycheck-mode . flyover-mode)
+  :commands flyover-mode
+  :hook (flycheck-mode . user/no-flyover-if-lsp)
   :functions flyover-toggle
   :init (setq flyover-checkers '(flycheck))
+  
   :custom
   (flyover-levels '(error warning info))
   (flyover-use-theme-colors t)
@@ -91,13 +147,15 @@ See URL `https://github.com/rvben/rumdl'."
   (flyover-display-mode 'hide-on-same-line)
   (flyover-hide-during-completion t)
   :config
+
   (bind-keys
    :map flycheck-mode-map
    ("C-c M-f" . flyover-toggle)))
 
 (use-package flycheck-color-mode-line
   :after flycheck
-  :hook (flycheck-mode . flycheck-color-mode-line-mode))
+  :hook (flycheck-mode . (lambda ()
+			   flycheck-color-mode-line-mode 1)))
 
 
 ;; =======  LSP-MODE  =======
@@ -110,18 +168,20 @@ See URL `https://github.com/rvben/rumdl'."
 ;; -------  OPTIONAL  -------
 ;; [OPTIONAL] bash: 'bash-language-server' (pacman -S bash-language-server)*
 ;; [OPTIONAL] json: 'json-language-server' (pacman -S json-language-server)*
+;; [OPTIONAL] lua: `lua-language-server'*
 ;; [OPTIONAL] xml: 'lemminx'*
 ;; [OPTIONAL] yaml: 'yaml-language-server' (pacman -S yaml-language-server)*
 ;; ==========================
 (use-package lsp-mode
   :hook
   ((cmake-ts-mode  . lsp-deferred)
-   (fish-mode      . lsp-deferred)
    (markdown-mode  . lsp-deferred)
    (python-ts-mode . lsp-deferred)
    (toml-ts-mode   . lsp-deferred))
-  :commands lsp
+  :bind (:map prog-mode-map
+	      ("C-c C-l" . lsp))
   :functions
+  lsp-mode
   lsp-register-client
   make-lsp--client
   lsp-stdio-connection
@@ -164,12 +224,29 @@ See URL `https://github.com/rvben/rumdl'."
     :new-connection (lsp-stdio-connection '("tombi" "lsp"))
     :major-modes '(toml-ts-mode)
     :server-id 'tombi-ls))
+
+  (add-hook 'lsp-mode-hook
+	    (lambda () (flyover-mode -1)))
+  
   (bind-keys
    :map lsp-mode-map
-   ("C-c F" . lsp-format-buffer)))
+   ("C-c F" . lsp-format-buffer))
+  (dolist (dir '("[/\\\\]node_modules\\'"
+                 "[/\\\\]\\.git\\'"
+                 "[/\\\\]dist\\'"
+                 "[/\\\\]build\\'"
+                 "[/\\\\]target\\'"
+                 "[/\\\\]\\.direnv\\'"
+                 "[/\\\\]\\.cache\\'"
+                 "[/\\\\]vendor\\'"))
+    (add-to-list 'lsp-file-watch-ignored-directories dir))
+  (add-hook 'fish-mode-hook
+            (lambda ()
+	      (setq-local lsp-enable-file-watchers nil))))
 
 (use-package lsp-ui
-  :after lsp-mode)
+  :after lsp-mode
+  :config)
 
 (use-package lsp-treemacs
   :after (lsp-mode treemacs))
@@ -181,6 +258,7 @@ See URL `https://github.com/rvben/rumdl'."
 ;; fish: 'fish_indent' (bundled with fish shell)
 ;; emacs-lisp: 'indent' (built-in)
 ;; json: 'prettier'* (npm install --save-dev --save-exact prettier)*
+;; lua: `stylua'*
 ;; markdown: 'rumdl'* (pacman -S rumdl)*
 ;; python: 'ruff' (uv tool install ruff)*
 ;; toml: 'tombi' (pacman -S tombi)*
@@ -265,6 +343,101 @@ See URL `https://github.com/rvben/rumdl'."
   :functions yasnippet-capf
   :config
   (add-to-list 'completion-at-point-functions #'yasnippet-capf))
+
+
+;; =======  MASON  =======
+;; `mason' (install external deps)
+;; =======================
+(use-package mason
+  :commands
+  mason-install
+  mason-manager
+  mason-setup
+  :functions
+  mason-installed-p
+  user/mason--install-program
+  user/mason-install-optional-program
+  user/mason-install-optional-programs
+  :defines mason-dir
+
+  :init
+  (setq mason-dir (expand-file-name "~/.local"))
+
+  :config
+  (mason-setup)
+  
+  ;; Variables
+  (defvar user/required-mason-programs
+    '("debugpy" "fish-lsp" "jsonlint" "lua-language-server" "neocmakelsp"
+      "prettier" "ruff" "rumdl" "selene" "shellcheck" "shfmt" "stylua" "tombi"
+      "ty" "yamllint")
+    "List of programs required in this setup that mason is able to install.")
+  
+  (defvar user/optional-mason-programs
+    '("bash-language-server" "json-language-server" "lemminx" "systemdlsp"
+      "systemdlint" "textlint" "textlsp" "yaml-language-server")
+    "List of optional programs in this setup that mason is able to install.")
+
+  ;; Functions
+  (defun user/mason--install-program (program)
+    "Checks installation status of PROGRAM. If PROGRAM is not installed,
+mason installs it."
+    (condition-case err
+        (if (mason-installed-p program)
+            (message "%s is already installed." program)
+          (message "Installing %s ..." program)
+          (mason-install program))
+      (error
+       (message "Mason failed to install %s: %s"
+                program (error-message-string err)))))
+
+  (defun user/mason-install-program (program)
+    "Use mason to install a PROGRAM.
+ Installation options come from the lists
+ \"user/required-mason-programs\" & \"user/optional-mason-programs\"."
+    (interactive
+     (list (completing-read "Select program: "
+			    (append user/required-mason-programs
+				    user/optional-mason-programs) nil t)))
+    (user/mason--install-program program))
+
+  (defun user/mason-install-required-programs ()
+    "Leverages mason to install required programs if not installed."
+    (interactive)
+    (dolist (program user/required-mason-programs)
+      (user/mason--install-program program)))
+  
+  (defun user/mason-install-optional-programs ()
+    "Use mason to install all optional programs."
+    (interactive)
+    (dolist (program user/optional-mason-programs)
+      (user/mason--install-program program)))
+
+  (defvar user/mason--dispatch nil)
+  (declare-function mason-setup "mason")
+  (transient-define-prefix
+    user/mason--dispatch ()
+    "Commands to install external dependencies with `mason'."
+    [
+     ["Mason - Install external
+deps for flycheck & lsp-mode"]
+     [("r" "Install required" user/mason-install-required-programs)
+      ("o" "Install optional" user/mason-install-optional-programs)]
+     [("p" "Install program" user/mason-install-program)
+      ("m" "Mason Manager" mason-manager)]]))
+
+(declare-function transient-define-prefix "transient")
+
+(declare-function user/mason--dispatch "06-code-assist")
+(defun user/mason-dispatch ()
+  "Load mason if not loaded then run user/mason--dispatch."
+  (interactive)
+  (if (featurep 'mason)
+      (user/mason--dispatch)
+    (progn
+      (mason-setup)
+      (user/mason--dispatch))))
+(bind-keys ("C-c m" . user/mason-dispatch))
 
 
 (provide '06-code-assist)

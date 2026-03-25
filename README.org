@@ -1,39 +1,18 @@
-# dot-emacs (.emacs.d)
-
-<!-- markdown-toc start - Don't edit this section.
-Run M-x markdown-toc-refresh-toc -->
-
-**"Table of Contents"**
-
-- [dot-emacs (.emacs.d)](#dot-emacs-emacsd)
-  - [Packages Included](#packages-included)
-    - [Core / Package Management](#core--package-management)
-    - [Completion](#completion)
-    - [UI](#ui)
-    - [Project / File Management](#project--file-management)
-    - [General Language & Coding Support](#general-language--coding-support)
-    - [Specific Language Support](#specific-language-support)
-    - [Reference / Utilities](#reference--utilities)
-  - [Custom Themes](#custom-themes)
-  - [Todo](#todo)
-  - [License](#license)
-  - [Version](#version)
-
-<!-- markdown-toc end -->
+* dot-emacs (.emacs.d)
 
 Personal Emacs configuration for that1guycolin. Please modify as much as you'd
 like for your own use, and definitely share any modifications you make
 (I'm sure this configuration could be much better)!
 
-## Packages Included
+** Packages Included
 
-### Core / Package Management
+*** Core / Package Management
 
 - [elpaca](https://github.com/progfolio/elpaca)
 - [use-package](https://github.com/jwiegley/use-package)
 - [auto-compile](https://github.com/emacs-auto/auto-compile)
 
-### Completion
+*** Completion
 
 - [corfu](https://github.com/minad/corfu)
 - [cape](https://github.com/minad/cape)
@@ -43,7 +22,7 @@ like for your own use, and definitely share any modifications you make
 - [marginalia](https://github.com/minad/marginalia)
 - [savehist](https://www.gnu.org/software/emacs/manual/html_node/emacs/Savehist.html)
 
-### UI
+*** UI
 
 - [nerd-icons](https://github.com/rainstormstudio/nerd-icons.el)
 - [nerd-icons-corfu](https://github.com/LuigiPiucco/nerd-icons-corfu)
@@ -57,7 +36,7 @@ like for your own use, and definitely share any modifications you make
 - [diredfl](https://github.com/purcell/diredfl)
 - [dired-video-thumbnail](https://github.com/captainflasmr/dired-video-thumbnail)
 
-### Project / File Management
+*** Project / File Management
 
 - [projectile](https://github.com/bbatsov/projectile)
 - [disproject](https://github.com/pkkm/disproject)
@@ -71,7 +50,7 @@ like for your own use, and definitely share any modifications you make
 - [transient](https://github.com/magit/transient)
 - [transient-dwim](https://github.com/conao3/transient-dwim)
 
-### General Language & Coding Support
+*** General Language & Coding Support
 
 - [treesit-auto](https://github.com/ethan-leba/treesit-auto)
 - [mason](https://github.com/yyoncho/emacs-mason)
@@ -88,7 +67,7 @@ like for your own use, and definitely share any modifications you make
 - [editorconfig](https://github.com/editorconfig/editorconfig-emacs)
 - [smartparens](https://github.com/Fuco1/smartparens)
 
-### Specific Language Support
+*** Specific Language Support
 
 - [fish-mode](https://github.com/wwwjfy/emacs-fish-mode)
 - [modern-sh](https://github.com/wyuenho/modern-sh)
@@ -107,7 +86,7 @@ like for your own use, and definitely share any modifications you make
 - [yaml-pro](https://github.com/zkry/yaml-pro)
 - [adjust-parens](https://github.com/Fanael/adjust-parens)
 
-### Reference / Utilities
+*** Reference / Utilities
 
 - [gcmh](https://github.com/emacscollective/gcmh)
 - [which-key](https://github.com/justbur/emacs-which-key)
@@ -117,7 +96,7 @@ like for your own use, and definitely share any modifications you make
 - [deadgrep](https://github.com/Wilfred/deadgrep)
 - [emms](https://www.gnu.org/software/emms/)
 
-## Custom Themes
+** Custom Themes
 
 The following custom themes are included in the `themes/` directory:
 
@@ -134,15 +113,15 @@ The following custom themes are included in the `themes/` directory:
 - [Overcast](https://github.com/myTerminal/overcast-theme/tree/e02b835a08919ead079d7221d513348ac02ba92e)
 - [VS-Dark](https://github.com/emacs-vs/vs-dark-theme/tree/ebc176a83808772746c55c91420a95b28b84c869)
 
-## Todo
+** Todo
 
 - Finish lite build
 - Explore AI integrations
 
-## License
+** License
 
 GPL-3.0
 
-## Version
+** Version
 
 0.1.0

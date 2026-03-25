@@ -1,7 +1,7 @@
 ;;; 09-file-management.el --- File explorer functions -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; deadgrep, diredfl, dirvish
+;; async, deadgrep, diredfl, dirvish
 
 ;;; Commentary:
 ;; Leverage `dirvish', along with some Dired built-in settings & extensions,
@@ -12,9 +12,19 @@
   :defer t
   :hook (dired-mode . diredfl-mode))
 
+(use-package async
+  :defer t
+  :commands
+  async-start
+  async-start-process
+  :hook (dired-mode . dired-async-mode)
+  :init
+  (require 'dired-async))
+
 (use-package dirvish
   :defer t
   :commands dirvish
+  
   :functions
   dirvish-override-dired-mode
   dirvish-peek-mode
@@ -40,8 +50,10 @@
   dirvish-mark-menu
   dirvish-setup-menu
   dirvish-emerge-menu
+  
   :init
   (dirvish-override-dired-mode 1)
+  
   :custom
   (dirvish-preview-dispatchers '(archive pdf))
   (dirvish-attributes '(file-size file-time nerd-icons))
@@ -49,17 +61,14 @@
   (dirvish-reuse-session nil)
   (dired-listing-switches "-l --almost-all --ignore-backups \
 --human-readable --group-directories-first --no-group")
+  
   :config
-  (dirvish-peek-mode nil)
   (bind-keys
-   ("C-c d"   . dirvish-dwim)
-   ("C-c C-d" . dirvish-fd)
+   ("C-c D"   . dirvish-dwim)
+   ("C-c C-S-d" . dirvish-fd)
    :map dirvish-mode-map
-   ;; left click for expand/collapse dir or open file
    ("<mouse-1>" . dirvish-subtree-toggle)
-   ;; middle click for opening file / entering dir in other window
    ("<mouse-2>" . dired-mouse-find-file-other-window)
-   ;; right click for opening file / entering dir
    ("<mouse-3>" . dired-mouse-find-file)
    ([remap dired-sort-toggle-or-edit] . dirvish-quicksort)
    ([remap dired-do-redisplay] . dirvish-ls-switches-menu)
