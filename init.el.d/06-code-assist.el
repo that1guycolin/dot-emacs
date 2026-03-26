@@ -222,7 +222,7 @@ See URL `https://github.com/rvben/rumdl'."
   (lsp-register-client
    (make-lsp--client
     :new-connection (lsp-stdio-connection '("tombi" "lsp"))
-    :major-modes '(toml-ts-mode)
+    :major-modes '(toml-mode toml-ts-mode)
     :server-id 'tombi-ls))
 
   (add-hook 'lsp-mode-hook
