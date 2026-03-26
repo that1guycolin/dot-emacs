@@ -235,9 +235,10 @@
   (sly-net-coding-system 'utf-8-unix))
 
 
-;; =======  EASK  =======
-;; `eask-mode' (syntax for Eask files)
-;; `flycheck-eask' (linting Eask files)
+;; =======  PACKAGING  =======
+;; `eask-mode' (Eask file syntax)
+;; `flycheck-eask' (lint Eask files)
+;; `flycheck-package' (lint Emacs' pacakges)
 ;; ======================
 (use-package eask-mode
   :defer t
@@ -246,6 +247,10 @@
 (use-package flycheck-eask
   :defer t
   :hook (eask-mode . flycheck-eask-setup))
+
+(use-package flycheck-package
+  :defer t
+  :hook (emacs-lisp-mode . flycheck-package-setup))
 
 
 (provide '08-language-configs)
