@@ -142,6 +142,7 @@
    ("C-c n" . display-line-numbers-mode)
    ("C-c N" . global-display-line-numbers-mode)
    ("C-c r" . restart-emacs))
+
   :custom
   (tab-always-indent 'complete)
   (text-mode-ispell-word-completion nil)
@@ -149,8 +150,10 @@
   (read-extended-command-predicate #'command-completion-default-include-p)
   (minibuffer-prompt-properties
    '(read-only t cursor-intangible t face minibuffer-prompt))
+
   :config
-  (context-menu-mode t))
+  (context-menu-mode 1)
+  (global-visual-line-mode 1))
 
 
 (provide '02-completion-setup)
