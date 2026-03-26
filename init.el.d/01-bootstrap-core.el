@@ -110,6 +110,11 @@
 (use-package transient
   :demand t)
 
+(defvar user/org-tasks-directory nil
+  "Branch of org directory that stores TODO items.")
+(defvar user/org-knowledge-directory nil
+  "Branch of org directory containing user's knowledge base.")
+
 (use-package org
   :ensure (
 	   :package "org"
@@ -128,16 +133,20 @@
 	   :wait t)
   :demand t
   :mode
-  (("\\.org\\'" . org-mode)
-   ("\\`todo\\'" . org-mode)
+  (("\\.org\\'"   . org-mode)
+   ("\\`todo\\'"  . org-mode)
    ("\\.notes\\'" . org-mode))
   :init
   (setq org-directory (expand-file-name "~/org"))
   :custom
-  (org-default-notes-file (expand-file-name ".notes" org-directory))
+  (user/org-tasks-directory (expand-file-name "tasks" org-directory))
+  (user/org-knowledge-directory
+   (expand-file-name "knowledge_base" org-directory))
+  (org-default-notes-file
+   (expand-file-name "inbox.org" user/org-tasks-directory))
   (org-insert-mode-line-in-empty-file t)
   :config
-  (setq org-agenda-files (list (expand-file-name "inbox.org" org-directory)))
+  (setq org-agenda-files '(org-default-notes-file))
   (bind-keys
    ("C-c o o" . org-mode)
    ("C-c o l" . org-store-link)
