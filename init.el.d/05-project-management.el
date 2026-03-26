@@ -123,29 +123,14 @@ The keybindings are exactly the same."
   (treemacs-filewatch-mode 1)
   (treemacs-git-mode 'deferred)
   (treemacs-git-commit-diff-mode 1)
+  (add-hook 'treemacs-post-buffer-init-hook
+	    (lambda () (treemacs-hide-gitignored-files-mode 1)))
+  
   (bind-keys
    ("M-0" . treemacs-select-window)
    :map treemacs-mode-map
    ("C-x p f" . treemacs-project-follow-mode)
    ("<backspace>" . treemacs-root-up)))
-
-(defun user/toggle-treemacs-no-ignored ()
-  "Go to treemacs-window.  If current window is treemacs, go to other window.
-Function contains safety measures to load treemacs and open a treemacs window
-if necessary."
-  (interactive)
-  (if (featurep 'treemacs)
-      (if (treemacs-get-local-window)
-	  (treemacs-select-window)
-	(progn
-	  (treemacs)
-	  (treemacs-hide-gitignored-files-mode 1)))
-    (progn
-      (treemacs)
-      (add-hook 'treemacs-post-buffer-init-hook
-		(lambda () (treemacs-hide-gitignored-files-mode 1)))
-      (treemacs-hide-gitignored-files-mode 1)
-      (treemacs-refresh))))
 
 (defvar user/projectile-treemacs-anywhere-dispatch nil)
 (declare-function user/toggle-treemacs-no-ignored "05-project-management.el")
@@ -156,7 +141,7 @@ if necessary."
   "Globally available commands for Treemacs & Projectile."
   [
    ["Treemacs" :pad-keys t
-    ("t" "Toggle" user/toggle-treemacs-no-ignored)
+    ("t" "Toggle" treemacs)
     ("T" "Refresh" treemacs-refresh)
     ("j" "treemacs-projectile" treemacs-projectile)]
 
