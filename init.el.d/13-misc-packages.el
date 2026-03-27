@@ -110,13 +110,13 @@ Otherwise, use the lucid build."
   (dashboard-startup-banner 'logo)
   (dashboard-icon-type 'nerd-icons)
   (dashboard-set-heading-icons t)
+  (dashboard-display-icons-p t)
   (dashboard-set-file-icons t)
   (dashboard-center-content t)
   (dashboard-vertically-center-content t)
   (dashboard-banner-logo-title "Welcome back")
 
   :config
-  (dashboard-display-icons-p t)
   (defun user/smart-dashboard-items ()
     "Set dashboard items based on whether or not projectile is loaded."
     (if (featurep 'projectile)
