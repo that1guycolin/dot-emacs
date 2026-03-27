@@ -1,4 +1,3 @@
-.aider*
 auto-save-list/
 %backup%~
 backups/
@@ -7,6 +6,7 @@ bookmarks
 .dap-breakpoints
 dirvish/
 *.eask/
+*ellama*
 eln-cache
 elpa/
 elpaca/
