@@ -1,4 +1,4 @@
-;;; 01-bootstrap.el --- Load startup and core packages -*- lexical-binding: t; -*-
+;;; 01-bootstrap-core.el --- Load startup and core packages -*- lexical-binding: t; -*-
 
 ;;; Packages included:
 ;; bind-key, elpaca, elpaca-use-package, envrc, exec-path-from-shell, gcmh, org
