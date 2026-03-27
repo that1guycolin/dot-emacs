@@ -7,93 +7,75 @@
 
 ;;; Code:
 ;; =======  THEME  =======
-;; Available theme list
-(defvar user/theme-list) ; see 03-visual-settings.el
-(defun user/populate-theme-list ()
-  "Find new themes, sort them, and append them to `user/theme-list'."
-  (let ((build-dir (bound-and-true-p elpaca-builds-directory))
-        (new-themes '())) ; Temporary list for newly discovered themes
-    (when (and build-dir (file-directory-p build-dir))
-      (let ((files (directory-files build-dir nil nil t)))
-        (dolist (file files)
-	  (let ((full-path (expand-file-name file build-dir)))
-	    (when (and (file-directory-p full-path)
-		       (string-match "-theme$" file))
-	      (let* ((theme-name (substring file 0 (match-beginning 0)))
-		     (theme-symbol (intern theme-name)))
-                (unless (or (member theme-symbol user/theme-list)
-			    (member theme-symbol new-themes))
-		  (push theme-symbol new-themes)))))))
-      (setq new-themes (sort new-themes
-			     (lambda (a b)
-			       (string< (symbol-name a) (symbol-name b)))))
-      (setq user/theme-list (append user/theme-list new-themes)))))
-
-(user/populate-theme-list)
-
 ;; Install themes
-(defvar user/themes-to-install-list
+(defvar user/themes-alist
   '(
-    ancient-one-dark-theme caroline-theme curry-on-theme dakrone-theme
-    darkokai-theme dream-theme edna-theme evangelion-theme fantom-theme
-    foggy-night-theme gotham-theme iceberg-theme idea-darkula-theme
-    madhat2r-theme material-theme miasma-theme monokai-alt-theme
-    morrowind-theme night-owl-theme nordic-night-theme nord-theme
-    oblivion-theme obsidian-theme overcast-theme planet-theme
-    purple-haze-theme rebecca-theme reykjavik-theme simplicity-theme
-    starlit-theme vscode-dark-plus-theme zerodark-theme)
-  "List of themes to be installed with `user/install-themes(s)'.")
+    ancient-one-dark
+    caroline curry-on dakrone darkokai dream edna evangelion fantom foggy-night
+    gotham iceberg idea-darkula madhat2r material miasma monokai-alt morrowind
+    night-owl nordic-night nord oblivion obsidian overcast planet purple-haze
+    rebecca reykjavik simplicity starlit vscode-dark-plus zerodark)
+  "Custom list of themes defined by user.  Uses common theme names.")
+
+(defvar user/themes-fullname-alist nil
+  "Full names of themes from `user/themes-alist'.")
+
+(dolist (theme user/themes-alist)
+  (add-to-list 'user/themes-fullname-alist
+	       (concat (symbol-name theme) "-theme")))
+
+(defvar user/theme-name-common nil
+  "A theme's name without the `-theme' suffix.")
+
+(defvar user/theme-name-full nil
+  "A theme's name with the `-theme' suffix.")
+
 (declare-function elpaca "elpaca")
 (defun user/install-themes ()
-  "Use elpaca to install all themes in `user/themes-to-install-list'."
+  "Use elpaca to install all themes in `user/themes-fullname-alist'."
   (interactive)
-  (dolist (theme user/themes-to-install-list)
-    (eval `(elpaca ,theme)))
-  (user/populate-theme-list))
+  (dolist (theme user/themes-fullname-alist)
+    (eval `(elpaca ,theme))))
 
 (defun user/install-theme (theme)
-  "Use elpaca to install a single THEME from `user/themes-to-install-list'."
+  "Use elpaca to install a single THEME from `user/themes-alist'."
   (interactive
    (list (intern (completing-read "Select theme: "
 				  (mapcar #'symbol-name
-					  user/themes-to-install-list)
+					  user/themes-fullname-alist)
 				  nil t))))
-  (eval `(elpaca ,theme))
-  (user/populate-theme-list))
+  (eval `(elpaca ,theme)))
 
 ;; Select themes
 (defvar user/theme-index 0)
-(defvar user/theme-name nil
-  "A theme's name without the `-theme' suffix.")
-(defvar user/theme-dir-name nil
-  "A theme's name with the `-theme' suffix.")
 
 (defvar elpaca-builds-directory)
 (defun user/cycle-themes ()
   "Cycle through themes in user/theme-list."
   (interactive)
-  (disable-theme (nth user/theme-index user/theme-list))
+  (disable-theme (nth user/theme-index user/themes-alist))
   (setq user/theme-index
-        (mod (1+ user/theme-index) (length user/theme-list)))
-  (setq user/theme-name (nth user/theme-index user/theme-list))
-  (setq user/theme-dir-name (concat (symbol-name user/theme-name) "-theme"))
+        (mod (1+ user/theme-index) (length user/themes-alist)))
+  (setq user/theme-name-common (nth user/theme-index user/themes-alist))
+  (setq user/theme-name-full (concat
+			      (symbol-name user/theme-name-common) "-theme"))
   (add-to-list 'custom-theme-load-path
-	       (expand-file-name user/theme-dir-name elpaca-builds-directory))
-  (load-theme user/theme-name t)
-  (message "Loaded theme: %s" user/theme-name))
+	       (expand-file-name user/theme-name-full elpaca-builds-directory))
+  (load-theme user/theme-name-common t)
+  (message "Loaded theme: %s" user/theme-name-common))
 
 (defun user/select-theme (theme)
   "Switch to a THEME from user/theme-list."
   (interactive
    (list (intern (completing-read "Select theme: "
-				  user/theme-list nil t))))
-  (let ((new-index (seq-position user/theme-list theme)))
+				  user/themes-alist nil t))))
+  (let ((new-index (seq-position user/themes-alist theme)))
     (when new-index
-      (disable-theme (nth user/theme-index user/theme-list))
+      (disable-theme (nth user/theme-index user/themes-alist))
       (setq user/theme-index new-index)
-      (setq user/theme-dir-name (concat (symbol-name theme) "-theme"))
+      (setq user/theme-name-full (concat (symbol-name theme) "-theme"))
       (add-to-list 'custom-theme-load-path
-		   (expand-file-name user/theme-dir-name
+		   (expand-file-name user/theme-name-full
 				     elpaca-builds-directory))
       (load-theme theme t)
       (message "Loaded theme: %s" theme))))
