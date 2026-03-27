@@ -1,8 +1,7 @@
 ;;; 13-misc-packages.el --- Misc & Dashboard -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; dashboard, emacs-everywhere, free-keys, mistty, popper, transient, vterm,
-;; with-editor
+;; dashboard, emacs-everywhere, free-keys, mistty, telega, vterm, with-editor
 
 ;;; Commentary:
 ;; Packages that don't fit nicely into another category or, as is the case with
@@ -55,64 +54,46 @@ Otherwise, use the lucid build."
 ;; `emacs-everywhere'
 ;; ======================
 (use-package telega
-  :commands telega
+  :bind ("C-c g" . telega)
   :functions
   telega-mode-line-mode
-  user/telega-daemon-setup
+  user/telega-setup
+  telega-notifications-mode
   :defer t
   :init
   (setq telega-use-images t)
 
-  (defun user/telega-daemon-setup (&optional frame)
-    "Define settings for telega when running Emacs in daemon-mode."
+  (defun user/telega-setup (&optional frame)
+    "Define settings for telega."
     (with-selected-frame (or frame (selected-frame))
       (when (display-graphic-p)
         (telega-mode-line-mode 1))))
 
   (if (daemonp)
-      (add-hook 'after-make-frame-functions #'user/telega-daemon-setup)
-    (add-hook 'telega-load-hook #'user/telega-daemon-setup))
+      (add-hook 'after-make-frame-functions #'user/telega-setup)
+    (add-hook 'telega-load-hook #'user/telega-setup))
 
   :config
-  (setq telega-completing-read-function 'completing-read
-        telega-notifications-mode t)
+  (setq telega-completing-read-function 'completing-read)
+  (telega-notifications-mode 1)
   (message "Telega loaded successfully."))
-
-(use-package popper
-  :defer t
-  :bind ("C-c P" . popper-mode)
-  :functions
-  popper-mode
-  popper-echo-mode
-  popper-toggle
-  popper-cycle
-  popper-toggle-type
-
-  :defines popper-mode-map
-  
-  :custom
-  (popper-reference-buffers
-   '("\\*Messages\\*"
-     "Output\\*$"
-     "\\*Async Shell Command\\*"
-     help-mode
-     compilation-mode))
-
-  :config
-  (popper-mode +1)
-  (popper-echo-mode +1)
-  (bind-keys
-   :map popper-mode-map
-   ("C-`"   . popper-toggle)
-   ("M-`"   . popper-cycle)
-   ("C-M-`" . popper-toggle-type)))
 
 (use-package free-keys
   :defer t
-  :commands free-keys)
+  :bind ("C-c =" . free-keys))
 
 ;; Configuration is done primarly in DE.
-(use-package emacs-everywhere)
+(use-package emacs-everywhere
+  :elpaca t
+  :config
+  ;; Customizing the frame appearance for a "popup" feel
+  (setq emacs-everywhere-frame-parameters
+        '((name . "emacs-everywhere")
+          (width . 80)
+          (height . 20)
+          (menu-bar-lines . 0)
+          (tool-bar-lines . 0)
+          (vertical-scroll-bars . nil))))
 
 
 ;; =======  DASHBOARD  =======
@@ -120,17 +101,13 @@ Otherwise, use the lucid build."
   :demand t
   
   :functions
-  dashboard-insert-startupify-lists
-  dashboard-initialize
-  dashboard-setup-startup-hook
-  dashboard-open
-  user/smart-dashboard-items
-  user/dashboard-cleanup-org-buffers
+  dashboard-insert-startupify-lists dashboard-initialize
+  dashboard-setup-startup-hook dashboard-refresh-buffer dashboard-display-icons-p
+  user/smart-dashboard-items user/dashboard-cleanup-org-buffers
   user/emacsclient-dashboard
 
   :custom
   (dashboard-startup-banner 'logo)
-  (dashboard-display-icons-p t)
   (dashboard-icon-type 'nerd-icons)
   (dashboard-set-heading-icons t)
   (dashboard-set-file-icons t)
@@ -139,6 +116,7 @@ Otherwise, use the lucid build."
   (dashboard-banner-logo-title "Welcome back")
 
   :config
+  (dashboard-display-icons-p t)
   (defun user/smart-dashboard-items ()
     "Set dashboard items based on whether or not projectile is loaded."
     (if (featurep 'projectile)
@@ -178,7 +156,7 @@ Otherwise, use the lucid build."
     "Show the dashboard every time a new FRAME is opened."
     (with-selected-frame frame
       (user/smart-dashboard-items)
-      (dashboard-open)))
+      (dashboard-refresh-buffer)))
   (add-hook 'after-make-frame-functions #'user/emacsclient-dashboard))
 
 (provide '13-misc-packages)
