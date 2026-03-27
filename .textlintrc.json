@@ -1,0 +1,34 @@
+{
+	"rules": {
+		"editorconfig": true,
+		"alex": true,
+		"rousseau": true,
+		"apostrophe": true,
+		"diacritics": true,
+		"stop-words": true,
+		"date-weekday-mismatch": true,
+		"unexpanded-acronym": {
+			"min_acronym_len": 3
+		},
+		"max-comma": {
+			"max": 4
+		},
+		"alive-link": {
+			"language": "en",
+			"checkRelative": true,
+			"baseURI": null,
+			"ignore": [],
+			"ignoreRedirects": false,
+			"ignoreStringLinks": false,
+			"preferGET": [],
+			"retry": 3,
+			"concurrency": 4,
+			"interval": 500,
+			"intervalCap": 8,
+			"userAgent": "textlint-rule-alive-link/0.1",
+			"maxRetryDelay": 10,
+			"maxRetryAfterDelay": 10,
+			"timeout": 20
+		}
+	}
+}
