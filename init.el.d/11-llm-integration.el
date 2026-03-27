@@ -1,31 +1,56 @@
 ;;; 11-llm-integration.el --- LLM Integration -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; elisp-dev-mcp, emms, gptel, gptel-commit, gptel-forge-prs,
-;; ollama-magit-gen-commit
+;; elisp-dev-mcp, ellama, gptel, gptel-forge-prs, ollama-magit-commit-message
 
 ;;; Commentary:
 ;; Support Emacs in executing tasks not typical of a text editor/IDE, such as
 ;; media playback, or chatting with an LLM right in your coding buffer.
 
 ;;; Code:
-
 ;; =======  VARIABLES & FUNCTIONS  =======
 (defvar user/ollama-alist
-  '(
-    gpt-oss:120b-cloud llama3.1:latest qwen3-coder:480b-cloud
-    qwen3-coder-next:cloud qwen3.5:cloud granite-code:8b llama3:8b llama3.1:8b
-    opencoder:8b qwen3:8b codellama:7b-instruct qwen2.5-coder:7b starcoder2:7b
-    qwen3:4b phi4-mini:3.8b granite-code:3b granite3.1-moe:3b llama3.2:3b
-    qwen2.5-coder:3b stable-code:3b starcoder2:3b codegemma:2b qwen3:1.7b
-    opencoder:1.5b qwen2.5:1.5b qwen2.5-coder:1.5b yi-coder:1.5b
-    granite3.1-moe:1b llama3.2:1b starcoder:1b qwen3:0.6b qwen2.5:0.5b
-    qwen2.5-coder:0.5b)
-  "A list of user-selected LLMs available through Ollama.
+  '((gpt-oss:120b-cloud     . (* 16 4096))
+    (llama3.1:latest        . (* 16 4096))
+    (qwen3-coder:480b-cloud . (* 16 4096))
+    (qwen3-coder-next:cloud . (* 16 4096))
+    (qwen3.5:cloud          . (* 16 4096))
+    (granite-code:8b        .  (* 2 4096))
+    (llama3:8b              .  (* 2 4096))
+    (llama3.1:8b            .  (* 1 4096))
+    (opencoder:8b           .  (* 2 4096))
+    (qwen3:8b               .  (* 2 4096))
+    (codellama:7b-instruct  .  (* 1 4096))
+    (qwen2.5-coder:7b       .  (* 2 4096))
+    (starcoder2:7b          .  (* 2 4096))
+    (qwen3:4b               .  (* 2 4096))
+    (phi4-mini:3.8b         .  (* 2 4096))
+    (granite-code:3b        .  (* 1 4096))
+    (granite3.1-moe:3b      .  (* 1 4096))
+    (llama3.2:3b            .  (* 1 4096))
+    (qwen2.5-coder:3b       .  (* 1 4096))
+    (stable-code:3b         .  (* 1 4096))
+    (starcoder2:3b          .  (* 1 4096))
+    (codegemma:2b           .  (* 1 4096))
+    (qwen3:1.7b             .  (* 1 4096))
+    (opencoder:1.5b         .  (* 1 4096))
+    (qwen2.5:1.5b           .  (* 1 4096))
+    (qwen2.5-coder:1.5b     .  (* 1 4096))
+    (yi-coder:1.5b          .  (* 1 4096))
+    (granite3.1-moe:1b      .  (* 1 4096))
+    (llama3.2:1b            .  (* 1 4096))
+    (starcoder:1b           .  (* 1 4096))
+    (qwen3:0.6b             .  (* 1 4096))
+    (qwen2.5:0.5b           .  (* 1 4096))
+    (qwen2.5-coder:0.5b     .  (* 1 4096)))
+  "Alist containing Ollama models and their context length.
 Models on this list are either cloud-based or have already been downloaded
 to the user's device.")
 
-(defvar user/openrouter-alist
+(defvar user/ollama-model-names (mapcar #'car user/ollama-alist)
+  "A simple list of available Ollama model names.")
+
+(defvar user/openrouter-list
   '(
     openai/gpt-oss-120b:free qwen/qwen3-coder:free
     meta-llama/llama-3.3-70b-instruct:free qwen/qwen3-4b:free
@@ -82,7 +107,7 @@ to the user's device.")
   gptel-get-backend
 
   :defines
-  gptel-backend
+  gptel-backend user/gptel--backend-map
 
   :config
   (user/ensure-ollama-system-service)
@@ -90,7 +115,7 @@ to the user's device.")
    gptel-backend (gptel-make-ollama "Ollama"
 		   :host "localhost:11434"
 		   :stream t
-		   :models user/ollama-alist)
+		   :models user/ollama-model-names)
    gptel-model 'llama3.2:3b)
 
   (gptel-make-openai "OpenRouter"
@@ -101,10 +126,10 @@ to the user's device.")
 	   (auth-source-pick-first-password
 	    :host "openrouter.ai"
 	    :user "apikey"))
-    :models user/openrouter-alist)
+    :models user/openrouter-list)
 
   (defvar user/gptel--backend-map
-    '(("Ollama"      . (name "Ollama"      models user/ollama-alist))
+    '(("Ollama"      . (name "Ollama"      models user/ollama-model-names))
       ("OpenRouter"  . (name "OpenRouter"  models user/openrouter-alist)))
     "Alist mapping display names to backend metadata plists.")
 
@@ -138,28 +163,26 @@ doubles as a model-switcher."
       (message "[gptel] Backend → %s | Model → %s"
 	       backend-name gptel-model))))
 
-(use-package ollama-magit-gen-commit
-  :ensure (ollama-magit-gen-commit
+(use-package ollama-magit-commit-message
+  :ensure (ollama-magit-commit-message
 	   :host github
-	   :repo "that1guycolin/ollama-magit-gen-commit")
-  :commands magit-ggc-generate-commit-message
-  :demand t
+	   :repo "that1guycolin/ollama-magit-commit-message")
   :after (gptel magit))
 
-(defvar git-commit-mode-map)
-(use-package gptel-commit
-  :after (gptel magit)
-  :functions
-  gptel-commit
-  gptel-commit-rationale
-  :custom
-  (gptel-commit-stream t)
-  :config
-  (with-eval-after-load 'magit
-    (bind-keys
-     :map git-commit-mode-map
-     ("C-c g" . gptel-commit)
-     ("C-c G" . gptel-commit-rationale))))
+;; (defvar git-commit-mode-map)
+;; (use-package gptel-commit
+;;   :after (gptel magit)
+;;   :functions
+;;   gptel-commit
+;;   gptel-commit-rationale
+;;   :custom
+;;   (gptel-commit-stream t)
+;;   :config
+;;   (with-eval-after-load 'magit
+;;     (bind-keys
+;;      :map git-commit-mode-map
+;;      ("C-c g" . gptel-commit)
+;;      ("C-c G" . gptel-commit-rationale))))
 
 (use-package gptel-forge-prs
   :after forge
@@ -168,16 +191,135 @@ doubles as a model-switcher."
   (gptel-forge-prs-install))
 
 
+;; =======  ELLAMA  =======
+(use-package ellama
+  :defer t
+  :commands ellama-transient-main-menu
+  :functions
+  make-llm-ollama user/ellama-set-tier user/ellama-switch-tier
+  user/ellama-switch-model ellama-disable-scroll ellama-enable-scroll
+  :init
+  (setopt ellama-language "English")
+  :config
+  (require 'llm-ollama)
+
+  ;; ----------- MODEL TYPES -----------
+  ;; Fast:
+  (defvar user/ellama-model-fast-chat
+    (make-llm-ollama
+     :chat-model "llama3.2:3b"
+     :embedding-model "nomic-embed-text"
+     :default-chat-non-standard-params '(("num_ctx" . 4096))))
+
+  (defvar user/ellama-model-fast-code
+    (make-llm-ollama
+     :chat-model "codegemma:2b"
+     :embedding-model "nomic-embed-text"
+     :default-chat-non-standard-params '(("num_ctx" . 4096))))
+
+  ;; Balanced:
+  (defvar user/ellama-model-balanced-chat
+    (make-llm-ollama
+     :chat-model "phi4-mini:3.8b"
+     :embedding-model "nomic-embed-text"
+     :default-chat-non-standard-params '(("num_ctx" . 8192))))
+
+  (defvar user/ellama-model-balanced-summary
+    (make-llm-ollama
+     :chat-model "qwen3:4b"
+     :embedding-model "nomic-embed-text"
+     :default-chat-non-standard-params '(("num_ctx" . 8192))))
+
+  (defvar user/ellama-model-balanced-code
+    (make-llm-ollama
+     :chat-model "codellama:7b-instruct"
+     :embedding-model "nomic-embed-text"
+     :default-chat-non-standard-params '(("num_ctx" . 4096))))
+
+  ;; Heavy
+  (defvar user/ellama-model-heavy-chat
+    (make-llm-ollama
+     :chat-model "llama3.1:8b"
+     :embedding-model "nomic-embed-text"
+     :default-chat-non-standard-params '(("num_ctx" . 4096))))
+
+  (defvar user/ellama-model-heavy-code
+    (make-llm-ollama
+     :chat-model "qwen2.5-coder:7b"
+     :embedding-model "nomic-embed-text"
+     :default-chat-non-standard-params '(("num_ctx" . 4096))))
+
+  ;; Defaults:
+  (setopt ellama-provider user/ellama-model-fast-chat)
+  (setopt ellama-coding-provider user/ellama-model-fast-code)
+  (setopt ellama-summarization-provider user/ellama-model-balanced-summary)
+
+  ;; ----------- FUNCTIONS -----------
+  (defun user/ellama-set-tier (tier)
+    "Activate default models for TIER."
+    (pcase tier
+      ('fast
+       (setopt ellama-provider user/ellama-model-fast-chat)
+       (setopt ellama-coding-provider user/ellama-model-fast-code)
+       (setopt ellama-summarization-provider user/ellama-model-fast-chat)
+       (message "Ellama tier → FAST"))
+
+      ('balanced
+       (setopt ellama-provider user/ellama-model-balanced-chat)
+       (setopt ellama-coding-provider user/ellama-model-balanced-code)
+       (setopt ellama-summarization-provider user/ellama-model-balanced-summary)
+       (message "Ellama tier → BALANCED"))
+
+      ('heavy
+       (setopt ellama-provider user/ellama-model-heavy-chat)
+       (setopt ellama-coding-provider user/ellama-model-heavy-code)
+       (setopt ellama-summarization-provider user/ellama-model-balanced-summary)
+       (message "Ellama tier → HEAVY"))))
+
+  (defun user/ellama-switch-tier ()
+    (interactive)
+    (let ((choice (completing-read
+                   "Select ellama tier: "
+                   '("fast" "balanced" "heavy"))))
+      (user/ellama-set-tier (intern choice))))
+
+  (defun user/ellama-switch-model ()
+    "Interactively select a model."
+    (interactive)
+    (let* ((model-names (mapcar #'car user/ollama-alist))
+           (choice (completing-read "Select model: " model-names nil t))
+           (ctx (cdr (assoc choice user/ollama-alist))))
+      (setopt ellama-provider
+              (make-llm-ollama
+               :chat-model choice
+               :embedding-model "nomic-embed-text"
+               :default-chat-non-standard-params
+               `(("num_ctx" . ,ctx))))
+      (message "Ellama model → %s" choice)))
+
+  ;; ----------- DISPLAY -----------
+  (setopt ellama-chat-display-action-function #'display-buffer-full-frame)
+  (setopt ellama-instant-display-action-function #'display-buffer-at-bottom)
+
+  (advice-add 'pixel-scroll-precision :before #'ellama-disable-scroll)
+  (advice-add 'end-of-buffer :after #'ellama-enable-scroll))
+
+
 ;; =======  TRANSIENT  =======
 (declare-function transient-define-prefix "transient")
 (defvar user/llm-dispatch nil)
 (transient-define-prefix
   user/llm-dispatch ()
   "Commands to interact with LLMs in Emacs."
-  ["Gptel"
-   ("g ." "Activate @ cursor" gptel-send)
-   ("g b" "Chat buffer" gptel)
-   ("g s" "Switch backend" user/gptel-switch-backend)])
+  ["LLM Integrations"
+   ["Gptel"
+    ("g ." "Activate @ cursor" gptel-send)
+    ("g b" "Chat buffer" gptel)
+    ("g s" "Switch backend" user/gptel-switch-backend)]
+   ["Ellama"
+    ("e e" "Ellama Menu" ellama-transient-main-menu)
+    ("e t" "Switch Tier" user/ellama-switch-tier)
+    ("e m" "Switch Model" user/ellama-switch-model)]])
 (declare-function user/llm-dispatch "11-llm-integration")
 (bind-keys ("C-c a" . user/llm-dispatch))
 
