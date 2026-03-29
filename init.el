@@ -100,8 +100,11 @@
 ;; Misc & Dashboard
 (require '13-misc-packages)
 
+;; Install themes
+(require '14-install-themes)
+
 ;; Custom variables & functions
-(require '14-user-functions)
+(require '15-user-functions)
 
 
 (provide 'init)
