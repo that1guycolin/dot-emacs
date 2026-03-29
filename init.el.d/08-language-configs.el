@@ -224,14 +224,11 @@
 
 (use-package sly
   :defer t
-  :commands
-  sly
-  sly-connect
-  :hook (common-lisp-mode . sly)
+  :mode ("\\.lisp\\'" . sly-mode)
+  :commands sly sly-connect
+  :hook (lisp-mode . sly-mode)
   :custom
-  (inferior-lisp-program "ros run")
-  (sly-lisp-implementations '((ros ("ros" "run"))))
-  (sly-default-lisp 'ros)
+  (inferior-lisp-program "sbcl")
   (sly-net-coding-system 'utf-8-unix))
 
 
