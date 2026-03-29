@@ -1,7 +1,7 @@
 ;;; 13-misc-packages.el --- Misc & Dashboard -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; dashboard, emacs-everywhere, free-keys, mistty, telega, vterm, with-editor
+;; dashboard, emacs-everywhere free-keys, mistty, telega, vterm, with-editor
 
 ;;; Commentary:
 ;; Packages that don't fit nicely into another category or, as is the case with
@@ -62,13 +62,11 @@ Otherwise, use the lucid build."
   :defer t
   :init
   (setq telega-use-images t)
-
   (defun user/telega-setup (&optional frame)
     "Define settings for telega."
     (with-selected-frame (or frame (selected-frame))
       (when (display-graphic-p)
         (telega-mode-line-mode 1))))
-
   (if (daemonp)
       (add-hook 'after-make-frame-functions #'user/telega-setup)
     (add-hook 'telega-load-hook #'user/telega-setup))
@@ -84,7 +82,6 @@ Otherwise, use the lucid build."
 
 ;; Configuration is done primarly in DE.
 (use-package emacs-everywhere
-  :elpaca t
   :config
   ;; Customizing the frame appearance for a "popup" feel
   (setq emacs-everywhere-frame-parameters
