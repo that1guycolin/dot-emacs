@@ -1,14 +1,7 @@
 ;;; 03-visual-settings.el --- Core UI configuration -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; minions, nerd-icons, nerd-icons-corfu, tab-line-nerd-icons
-
-;;; Themes included:
-;; ancient-one-dark, caroline, curry-on, dakrone, darkokai, dream, edna,
-;; evangelion, fantom, foggy-night, gotham, iceberg, idea-darkula, madhat2r,
-;; material, miasma, monokai-alt, morrowind, night-owl, nordic-night, nord,
-;; oblivion, obsidian, overcast, planet, purple-haze, rebecca, reykjavik,
-;; simplicity, starlit, vscode-dark-plus, weyland-yutani, zerodark
+;; minions, nerd-icons, nerd-icons-corfu, tab-line-nerd-icons, which-key
 
 ;;; Commentary:
 ;; Core UI elements that provide visual feedback and interaction.
@@ -57,22 +50,6 @@
 (use-package which-key
   :config
   (which-key-mode 1))
-
-;; =======  THEMES  =======
-;; Initial theme: `weyland-yutani'
-;; ========================
-(defvar elpaca-builds-directory)
-(defvar user/theme-list nil
-  "A list of themes in \='elpaca-builds-directory\=' available to be loaded.")
-(use-package weyland-yutani-theme)
-(add-hook 'elpaca-after-init-hook
-	  (lambda ()
-	    (setq custom-safe-themes t)
-	    (load-theme 'weyland-yutani t)
-	    (setq user/theme-list (list 'weyland-yutani))))
-
-(add-hook 'prog-mode-hook #'display-fill-column-indicator-mode)
-(add-hook 'text-mode-hook #'display-fill-column-indicator-mode)
 
 
 (provide '03-visual-settings)

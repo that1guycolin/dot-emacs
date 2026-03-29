@@ -1,4 +1,4 @@
-;;; 14-user-functions.el --- Custom variables & functions -*- lexical-binding: t; -*-
+;;; 15-user-functions.el --- Custom variables & functions -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 ;; Variables, functions, and transient dispatches defined by the user.
@@ -7,77 +7,53 @@
 
 ;;; Code:
 ;; =======  THEME  =======
-;; Install themes
-(defvar user/themes-alist
-  '(
-    ancient-one-dark
-    caroline curry-on dakrone darkokai dream edna evangelion fantom foggy-night
-    gotham iceberg idea-darkula madhat2r material miasma monokai-alt morrowind
-    night-owl nordic-night nord oblivion obsidian overcast planet purple-haze
-    rebecca reykjavik simplicity starlit vscode-dark-plus zerodark)
-  "Custom list of themes defined by user.  Uses common theme names.")
-
-(defvar user/themes-fullname-alist nil
-  "Full names of themes from `user/themes-alist'.")
-
-(dolist (theme user/themes-alist)
-  (add-to-list 'user/themes-fullname-alist
-	       (concat (symbol-name theme) "-theme")))
-
-(defvar user/theme-name-common nil
-  "A theme's name without the `-theme' suffix.")
-
-(defvar user/theme-name-full nil
-  "A theme's name with the `-theme' suffix.")
-
-(declare-function elpaca "elpaca")
-(defun user/install-themes ()
-  "Use elpaca to install all themes in `user/themes-fullname-alist'."
+(defvar user/themes-list)
+(defun user/add-theme (theme)
+  "Install new THEME and add it to `user/themes-list'."
   (interactive)
-  (dolist (theme user/themes-fullname-alist)
-    (eval `(elpaca ,theme))))
-
-(defun user/install-theme (theme)
-  "Use elpaca to install a single THEME from `user/themes-alist'."
-  (interactive
-   (list (intern (completing-read "Select theme: "
-				  (mapcar #'symbol-name
-					  user/themes-fullname-alist)
-				  nil t))))
-  (eval `(elpaca ,theme)))
+  (let ((theme-name-full (concat (symbol-name theme) "-theme")))
+    (when (eval `(elpaca ,theme-name-full))
+      (add-to-list 'user/themes-list theme))))
 
 ;; Select themes
-(defvar user/theme-index 0)
+(defvar user/themes-index 0
+  "Index location of user/themes-list.")
 
 (defvar elpaca-builds-directory)
+(defun user/set-theme (theme)
+  "Get sha256hash of THEME, add hash to `custom-safe-themes', and load THEME."
+  (let* ((theme-name-full (concat (symbol-name theme) "-theme"))
+	 (theme-path (expand-file-name theme-name-full elpaca-builds-directory))
+	 (theme-file (concat theme-name-full ".el"))
+	 (theme-file-path (expand-file-name theme-file theme-path))
+	 (theme-hash
+          (secure-hash 'sha256
+                       (with-temp-buffer
+			 (insert-file-contents-literally theme-file-path)
+			 (buffer-string)))))
+    (add-to-list 'custom-safe-themes theme-hash)
+    (load-theme theme)))
+
 (defun user/cycle-themes ()
-  "Cycle through themes in user/theme-list."
+  "Cycle through themes in `user/themes-list'."
   (interactive)
-  (disable-theme (nth user/theme-index user/themes-alist))
-  (setq user/theme-index
-        (mod (1+ user/theme-index) (length user/themes-alist)))
-  (setq user/theme-name-common (nth user/theme-index user/themes-alist))
-  (setq user/theme-name-full (concat
-			      (symbol-name user/theme-name-common) "-theme"))
-  (add-to-list 'custom-theme-load-path
-	       (expand-file-name user/theme-name-full elpaca-builds-directory))
-  (load-theme user/theme-name-common t)
-  (message "Loaded theme: %s" user/theme-name-common))
+  (disable-theme (nth user/themes-index user/themes-list))
+  (setq user/themes-index
+        (mod (1+ user/themes-index) (length user/themes-list)))
+  (let ((theme (nth user/themes-index user/themes-list)))
+    (user/set-theme theme)
+    (message "Loaded theme: %s" theme)))
 
 (defun user/select-theme (theme)
-  "Switch to a THEME from user/theme-list."
+  "Switch to a THEME from `user/themes-list'."
   (interactive
    (list (intern (completing-read "Select theme: "
-				  user/themes-alist nil t))))
-  (let ((new-index (seq-position user/themes-alist theme)))
+				  user/themes-list nil t))))
+  (let* ((new-index (seq-position user/themes-list theme)))
     (when new-index
-      (disable-theme (nth user/theme-index user/themes-alist))
-      (setq user/theme-index new-index)
-      (setq user/theme-name-full (concat (symbol-name theme) "-theme"))
-      (add-to-list 'custom-theme-load-path
-		   (expand-file-name user/theme-name-full
-				     elpaca-builds-directory))
-      (load-theme theme t)
+      (disable-theme (nth user/themes-index user/themes-list))
+      (setq user/themes-index new-index)
+      (user/set-theme theme)
       (message "Loaded theme: %s" theme))))
 
 
@@ -212,6 +188,41 @@
      (lambda (result)
        (message result)))))
 
+(defvar user-init-directory)
+(defun user/get-package-list ()
+  "Return a list of all packages installed with elpaca-use-package."
+  (let ((package-list '()))
+    (let* ((get-files-command (format "ls %s" user-init-directory))
+	   (init-file-list (split-string
+			    (shell-command-to-string get-files-command))))
+      (dolist (file init-file-list)
+	(let* ((script (expand-file-name "tools/list-use-packages.el"
+					 user-emacs-directory))
+	       (get-packages-command
+		(format "emacs --script %s %s" script file))
+	       (packages-string (shell-command-to-string get-packages-command))
+	       (package-split-string (split-string packages-string)))
+	  (dolist (package package-split-string)
+	    (push (intern package) package-list)))))
+    (nreverse package-list)))
+
+(defun user/elpaca-update-packages ()
+  "Asynchronously update all Elpaca packages (excepting themes)."
+  (interactive)
+  (let ((packages (user/get-package-list))
+	(init-file (expand-file-name "init.el" user-emacs-directory)))
+    (message "Updating Elpaca packages in the background...")
+    (async-start
+     `(lambda ()
+	(load ,init-file)
+        (dolist (package ',packages)
+          (elpaca-fetch package)
+	  (elpaca-merge package)
+	  (elpaca-rebuild package))
+        "All packages updated!")
+     (lambda (result)
+       (message result)))))
+
 
 ;; =======  TRANSIENT  =======
 (declare-function transient-define-prefix "transient")
@@ -223,13 +234,12 @@
     ("f" "Switch Font" user/switch-font)]
    [("c" "Cycle Themes" user/cycle-themes)
     ("t" "Select Theme" user/select-theme)]
-   [("i" "Install single theme" user/install-theme)
-    ("I" "Install all themes" user/install-themes)]
    [("E" "Update elpaca menus" user/update-elpaca-menus)
-    ("s" "Major -ts-mode fallback" user/major-ts-mode-fallback)]])
-(declare-function user/custom-functions-dispatch "14-user-functions")
+    ("p" "Update packages" user/elpaca-update-packages)]
+   [("s" "Major -ts-mode fallback" user/major-ts-mode-fallback)]])
+(declare-function user/custom-functions-dispatch "15-user-functions")
 (bind-keys ("C-c u" . user/custom-functions-dispatch))
 
 
-(provide '14-user-functions)
-;;; 14-user-functions.el ends here
+(provide '15-user-functions)
+;;; 15-user-functions.el ends here
