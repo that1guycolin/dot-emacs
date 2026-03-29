@@ -8,6 +8,15 @@
 
 ;;; Code:
 (defvar org-directory)
+
+(defun user/convert-md-links-to-org ()
+  "Convert all [label](link) patterns in the current buffer to [[link][label]]."
+  (interactive)
+  (save-excursion
+    (goto-char (point-min)) ; Start at the beginning of the file
+    (while (re-search-forward "\\[\\([^]]+\\)\\](\\([^)]+\\))" nil t)
+      (replace-match "[[\\2][\\1]]" nil nil))))
+
 (use-package org-edna
   :after org
   :functions org-edna-mode
