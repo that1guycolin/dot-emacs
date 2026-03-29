@@ -1,127 +1,145 @@
 * dot-emacs (.emacs.d)
 
-Personal Emacs configuration for that1guycolin. Please modify as much as you'd
-like for your own use, and definitely share any modifications you make
-(I'm sure this configuration could be much better)!
+Personal Emacs configuration for that1guycolin. Uploading it publicly in case someone else finds it
+useful. Feel free to modify this config as much as you'd like for your own use, and definitely share
+any modifications you make (I'm always looking for ways to improve)!
 
 ** Packages Included
 
-*** Core / Package Management
+*** Bootstrap/Core
 
-- [elpaca](https://github.com/progfolio/elpaca)
-- [use-package](https://github.com/jwiegley/use-package)
-- [auto-compile](https://github.com/emacs-auto/auto-compile)
-
+- [[https://github.com/progfolio/elpaca][elpaca]]
+- [[https://github.com/purcell/envrc][envrc]]
+- [[https://github.com/purcell/exec-path-from-shell][exec-path-from-shell]]
+- [[https://github.com/emacscollective/gcmh][gcmh]]
+- [[https://orgmode.org/][org]]
+- [[https://github.com/emacs-auto/auto-compile][auto-compile]]
+- [[https://github.com/magit/transient][transient]]
+  
 *** Completion
 
-- [corfu](https://github.com/minad/corfu)
-- [cape](https://github.com/minad/cape)
-- [yasnippet-capf](https://github.com/elken/yasnippet-capf)
-- [vertico](https://github.com/minad/vertico)
-- [orderless](https://github.com/oantolin/orderless)
-- [marginalia](https://github.com/minad/marginalia)
-- [savehist](https://www.gnu.org/software/emacs/manual/html_node/emacs/Savehist.html)
+- [[https://github.com/minad/cape][cape]]
+- [[https://github.com/minad/corfu][corfu]]
+- [[https://github.com/Wilfred/helpful][helpful]]
+- [[https://github.com/minad/marginalia][marginalia]]
+- [[https://github.com/oantolin/orderless][orderless]]
+- [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Savehist.html][savehist]]
+- [[https://github.com/minad/vertico][vertico]]
+  
+*** Visual Settings
 
-*** UI
+- [[https://github.com/tarsius/minions][minions]]
+- [[https://github.com/rainstormstudio/nerd-icons.el][nerd-icons]]
+- [[https://github.com/LuigiPiucco/nerd-icons-corfu][nerd-icons-corfu]]
+- [[https://github.com/lucius-martius/tab-line-nerd-icons][tab-line-nerd-icons]]
+- [[https://github.com/justbur/emacs-which-key][which-key]]
 
-- [nerd-icons](https://github.com/rainstormstudio/nerd-icons.el)
-- [nerd-icons-corfu](https://github.com/LuigiPiucco/nerd-icons-corfu)
-- [nerd-icons-dired](https://github.com/rainstormstudio/nerd-icons-dired.el)
-- [tab-line-nerd-icons](https://github.com/lucius-martius/tab-line-nerd-icons)
-- [treemacs](https://github.com/Alexander-Miller/treemacs)
-- [treemacs-projectile](https://github.com/Alexander-Miller/treemacs/blob/master/src/extra/treemacs-projectile.el)
-- [treemacs-nerd-icons](https://github.com/Alexander-Miller/treemacs)
-- [dashboard](https://github.com/emacs-dashboard/emacs-dashboard)
-- [dirvish](https://github.com/alexluigit/dirvish)
-- [diredfl](https://github.com/purcell/diredfl)
-- [dired-video-thumbnail](https://github.com/captainflasmr/dired-video-thumbnail)
+*** Tree-Sitter Language Configuration
 
-*** Project / File Management
+- [[https://github.com/ethan-leba/treesit-auto][treesit-auto]]
 
-- [projectile](https://github.com/bbatsov/projectile)
-- [disproject](https://github.com/pkkm/disproject)
-- [magit](https://github.com/magit/magit)
-- [forge](https://github.com/magit/forge)
-- [magit-git-toolbelt](https://github.com/thisisrc/magit-git-toolbelt)
-- [magit-pre-commit](https://github.com/sigma/magit-pre-commit)
-- [treemacs-magit](https://github.com/Alexander-Miller/treemacs)
-- [envrc](https://github.com/purcell/envrc)
-- [license-templates](https://github.com/iqbalansari/license-templates.el)
-- [transient](https://github.com/magit/transient)
-- [transient-dwim](https://github.com/conao3/transient-dwim)
+*** Project Management
 
-*** General Language & Coding Support
+- [[https://github.com/editorconfig/editorconfig-emacs][editorconfig]]
+- [[https://github.com/bbatsov/projectile][projectile]]
+- [[https://github.com/Alexander-Miller/treemacs][treemacs]]
+- [[https://github.com/Alexander-Miller/treemacs][treemacs-nerd-icons]]
+- [[https://github.com/Alexander-Miller/treemacs/blob/master/src/extra/treemacs-projectile.el][treemacs-projectile]]
 
-- [treesit-auto](https://github.com/ethan-leba/treesit-auto)
-- [mason](https://github.com/yyoncho/emacs-mason)
-- [lsp-mode](https://github.com/emacs-lsp/lsp-mode)
-- [lsp-ui](https://github.com/emacs-lsp/lsp-ui)
-- [lsp-treemacs](https://github.com/emacs-lsp/lsp-treemacs)
-- [dap-mode](https://github.com/emacs-lsp/dap-mode)
-- [flycheck](https://www.flycheck.org/)
-- [flyover](https://github.com/pashinin/flyover)
-- [flycheck-color-mode-line](https://github.com/flycheck/flycheck-color-mode-line)
-- [apheleia](https://github.com/radian-software/apheleia)
-- [yasnippet](https://github.com/joaotavora/yasnippet)
-- [yasnippet-snippets](https://github.com/AndreaCrotti/yasnippet-snippets)
-- [editorconfig](https://github.com/editorconfig/editorconfig-emacs)
-- [smartparens](https://github.com/Fuco1/smartparens)
+*** Code Assist
 
-*** Specific Language Support
+- [[https://github.com/emacsmirror/adaptive-wrap][adaptive-wrap]]
+- [[https://github.com/radian-software/apheleia][apheleia]]
+- [[https://github.com/emacs-lsp/dap-mode][dap-mode]]
+- [[https://github.com/emacs-vs/docstr][docstr]]
+- [[https://www.flycheck.org/][flycheck]]
+- [[https://github.com/flycheck/flycheck-color-mode-line][flycheck-color-mode-line]]
+- [[https://github.com/pashinin/flyover][flyover]]
+- [[https://github.com/emacs-lsp/lsp-mode][lsp-mode]]
+- [[https://github.com/emacs-lsp/lsp-treemacs][lsp-treemacs]]
+- [[https://github.com/emacs-lsp/lsp-ui][lsp-ui]]
+- [[https://github.com/yyoncho/emacs-mason][mason]]
+- [[https://github.com/Fuco1/smartparens][smartparens]]
+- [[https://github.com/joaotavora/yasnippet][yasnippet]]
+- [[https://github.com/elken/yasnippet-capf][yasnippet-capf]]
+- [[https://github.com/AndreaCrotti/yasnippet-snippets][yasnippet-snippets]]
 
-- [fish-mode](https://github.com/wwwjfy/emacs-fish-mode)
-- [modern-sh](https://github.com/wyuenho/modern-sh)
-- [slime](https://github.com/slime/slime)
-- [flycheck-eask](https://github.com/emacs-eask/flycheck-eask)
-- [lisp-semantic-hl](https://github.com/Lindydancer/lisp-semantic-highlight)
-- [markdown-mode](https://github.com/jrblevin/markdown-mode)
-- [python-x](https://github.com/pythonic-emacs/python-x)
-- [uv-mode](https://github.com/z80dev/uv-mode)
-- [auto-virtualenv](https://github.com/that1guycolin/auto-virtualenv)
-- [live-py-mode](https://github.com/andyjeffries/live-py-mode)
-- [eask-mode](https://github.com/emacs-eask/eask-mode)
-- [auto-rename-tag](https://github.com/minad/auto-rename-tag)
-- [elisp-def](https://github.com/Wilfred/elisp-def)
-- [suggest](https://github.com/Wilfred/suggest)
-- [yaml-pro](https://github.com/zkry/yaml-pro)
-- [adjust-parens](https://github.com/Fanael/adjust-parens)
+*** Git Tools
 
-*** Reference / Utilities
+- [[https://github.com/magit/forge][forge]]
+- [[https://github.com/magit/git-modes][git-modes]]
+- [[https://github.com/magit/magit][magit]]
+- [[https://github.com/thisisrc/magit-git-toolbelt][magit-git-toolbelt]]
+- [[https://github.com/sigma/magit-pre-commit][magit-pre-commit]]
+- [[https://github.com/Alexander-Miller/treemacs][treemacs-magit]]
 
-- [gcmh](https://github.com/emacscollective/gcmh)
-- [which-key](https://github.com/justbur/emacs-which-key)
-- [exec-path-from-shell](https://github.com/purcell/exec-path-from-shell)
-- [mistty](https://github.com/mistty/mistty)
-- [buffer-terminator](https://github.com/cleesmith/buffer-terminator)
-- [deadgrep](https://github.com/Wilfred/deadgrep)
-- [emms](https://www.gnu.org/software/emms/)
+*** Language Configurations
 
-** Custom Themes
+- [[https://github.com/Fanael/adjust-parens][adjust-parens]]
+- [[https://github.com/minad/auto-rename-tag][auto-rename-tag]]
+- [[https://github.com/that1guycolin/auto-virtualenv][auto-virtualenv]]
+- [[https://github.com/emacs-eask/eask-mode][eask-mode]]
+- [[https://github.com/Wilfred/elisp-def][elisp-def]]
+- [[https://github.com/xiongtx/eros][eros]]
+- [[https://github.com/wwwjfy/emacs-fish-mode][fish-mode]]
+- [[https://github.com/emacs-eask/flycheck-eask][flycheck-eask]]
+- [[https://github.com/purcell/flycheck-package][flycheck-package]]
+- [[https://github.com/seagle0128/grip-mode][grip-mode]]
+- [[https://github.com/Lindydancer/ini-mode][ini-mode]]
+- [[https://github.com/taquangtrung/emacs-kdl-mode][kdl-mode]]
+- [[https://github.com/Lindydancer/lisp-semantic-highlight][lisp-semantic-hl]]
+- [[https://github.com/andyjeffries/live-py-mode][live-py-mode]]
+- [[https://github.com/joddie/macrostep][macrostep]]
+- [[https://github.com/jrblevin/markdown-mode][markdown-mode]]
+- [[https://github.com/jonschlinkert/markdown-toc][markdown-toc]]
+- [[https://github.com/wyuenho/modern-sh][modern-sh]]
+- [[https://github.com/tarsius/morlock][morlock]]
+- [[https://github.com/pythonic-emacs/python-x][python-x]]
+- [[https://github.com/joaotavora/sly][sly]]
+- [[https://github.com/Wilfred/suggest][suggest]]
+- [[https://github.com/zkry/yaml-pro][yaml-pro]]
 
-The following custom themes are included in the `themes/` directory:
+*** File Management
 
-- [Wayland-Yutani](https://github.com/jstaursky/weyland-yutani-theme/tree/e89a63a62e071180c9cdd9067679fadc3f7bf796)
-  (default)
-- [Material](https://github.com/cpaulik/emacs-material-theme/tree/6823009bc92f82aa3a90e27e1009f7da8e87b648)
-- [Monokai](https://github.com/oneKelvinSmith/monokai-emacs/tree/dacd9d8a8867afea3ed76b15a6c997053ff88093)
-- [Morrowind](https://github.com/SamuelBanya/morrowind-theme/tree/f197ef02e96fa3b8a38eca25ba750df7b843e564)
-- [Night-Owl](https://github.com/aaronjensen/night-owl-emacs/tree/13d9966ffda746231eef0dc905b50303309f115e)
-- [Nord](https://github.com/nordtheme/emacs/tree/551b2b8a0751c0a22e5c5daa6958152f208e668f)
-- [Nordic-Night](https://codeberg.org/ashton314/nordic-night)
-- [Oblivion](https://codeberg.org/ideasman42/emacs-theme-oblivion)
-- [Obsidian](https://github.com/mswift42/obsidian-theme/tree/f45efb2ebe9942466c1db6abbe2d0e6847b785ea)
-- [Overcast](https://github.com/myTerminal/overcast-theme/tree/e02b835a08919ead079d7221d513348ac02ba92e)
-- [VS-Dark](https://github.com/emacs-vs/vs-dark-theme/tree/ebc176a83808772746c55c91420a95b28b84c869)
+- [[https://github.com/jwiegley/emacs-async][async]]
+- [[https://github.com/Wilfred/deadgrep][deadgrep]]
+- [[https://github.com/purcell/diredfl][diredfl]]
+- [[https://github.com/alexluigit/dirvish][dirvish]]
+
+*** Org-Mode Extensions
+
+- [[https://github.com/emacsmirror/org-edna][org-edna]]
+- [[https://github.com/Trevoke/org-gtd.el][org-gtd]]
+- [[https://github.com/colonelpanic8/org-project-capture][org-project-capture]]
+- [[https://github.com/snosov1/toc-org][toc-org]]
+
+*** LLM Integration
+
+- [[https://github.com/laurynas-biveinis/elisp-dev-mcp][elisp-dev-mcp]]
+- [[https://github.com/s-kostyaev/ellama][ellama]]
+- [[https://github.com/karthink/gptel][gptel]]
+- [[https://github.com/ArthurHeymans/gptel-forge-prs][gptel-forge-prs]]
+- [[https://github.com/that1guycolin/ollama-magit-commit-message][ollama-magit-commit-message]]
+
+*** Media Player
+
+- [[https://www.gnu.org/software/emms/][emms]]
+- [[https://github.com/that1guycolin/emms-info-mediainfo][emms-info-mediainfo]]
+
+*** Misc Pacakges
+
+- [[https://github.com/emacs-dashboard/emacs-dashboard][dashboard]]
+- [[https://github.com/tecosaur/emacs-everywhere][emacs-everywhere]]
+- [[https://github.com/Fuco1/free-keys][free-keys]]
+- [[https://github.com/mistty/mistty][mistty]]
+- [[https://github.com/zevlg/telega.el][telega]]
+- [[https://github.com/akermu/emacs-libvterm][vterm]]
+- [[https://github.com/magit/with-editor][with-editor]]
 
 ** Todo
 
-- Finish lite build
-- Explore AI integrations
+- Fix EMMS display
 
 ** License
 
 GPL-3.0
-
-** Version
-
-0.1.0
