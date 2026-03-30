@@ -34,8 +34,14 @@
   :defer t
   :mode "\\COMMIT_EDITMSG\\'")
 
+(use-package diff-hl
+  :defer t
+  :bind ("C-c h" . diff-hl-mode)
+  :config
+  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
 
 (use-package git-modes
+  :defer t
   :mode ("\\.dockerignore\\'" . gitignore-mode))
 
 (use-package magit-git-toolbelt

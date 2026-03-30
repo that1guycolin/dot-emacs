@@ -21,6 +21,7 @@
   :init
   (require 'dired-async))
 
+(declare-function diff-hl-dired-mode "diff-hl")
 (use-package dirvish
   :defer t
   :commands dirvish
@@ -64,31 +65,32 @@
   
   :config
   (bind-keys
-   ("C-c D"   . dirvish-dwim)
+   ("C-c D"     . dirvish-dwim)
    ("C-c C-S-d" . dirvish-fd)
    :map dirvish-mode-map
-   ("<mouse-1>" . dirvish-subtree-toggle)
-   ("<mouse-2>" . dired-mouse-find-file-other-window)
-   ("<mouse-3>" . dired-mouse-find-file)
+   ("<mouse-1>"                       . dirvish-subtree-toggle)
+   ("<mouse-2>"                       . dired-mouse-find-file-other-window)
+   ("<mouse-3>"                       . dired-mouse-find-file)
    ([remap dired-sort-toggle-or-edit] . dirvish-quicksort)
-   ([remap dired-do-redisplay] . dirvish-ls-switches-menu)
-   ([remap dired-do-copy] . dirvish-yank-menu)
-   ("?"   . dirvish-dispatch)
-   ("q"   . dirvish-quit)
-   ("a"   . dirvish-quick-access)
-   ("f"   . dirvish-file-info-menu)
-   ("x"   . dired-do-delete)
-   ("X"   . dired-do-flagged-delete)
-   ("y"   . dirvish-yank)
-   ("s"   . dirvish-quicksort)
-   ("TAB" . dirvish-subtree-toggle)
-   ("M-t" . dirvish-layout-toggle)
-   ("M-b" . dirvish-history-go-backward)
-   ("M-f" . dirvish-history-go-forward)
-   ("M-n" . dirvish-narrow)
-   ("M-m" . dirvish-mark-menu)
-   ("M-s" . dirvish-setup-menu)
-   ("M-e" . dirvish-emerge-menu)))
+   ([remap dired-do-redisplay]        . dirvish-ls-switches-menu)
+   ([remap dired-do-copy]             . dirvish-yank-menu)
+   ("?"                               . dirvish-dispatch)
+   ("q"                               . dirvish-quit)
+   ("a"                               . dirvish-quick-access)
+   ("f"                               . dirvish-file-info-menu)
+   ("x"                               . dired-do-delete)
+   ("X"                               . dired-do-flagged-delete)
+   ("y"                               . dirvish-yank)
+   ("s"                               . dirvish-quicksort)
+   ("TAB"                             . dirvish-subtree-toggle)
+   ("M-t"                             . dirvish-layout-toggle)
+   ("M-b"                             . dirvish-history-go-backward)
+   ("M-f"                             . dirvish-history-go-forward)
+   ("M-n"                             . dirvish-narrow)
+   ("M-m"                             . dirvish-mark-menu)
+   ("M-s"                             . dirvish-setup-menu)
+   ("M-e"                             . dirvish-emerge-menu)
+   ("C-c h"                           . diff-hl-dired-mode)))
 
 (use-package deadgrep
   :defer t
