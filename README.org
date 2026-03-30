@@ -1,12 +1,44 @@
 * dot-emacs (.emacs.d)
+:PROPERTIES:
+:TOC:      :include all
+:CUSTOM_ID: dot-emacs-emacsd
+:END:
+
+:CONTENTS:
+- [[#dot-emacs-emacsd][dot-emacs (.emacs.d)]]
+  - [[#packages-included][Packages Included]]
+    - [[#bootstrapcore][Bootstrap/Core]]
+    - [[#completion][Completion]]
+    - [[#visual-settings][Visual Settings]]
+    - [[#tree-sitter-languages][Tree-Sitter Languages]]
+    - [[#project-management][Project Management]]
+    - [[#code-assist][Code Assist]]
+    - [[#git-tools][Git Tools]]
+    - [[#language-configuration][Language Configuration]]
+    - [[#file-management][File Management]]
+    - [[#org-mode-extensions][Org-Mode Extensions]]
+    - [[#llm-integration][LLM Integration]]
+    - [[#media-player][Media Player]]
+    - [[#misc-pacakges][Misc Pacakges]]
+  - [[#themes][Themes]]
+  - [[#user-functions][User Functions]]
+  - [[#todo][Todo]]
+  - [[#license][License]]
+:END:
 
 Personal Emacs configuration for that1guycolin. Uploading it publicly in case someone else finds it
 useful. Feel free to modify this config as much as you'd like for your own use, and definitely share
 any modifications you make (I'm always looking for ways to improve)!
 
 ** Packages Included
+:PROPERTIES:
+:CUSTOM_ID: packages-included
+:END:
 
-*** Bootstrap/Core
+*** [[file:init.el.d/01-bootstrap-core.el][Bootstrap/Core]]
+:PROPERTIES:
+:CUSTOM_ID: bootstrapcore
+:END:
 
 - [[https://github.com/progfolio/elpaca][elpaca]]
 - [[https://github.com/purcell/envrc][envrc]]
@@ -16,7 +48,10 @@ any modifications you make (I'm always looking for ways to improve)!
 - [[https://github.com/emacs-auto/auto-compile][auto-compile]]
 - [[https://github.com/magit/transient][transient]]
   
-*** Completion
+*** [[file:init.el.d/02-completion-setup.el][Completion]]
+:PROPERTIES:
+:CUSTOM_ID: completion
+:END:
 
 - [[https://github.com/minad/cape][cape]]
 - [[https://github.com/minad/corfu][corfu]]
@@ -26,7 +61,10 @@ any modifications you make (I'm always looking for ways to improve)!
 - [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Savehist.html][savehist]]
 - [[https://github.com/minad/vertico][vertico]]
   
-*** Visual Settings
+*** [[file:init.el.d/03-visual-settings.el][Visual Settings]]
+:PROPERTIES:
+:CUSTOM_ID: visual-settings
+:END:
 
 - [[https://github.com/tarsius/minions][minions]]
 - [[https://github.com/rainstormstudio/nerd-icons.el][nerd-icons]]
@@ -34,11 +72,17 @@ any modifications you make (I'm always looking for ways to improve)!
 - [[https://github.com/lucius-martius/tab-line-nerd-icons][tab-line-nerd-icons]]
 - [[https://github.com/justbur/emacs-which-key][which-key]]
 
-*** Tree-Sitter Language Configuration
+*** [[file:init.el.d/04-tree-sitter-lang-config.el][Tree-Sitter Languages]]
+:PROPERTIES:
+:CUSTOM_ID: tree-sitter-languages
+:END:
 
 - [[https://github.com/ethan-leba/treesit-auto][treesit-auto]]
 
-*** Project Management
+*** [[file:init.el.d/05-project-management.el][Project Management]]
+:PROPERTIES:
+:CUSTOM_ID: project-management
+:END:
 
 - [[https://github.com/editorconfig/editorconfig-emacs][editorconfig]]
 - [[https://github.com/bbatsov/projectile][projectile]]
@@ -46,7 +90,10 @@ any modifications you make (I'm always looking for ways to improve)!
 - [[https://github.com/Alexander-Miller/treemacs][treemacs-nerd-icons]]
 - [[https://github.com/Alexander-Miller/treemacs/blob/master/src/extra/treemacs-projectile.el][treemacs-projectile]]
 
-*** Code Assist
+*** [[file:init.el.d/06-code-assist.el][Code Assist]]
+:PROPERTIES:
+:CUSTOM_ID: code-assist
+:END:
 
 - [[https://github.com/emacsmirror/adaptive-wrap][adaptive-wrap]]
 - [[https://github.com/radian-software/apheleia][apheleia]]
@@ -64,7 +111,10 @@ any modifications you make (I'm always looking for ways to improve)!
 - [[https://github.com/elken/yasnippet-capf][yasnippet-capf]]
 - [[https://github.com/AndreaCrotti/yasnippet-snippets][yasnippet-snippets]]
 
-*** Git Tools
+*** [[file:init.el.d/07-git-tools.el][Git Tools]]
+:PROPERTIES:
+:CUSTOM_ID: git-tools
+:END:
 
 - [[https://github.com/magit/forge][forge]]
 - [[https://github.com/magit/git-modes][git-modes]]
@@ -73,7 +123,10 @@ any modifications you make (I'm always looking for ways to improve)!
 - [[https://github.com/sigma/magit-pre-commit][magit-pre-commit]]
 - [[https://github.com/Alexander-Miller/treemacs][treemacs-magit]]
 
-*** Language Configurations
+*** [[file:init.el.d/08-language-configs.el][Language Configuration]]
+:PROPERTIES:
+:CUSTOM_ID: language-configuration
+:END:
 
 - [[https://github.com/Fanael/adjust-parens][adjust-parens]]
 - [[https://github.com/minad/auto-rename-tag][auto-rename-tag]]
@@ -99,21 +152,30 @@ any modifications you make (I'm always looking for ways to improve)!
 - [[https://github.com/Wilfred/suggest][suggest]]
 - [[https://github.com/zkry/yaml-pro][yaml-pro]]
 
-*** File Management
+*** [[file:init.el.d/09-file-management.el][File Management]]
+:PROPERTIES:
+:CUSTOM_ID: file-management
+:END:
 
 - [[https://github.com/jwiegley/emacs-async][async]]
 - [[https://github.com/Wilfred/deadgrep][deadgrep]]
 - [[https://github.com/purcell/diredfl][diredfl]]
 - [[https://github.com/alexluigit/dirvish][dirvish]]
 
-*** Org-Mode Extensions
+*** [[file:init.el.d/10-org-mode-extensions.el][Org-Mode Extensions]]
+:PROPERTIES:
+:CUSTOM_ID: org-mode-extensions
+:END:
 
 - [[https://github.com/emacsmirror/org-edna][org-edna]]
 - [[https://github.com/Trevoke/org-gtd.el][org-gtd]]
 - [[https://github.com/colonelpanic8/org-project-capture][org-project-capture]]
 - [[https://github.com/snosov1/toc-org][toc-org]]
 
-*** LLM Integration
+*** [[file:init.el.d/11-llm-integration.el][LLM Integration]]
+:PROPERTIES:
+:CUSTOM_ID: llm-integration
+:END:
 
 - [[https://github.com/laurynas-biveinis/elisp-dev-mcp][elisp-dev-mcp]]
 - [[https://github.com/s-kostyaev/ellama][ellama]]
@@ -121,12 +183,18 @@ any modifications you make (I'm always looking for ways to improve)!
 - [[https://github.com/ArthurHeymans/gptel-forge-prs][gptel-forge-prs]]
 - [[https://github.com/that1guycolin/ollama-magit-commit-message][ollama-magit-commit-message]]
 
-*** Media Player
+*** [[file:init.el.d/12-media-player.el][Media Player]]
+:PROPERTIES:
+:CUSTOM_ID: media-player
+:END:
 
 - [[https://www.gnu.org/software/emms/][emms]]
 - [[https://github.com/that1guycolin/emms-info-mediainfo][emms-info-mediainfo]]
 
-*** Misc Pacakges
+*** [[file:init.el.d/13-misc-packages.el][Misc Pacakges]]
+:PROPERTIES:
+:CUSTOM_ID: misc-pacakges
+:END:
 
 - [[https://github.com/emacs-dashboard/emacs-dashboard][dashboard]]
 - [[https://github.com/tecosaur/emacs-everywhere][emacs-everywhere]]
@@ -136,10 +204,62 @@ any modifications you make (I'm always looking for ways to improve)!
 - [[https://github.com/akermu/emacs-libvterm][vterm]]
 - [[https://github.com/magit/with-editor][with-editor]]
 
+** [[file:init.el.d/14-install-themes.el][Themes]]
+:PROPERTIES:
+:CUSTOM_ID: themes
+:END:
+
+- [[https://github.com/sigvt/ancient-one-dark-emacs][ancient-one-dark]]
+- [[https://github.com/xjackk/caroline-theme][caroline]]
+- [[https://github.com/mvarela/Curry-On-theme.git][curry-on]]
+- [[https://github.com/dakrone/dakrone-theme][dakrone]]
+- [[https://github.com/sjrmanning/darkokai][darkokai]]
+- [[https://github.com/djcb/dream-theme][dream]]
+- [[https://codeberg.org/golanv/edna-theme][edna]]
+- [[https://github.com/crmsnbleyd/evangelion-theme][evangelion]]
+- [[https://github.com/adsva/fantom-emacs-theme][fantom]]
+- [[https://github.com/mswift42/foggy-night-theme][foggy-night]]
+- [[https://depp.brause.cc/gotham-theme][gotham]]
+- [[https://github.com/conao3/iceberg-theme.el][iceberg]]
+- [[https://codeberg.org/fourier/idea-darkula-theme][idea-darkula]]
+- [[https://github.com/madhat2r/madhat2r-theme][madhat2r]]
+- [[https://github.com/cpaulik/emacs-material-theme][material]]
+- [[https://github.com/daut/miasma-theme.el][miasma]]
+- [[https://github.com/dawidof/emacs-monokai-theme.git][monokai-alt]]
+- [[https://github.com/SamuelBanya/morrowind-theme][morrowind]]
+- [[https://github.com/aaronjensen/night-owl-emacs][night-owl]]
+- [[https://codeberg.org/ashton314/nordic-night][nordic-night]]
+- [[https://codeberg.org/ashton314/nordic-night][nord]]
+- [[https://codeberg.org/ideasman42/emacs-theme-oblivion][oblivion]]
+- [[https://github.com/mswift42/obsidian-theme][obsidian]]
+- [[https://github.com/myTerminal/overcast-theme][overcast]]
+- [[https://github.com/cmack/emacs-planet-theme][planet]]
+- [[https://github.com/emacsfodder/emacs-purple-haze-theme][purple-haze]]
+- [[https://github.com/vic/rebecca-theme][rebecca]]
+- [[https://github.com/mswift42/reykjavik-theme][reykjavik]]
+- [[https://github.com/smallwat3r/emacs-simplicity-theme][simplicity]]
+- [[https://github.com/SFTtech/starlit-emacs][starlit]]
+- [[https://github.com/ianyepan/vscode-dark-plus-emacs-theme][vscode-dark-plus]]
+- [[https://github.com/jstaursky/weyland-yutani-theme][weyland-yutani]]
+- [[https://github.com/NicolasPetton/zerodark-theme][zerodark]]
+
+** [[file:init.el.d/15-user-functions.el][User Functions]]
+:PROPERTIES:
+:CUSTOM_ID: user-functions
+:END:
+
+Custom functions to manipulate themes, fonts, Elpaca, and more.
+
 ** Todo
+:PROPERTIES:
+:CUSTOM_ID: todo
+:END:
 
 - Fix EMMS display
 
 ** License
+:PROPERTIES:
+:CUSTOM_ID: license
+:END:
 
 GPL-3.0
