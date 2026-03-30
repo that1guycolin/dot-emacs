@@ -193,6 +193,7 @@
 (declare-function feature-file "savehist")
 (declare-function async-start "async")
 (defvar elpaca-installer-version)
+
 (defun user/update-elpaca-menus ()
   "Asynchronously update all Elpaca menus."
   (interactive)
@@ -216,27 +217,36 @@
        (message result)))))
 
 (defvar user-init-directory)
+(defun user/get-init-files ()
+  "Return a list of all files in `user/init-directory'."
+  (let* ((get-files-command (format "ls %s" user-init-directory))
+	 (directory-string (shell-command-to-string get-files-command)))
+    (split-string directory-string)))
+
 (defun user/get-package-list ()
-  "Return a list of all packages installed with elpaca-use-package."
+  "Return packages installed with elpaca-use-package as strings."
   (let ((package-list '()))
-    (let* ((get-files-command (format "ls %s" user-init-directory))
-	   (init-file-list (split-string
-			    (shell-command-to-string get-files-command))))
-      (dolist (file init-file-list)
-	(let* ((script (expand-file-name "tools/list-use-packages.el"
-					 user-emacs-directory))
-	       (get-packages-command
-		(format "emacs --script %s %s" script file))
-	       (packages-string (shell-command-to-string get-packages-command))
-	       (package-split-string (split-string packages-string)))
-	  (dolist (package package-split-string)
-	    (push (intern package) package-list)))))
+    (dolist (file (user/get-init-files))
+      (let* ((script (expand-file-name "tools/list-use-packages.el"
+				       user-emacs-directory))
+	     (get-packages-command (format "emacs --script %s %s" script file))
+	     (packages-string (shell-command-to-string get-packages-command))
+	     (package-split-string (split-string packages-string)))
+	(dolist (package package-split-string)
+	  (push (intern package) package-list))))
     (nreverse package-list)))
+
+(declare-function user/get-themes "14-install-themes")
+(defun user/packages-themes ()
+  "Return a list of installed packages & themes."
+  (let* ((packages (user/get-package-list))
+	 (themes (user/get-themes)))
+    (append packages themes)))
 
 (defun user/elpaca-update-packages ()
   "Asynchronously update all Elpaca packages (excepting themes)."
   (interactive)
-  (let ((packages (user/get-package-list))
+  (let ((packages (user/packages-themes))
 	(init-file (expand-file-name "init.el" user-emacs-directory)))
     (message "Updating Elpaca packages in the background...")
     (async-start
@@ -258,12 +268,14 @@
   user/custom-functions-dispatch ()
   "Display functions defined by the user."
   [["Custom Functions"
-    ("f" "Switch Font" user/switch-font)]
-   [("c" "Cycle Themes" user/cycle-themes)
-    ("t" "Select Theme" user/select-theme)]
+    ("f" "Switch font" user/switch-font)
+    ("R" "Random font" user/random-font)]
+   [("c" "Cycle themes" user/cycle-themes)
+    ("t" "Select theme" user/select-theme)
+    ("r" "Random theme" user/random-theme)]
    [("E" "Update elpaca menus" user/update-elpaca-menus)
-    ("p" "Update packages" user/elpaca-update-packages)]
-   [("s" "Major -ts-mode fallback" user/major-ts-mode-fallback)]])
+    ("p" "Update packages" user/elpaca-update-packages)
+    ("s" "Major -ts-mode fallback" user/major-ts-mode-fallback)]])
 (declare-function user/custom-functions-dispatch "15-user-functions")
 (bind-keys ("C-c u" . user/custom-functions-dispatch))
 

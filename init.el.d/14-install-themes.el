@@ -22,12 +22,19 @@
     zerodark)
   "Custom list of themes defined by user.")
 
+(defun user/get-themes ()
+  "Get full names of themes in `user/themes-list'."
+  (let ((theme-symbols '()))
+    (dolist (theme user/themes-list)
+      (let* ((theme-name-full (concat (symbol-name theme) "-theme"))
+	     (theme-symbol (intern theme-name-full)))
+	(push theme-symbol theme-symbols)))
+    (nreverse theme-symbols)))
+
 ;; Install themes
 (declare-function elpaca-wait "elpaca")
-(dolist (theme user/themes-list)
-  (let* ((theme-name-full (concat (symbol-name theme) "-theme"))
-	 (theme-symbol (intern theme-name-full)))
-    (eval `(elpaca ,theme-symbol))))
+(dolist (theme (user/get-themes))
+  (eval `(elpaca ,theme)))
 
 (elpaca-wait)
 (load-theme 'weyland-yutani t)
