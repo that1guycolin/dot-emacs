@@ -78,7 +78,7 @@ Otherwise, use the lucid build."
 
 (use-package free-keys
   :defer t
-  :bind ("C-c =" . free-keys))
+  :bind ("C-c C-=" . free-keys))
 
 ;; Configuration is done primarly in DE.
 (use-package emacs-everywhere
