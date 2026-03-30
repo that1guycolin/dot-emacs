@@ -20,19 +20,14 @@
   "Index location of user/themes-list.")
 
 (defvar elpaca-builds-directory)
-(defun user/set-theme (theme)
-  "Get sha256hash of THEME, add hash to `custom-safe-themes', and load THEME."
+(defun user/smart-load-theme (theme)
+  "Load THEME.  If theme directory is not in`load-path', add it."
   (let* ((theme-name-full (concat (symbol-name theme) "-theme"))
-	 (theme-path (expand-file-name theme-name-full elpaca-builds-directory))
-	 (theme-file (concat theme-name-full ".el"))
-	 (theme-file-path (expand-file-name theme-file theme-path))
-	 (theme-hash
-          (secure-hash 'sha256
-                       (with-temp-buffer
-			 (insert-file-contents-literally theme-file-path)
-			 (buffer-string)))))
-    (add-to-list 'custom-safe-themes theme-hash)
-    (load-theme theme)))
+	 (theme-directory
+	  (expand-file-name theme-name-full elpaca-builds-directory)))
+    (unless (member theme-directory custom-theme-load-path)
+      (add-to-list 'custom-theme-load-path theme-directory))
+    (load-theme theme t)))
 
 (defun user/cycle-themes ()
   "Cycle through themes in `user/themes-list'."
@@ -41,7 +36,7 @@
   (setq user/themes-index
         (mod (1+ user/themes-index) (length user/themes-list)))
   (let ((theme (nth user/themes-index user/themes-list)))
-    (user/set-theme theme)
+    (user/smart-load-theme theme)
     (message "Loaded theme: %s" theme)))
 
 (defun user/select-theme (theme)
@@ -49,11 +44,11 @@
   (interactive
    (list (intern (completing-read "Select theme: "
 				  user/themes-list nil t))))
-  (let* ((new-index (seq-position user/themes-list theme)))
+  (let ((new-index (seq-position user/themes-list theme)))
     (when new-index
       (disable-theme (nth user/themes-index user/themes-list))
       (setq user/themes-index new-index)
-      (user/set-theme theme)
+      (user/smart-load-theme theme)
       (message "Loaded theme: %s" theme))))
 
 
