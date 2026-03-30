@@ -138,7 +138,7 @@
    (expand-file-name "tasks/inbox.org" org-directory))
   (org-insert-mode-line-in-empty-file t)
   :config
-  (setq org-agenda-files '(org-default-notes-file))
+  (setq org-agenda-files (list org-default-notes-file))
   (bind-keys
    ("C-c o o" . org-mode)
    ("C-c o l" . org-store-link)
