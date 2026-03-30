@@ -6,6 +6,11 @@
 ;; or, more likely, need to be loaded last.
 
 ;;; Code:
+;; =======  HELPER FUNCTIONS  =======
+(defun user/pick-random (lst)
+  "Return a random element from LST (list)."
+  (nth (random (length lst)) lst))
+
 ;; =======  THEME  =======
 (defvar user/themes-list)
 (defun user/add-theme (theme)
@@ -50,6 +55,18 @@
       (setq user/themes-index new-index)
       (user/smart-load-theme theme)
       (message "Loaded theme: %s" theme))))
+
+(defun user/random-theme ()
+  "Activate a random theme from `user/themes-list'."
+  (interactive)
+  (let* ((new-theme (user/pick-random user/themes-list))
+	 (new-index (seq-position user/themes-list new-theme)))
+    (when new-index
+      (disable-theme (nth user/themes-index user/themes-list))
+      (setq user/themes-index new-index)
+      (user/smart-load-theme new-theme)
+      (message "Loaded theme: %s" new-theme))))
+
 
 
 ;; =======  FONTS  =======
@@ -140,6 +157,21 @@
                         :height 110
                         :weight 'regular)
     (message "Font set to %s" font)))
+
+(defun user/random-font ()
+  "Activate a random theme from `user/font-alist'."
+  (interactive)
+  (let* ((new-font-cons (user/pick-random user/font-alist))
+	 (new-index (seq-position user/font-alist new-font-cons))
+	 (new-font-fullname (cdr new-font-cons))
+	 (new-font-shortname (car new-font-cons)))
+    (when new-index
+      (set-face-attribute 'default nil
+			  :family new-font-fullname
+			  :height 110
+			  :weight 'regular)
+      (message "Loaded font: %s" new-font-shortname))))
+
 
 
 ;; =======  TREESIT FALLBACK  =======
