@@ -110,11 +110,6 @@
 (use-package transient
   :demand t)
 
-(defvar user/org-tasks-directory nil
-  "Branch of org directory that stores TODO items.")
-(defvar user/org-knowledge-directory nil
-  "Branch of org directory containing user's knowledge base.")
-
 (use-package org
   :ensure (
 	   :package "org"
@@ -139,11 +134,8 @@
   :init
   (setq org-directory (expand-file-name "~/org"))
   :custom
-  (user/org-tasks-directory (expand-file-name "tasks" org-directory))
-  (user/org-knowledge-directory
-   (expand-file-name "knowledge_base" org-directory))
   (org-default-notes-file
-   (expand-file-name "inbox.org" user/org-tasks-directory))
+   (expand-file-name "tasks/inbox.org" org-directory))
   (org-insert-mode-line-in-empty-file t)
   :config
   (setq org-agenda-files '(org-default-notes-file))
