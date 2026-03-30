@@ -109,13 +109,6 @@
   :custom
   (org-make-toc-insert-custom-ids t))
 
-(use-package toc-org
-  :after org-mode
-  :defer t
-  :commands toc-org-mode
-  :bind (:map org-mode-map
-	      ("C-c M-t" . toc-org-mode)))
-
 
 (provide '10-org-mode-extensions)
 ;;; 10-org-mode-extensions.el ends here
