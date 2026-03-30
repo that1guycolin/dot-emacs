@@ -101,6 +101,14 @@
    ("C-c p p" . org-project-capture-project-todo-completing-read)
    ("C-c p a" . org-project-capture-agenda-for-current-project)))
 
+(use-package org-make-toc
+  :defer t
+  :bind (:map org-mode-map
+	      ("C-c T i" . org-make-toc-insert)
+	      ("C-c T m" . org-make-toc))
+  :custom
+  (org-make-toc-insert-custom-ids t))
+
 (use-package toc-org
   :after org-mode
   :defer t
