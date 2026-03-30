@@ -20,6 +20,7 @@
 	  (cpp "https://github.com/tree-sitter/tree-sitter-cpp")
 	  (fish "https://github.com/ram02z/tree-sitter-fish")
 	  (emacs-lisp "https://github.com/Wilfred/tree-sitter-elisp")
+	  (gitcommit "https://github.com/gbprod/tree-sitter-gitcommit")
 	  (go "https://github.com/tree-sitter/tree-sitter-go")
 	  (html "https://github.com/tree-sitter/tree-sitter-html")
 	  (javascript "https://github.com/tree-sitter/tree-sitter-javascript"

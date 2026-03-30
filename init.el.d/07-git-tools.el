@@ -30,6 +30,9 @@
   :custom
   (forge-pull-notifications t))
 
+(use-package git-commit-ts-mode
+  :defer t
+  :mode "\\COMMIT_EDITMSG\\'")
 
 
 (use-package git-modes
