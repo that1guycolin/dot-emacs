@@ -143,7 +143,9 @@
    ("C-c o o" . org-mode)
    ("C-c o l" . org-store-link)
    ("C-c o a" . org-agenda)
-   ("C-c o c" . org-capture)))
+   ("C-c c"   . org-capture)
+   :map org-mode-map
+   ("C-c l" . org-toggle-link-display)))
 
 
 (provide '01-bootstrap-core)
