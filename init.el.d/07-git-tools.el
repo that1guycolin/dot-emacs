@@ -43,11 +43,6 @@
   :bind (:map magit-mode-map
 	      ("/" . magit-git-toolbelt)))
 
-(use-package magit-pre-commit
-  :after magit
-  :bind (:map magit-mode-map
-	      ("@" . magit-pre-commit-mode)))
-
 (use-package treemacs-magit
   :after (treemacs magit))
 
