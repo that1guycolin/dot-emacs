@@ -69,22 +69,6 @@ to the user's device.")
         (message "Ollama service start command sent.")
 	(kill-buffer "*Async Shell Command*")))))
 
-;; `user/ensure-ollama-system-service' eliminates need for below function.
-;; Saving because possiblity exists it will be useful again at some point.
-(defun user/ollama--alive-p ()
-  "Return non-nil if an HTTP request to the Ollama server succeeds."
-  (require 'url)
-  (let* ((url-request-method "GET")
-         (buf (url-retrieve-synchronously
-	       "http://localhost:11434/api/version" t t 2)))
-    (when buf
-      (with-current-buffer buf
-        (unwind-protect
-            (and (boundp 'url-http-response-status)
-                 (numberp url-http-response-status)
-                 (= url-http-response-status 200))
-          (kill-buffer buf))))))
-
 
 ;; =======  MCP  =======
 (use-package elisp-dev-mcp
@@ -163,26 +147,22 @@ doubles as a model-switcher."
       (message "[gptel] Backend → %s | Model → %s"
 	       backend-name gptel-model))))
 
-(use-package ollama-magit-commit-message
-  :ensure (ollama-magit-commit-message
-	   :host github
-	   :repo "that1guycolin/ollama-magit-commit-message")
-  :after (gptel magit))
+(use-package gptel-magit
+  :hook (magit-mode . gptel-magit-install))
 
-;; (defvar git-commit-mode-map)
-;; (use-package gptel-commit
-;;   :after (gptel magit)
-;;   :functions
-;;   gptel-commit
-;;   gptel-commit-rationale
-;;   :custom
-;;   (gptel-commit-stream t)
-;;   :config
-;;   (with-eval-after-load 'magit
-;;     (bind-keys
-;;      :map git-commit-mode-map
-;;      ("C-c g" . gptel-commit)
-;;      ("C-c G" . gptel-commit-rationale))))
+(defvar git-commit-mode-map)
+(use-package gptel-commit
+  :after (gptel magit)
+  :functions
+  gptel-commit gptel-commit-rationale
+  :custom
+  (gptel-commit-stream t)
+  :config
+  (with-eval-after-load 'magit
+    (bind-keys
+     :map git-commit-mode-map
+     ("C-c g" . gptel-commit)
+     ("C-c G" . gptel-commit-rationale))))
 
 (use-package gptel-forge-prs
   :after forge
