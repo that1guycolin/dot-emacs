@@ -42,23 +42,6 @@
   :custom
   (auto-virtualenv-verbose t))
 
-;;(Use-Package uv-mode
-;;  :defer t
-;;  :hook ((python-ts-mode . user/uv-mode-auto-activate)
-;;         (python-mode    . user/uv-mode-auto-activate))
-;;  :functions
-;;  uv-mode-root
-;;  uv-mode
-;;  uv-mode-set
-;;  :init
-;;  (defun user/uv-mode-auto-activate ()
-;;    "Enable uv-mode and activate the nearest project .venv (if any)."
-;;    (when (derived-mode-p 'python-base-mode)
-;;      (when (uv-mode-root) <==NO SUCH THING AS uv-mode-root
-;;        (uv-mode 1)
-;;        (uv-mode-set)))))
-
-
 ;; =======  SHELL SCRIPTS  =======
 ;; `modern-sh' (enhaced sh-mode & bash(-ts)-mode)
 ;; `fish-mode' (fish shell support)
@@ -131,10 +114,8 @@
   :defer t
   :after markdown-mode
   :functions
-  markdown-toc-follow-link-at-point
-  markdown-toc-generate-or-refresh-toc
-  markdown-toc-delete-toc
-  markdown-toc-version
+  markdown-toc-follow-link-at-point markdown-toc-generate-or-refresh-toc
+  markdown-toc-delete-toc markdown-toc-version
   :config
   (bind-keys
    :map markdown-mode-command-map
