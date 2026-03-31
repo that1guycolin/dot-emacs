@@ -124,6 +124,17 @@
    ("C-d" . markdown-toc-delete-toc)
    ("C-v" . markdown-toc-version)))
 
+(use-package flycheck-vale
+  :defer t
+  :functions flycheck-vale-toggle-enabled
+  :hook
+  ((markdown-mode . flycheck-vale-setup)
+   (org-mode      . flycheck-vale-setup)
+   (text-mode     . flycheck-vale-setup))
+  :config
+  (bind-keys
+   ("C-c C-;" . flycheck-vale-toggle-enabled)))
+
 (use-package grip-mode
   :defer t
   :after markdown-mode
