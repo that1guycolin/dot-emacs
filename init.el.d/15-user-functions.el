@@ -174,6 +174,23 @@
 
 
 
+;; =======  SIDE-WINDOW  =======
+(defun user/toggle-side-window ()
+  "Switch focus between a side window and the main window area.
+If in a side window, return to the last used window.
+If not in a side window, jump to the first found side window."
+  (interactive)
+  (let* ((side-window (cl-find-if (lambda (w) (window-parameter w 'window-side))
+                                  (window-list))))
+    (cond
+     ((not side-window)
+      (message "No side window found in this frame."))
+     ((eq (selected-window) side-window)
+      (select-window (get-mru-window nil nil t)))
+     (t
+      (select-window side-window)))))
+(bind-keys ("M-0" . user/toggle-side-window))
+
 ;; =======  TREESIT FALLBACK  =======
 (defun user/major-ts-mode-fallback ()
   "Set major-modes to *-ts-mode if treesit-auto fails to activate."

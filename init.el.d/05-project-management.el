@@ -21,11 +21,8 @@
   :commands projectile-mode
 
   :functions
-  projectile-project-root
-  user/file-explorer-at-project-root
-  project-projectile
-  user/projectile-ignore-elpaca-packages
-  user/projectile-commander-dispatch
+  projectile-project-root user/file-explorer-at-project-root project-projectile
+  user/projectile-ignore-elpaca-packages user/projectile-commander-dispatch
 
   :custom
   (projectile-project-search-path '("~/projects/" "~/scripts/"))
@@ -106,14 +103,9 @@ The keybindings are exactly the same."
   :defer t
 
   :functions
-  treemacs-filewatch-mode
-  treemacs-git-mode
-  treemacs-git-commit-diff-mode
-  treemacs-select-window
-  treemacs-project-follow-mode
-  treemacs-root-up
-  treemacs-get-local-window
-  treemacs-hide-gitignored-files-mode
+  treemacs-filewatch-mode treemacs-git-mode treemacs-git-commit-diff-mode
+  treemacs-select-window treemacs-project-follow-mode treemacs-root-up
+  treemacs-get-local-window treemacs-hide-gitignored-files-mode
 
   :custom
   (treemacs-width 35)
@@ -127,7 +119,6 @@ The keybindings are exactly the same."
 	    (lambda () (treemacs-hide-gitignored-files-mode 1)))
   
   (bind-keys
-   ("M-0" . treemacs-select-window)
    :map treemacs-mode-map
    ("C-x p f" . treemacs-project-follow-mode)
    ("<backspace>" . treemacs-root-up)))
