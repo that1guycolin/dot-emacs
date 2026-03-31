@@ -26,13 +26,8 @@
 (use-package org-gtd
   :after org
   :functions
-  org-gtd-capture
-  org-gtd-engage
-  org-gtd-process-inbox
-  org-gtd-show-all-next
-  org-gtd-reflect-stuck-projects
-  org-gtd-organize
-  org-gtd-agenda-transient
+  org-gtd-capture org-gtd-engage org-gtd-process-inbox org-gtd-show-all-next
+  org-gtd-reflect-stuck-projects org-gtd-organize org-gtd-agenda-transient
   :defines
   org-gtd-update-ack
   
@@ -100,6 +95,31 @@
    ("C-c p c" . org-project-capture-capture-for-current-project)
    ("C-c p p" . org-project-capture-project-todo-completing-read)
    ("C-c p a" . org-project-capture-agenda-for-current-project)))
+
+(use-package org-roam
+  :after org
+  :functions
+  org-roam-db-autosync-mode org-roam-node-insert org-roam-node-find
+  org-roam-capture user/org-roam-global-prefix-map
+  :custom
+  (org-roam-directory (expand-file-name "knowledge-base" org-directory))
+  (org-roam-db-location org-directory)
+  :config
+  (org-roam-db-autosync-mode 1)
+  (defvar-keymap user/org-roam-global-prefix-map
+    :doc "Prefix for org-roam-commands that can be called at any time."
+    :prefix 'user/org-roam-global-prefix-map
+    "i" #'org-roam-node-insert
+    "f" #'org-roam-node-find
+    "c" #'org-roam-capture)
+  (bind-keys ("C-c r" . user/org-roam-global-prefix-map)))
+
+(use-package org-roam-ql
+  :after (org-roam)
+  :bind ((:map org-roam-mode-map
+	       ("v" . org-roam-ql-buffer-dispatch))
+         (:map minibuffer-mode-map
+               ("C-c n i" . org-roam-ql-insert-node-title))))
 
 (use-package org-make-toc
   :defer t
