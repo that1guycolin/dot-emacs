@@ -103,8 +103,10 @@
   org-roam-capture user/org-roam-global-prefix-map
   :custom
   (org-roam-directory (expand-file-name "knowledge-base" org-directory))
-  (org-roam-db-location org-directory)
+  (org-roam-db-location (expand-file-name "org-roam.db" org-directory))
   :config
+  (unless (file-exists-p org-roam-directory)
+    (make-directory org-roam-directory t))
   (org-roam-db-autosync-mode 1)
   (defvar-keymap user/org-roam-global-prefix-map
     :doc "Prefix for org-roam-commands that can be called at any time."
