@@ -96,6 +96,18 @@
    ("C-c p p" . org-project-capture-project-todo-completing-read)
    ("C-c p a" . org-project-capture-agenda-for-current-project)))
 
+(use-package org-caldav
+  :after (org org-gtd org-project-capture)
+  :custom
+  (org-caldav-url "https://use11.thegood.cloud/remote.php/dav/calendars/colinloeffler%40gmail.com")
+  (org-caldav-calendar-id "org-tasks")
+  (org-caldav-inbox (expand-file-name "~/org/tasks/inbox.org"))
+  (org-caldav-files nil)
+  (org-icalendar-timezone "America/Chicago")
+  (org-icalendar-include-todo 'all)
+  (org-caldav-sync-todo t)
+  (org-icalendar-categories '(local-tags)))
+
 (use-package org-roam
   :after org
   :functions
