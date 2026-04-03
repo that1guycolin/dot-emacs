@@ -148,6 +148,7 @@ doubles as a model-switcher."
 	       backend-name gptel-model))))
 
 (use-package gptel-magit
+  :after gptel
   :hook (magit-mode . gptel-magit-install))
 
 (defvar git-commit-mode-map)
