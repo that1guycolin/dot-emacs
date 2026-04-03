@@ -18,13 +18,9 @@
 (declare-function dirvish "dirvish")
 (declare-function transient-define-prefix "transient")
 (use-package projectile
-  :defer t
-  :commands projectile-mode
-
   :functions
-  projectile-project-root user/file-explorer-at-project-root project-projectile
-  user/projectile-ignore-elpaca-packages user/projectile-commander-dispatch
-  user/dired-or-dirvish-at-project-root
+  projectile-mode projectile-project-root user/file-explorer-at-project-root project-projectile user/projectile-ignore-elpaca-packages user/projectile-commander-dispatch user/dired-or-dirvish-at-project-root
+
   :custom
   (projectile-project-search-path '("~/projects/"
 				    "~/scripts/"
