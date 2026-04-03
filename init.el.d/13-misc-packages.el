@@ -99,8 +99,8 @@ Otherwise, use the lucid build."
   
   :functions
   dashboard-insert-startupify-lists dashboard-initialize
-  dashboard-setup-startup-hook dashboard-refresh-buffer dashboard-display-icons-p
-  user/smart-dashboard-items user/dashboard-cleanup-org-buffers
+  dashboard-setup-startup-hook dashboard-refresh-buffer
+  dashboard-display-icons-p user/dashboard-cleanup-org-buffers
   user/emacsclient-dashboard
 
   :custom
@@ -112,22 +112,13 @@ Otherwise, use the lucid build."
   (dashboard-center-content t)
   (dashboard-vertically-center-content t)
   (dashboard-banner-logo-title "Welcome back")
-
+  (dashboard-projects-backend 'projectile)
+  (dashboard-items '(
+		     ;; (agenda . 10)
+		     (projects . 5)
+		     (recents . 5)))
+  
   :config
-  (defun user/smart-dashboard-items ()
-    "Set dashboard items based on whether or not projectile is loaded."
-    (if (featurep 'projectile)
-	(progn
-	  (setq dashboard-projects-backend 'projectile
-		dashboard-items '(
-				  ;; (agenda . 10)
-				  (projects . 5)
-				  (recents . 5))))
-      (progn
-	(setq dashboard-items '(
-				;; (agenda . 10)
-				(recents . 10))))))
-  (user/smart-dashboard-items)
   (add-hook 'elpaca-after-init-hook #'dashboard-insert-startupify-lists)
   (add-hook 'elpaca-after-init-hook #'dashboard-initialize)
   (dashboard-setup-startup-hook)
