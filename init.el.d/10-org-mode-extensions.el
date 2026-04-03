@@ -175,6 +175,18 @@
   :custom
   (org-make-toc-insert-custom-ids t))
 
+(use-package pdf-tools
+  :defer t
+  :mode ("\\.pdf\\'" . pdf-view-mode)
+  :functions pdf-tools-install
+  :custom
+  (pdf-view-display-size 'fit-page)
+  (pdf-info-asynchronous t)
+  :config
+  (pdf-tools-install)
+  (add-hook 'pdf-view-mode-hook 'pdf-view-midnight-minor-mode))
+
+
 
 (provide '10-org-mode-extensions)
 ;;; 10-org-mode-extensions.el ends here
