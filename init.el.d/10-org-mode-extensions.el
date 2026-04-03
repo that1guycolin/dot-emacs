@@ -132,6 +132,47 @@ ORG_GTD_CAPTURED_AT properties, similar to org-gtd-capture."
   (setq org-project-capture-capture-template
 	(user/org-project-capture--gtd-template))
 
+  (defun user/org-gtd-refile-to-project-todo ()
+    "Refile an org-gtd item to a projectile project's TODO file.
+Prompts the user to select from all projectile projects. If the
+project's TODO file doesn't exist, it will be created. If 'None'
+is selected, the item is refiled to the default org-gtd file.
+
+This function is designed to be used as an interactive command
+during org-gtd's organization workflow."
+    (interactive)
+    (if (featurep 'projectile)
+	(let* ((projects (projectile-relevant-known-projects))
+	       (project-names (sort (mapcar #'file-name-nondirectory
+					    (mapcar #'directory-file-name
+						    projects))
+				    #'string-lessp))
+	       (selection (completing-read
+			   "Refile to project TODO: "
+			   (cons "None" project-names)
+			   nil t)))
+	  (if (string= selection "None")
+	      (org-gtd-refile--do org-gtd--organize-type
+				  org-gtd-action-template)
+	    (let* ((project-path (cl-find-if
+				  (lambda (p)
+				    (string= (file-name-nondirectory
+					      (directory-file-name p))
+					     selection))
+				  projects)))
+	      (when project-path
+		(let* ((todo-file (expand-file-name "TODO" project-path))
+		       (category (file-name-nondirectory
+				  (directory-file-name project-path))))
+		  (unless (file-exists-p todo-file)
+		    (with-temp-file todo-file
+		      (insert "#+title: " category "\n")))
+		  (let ((org-refile-targets
+			 (list (cons todo-file
+				     (cons :maxlevel 2)))))
+		    (org-refile nil nil nil
+				(format "Refile to %s TODO: " category))))))))
+      (user-error "Projectile is not available")))
 
   (bind-keys
    ("C-c p c" . org-project-capture-capture-for-current-project)
