@@ -107,6 +107,31 @@
     (dolist (project (projectile-relevant-known-projects))
       (let ((ptodo (concat project "TODO")))
 	(add-to-list 'org-refile-targets `(,ptodo :maxlevel . 2)))))
+  
+  (defun user/org-project-capture--add-captured-at-timestamp ()
+    "Add ORG_GTD_CAPTURED_AT property to level-1 headings.
+Used as :before-finalize hook in org-project-capture templates.
+All headings in a multi-item capture get the same timestamp."
+    (let ((timestamp (format-time-string (org-time-stamp-format t t))))
+      (org-map-entries
+       (lambda ()
+	 (unless (org-entry-get nil "ORG_GTD_CAPTURED_AT")
+           (org-entry-put nil "ORG_GTD_CAPTURED_AT" timestamp)))
+       "LEVEL=1"
+       nil)))
+
+  (defun user/org-project-capture--gtd-template ()
+    "Return an org-gtd compatible capture template for project TODOs.
+This template adds a :PROPERTIES: drawer with ORG_GTD and
+ORG_GTD_CAPTURED_AT properties, similar to org-gtd-capture."
+    `("p" "Project TODO" entry
+      (function . org-project-capture--target-location)
+      "* %?\n\n\n  %i"
+      :kill-buffer t
+      :before-finalize user/org-project-capture--add-captured-at-timestamp))
+  (setq org-project-capture-capture-template
+	(user/org-project-capture--gtd-template))
+
 
   (bind-keys
    ("C-c p c" . org-project-capture-capture-for-current-project)
