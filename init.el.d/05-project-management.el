@@ -19,7 +19,7 @@
 (declare-function transient-define-prefix "transient")
 (use-package projectile
   :defer t
-  :command projectile-mode
+  :commands projectile-mode
 
   :functions
   projectile-project-root user/file-explorer-at-project-root project-projectile
