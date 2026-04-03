@@ -93,14 +93,20 @@
   org-project-capture-capture-for-current-project
   org-project-capture-project-todo-completing-read
   org-project-capture-agenda-for-current-project
-
   org-project-capture-per-project
+  :defines org-project-capture-capture-template
 
+  :custom
+  (org-project-capture-per-project-filepath "TODO")
   :config
   (require 'org-projectile)
   (setq org-project-capture-default-backend
 	(make-instance 'org-project-capture-projectile-backend))
-  (org-project-capture-per-project)
+
+  (with-eval-after-load 'projectile
+    (dolist (project (projectile-relevant-known-projects))
+      (let ((ptodo (concat project "TODO")))
+	(add-to-list 'org-refile-targets `(,ptodo :maxlevel . 2)))))
 
   (bind-keys
    ("C-c p c" . org-project-capture-capture-for-current-project)
