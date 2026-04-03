@@ -29,22 +29,11 @@
 
 (use-package docstr
   :functions
-  docstr-major-modes
-  docstr-mode
-  user/docstr-mode-hooks
+  docstr-major-modes docstr-mode user/docstr-mode-hooks
   :config
-
-  (defun user/docstr-mode-hooks ()
-
-    "Trigger `docstr-mode' for major modes in which it is available.
-Run docstr-major-modes for an up-to-date list of modes in which docstr works.
-For each mode on that list, add `docstr-mode' to its hook."
-    
-    (dolist (mode (docstr-major-modes))
-      (add-hook (intern (concat (symbol-name mode) "-hook"))
-		#'docstr-mode)))
-  
-  (user/docstr-mode-hooks))
+  (dolist (mode (docstr-major-modes))
+    (add-hook (intern (concat (symbol-name mode) "-hook"))
+	      #'docstr-mode)))
 
 
 ;; =======  FLYCHECK  =======
@@ -108,19 +97,30 @@ See URL `https://github.com/rvben/rumdl'."
     :modes (markdown-mode gfm-mode))
   (add-to-list 'flycheck-checkers 'markdown-rumdl)
   (add-hook 'markdown-mode-hook (lambda ()
-                                  (flycheck-select-checker 'markdown-rumdl))))
+                                  (flycheck-select-checker 'markdown-rumdl)))
 
-(defun user/no-flyover-if-lsp ()
-  "If `lsp-mode' is not nil, disable `flyover-mode'."
-  (if (fboundp 'lsp-mode)
-      (flyover-mode -1)
-    (flyover-mode 1)))
+  (flycheck-define-checker vale
+    "A Vale checker for prose."
+    :command ("vale" "--output" "line" source)
+    :error-patterns
+    ((warning line-start (file-name) ":" line ":" column ":"
+              (id (one-or-more (not (any ":")))) ":" (message) line-end))
+    :modes (markdown-mode gfm-mode text-mode org-mode))
+  (add-to-list 'flycheck-checkers 'vale)
+  (add-hook 'org-mode-hook
+            (lambda ()
+              (flycheck-select-checker 'vale)))
+
+  (add-hook 'text-mode-hook
+            (lambda ()
+              (flycheck-select-checker 'vale))))
 
 (use-package flyover
   :after flycheck
-  :commands flyover-mode
-  :hook (flycheck-mode . user/no-flyover-if-lsp)
-  :functions flyover-toggle
+  :hook (flycheck-mode . flyover-mode)
+  :functions
+  flyover-toggle user/no-flyover-if-lsp
+  
   :init (setq flyover-checkers '(flycheck))
   
   :custom
@@ -146,16 +146,22 @@ See URL `https://github.com/rvben/rumdl'."
   (flyover-cursor-debounce-interval 0.2)
   (flyover-display-mode 'hide-on-same-line)
   (flyover-hide-during-completion t)
-  :config
 
-  (bind-keys
-   :map flycheck-mode-map
-   ("C-c M-f" . flyover-toggle)))
+  :config
+  (defun user/no-flyover-if-lsp ()
+    "Activate flyover-mode if flycheck-mode is active and lsp-mode is not."
+    (when (and (fboundp 'flyover-mode)
+	       (not (and (boundp 'lsp-mode) lsp-mode)))
+      (flyover-mode 1))
+    (add-hook 'flycheck-mode-hook #'user/no-flyover-if-lsp)
+    
+    (bind-keys
+     :map flycheck-mode-map
+     ("C-c C-&" . flyover-toggle))))
 
 (use-package flycheck-color-mode-line
   :after flycheck
-  :hook (flycheck-mode . (lambda ()
-			   flycheck-color-mode-line-mode 1)))
+  :hook (flycheck-mode . flycheck-color-mode-line-mode))
 
 
 ;; =======  LSP-MODE  =======
@@ -181,13 +187,10 @@ See URL `https://github.com/rvben/rumdl'."
   :bind (:map prog-mode-map
 	      ("C-c C-l" . lsp))
   :functions
-  lsp-mode
-  lsp-register-client
-  make-lsp--client
-  lsp-stdio-connection
-  lsp-format-buffer
-  lsp-enable-which-key-integration
+  lsp-mode lsp-register-client make-lsp--client lsp-stdio-connection
+  lsp-format-buffer lsp-enable-which-key-integration
   :defines lsp-language-id-configuration
+
   :custom
   (lsp-use-plists t)
   (lsp-idle-delay 0.8)
@@ -197,36 +200,33 @@ See URL `https://github.com/rvben/rumdl'."
   (lsp-auto-guess-root t)
   (lsp-enable-on-type-formatting nil)
   (lsp-disabled-clients
-   '(cmake-language-server
-     marksman
-     pylsp
-     pyright
-     taplo))
+   '(cmake-language-server marksman pylsp pyright taplo))
+  
   :config
   (lsp-register-client
    (make-lsp--client
     :new-connection (lsp-stdio-connection '("neocmakelsp" "stdio"))
     :major-modes '(cmake-ts-mode)
     :server-id 'neocmakelsp))
+
   (add-to-list 'lsp-language-id-configuration '(fish-mode . "fish"))
   (lsp-register-client
    (make-lsp--client
     :new-connection (lsp-stdio-connection '("fish-lsp" "start"))
     :major-modes '(fish-mode)
     :server-id 'fish-ls))
+
   (lsp-register-client
    (make-lsp--client
     :new-connection (lsp-stdio-connection '("rumdl" "server" "--stdio"))
     :major-modes '(markdown-mode gfm-mode)
     :server-id 'rumdl-ls))
+
   (lsp-register-client
    (make-lsp--client
     :new-connection (lsp-stdio-connection '("tombi" "lsp"))
     :major-modes '(toml-mode toml-ts-mode)
     :server-id 'tombi-ls))
-
-  (add-hook 'lsp-mode-hook
-	    (lambda () (flyover-mode -1)))
   
   (bind-keys
    :map lsp-mode-map
@@ -245,8 +245,7 @@ See URL `https://github.com/rvben/rumdl'."
 	      (setq-local lsp-enable-file-watchers nil))))
 
 (use-package lsp-ui
-  :after lsp-mode
-  :config)
+  :after lsp-mode)
 
 (use-package lsp-treemacs
   :after (lsp-mode treemacs))
@@ -268,8 +267,10 @@ See URL `https://github.com/rvben/rumdl'."
 (use-package apheleia
   :bind ("C-c f" . apheleia-format-buffer)
   :hook
-  ((prog-mode . apheleia-mode)
-   (markdown-mode . apheleia-mode))
+  ((prog-mode     . apheleia-mode)
+   (markdown-mode . apheleia-mode)
+   (org-mode      . apheleia-mode))
+
   :config
   (setf (alist-get 'shfmt apheleia-formatters)
 	'("shfmt" "-i" "4" "-ci" "-"))
@@ -289,6 +290,7 @@ See URL `https://github.com/rvben/rumdl'."
         '("tombi" "fmt" "-"))
   (setf (alist-get 'xmlstarlet apheleia-formatters)
         '("xmlstarlet" "fo" "--indent-spaces" "2" "-"))
+
   (setf (alist-get 'cmake-ts-mode apheleia-mode-alist) 'neocmakelsp)
   (setf (alist-get 'eask-mode apheleia-mode-alist) 'lisp-indent)
   (setf (alist-get 'fish-mode apheleia-mode-alist) 'fish-indent)
@@ -306,9 +308,7 @@ See URL `https://github.com/rvben/rumdl'."
 (use-package dap-mode
   :defer t
   :commands
-  dap-debug
-  dap-debug-edit-template
-  dap-auto-configure-mode
+  dap-debug dap-debug-edit-template dap-auto-configure-mode
   :defines dap-python-debugger
   :custom
   (dap-auto-configure-features '(sessions locals controls tooltip))
@@ -348,21 +348,18 @@ See URL `https://github.com/rvben/rumdl'."
 ;; =======  MASON  =======
 ;; `mason' (install external deps)
 ;; =======================
+(declare-function transient-define-prefix "transient")
 (use-package mason
   :commands
-  mason-install
-  mason-manager
-  mason-setup
+  mason-install mason-manager mason-setup
   :functions
-  mason-installed-p
-  user/mason--install-program
-  user/mason-install-optional-program
-  user/mason-install-optional-programs
+  mason-installed-p user/mason--install-program
+  user/mason-install-optional-program user/mason-install-optional-programs
+  user/mason-dispatch
   :defines mason-dir
 
   :init
   (setq mason-dir (expand-file-name "~/.local"))
-
   :config
   (mason-setup)
   
@@ -414,7 +411,6 @@ mason installs it."
       (user/mason--install-program program)))
 
   (defvar user/mason--dispatch nil)
-  (declare-function mason-setup "mason")
   (transient-define-prefix
     user/mason--dispatch ()
     "Commands to install external dependencies with `mason'."
@@ -424,20 +420,18 @@ deps for flycheck & lsp-mode"]
      [("r" "Install required" user/mason-install-required-programs)
       ("o" "Install optional" user/mason-install-optional-programs)]
      [("p" "Install program" user/mason-install-program)
-      ("m" "Mason Manager" mason-manager)]]))
+      ("m" "Mason Manager" mason-manager)]])
 
-(declare-function transient-define-prefix "transient")
-
-(declare-function user/mason--dispatch "06-code-assist")
-(defun user/mason-dispatch ()
-  "Load mason if not loaded then run user/mason--dispatch."
-  (interactive)
-  (if (featurep 'mason)
-      (user/mason--dispatch)
-    (progn
-      (mason-setup)
-      (user/mason--dispatch))))
-(bind-keys ("C-c m" . user/mason-dispatch))
+  (declare-function user/mason--dispatch "06-code-assist")
+  (defun user/mason-dispatch ()
+    "Load mason if not loaded then run user/mason--dispatch."
+    (interactive)
+    (if (featurep 'mason)
+	(user/mason--dispatch)
+      (progn
+	(mason-setup)
+	(user/mason--dispatch))))
+  (bind-keys ("C-c m" . user/mason-dispatch)))
 
 
 (provide '06-code-assist)
