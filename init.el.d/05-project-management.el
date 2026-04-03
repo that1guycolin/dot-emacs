@@ -23,9 +23,12 @@
   :functions
   projectile-project-root user/file-explorer-at-project-root project-projectile
   user/projectile-ignore-elpaca-packages user/projectile-commander-dispatch
-
+  user/dired-or-dirvish-at-project-root
   :custom
-  (projectile-project-search-path '("~/projects/" "~/scripts/"))
+  (projectile-project-search-path '("~/projects/"
+				    "~/scripts/"
+				    "~/org"
+				    "~/.emacs.d"))
   (projectile-completion-system 'default)
   (projectile-track-known-projects-automatically t)
   (projectile-enable-caching 'persistent)
@@ -38,13 +41,19 @@
   (projectile-mode +1)
   (add-hook 'project-find-functions #'project-projectile)
 
-  (defun user/file-explorer-at-project-root ()
-    "Open Dirvish at the current Projectile project root.  Calling Dired instead
-of calling Dirvish directly ensures that the function will work whether or not
-Dirvish is loaded."
+  (defun user/file-explorer-at-project-root (explr)
+    "Open EXPLR at the current Projectile project root."
     (when-let ((root (projectile-project-root)))
-      (dired root)))
-  (setq projectile-switch-project-action #'user/file-explorer-at-project-root)
+      (funcall explr root)))
+
+  (defun user/dired-or-dirvish-at-project-root ()
+    "When active, open Dirvish at the current Projectile project root.
+If not active, call Dired instead of Dirvish."
+    (if (featurep 'dirvish)
+	(user/file-explorer-at-project-root 'dirvish)
+      (user/file-explorer-at-project-root 'dired)))
+  (setq projectile-switch-project-action
+	#'user/dired-or-dirvish-at-project-root)
 
   (defun user/projectile-ignore-elpaca-packages (project-root)
     "Return non-nil if PROJECT-ROOT is inside the Elpaca directory."
