@@ -131,7 +131,7 @@
   :demand t
   :mode
   (("\\.org\\'"   . org-mode)
-   ("\\`todo\\'"  . org-mode)
+   ("TODO\\'"     . org-mode)
    ("\\.notes\\'" . org-mode))
   :init
   (setq org-directory (expand-file-name "~/org"))
