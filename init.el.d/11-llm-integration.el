@@ -182,7 +182,6 @@ doubles as a model-switcher."
   :init
   (setopt ellama-language "English")
   :config
-  (user/ensure-ollama-system-service)
   (require 'llm-ollama)
 
   ;; ----------- MODEL TYPES -----------
