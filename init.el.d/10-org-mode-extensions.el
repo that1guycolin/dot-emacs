@@ -44,15 +44,16 @@
   :custom
   (org-todo-keywords
    '((sequence "TODO(t)" "NEXT(n)" "WAIT(w)" "|" "DONE(d)" "CNCL(c)")))
-  (org-gtd-keyword-mapping '((todo . "TODO(t)")
-                             (next . "NEXT(n)")
-                             (wait . "WAIT(w)")
-			     (done . "DONE(d)")
+  (org-gtd-keyword-mapping '((todo     . "TODO(t)")
+                             (next     . "NEXT(n)")
+                             (wait     . "WAIT(w)")
+			     (done     . "DONE(d)")
                              (canceled . "CNCL(c)")))
   (org-gtd-refile-to-any-target nil)
   (org-gtd-refile-prompt-for-types
-   '(single-action project-heading project-task calendar someday tickler
-		   habit quick-action trash))
+   '(single-action
+     project-heading project-task calendar someday tickler habit quick-action
+     trash))
   (org-refile-targets
    '(("~/org/tasks/someday.org"  :maxlevel . 2)
      ("~/org/tasks/tickler.org"  :maxlevel . 2)
@@ -93,7 +94,6 @@
   org-project-capture-project-todo-completing-read
   org-project-capture-agenda-for-current-project
 
-  :functions
   org-project-capture-per-project
 
   :config
