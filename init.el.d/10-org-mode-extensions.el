@@ -7,19 +7,24 @@
 ;; Provide extensions for Emacs' Org-mode.
 
 ;;; Code:
+;; =======  VAR & FUNC  =======
 (defvar org-directory)
 
 (defun user/convert-md-links-to-org ()
   "Convert all [label](link) patterns in the current buffer to [[link][label]]."
   (interactive)
   (save-excursion
-    (goto-char (point-min)) ; Start at the beginning of the file
+    (goto-char (point-min))
     (while (re-search-forward "\\[\\([^]]+\\)\\](\\([^)]+\\))" nil t)
       (replace-match "[[\\2][\\1]]" nil nil))))
 
+;; =======  TASKS  =======
+;; `org-edna' (cond. task completion)
+;; `org-gtd' (get-things-done)
+;; `org-project-capture' (integrate org-mode & projectile)
+;; =======================
 (use-package org-edna
-  :after org
-  :functions org-edna-mode
+  :hook (org-mode . org-edna-mode)
   :config
   (org-edna-mode 1))
 
@@ -47,7 +52,13 @@
   (org-gtd-refile-to-any-target nil)
   (org-gtd-refile-prompt-for-types
    '(single-action project-heading project-task calendar someday tickler
-		   habit knowledge quick-action trash))
+		   habit quick-action trash))
+  (org-refile-targets
+   '(("~/org/tasks/someday.org"  :maxlevel . 2)
+     ("~/org/tasks/tickler.org"  :maxlevel . 2)
+     ("~/org/tasks/projects.org" :maxlevel . 3)
+     ("~/org/tasks/calendar.org" :maxlevel . 2)
+     ("~/org/tasks/habit.org"    :maxlevel . 2)))
   
   :config
   (org-edna-mode 1)
@@ -96,18 +107,11 @@
    ("C-c p p" . org-project-capture-project-todo-completing-read)
    ("C-c p a" . org-project-capture-agenda-for-current-project)))
 
-(use-package org-caldav
-  :after (org org-gtd org-project-capture)
-  :custom
-  (org-caldav-url "https://use11.thegood.cloud/remote.php/dav/calendars/colinloeffler%40gmail.com")
-  (org-caldav-calendar-id "org-tasks")
-  (org-caldav-inbox (expand-file-name "~/org/tasks/inbox.org"))
-  (org-caldav-files nil)
-  (org-icalendar-timezone "America/Chicago")
-  (org-icalendar-include-todo 'all)
-  (org-caldav-sync-todo t)
-  (org-icalendar-categories '(local-tags)))
 
+;; =======  KNOWLEDGE  =======
+;; `org-roam' (capture and organize knowledge)
+;; `org-roam-ql' (query knowledge-db)
+;; ===========================
 (use-package org-roam
   :after org
   :functions
@@ -134,6 +138,34 @@
 	       ("v" . org-roam-ql-buffer-dispatch))
          (:map minibuffer-mode-map
                ("C-c n i" . org-roam-ql-insert-node-title))))
+
+
+;; =======  MISC  =======
+;; `org-superstar' (pretty bullets)
+;; `org-caldev' (nextcloud cal sync)
+;; `org-make-toc' (table-of-contents)
+;; ======================
+(use-package org-superstar
+  :hook (org-mode . org-superstar-mode)
+  :custom
+  (org-superstar-special-todo-items t)
+  (org-superstar-todo-bullet-alist '(("TODO(t)" . 8226)
+				     ("NEXT(n)" . 8227)
+				     ("WAIT(w)" . 8259)
+				     ("DONE(d)" . 10687)
+				     ("CNCL(c)" . 9702))))
+
+(use-package org-caldav
+  :after (org org-gtd org-project-capture)
+  :custom
+  (org-caldav-url "https://use11.thegood.cloud/remote.php/dav/calendars/colinloeffler%40gmail.com")
+  (org-caldav-calendar-id "org-tasks")
+  (org-caldav-inbox (expand-file-name "~/org/tasks/inbox.org"))
+  (org-caldav-files nil)
+  (org-icalendar-timezone "America/Chicago")
+  (org-icalendar-include-todo 'all)
+  (org-caldav-sync-todo t)
+  (org-icalendar-categories '(local-tags)))
 
 (use-package org-make-toc
   :defer t
