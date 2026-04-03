@@ -18,7 +18,8 @@
 (declare-function dirvish "dirvish")
 (declare-function transient-define-prefix "transient")
 (use-package projectile
-  :hook (emacs-startup . projectile-mode)
+  :defer t
+  :command projectile-mode
 
   :functions
   projectile-project-root user/file-explorer-at-project-root project-projectile
