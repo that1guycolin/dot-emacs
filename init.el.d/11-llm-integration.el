@@ -81,14 +81,10 @@ to the user's device.")
 (declare-function auth-source-pick-first-password "auth-source")
 (use-package gptel
   :defer t
-  :commands
-  gptel
-  gptel-send
+  :commands gptel gptel-send
   
   :functions
-  gptel-make-ollama
-  gptel-make-openai
-  gptel-get-backend
+  gptel-make-ollama gptel-make-openai gptel-get-backend
 
   :defines
   gptel-backend user/gptel--backend-map
