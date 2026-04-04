@@ -143,7 +143,6 @@ Otherwise, use the lucid build."
   (defun user/emacsclient-dashboard (frame)
     "Show the dashboard every time a new FRAME is opened."
     (with-selected-frame frame
-      (user/smart-dashboard-items)
       (dashboard-refresh-buffer)))
   (add-hook 'after-make-frame-functions #'user/emacsclient-dashboard))
 
