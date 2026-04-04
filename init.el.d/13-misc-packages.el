@@ -34,17 +34,8 @@
   :hook
   ((shell-mode  . with-editor-export-editor)
    (eshell-mode . with-editor-export-editor)
-   (vterm-mode  . with-editor-export-editor)
-   (term-exec   . with-editor-export-editor))
-  :config
-  (defun user/emacsclient-for-session ()
-    "If XDG_DESKTOP_SESSION = \"wayland\", use the Emacs pgtk build.
-Otherwise, use the lucid build."
-    (let ((session-type (getenv "XDG_SESSION_TYPE")))
-      (if (and session-type (string= session-type "wayland"))
-          (setq with-editor-emacsclient-program-suffixes (list "-pgtk"))
-	(setq  with-editor-emacsclient-program-suffixes (list "-lucid"))
-	(or session-type "Unknown")))))
+   (vterm-mode  . with-editor-export-editor)))
+:config
 
 
 ;; =======  MISC  =======
