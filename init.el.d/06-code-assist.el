@@ -98,6 +98,7 @@ See URL `https://github.com/rvben/rumdl'."
   (add-to-list 'flycheck-checkers 'markdown-rumdl)
   (add-hook 'markdown-mode-hook (lambda ()
                                   (flycheck-select-checker 'markdown-rumdl)))
+
   (defvar user/vale-config (expand-file-name ".vale.ini" user-emacs-directory)
     "Path to the .vale.ini file to use when running vale with flycheck.")
   (unless (file-exists-p (expand-file-name ".vale-styles" user-emacs-directory))
@@ -111,7 +112,8 @@ See URL `https://github.com/rvben/rumdl'."
     :error-patterns
     ((warning line-start (file-name) ":" line ":" column ":"
               (id (one-or-more (not (any ":")))) ":" (message) line-end))
-    :modes (markdown-mode gfm-mode text-mode org-mode))
+    :modes (markdown-mode gfm-mode text-mode org-mode org-gtd-clarify-mode
+			  flycheck-error-message-mode))
   (add-to-list 'flycheck-checkers 'text-vale)
   (add-hook 'text-mode-hook
             (lambda ()
