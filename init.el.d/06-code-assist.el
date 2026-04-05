@@ -119,49 +119,11 @@ See URL `https://github.com/rvben/rumdl'."
             (lambda ()
               (flycheck-select-checker 'text-vale))))
 
-(use-package flyover
+(use-package flycheck-pos-tip
   :after flycheck
-  :hook (flycheck-mode . flyover-mode)
-  :functions
-  flyover-toggle user/no-flyover-if-lsp
-  
-  :init (setq flyover-checkers '(flycheck))
-  
-  :custom
-  (flyover-levels '(error warning info))
-  (flyover-use-theme-colors t)
-  (flyover-background-lightness 45)
-  (flyover-text-tint 'lighter)
-  (flyover-text-tint-percent 50)
-  (flyover-icon-tint 'lighter)
-  (flyover-icon-tint-percent 50)
-  (flyover-icon-background-tint 'darker)
-  (flyover-icon-background-tint-percent 50)
-  (flyover-border-style 'arrow)
-  (flyover-border-match-icon t)
-  (flyover-hide-checker-name nil)
-  (flyover-show-error-id t)
-  (flyover-show-virtual-line t)
-  (flyover-virtual-line-type 'curved-arrow)
-  (flyover-line-position-offset 1)
-  (flyover-wrap-messages t)
-  (flyover-max-line-length 80)
-  (flyover-debounce-interval 0.1)
-  (flyover-cursor-debounce-interval 0.2)
-  (flyover-display-mode 'hide-on-same-line)
-  (flyover-hide-during-completion t)
-
+  :functions flycheck-pos-tip-mode
   :config
-  (defun user/no-flyover-if-lsp ()
-    "Activate flyover-mode if flycheck-mode is active and lsp-mode is not."
-    (when (and (fboundp 'flyover-mode)
-	       (not (and (boundp 'lsp-mode) lsp-mode)))
-      (flyover-mode 1))
-    (add-hook 'flycheck-mode-hook #'user/no-flyover-if-lsp)
-    
-    (bind-keys
-     :map flycheck-mode-map
-     ("C-c C-&" . flyover-toggle))))
+  (flycheck-pos-tip-mode 1))
 
 (use-package flycheck-color-mode-line
   :after flycheck
