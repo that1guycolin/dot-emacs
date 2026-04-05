@@ -98,22 +98,24 @@ See URL `https://github.com/rvben/rumdl'."
   (add-to-list 'flycheck-checkers 'markdown-rumdl)
   (add-hook 'markdown-mode-hook (lambda ()
                                   (flycheck-select-checker 'markdown-rumdl)))
-
-  (flycheck-define-checker vale
+  (defvar user/vale-config (expand-file-name ".vale.ini" user-emacs-directory)
+    "Path to the .vale.ini file to use when running vale with flycheck.")
+  (unless (file-exists-p (expand-file-name ".vale-styles" user-emacs-directory))
+    (let ((command (format "vale --config %s sync >/dev/null" user/vale-config)))
+      (shell-command command)))
+  (flycheck-define-checker text-vale
     "A Vale checker for prose."
-    :command ("vale" "--output" "line" source)
+    :command
+    ("vale" "--config" (eval user/vale-config) "--no-global" "--output" "line"
+     source)
     :error-patterns
     ((warning line-start (file-name) ":" line ":" column ":"
               (id (one-or-more (not (any ":")))) ":" (message) line-end))
     :modes (markdown-mode gfm-mode text-mode org-mode))
-  (add-to-list 'flycheck-checkers 'vale)
-  (add-hook 'org-mode-hook
-            (lambda ()
-              (flycheck-select-checker 'vale)))
-
+  (add-to-list 'flycheck-checkers 'text-vale)
   (add-hook 'text-mode-hook
             (lambda ()
-              (flycheck-select-checker 'vale))))
+              (flycheck-select-checker 'text-vale))))
 
 (use-package flyover
   :after flycheck

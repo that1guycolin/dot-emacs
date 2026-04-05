@@ -33,5 +33,6 @@ transient/
 tree-sitter/
 tutorial/
 url/
+.vale-styles/
 .vscode/
 wip/
