@@ -105,8 +105,9 @@
 
   (with-eval-after-load 'projectile
     (dolist (project (projectile-relevant-known-projects))
-      (let ((ptodo (concat project "TODO")))
-	(add-to-list 'org-refile-targets `(,ptodo :maxlevel . 2)))))
+      (let ((ptodo (expand-file-name "TODO" project)))
+	(when (file-exists-p ptodo)
+	  (add-to-list 'org-refile-targets `(,ptodo :maxlevel . 2))))))
   
   (defun user/org-project-capture--add-captured-at-timestamp ()
     "Add ORG_GTD_CAPTURED_AT property to level-1 headings.
@@ -236,7 +237,8 @@ during org-gtd's organization workflow."
 (use-package org-caldav
   :after (org org-gtd org-project-capture)
   :custom
-  (org-caldav-url "https://use11.thegood.cloud/remote.php/dav/calendars/colinloeffler%40gmail.com")
+  (org-caldav-url
+   "https://use11.thegood.cloud/remote.php/dav/calendars/colinloeffler%40gmail.com")
   (org-caldav-calendar-id "org-tasks")
   (org-caldav-inbox (expand-file-name "~/org/tasks/inbox.org"))
   (org-caldav-files nil)
@@ -256,13 +258,13 @@ during org-gtd's organization workflow."
 (use-package pdf-tools
   :defer t
   :mode ("\\.pdf\\'" . pdf-view-mode)
-  :functions pdf-tools-install
+  :functions pdf-tools-install pdf-view-midnight-minor-mode
   :custom
   (pdf-view-display-size 'fit-page)
   (pdf-info-asynchronous t)
   :config
   (pdf-tools-install)
-  (add-hook 'pdf-view-mode-hook 'pdf-view-midnight-minor-mode))
+  (add-hook 'pdf-view-mode-hook #'pdf-view-midnight-minor-mode))
 
 (use-package el2org
   :defer t
@@ -272,7 +274,8 @@ during org-gtd's organization workflow."
    ("C-c 2 h" . el2org-generate-html)
    ("C-c 2 o" . el2org-generate-org)))
 
-
+(use-package org-autolist
+  :hook (org-mode . org-autolist-mode))
 
 (provide '10-org-mode-extensions)
 ;;; 10-org-mode-extensions.el ends here
