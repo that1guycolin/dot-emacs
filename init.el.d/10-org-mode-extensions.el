@@ -258,6 +258,14 @@ during org-gtd's organization workflow."
   (pdf-tools-install)
   (add-hook 'pdf-view-mode-hook 'pdf-view-midnight-minor-mode))
 
+(use-package el2org
+  :defer t
+  :bind
+  (("C-c 2 f" . el2org-generate-file)
+   ("C-c 2 r" . el2org-generate-readme)
+   ("C-c 2 h" . el2org-generate-html)
+   ("C-c 2 o" . el2org-generate-org)))
+
 
 
 (provide '10-org-mode-extensions)
