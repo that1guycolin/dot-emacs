@@ -19,7 +19,10 @@
 (declare-function transient-define-prefix "transient")
 (use-package projectile
   :functions
-  projectile-mode projectile-project-root user/file-explorer-at-project-root project-projectile user/projectile-ignore-elpaca-packages user/projectile-commander-dispatch user/dired-or-dirvish-at-project-root
+  projectile-mode projectile-project-root user/file-explorer-at-project-root
+  project-projectile user/projectile-ignore-elpaca-packages
+  user/projectile-commander-dispatch user/dired-or-dirvish-at-project-root
+  projectile-ag projectile-ripgrep
 
   :custom
   (projectile-project-search-path '("~/projects/"
@@ -60,8 +63,6 @@ If not active, call Dired instead of Dirvish."
   (setq projectile-ignored-project-function
         #'user/projectile-ignore-elpaca-packages)
 
-  (declare-function projectile-ag "projectile")
-  (declare-function projectile-ripgrep "projectile")
   (defun user/interactive-projectile-ag ()
     "Call projectile-ag interactively."
     (interactive)
@@ -112,6 +113,8 @@ The keybindings are exactly the same."
   treemacs-filewatch-mode treemacs-git-mode treemacs-git-commit-diff-mode
   treemacs-select-window treemacs-project-follow-mode treemacs-root-up
   treemacs-get-local-window treemacs-hide-gitignored-files-mode
+  treemacs--select-workspace-by-name treemacs-switch-workspace
+  user/treemacs-switch-workspace-and-focus
 
   :custom
   (treemacs-width 35)
@@ -122,7 +125,15 @@ The keybindings are exactly the same."
   (treemacs-git-mode 'deferred)
   (treemacs-git-commit-diff-mode 1)
   (add-hook 'treemacs-post-buffer-init-hook
-	    (lambda () (treemacs-hide-gitignored-files-mode 1)))
+	    #'treemacs-hide-gitignored-files-mode)
+
+  (defun user/treemacs-switch-workspace-and-focus ()
+    "Run `treemacs-switch-workspace' and ensure the Treemacs window is focused."
+    (interactive)
+    (call-interactively #'treemacs-switch-workspace)
+    (let ((treemacs-win (treemacs-get-local-window)))
+      (when (and treemacs-win (not (eq treemacs-win (selected-window))))
+	(select-window treemacs-win))))
   
   (bind-keys
    :map treemacs-mode-map
@@ -153,7 +164,7 @@ The keybindings are exactly the same."
    
    ["Treemacs - Workspaces"
     ("w e" "Edit" treemacs-edit-workspaces)
-    ("w s" "Switch" treemacs-switch-workspace)
+    ("w s" "Switch" user/treemacs-switch-workspace-and-focus)
     ("w n" "New" treemacs-create-workspace)
     ("w r" "Rename" treemacs-rename-workspace)
     ("w d" "Delete" treemacs-remove-workspace)]
