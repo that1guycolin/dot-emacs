@@ -179,6 +179,12 @@ during org-gtd's organization workflow."
    ("C-c p p" . org-project-capture-project-todo-completing-read)
    ("C-c p a" . org-project-capture-agenda-for-current-project)))
 
+(use-package magit-org-todos
+  :after magit
+  :functions magit-org-todos-autoinsert
+  :config
+  (magit-org-todos-autoinsert))
+
 
 ;; =======  KNOWLEDGE  =======
 ;; `org-roam' (capture and organize knowledge)
