@@ -35,7 +35,6 @@
   ((shell-mode  . with-editor-export-editor)
    (eshell-mode . with-editor-export-editor)
    (vterm-mode  . with-editor-export-editor)))
-:config
 
 
 ;; =======  MISC  =======
