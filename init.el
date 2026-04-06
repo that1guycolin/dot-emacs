@@ -3,10 +3,7 @@
 ;; Created date: 2026-03-09
 
 ;; Author: Loeffler, Colin <that1guycolin@gmail.com>
-;; URL: https://github.com/that1guycolin/dot-emacs
-;; Version: 0.3.0
-;; Package-Requires: (emacs 30.2)
-;; Keywords: emacs config elisp emacs-lisp
+;; URL: https://github.com/that1guycolin/dot-Emacs
 
 ;; This file is NOT part of GNU Emacs.
 
@@ -35,17 +32,17 @@
 ;; adaptive-wrap, adjust-parens, apheleia, auto-rename-tag, bash-ts-mode, cape,
 ;; checkdoc, cmake-ts-mode, corfu, dap-mode, dashboard, deadgrep, diredfl,
 ;; dirvish, disproject, eask-mode, editorconfig, elisp-def, elisp-dev-mcp,
-;; elpaca, elpaca-use-package, emacs, emacs-everywhere, emacs-lisp-mode, emms,
+;; elpaca, elpaca-use-package, Emacs, Emacs-everywhere, Emacs-lisp-mode, emms,
 ;; envrc, eros, exec-path-from-shell, fish-mode, flycheck,
 ;; flycheck-color-mode-line, flycheck-eask, flyover, forge, gcmh, git-modes,
 ;; gptel, gptel-commit, gptel-forge-prs, gptel-magit, grip-mode, helpful, ielm,
 ;; json-ts-mode, kdl-mode, lisp-mode, lisp-semantic-hl, live-py-mode, lsp-mode,
-;; lsp-treemacs, lsp-ui, macrostep, magit, magit-git-toolbelt, magit-pre-commit,
+;; lsp-treEmacs, lsp-ui, macrostep, magit, magit-git-toolbelt, magit-pre-commit,
 ;; marginalia, markdown-mode, markdown-toc, minions, mistty, modern-sh,
 ;; nerd-icons, nerd-icons-corfu, nxml-mode, orderless, org, org-gtd, popper,
 ;; projectile, python-ts-mode, python-x, savehist, sly, smartparens, suggest,
-;; tab-line-nerd-icons, toml-ts-mode, transient, treemacs, treemacs-magit,
-;; treemacs-nerd-icons, treemacs-projectile, treesit, treesit-auto, uv-mode,
+;; tab-line-nerd-icons, toml-ts-mode, transient, treEmacs, treEmacs-magit,
+;; treEmacs-nerd-icons, treEmacs-projectile, treesit, treesit-auto, uv-mode,
 ;; vertico, vterm, which-key, with-editor, yaml-pro, yaml-ts-mode, yasnippet,
 ;; yasnippet-capf, yasnippet-snippets
 
@@ -109,3 +106,4 @@
 
 (provide 'init)
 ;;; init.el ends here
+
