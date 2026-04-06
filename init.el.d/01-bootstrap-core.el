@@ -140,7 +140,11 @@
    (expand-file-name "tasks/inbox.org" org-directory))
   (org-insert-mode-line-in-empty-file t)
   :config
-  (setq org-agenda-files (list org-default-notes-file))
+  (setq org-refile-targets '(("~/org/tasks/someday.org"  (:maxlevel . 2))
+			     ("~/org/tasks/tickler.org"  (:maxlevel . 2))
+			     ("~/org/tasks/projects.org" (:maxlevel . 3))
+			     ("~/org/tasks/calendar.org" (:maxlevel . 2))
+			     ("~/org/tasks/habit.org"    (:maxlevel . 2))))
   (bind-keys
    ("C-c o o" . org-mode)
    ("C-c o l" . org-store-link)

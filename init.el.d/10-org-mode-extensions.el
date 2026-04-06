@@ -7,16 +7,8 @@
 ;; Provide extensions for Emacs' Org-mode.
 
 ;;; Code:
-;; =======  VAR & FUNC  =======
 (defvar org-directory)
-
-(defun user/convert-md-links-to-org ()
-  "Convert all [label](link) patterns in the current buffer to [[link][label]]."
-  (interactive)
-  (save-excursion
-    (goto-char (point-min))
-    (while (re-search-forward "\\[\\([^]]+\\)\\](\\([^)]+\\))" nil t)
-      (replace-match "[[\\2][\\1]]" nil nil))))
+(defvar org-refile-targets)
 
 ;; =======  TASKS  =======
 ;; `org-edna' (cond. task completion)
@@ -40,29 +32,23 @@
   (setq
    org-gtd-update-ack "4.0.0"
    org-gtd-directory (expand-file-name "tasks" org-directory))
-
   :custom
-  (org-todo-keywords
-   '((sequence "TODO(t)" "NEXT(n)" "WAIT(w)" "|" "DONE(d)" "CNCL(c)")))
-  (org-gtd-keyword-mapping '((todo     . "TODO(t)")
-                             (next     . "NEXT(n)")
-                             (wait     . "WAIT(w)")
-			     (done     . "DONE(d)")
-                             (canceled . "CNCL(c)")))
   (org-gtd-refile-to-any-target nil)
-  (org-gtd-refile-prompt-for-types
-   '(single-action
-     project-heading project-task calendar someday tickler habit quick-action
-     trash))
-  (org-refile-targets
-   '(("~/org/tasks/someday.org"  :maxlevel . 2)
-     ("~/org/tasks/tickler.org"  :maxlevel . 2)
-     ("~/org/tasks/projects.org" :maxlevel . 3)
-     ("~/org/tasks/calendar.org" :maxlevel . 2)
-     ("~/org/tasks/habit.org"    :maxlevel . 2)))
   
   :config
   (org-edna-mode 1)
+  (setq
+   org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "WAIT(w)" "|"
+				 "DONE(d)" "CNCL(c)"))
+   org-gtd-keyword-mapping '((todo     . "TODO(t)")
+                             (next     . "NEXT(n)")
+                             (wait     . "WAIT(w)")
+			     (done     . "DONE(d)")
+                             (canceled . "CNCL(c)"))
+   org-gtd-refile-prompt-for-types '(single-action
+				     project-heading project-task calendar
+				     someday tickler habit quick-action))
+
   (bind-keys
    ("C-c d c" . org-gtd-capture)
    ("C-c d e" . org-gtd-engage)
@@ -88,101 +74,36 @@
 	   :protocol https
 	   :inherit t
 	   :depth treeless)
-  :after (org projectile)
+  :after org
   :functions
   org-project-capture-capture-for-current-project
   org-project-capture-project-todo-completing-read
   org-project-capture-agenda-for-current-project
-  org-project-capture-per-project
-  :defines org-project-capture-capture-template
 
-  :custom
-  (org-project-capture-per-project-filepath "TODO")
   :config
   (require 'org-projectile)
-  (setq org-project-capture-default-backend
-	(make-instance 'org-project-capture-projectile-backend))
+  (setq
+   org-project-capture-default-backend (make-instance
+					'org-project-capture-projectile-backend)
+   org-project-capture-per-project-filepath "TODO")
 
   (with-eval-after-load 'projectile
-    (dolist (project (projectile-relevant-known-projects))
+    (dolist (project projectile-known-projects)
       (let ((ptodo (expand-file-name "TODO" project)))
-	(when (file-exists-p ptodo)
-	  (add-to-list 'org-refile-targets `(,ptodo :maxlevel . 2))))))
+  	(when (file-exists-p ptodo)
+  	  (add-to-list 'org-refile-targets `(,ptodo (:maxlevel . 2)))))))
   
-  (defun user/org-project-capture--add-captured-at-timestamp ()
-    "Add ORG_GTD_CAPTURED_AT property to level-1 headings.
-Used as :before-finalize hook in org-project-capture templates.
-All headings in a multi-item capture get the same timestamp."
-    (let ((timestamp (format-time-string (org-time-stamp-format t t))))
-      (org-map-entries
-       (lambda ()
-	 (unless (org-entry-get nil "ORG_GTD_CAPTURED_AT")
-           (org-entry-put nil "ORG_GTD_CAPTURED_AT" timestamp)))
-       "LEVEL=1"
-       nil)))
-
-  (defun user/org-project-capture--gtd-template ()
-    "Return an org-gtd compatible capture template for project TODOs.
-This template adds a :PROPERTIES: drawer with ORG_GTD and
-ORG_GTD_CAPTURED_AT properties, similar to org-gtd-capture."
-    `("p" "Project TODO" entry
-      (function . org-project-capture--target-location)
-      "* %?\n\n\n  %i"
-      :kill-buffer t
-      :before-finalize user/org-project-capture--add-captured-at-timestamp))
-  (setq org-project-capture-capture-template
-	(user/org-project-capture--gtd-template))
-
-  (defun user/org-gtd-refile-to-project-todo ()
-    "Refile an org-gtd item to a projectile project's TODO file.
-Prompts the user to select from all projectile projects. If the
-project's TODO file doesn't exist, it will be created. If 'None'
-is selected, the item is refiled to the default org-gtd file.
-
-This function is designed to be used as an interactive command
-during org-gtd's organization workflow."
-    (interactive)
-    (if (featurep 'projectile)
-	(let* ((projects (projectile-relevant-known-projects))
-	       (project-names (sort (mapcar #'file-name-nondirectory
-					    (mapcar #'directory-file-name
-						    projects))
-				    #'string-lessp))
-	       (selection (completing-read
-			   "Refile to project TODO: "
-			   (cons "None" project-names)
-			   nil t)))
-	  (if (string= selection "None")
-	      (org-gtd-refile--do org-gtd--organize-type
-				  org-gtd-action-template)
-	    (let* ((project-path (cl-find-if
-				  (lambda (p)
-				    (string= (file-name-nondirectory
-					      (directory-file-name p))
-					     selection))
-				  projects)))
-	      (when project-path
-		(let* ((todo-file (expand-file-name "TODO" project-path))
-		       (category (file-name-nondirectory
-				  (directory-file-name project-path))))
-		  (unless (file-exists-p todo-file)
-		    (with-temp-file todo-file
-		      (insert "#+title: " category "\n")))
-		  (let ((org-refile-targets
-			 (list (cons todo-file
-				     (cons :maxlevel 2)))))
-		    (org-refile nil nil nil
-				(format "Refile to %s TODO: " category))))))))
-      (user-error "Projectile is not available")))
-
   (bind-keys
    ("C-c p c" . org-project-capture-capture-for-current-project)
    ("C-c p p" . org-project-capture-project-todo-completing-read)
    ("C-c p a" . org-project-capture-agenda-for-current-project)))
 
+
 (use-package magit-org-todos
   :after magit
   :functions magit-org-todos-autoinsert
+  :custom
+  (magit-org-todos-filename "TODO")
   :config
   (magit-org-todos-autoinsert))
 
@@ -216,7 +137,7 @@ during org-gtd's organization workflow."
   :bind ((:map org-roam-mode-map
 	       ("v" . org-roam-ql-buffer-dispatch))
          (:map minibuffer-mode-map
-               ("C-c n i" . org-roam-ql-insert-node-title))))
+	       ("C-c n i" . org-roam-ql-insert-node-title))))
 
 
 ;; =======  MISC  =======
@@ -276,6 +197,41 @@ during org-gtd's organization workflow."
 
 (use-package org-autolist
   :hook (org-mode . org-autolist-mode))
+
+
+;; =======  FUNCTIONS & VARIABLES  =======
+(defun user/convert-md-links-to-org ()
+  "Convert all [label](link) patterns in the current buffer to [[link][label]]."
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (while (re-search-forward "\\[\\([^]]+\\)\\](\\([^)]+\\))" nil t)
+      (replace-match "[[\\2][\\1]]" nil nil))))
+
+(defun user/remove-org-todo ()
+  "Delete a TODO file in the org-directory if it exists.
+
+Because the org-directory is a git repo, there is a possibility of
+accidentally createing a TODO file.  A TODO file in the org-directory is
+by definition redundant, since any TODO items should go in the tasks
+folder."
+  (interactive)
+  (let ((org-dir-todo (expand-file-name "TODO" org-directory)))
+    (if (file-exists-p org-dir-todo)
+	(progn
+	  (delete-file org-dir-todo)
+	  (message "Removed org-directory TODO file."))
+      (when (called-interactively-p 'any)
+	(message "There is no TODO file in the org directory.")))))
+
+(add-hook 'org-mode-hook #'user/remove-org-todo)
+(let ((tmp-agenda-list (mapcar #'car org-refile-targets)))
+  (dolist (file '("~/org/tasks/someday.org" "~/org/TODO"
+		  "~/org/tasks/habit.org"))
+    (when (member file tmp-agenda-list)
+      (setq tmp-agenda-list (remove file tmp-agenda-list))))
+  (setq org-agenda-files tmp-agenda-list))
+
 
 (provide '10-org-mode-extensions)
 ;;; 10-org-mode-extensions.el ends here
