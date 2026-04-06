@@ -103,29 +103,14 @@
   (dashboard-vertically-center-content t)
   (dashboard-banner-logo-title "Welcome back")
   (dashboard-projects-backend 'projectile)
-  (dashboard-items '(
-		     ;; (agenda . 10)
-		     (projects . 5)
-		     (recents . 5)))
+  (dashboard-items `((projects . ,(length projectile-known-projects))
+		     (recents  . 5)))
   
   :config
   (add-hook 'elpaca-after-init-hook #'dashboard-insert-startupify-lists)
   (add-hook 'elpaca-after-init-hook #'dashboard-initialize)
   (dashboard-setup-startup-hook)
 
-  (defun user/dashboard-cleanup-org-buffers ()
-    "Close any `org-agenda' buffers that are open but unmodified."
-    (interactive)
-    (let ((agenda-files (mapcar #'expand-file-name (org-agenda-files))))
-      (dolist (buf (buffer-list))
-        (let ((file (buffer-file-name buf)))
-          (when (and file
-                     (member (expand-file-name file) agenda-files)
-                     (not (buffer-modified-p buf))
-                     (not (get-buffer-window buf)))
-            (progn
-	      (kill-buffer buf)
-	      (message "Cleaned org-agenda buffers.")))))))
   (bind-keys
    :map dashboard-mode-map
    ("c" . user/dashboard-cleanup-org-buffers))
@@ -135,6 +120,7 @@
     (with-selected-frame frame
       (dashboard-refresh-buffer)))
   (add-hook 'after-make-frame-functions #'user/emacsclient-dashboard))
+
 
 (provide '13-misc-packages)
 ;;; 13-misc-packages.el ends here
