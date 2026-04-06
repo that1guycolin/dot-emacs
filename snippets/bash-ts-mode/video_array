@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: video_array
+# key: videoarray
+# --
+video_array["${1:download_filename}"]="${2:desired_filename}"
+$0
