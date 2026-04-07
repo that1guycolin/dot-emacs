@@ -10,39 +10,39 @@
 ;;; Code:
 ;; =======  VARIABLES & FUNCTIONS  =======
 (defvar user/ollama-alist
-  '((gpt-oss:120b-cloud     . (* 16 4096))
-    (llama3.1:latest        . (* 16 4096))
-    (qwen3-coder:480b-cloud . (* 16 4096))
-    (qwen3-coder-next:cloud . (* 16 4096))
-    (qwen3.5:cloud          . (* 16 4096))
-    (granite-code:8b        .  (* 2 4096))
-    (llama3:8b              .  (* 2 4096))
-    (llama3.1:8b            .  (* 1 4096))
-    (opencoder:8b           .  (* 2 4096))
-    (qwen3:8b               .  (* 2 4096))
-    (codellama:7b-instruct  .  (* 1 4096))
-    (qwen2.5-coder:7b       .  (* 2 4096))
-    (starcoder2:7b          .  (* 2 4096))
-    (qwen3:4b               .  (* 2 4096))
-    (phi4-mini:3.8b         .  (* 2 4096))
-    (granite-code:3b        .  (* 1 4096))
-    (granite3.1-moe:3b      .  (* 1 4096))
-    (llama3.2:3b            .  (* 1 4096))
-    (qwen2.5-coder:3b       .  (* 1 4096))
-    (stable-code:3b         .  (* 1 4096))
-    (starcoder2:3b          .  (* 1 4096))
-    (codegemma:2b           .  (* 1 4096))
-    (qwen3:1.7b             .  (* 1 4096))
-    (opencoder:1.5b         .  (* 1 4096))
-    (qwen2.5:1.5b           .  (* 1 4096))
-    (qwen2.5-coder:1.5b     .  (* 1 4096))
-    (yi-coder:1.5b          .  (* 1 4096))
-    (granite3.1-moe:1b      .  (* 1 4096))
-    (llama3.2:1b            .  (* 1 4096))
-    (starcoder:1b           .  (* 1 4096))
-    (qwen3:0.6b             .  (* 1 4096))
-    (qwen2.5:0.5b           .  (* 1 4096))
-    (qwen2.5-coder:0.5b     .  (* 1 4096)))
+  `((gpt-oss:120b-cloud     . ,(* 16 4096))
+    (llama3.1:latest        . ,(* 16 4096))
+    (qwen3-coder:480b-cloud . ,(* 16 4096))
+    (qwen3-coder-next:cloud . ,(* 16 4096))
+    (qwen3.5:cloud          . ,(* 16 4096))
+    (granite-code:8b        . ,(* 2 4096))
+    (llama3:8b              . ,(* 2 4096))
+    (llama3.1:8b            . ,(* 1 4096))
+    (opencoder:8b           . ,(* 2 4096))
+    (qwen3:8b               . ,(* 2 4096))
+    (codellama:7b-instruct  . ,(* 1 4096))
+    (qwen2.5-coder:7b       . ,(* 2 4096))
+    (starcoder2:7b          . ,(* 2 4096))
+    (qwen3:4b               . ,(* 2 4096))
+    (phi4-mini:3.8b         . ,(* 2 4096))
+    (granite-code:3b        . ,(* 1 4096))
+    (granite3.1-moe:3b      . ,(* 1 4096))
+    (llama3.2:3b            . ,(* 1 4096))
+    (qwen2.5-coder:3b       . ,(* 1 4096))
+    (stable-code:3b         . ,(* 1 4096))
+    (starcoder2:3b          . ,(* 1 4096))
+    (codegemma:2b           . ,(* 1 4096))
+    (qwen3:1.7b             . ,(* 1 4096))
+    (opencoder:1.5b         . ,(* 1 4096))
+    (qwen2.5:1.5b           . ,(* 1 4096))
+    (qwen2.5-coder:1.5b     . ,(* 1 4096))
+    (yi-coder:1.5b          . ,(* 1 4096))
+    (granite3.1-moe:1b      . ,(* 1 4096))
+    (llama3.2:1b            . ,(* 1 4096))
+    (starcoder:1b           . ,(* 1 4096))
+    (qwen3:0.6b             . ,(* 1 4096))
+    (qwen2.5:0.5b           . ,(* 1 4096))
+    (qwen2.5-coder:0.5b     . ,(* 1 4096)))
   "Alist containing Ollama models and their context length.
 Models on this list are either cloud-based or have already been downloaded
 to the user's device.")
@@ -118,8 +118,7 @@ to the user's device.")
 The user is allowed to select their already-active backend, so this function
 doubles as a model-switcher."
     (interactive)
-    (let* (
-           (backend-name
+    (let* ((backend-name
 	    (completing-read
 	     (format "Backend (current: %s): "
 		     (gptel-backend-name gptel-backend))
@@ -139,7 +138,7 @@ doubles as a model-switcher."
       (setq gptel-backend (gptel-get-backend gptel-name)
 	    gptel-model   (if (consp (car models))
 			      (cdr (assoc model models))
-			    model))
+			    (intern model)))
       (message "[gptel] Backend → %s | Model → %s"
 	       backend-name gptel-model))))
 
@@ -265,7 +264,8 @@ doubles as a model-switcher."
     (interactive)
     (let* ((model-names (mapcar #'car user/ollama-alist))
            (choice (completing-read "Select model: " model-names nil t))
-           (ctx (cdr (assoc choice user/ollama-alist))))
+	   (choice-sym (intern choice))
+           (ctx (cdr (assoc choice-sym user/ollama-alist))))
       (setopt ellama-provider
               (make-llm-ollama
                :chat-model choice
