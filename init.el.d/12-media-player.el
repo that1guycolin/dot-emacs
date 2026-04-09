@@ -8,10 +8,10 @@
 (use-package emms
   :defer t
   :bind
-  (("<f6>"    . emms-browse)
-   ("C-c p b" . emms-browse)
+  (("<f6>"    . emms-browser)
+   ("C-c m b" . emms-browser)
    ("<f7>"    . emms-smart-browse)
-   ("C-c p s" . emms-smart-browse))
+   ("C-c m s" . emms-smart-browse))
 
   :functions
   emms-all emms-seek emms-player-mpv-pause emms-player-mpv-resume
