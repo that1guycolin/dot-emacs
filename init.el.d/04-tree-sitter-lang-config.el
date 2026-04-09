@@ -42,8 +42,7 @@
 	       "master" "tsx/src")
 	  (typescript "https://github.com/tree-sitter/tree-sitter-typescript"
 		      "master" "typescript/src")
-	  (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
-  (add-to-list 'treesit-extra-load-path "/usr/lib"))
+	  (yaml "https://github.com/ikatyang/tree-sitter-yaml"))))
 
 (use-package treesit-auto
   :functions
