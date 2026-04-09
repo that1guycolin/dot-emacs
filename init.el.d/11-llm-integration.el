@@ -47,9 +47,6 @@
 Models on this list are either cloud-based or have already been downloaded
 to the user's device.")
 
-(defvar user/ollama-model-names (mapcar #'car user/ollama-alist)
-  "A simple list of available Ollama model names.")
-
 (defvar user/openrouter-list
   '(
     openai/gpt-oss-120b:free qwen/qwen3-coder:free
@@ -95,7 +92,7 @@ to the user's device.")
    gptel-backend (gptel-make-ollama "Ollama"
 		   :host "localhost:11434"
 		   :stream t
-		   :models user/ollama-model-names)
+		   :models (mapcar #'car user/ollama-alist))
    gptel-model 'llama3.2:3b)
 
   (gptel-make-openai "OpenRouter"
@@ -109,7 +106,7 @@ to the user's device.")
     :models user/openrouter-list)
 
   (defvar user/gptel--backend-map
-    '(("Ollama"      . (name "Ollama"      models user/ollama-model-names))
+    '(("Ollama"      . (name "Ollama"   models (mapcar #'car user/ollama-alist)))
       ("OpenRouter"  . (name "OpenRouter"  models user/openrouter-alist)))
     "Alist mapping display names to backend metadata plists.")
 
@@ -143,8 +140,11 @@ doubles as a model-switcher."
 	       backend-name gptel-model))))
 
 (use-package gptel-magit
+  :functions gptel-magit-install
   :after gptel
-  :hook (magit-mode . gptel-magit-install))
+  :hook (magit-mode . (lambda ()
+			(when (featurep 'gptel)
+			  (gptel-magit-install)))))
 
 (defvar git-commit-mode-map)
 (use-package gptel-commit
@@ -155,10 +155,11 @@ doubles as a model-switcher."
   (gptel-commit-stream t)
   :config
   (with-eval-after-load 'magit
-    (bind-keys
-     :map git-commit-mode-map
-     ("C-c g" . gptel-commit)
-     ("C-c G" . gptel-commit-rationale))))
+    (when (featurep 'gptel)
+      (bind-keys
+       :map git-commit-mode-map
+       ("C-c g" . gptel-commit)
+       ("C-c G" . gptel-commit-rationale)))))
 
 (use-package gptel-forge-prs
   :after forge
