@@ -40,11 +40,11 @@
   (setq
    org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "WAIT(w)" "|"
 				 "DONE(d)" "CNCL(c)"))
-   org-gtd-keyword-mapping '((todo     . "TODO(t)")
-                             (next     . "NEXT(n)")
-                             (wait     . "WAIT(w)")
-			     (done     . "DONE(d)")
-                             (canceled . "CNCL(c)"))
+   org-gtd-keyword-mapping '((todo     . "TODO")
+                             (next     . "NEXT")
+                             (wait     . "WAIT")
+			     (done     . "DONE")
+                             (canceled . "CNCL"))
    org-gtd-refile-prompt-for-types '(single-action
 				     project-heading project-task calendar
 				     someday tickler habit quick-action))
