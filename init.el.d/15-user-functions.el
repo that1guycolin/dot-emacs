@@ -68,11 +68,9 @@
       (message "Loaded theme: %s" new-theme))))
 
 
-
 ;; =======  FONTS  =======
 (defvar user/font-alist
-  '(
-    ("0xProto NFM"          . "0xProto Nerd Font Mono")
+  '(("0xProto NFM"          . "0xProto Nerd Font Mono")
     ("03270 NFM"            . "03270 Nerd Font Mono")
     ("AdwaitaMono NFM"      . "AdwaitaMono Nerd Font Mono")
     ("Agave NFM"            . "Agave Nerd Font Mono")
@@ -261,7 +259,7 @@ If not in a side window, jump to the first found side window."
     (append packages themes)))
 
 (defun user/elpaca-update-packages ()
-  "Asynchronously update all Elpaca packages (excepting themes)."
+  "Asynchronously update all Elpaca packages."
   (interactive)
   (let ((packages (user/packages-themes))
 	(init-file (expand-file-name "init.el" user-emacs-directory)))
