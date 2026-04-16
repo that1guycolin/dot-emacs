@@ -140,32 +140,35 @@ doubles as a model-switcher."
 	       backend-name gptel-model))))
 
 (use-package gptel-magit
+  :defer t
   :functions gptel-magit-install
   :after gptel
-  :hook (magit-mode . (lambda ()
-			(when (featurep 'gptel)
-			  (gptel-magit-install)))))
+  :config
+  (add-hook 'magit-mode-hook (lambda ()
+			       (when (featurep 'gptel)
+				 (gptel-magit-install)))))
 
 (defvar git-commit-mode-map)
 (use-package gptel-commit
-  :after (gptel magit)
+  :defer t
+  :after gptel
   :functions
   gptel-commit gptel-commit-rationale
   :custom
   (gptel-commit-stream t)
   :config
-  (with-eval-after-load 'magit
-    (when (featurep 'gptel)
-      (bind-keys
-       :map git-commit-mode-map
-       ("C-c g" . gptel-commit)
-       ("C-c G" . gptel-commit-rationale)))))
+  (when (featurep 'gptel)
+    (bind-keys
+     :map git-commit-mode-map
+     ("C-c g" . gptel-commit)
+     ("C-c G" . gptel-commit-rationale))))
 
 (use-package gptel-forge-prs
   :after forge
   :functions gptel-forge-prs-install
   :config
-  (gptel-forge-prs-install))
+  (when (featurep 'gptel)
+    (gptel-forge-prs-install)))
 
 
 ;; =======  ELLAMA  =======
