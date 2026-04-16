@@ -106,7 +106,8 @@ to the user's device.")
     :models user/openrouter-list)
 
   (defvar user/gptel--backend-map
-    '(("Ollama"      . (name "Ollama"   models (mapcar #'car user/ollama-alist)))
+    `(("Ollama" . (name "Ollama" models ,(mapcar #'car user/ollama-alist)))
+      
       ("OpenRouter"  . (name "OpenRouter"  models user/openrouter-alist)))
     "Alist mapping display names to backend metadata plists.")
 
@@ -119,19 +120,14 @@ doubles as a model-switcher."
 	    (completing-read
 	     (format "Backend (current: %s): "
 		     (gptel-backend-name gptel-backend))
-	     user/gptel--backend-map
-	     nil
-	     t))
-           (meta   (cdr (assoc backend-name user/gptel--backend-map)))
+	     user/gptel--backend-map nil t))
+           (meta  (cdr (assoc backend-name user/gptel--backend-map)))
            (gptel-name (plist-get meta 'name))
-           (models-sym (plist-get meta 'models))
-           (models (symbol-value models-sym))
+           (models (plist-get meta 'models))
            (model
 	    (completing-read
 	     (format "Model [%s]: " backend-name)
-	     models
-	     nil
-	     t)))
+	     models nil t)))
       (setq gptel-backend (gptel-get-backend gptel-name)
 	    gptel-model   (if (consp (car models))
 			      (cdr (assoc model models))
