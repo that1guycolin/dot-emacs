@@ -17,6 +17,7 @@ emms
 .env
 eshell
 forge-database.sqlite
+*ghostel
 history
 ielm-history.eld
 .lsp-session-v1

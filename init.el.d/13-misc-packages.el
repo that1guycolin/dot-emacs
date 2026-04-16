@@ -30,6 +30,25 @@
   (("C-c s v" . vterm)
    ("C-c s V" . vterm-other-window)))
 
+(defvar user/ghostel-directory
+  (expand-file-name "other/ghostel" user-emacs-directory)
+  "Location of cloned repo for package `ghostel'.")
+
+(unless (file-exists-p user/ghostel-directory)
+  (call-process "git" nil "*Git Clone Output*" nil "clone" "--recurse-submodules"
+		"https://github.com/dakra/ghostel.git" user/ghostel-directory))
+
+(use-package ghostel
+  :ensure nil
+  :load-path user/ghostel-directory
+  :bind ("C-c s g" . ghostel)
+  :init
+  (setq ghostel-module-auto-install nil)
+  :config
+  (unless (file-exists-p
+	   (expand-file-name "ghostel-module.so" user/ghostel-directory))
+    (ghostel-module-compile)))
+
 (use-package with-editor
   :hook
   ((shell-mode  . with-editor-export-editor)
