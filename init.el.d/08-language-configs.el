@@ -158,7 +158,7 @@
 ;; `macrostep' (interactive macro stepper)
 ;; `lispxmp' (see results in buffer)
 ;; -------------------------
-;; SBCL (ros)
+;; SBCL
 ;; `sly' (modern slime)
 ;; =========================
 (use-package lisp-semantic-hl
@@ -205,12 +205,29 @@
 
 (use-package sly
   :defer t
-  :mode ("\\.lisp\\'" . sly-mode)
-  :commands sly sly-connect
-  :hook (lisp-mode . sly-mode)
+  :hook (lisp-mode . sly-editing-mode)
+  :functions sly-init-string
   :custom
   (inferior-lisp-program "sbcl")
-  (sly-net-coding-system 'utf-8-unix))
+  (sly-lisp-implementations
+   '((sbcl ("sbcl" "--dynamic-space-size" "2048")
+           :coding-system utf-8-unix)))
+
+  :config
+  (let ((ql-setup "~/quicklisp/setup.lisp"))
+    (when (file-exists-p ql-setup)
+      (setq sly-lisp-implementations
+            (mapcar (lambda (impl)
+                      (append impl
+                              (list
+			       :init (lambda (port-filename coding-system)
+                                       (format "(progn (load \"%s\") %s)\n"
+                                               (expand-file-name ql-setup)
+                                               (sly-init-string
+						port-filename
+						coding-system))))))
+                    sly-lisp-implementations))))
+  (add-to-list 'sly-contribs 'sly-mrepl))
 
 
 ;; =======  PACKAGING  =======
