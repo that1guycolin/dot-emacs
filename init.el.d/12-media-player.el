@@ -72,9 +72,9 @@
 
   (bind-keys
    ("<f8>"    . emms-playlist-mode-go)
-   ("C-c p g" . emms-playlist-mode-go)
+   ("C-c m g" . emms-playlist-mode-go)
    ("<f9>"    . emms-playlist-mode-go-popup)
-   ("C-c p p" . emms-playlist-mode-go-popup)
+   ("C-c m p" . emms-playlist-mode-go-popup)
    
    :map emms-playlist-mode-map
    ("SPC"     . user/toggle-play-pause)
