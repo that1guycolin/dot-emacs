@@ -43,7 +43,7 @@
 			     (done     . "DONE")
 			     (canceled . "CNCL")))
   (org-gtd-refile-to-any-target nil)
-  (org-gtd-refile-prompt-for-types '(project-heading project-task))
+  (org-gtd-refile-prompt-for-types '(single-action project-heading project-task))
   
   :config
   (org-gtd-mode 1)
@@ -95,9 +95,7 @@
     (dolist (project projectile-known-projects)
       (let ((ptodo (expand-file-name "TODO" project)))
       	(when (file-exists-p ptodo)
-	  (progn
-      	    (add-to-list 'org-refile-targets `(,ptodo t))
-	    (add-to-list 'org-agenda-files ptodo))))))
+	  (add-to-list 'org-agenda-files ptodo)))))
   
   (bind-keys
    ("C-c p c" . org-project-capture-capture-for-current-project)
@@ -230,6 +228,9 @@ folder."
 	(message "There is no TODO file in the org directory.")))))
 
 (add-hook 'org-mode-hook #'user/remove-org-todo)
+(unless (boundp 'org-refile-targets)
+  (setq org-refile-targets '((nil :maxlevel . 9)
+                             (org-agenda-files :maxlevel . 9))))
 
 
 (provide '10-org-mode-extensions)
