@@ -16,47 +16,51 @@
 ;; `org-project-capture' (integrate org-mode & projectile)
 ;; =======================
 (use-package org-edna
-  :hook (org-mode . org-edna-mode)
+  :after org
+  :functions org-edna-mode
   :config
   (org-edna-mode 1))
 
 (use-package org-gtd
   :after org
   :functions
-  org-gtd-capture org-gtd-engage org-gtd-process-inbox org-gtd-show-all-next
-  org-gtd-reflect-stuck-projects org-gtd-organize org-gtd-agenda-transient
+  org-gtd-mode org-gtd-capture org-gtd-engage org-gtd-process-inbox
+  org-gtd-show-all-next org-gtd-reflect-stuck-projects org-gtd-organize
+  org-gtd-agenda-transient
   :defines
   org-gtd-update-ack
   
   :init
-  (setq
-   org-gtd-update-ack "4.0.0"
-   org-gtd-directory (expand-file-name "tasks" org-directory))
+  (setq org-gtd-update-ack "4.0.0")
+  (setq org-gtd-directory (expand-file-name "tasks" org-directory))
+
   :custom
+  (org-todo-keywords
+   '((sequence "TODO(t)" "NEXT(n)" "WAIT(w@/!)" "|" "DONE(d!)" "CNCL(c)")))
+  (org-gtd-keyword-mapping '((todo     . "TODO")
+			     (next     . "NEXT")
+			     (wait     . "WAIT")
+			     (done     . "DONE")
+			     (canceled . "CNCL")))
   (org-gtd-refile-to-any-target nil)
+  (org-gtd-refile-prompt-for-types '(project-heading project-task))
   
   :config
-  (org-edna-mode 1)
-  (setq
-   org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "WAIT(w)" "|"
-				 "DONE(d)" "CNCL(c)"))
-   org-gtd-keyword-mapping '((todo     . "TODO")
-                             (next     . "NEXT")
-                             (wait     . "WAIT")
-			     (done     . "DONE")
-                             (canceled . "CNCL"))
-   org-gtd-refile-prompt-for-types '(single-action
-				     project-heading project-task calendar
-				     someday tickler habit quick-action))
-
+  (org-gtd-mode 1)
   (bind-keys
    ("C-c d c" . org-gtd-capture)
    ("C-c d e" . org-gtd-engage)
    ("C-c d p" . org-gtd-process-inbox)
    ("C-c d n" . org-gtd-show-all-next)
-   ("C-c d s" . org-gtd-reflect-stuck-projects)
+   ("C-c d s" . org-gtd-reflect-stuck-projects)))
+
+(with-eval-after-load 'org-gtd
+  (setq org-agenda-files (list org-gtd-directory))
+  (bind-keys
    :map org-gtd-clarify-mode-map
-   ("C-c c" . org-gtd-organize)
+   ("C-c c" . org-gtd-organize)))
+(with-eval-after-load 'org-agenda
+  (bind-keys
    :map org-agenda-mode-map
    ("C-c ." . org-gtd-agenda-transient)))
 
@@ -90,14 +94,15 @@
   (with-eval-after-load 'projectile
     (dolist (project projectile-known-projects)
       (let ((ptodo (expand-file-name "TODO" project)))
-  	(when (file-exists-p ptodo)
-  	  (add-to-list 'org-refile-targets `(,ptodo (:maxlevel . 2)))))))
+      	(when (file-exists-p ptodo)
+	  (progn
+      	    (add-to-list 'org-refile-targets `(,ptodo t))
+	    (add-to-list 'org-agenda-files ptodo))))))
   
   (bind-keys
    ("C-c p c" . org-project-capture-capture-for-current-project)
    ("C-c p p" . org-project-capture-project-todo-completing-read)
    ("C-c p a" . org-project-capture-agenda-for-current-project)))
-
 
 (use-package magit-org-todos
   :after magit
@@ -225,12 +230,6 @@ folder."
 	(message "There is no TODO file in the org directory.")))))
 
 (add-hook 'org-mode-hook #'user/remove-org-todo)
-(let ((tmp-agenda-list (mapcar #'car org-refile-targets)))
-  (dolist (file '("~/org/tasks/someday.org" "~/org/TODO"
-		  "~/org/tasks/habit.org"))
-    (when (member file tmp-agenda-list)
-      (setq tmp-agenda-list (remove file tmp-agenda-list))))
-  (setq org-agenda-files tmp-agenda-list))
 
 
 (provide '10-org-mode-extensions)
