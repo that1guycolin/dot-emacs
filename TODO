@@ -1,8 +1,98 @@
 #+TITLE: .emacs.d TODO
 :PROPERTIES:
+:ORG_GTD_REFILE: Projects
 :CATEGORY: .emacs.d
 :END:
 
 * Single-Actions
+** TODO Python Indent Offset
 
-* TODO Python Indent Offset 
+
+* Org Packages [0/5][0%] :orgmode:
+:PROPERTIES:
+:ORG_GTD_CAPTURED_AT: [2026-04-20 Mon 16:03]
+:ID:       Org-Packages-2026-04-20-16-26-05
+:ORG_GTD:  Projects
+:ORG_GTD_FIRST_TASKS: Explore-each-package-s-repo-2026-04-20-16-27-17
+:END:
+** NEXT Explore each package's repo
+:PROPERTIES:
+:ORG_GTD:  Actions
+:ID:       Explore-each-package-s-repo-2026-04-20-16-27-17
+:TRIGGER:  self org-gtd-update-project-after-task-done!
+:ORG_GTD_PROJECT_IDS: Org-Packages-2026-04-20-16-26-05
+:ORG_GTD_PROJECT: Org Packages
+:ORG_GTD_BLOCKS: Decide-if-it-s-a-function-you-want-a-function-you-2026-04-20-16-27-17
+:END:
+** TODO Decide if it's a function you want, a function you need, or not worth it.
+:PROPERTIES:
+:ORG_GTD:  Actions
+:ID:       Decide-if-it-s-a-function-you-want-a-function-you-2026-04-20-16-27-17
+:TRIGGER:  self org-gtd-update-project-after-task-done!
+:ORG_GTD_PROJECT_IDS: Org-Packages-2026-04-20-16-26-05
+:ORG_GTD_PROJECT: Org Packages
+:ORG_GTD_DEPENDS_ON: Explore-each-package-s-repo-2026-04-20-16-27-17
+:ORG_GTD_BLOCKS: Install-the-packages-you-need-dot-2026-04-20-16-27-17
+:END:
+** TODO Install the packages you need.
+:PROPERTIES:
+:ORG_GTD:  Actions
+:ID:       Install-the-packages-you-need-dot-2026-04-20-16-27-17
+:TRIGGER:  self org-gtd-update-project-after-task-done!
+:ORG_GTD_PROJECT_IDS: Org-Packages-2026-04-20-16-26-05
+:ORG_GTD_PROJECT: Org Packages
+:ORG_GTD_DEPENDS_ON: Decide-if-it-s-a-function-you-want-a-function-you-2026-04-20-16-27-17
+:ORG_GTD_BLOCKS: If-it-is-not-too-overwhelming-install-a-pacakge-2026-04-20-16-27-17
+:END:
+** TODO If it is not too overwhelming, install a pacakge you want.
+:PROPERTIES:
+:ORG_GTD:  Actions
+:ID:       If-it-is-not-too-overwhelming-install-a-pacakge-2026-04-20-16-27-17
+:TRIGGER:  self org-gtd-update-project-after-task-done!
+:ORG_GTD_PROJECT_IDS: Org-Packages-2026-04-20-16-26-05
+:ORG_GTD_PROJECT: Org Packages
+:ORG_GTD_DEPENDS_ON: Install-the-packages-you-need-dot-2026-04-20-16-27-17
+:ORG_GTD_BLOCKS: Packages-List-2026-04-20-16-35-17
+:END:
+
+
+** TODO Packages List
+:PROPERTIES:
+:ORG_GTD_CAPTURED_AT: [2026-04-20 Mon 16:35]
+:ID:       Packages-List-2026-04-20-16-35-17
+:ORG_GTD:  Actions
+:TRIGGER:  self org-gtd-update-project-after-task-done!
+:ORG_GTD_PROJECT_IDS: Org-Packages-2026-04-20-16-26-05
+:ORG_GTD_FIRST_TASKS: Packages-List-2026-04-20-16-35-17
+:ORG_GTD_PROJECT: Org Packages [0/4][0%]
+:ORG_GTD_DEPENDS_ON: If-it-is-not-too-overwhelming-install-a-pacakge-2026-04-20-16-27-17
+:END:
+- https://github.com/jingtaozf/literate-elisp?tab=readme-ov-file
+- https://github.com/Anoncheg1/emacs-oai
+- https://github.com/calvinwyoung/org-autolist
+- https://github.com/jonnay/org-beautify-theme
+- https://repo.or.cz/org-bookmarks.git
+- https://github.com/tumashu/org-capture-pop-frame
+- https://github.com/drghirlanda/org-change
+- https://spwhitton.name/tech/code/org-d20/
+- https://github.com/emacsomancer/org-daily-reflection
+- https://github.com/vapniks/org-dotemacs
+- https://git.sr.ht/~jagrg/org-emms
+- https://github.com/laurynas-biveinis/org-mcp
+- https://github.com/ndwarshuis/org-ml
+- https://github.com/minad/org-modern
+- https://github.com/meedstrom/org-node
+- https://github.com/org-noter/org-noter
+- https://github.com/fuxialexander/org-pdftools
+- https://github.com/marcinkoziej/org-pomodoro
+- https://github.com/KaratasFurkan/org-rainbow-tags
+- https://github.com/morazotti/org-snitch
+- https://github.com/llcc/org-table-highlight
+- https://github.com/rul/org-tempus
+- https://github.com/tarsius/orglink
+- https://github.com/laluxx/porg
+- https://github.com/snosov1/toc-org
+- https://github.com/d12frosted/vulpea
+- https://github.com/progfolio/wikinforg
+- https://github.com/Vidianos-Giannitsis/zetteldesk.el
+
