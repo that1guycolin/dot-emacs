@@ -114,10 +114,7 @@ See URL `https://github.com/rvben/rumdl'."
               (id (one-or-more (not (any ":")))) ":" (message) line-end))
     :modes (markdown-mode gfm-mode text-mode org-mode org-gtd-clarify-mode
 			  flycheck-error-message-mode))
-  (add-to-list 'flycheck-checkers 'text-vale)
-  (add-hook 'text-mode-hook
-            (lambda ()
-              (flycheck-select-checker 'text-vale))))
+  (add-to-list 'flycheck-checkers 'text-vale))
 
 (use-package flycheck-pos-tip
   :after flycheck
