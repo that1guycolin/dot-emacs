@@ -8,6 +8,18 @@
 ** TODO Python Indent Offset
 
 
+** NEXT Add tombi as flycheck-checker                                :emacsd:
+:PROPERTIES:
+:ORG_GTD_CAPTURED_AT: [2026-04-20 Mon 17:56]
+:ID:       Add-tombi-as-flycheck-checker-2026-04-20-18-04-28
+:ORG_GTD:  Actions
+:END:
+** NEXT Git gist integration with Emacs                              :emacsd:
+:PROPERTIES:
+:ORG_GTD_CAPTURED_AT: [2026-04-20 Mon 17:56]
+:ID:       Git-gist-integration-with-Emacs-2026-04-20-18-18-57
+:ORG_GTD:  Actions
+:END:
 * Org Packages [0/5][0%] :orgmode:
 :PROPERTIES:
 :ORG_GTD_CAPTURED_AT: [2026-04-20 Mon 16:03]
