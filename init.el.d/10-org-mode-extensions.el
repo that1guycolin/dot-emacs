@@ -221,9 +221,18 @@ With a prefix ARG, remove start location."
 
 
 ;; =======  MISC  =======
+;; `org-pomodoro' (manage time)
 ;; `org-caldev' (nextcloud cal sync)
 ;; ======================
+(use-package org-pomodoro
+  :functions org-pomodoro
   :custom
+  (org-pomodoro-manual-break t)
+  :config
+  (bind-keys
+   :map org-mode-map
+   ("C-c P" . org-pomodoro)))
+
 
 (use-package org-caldav
   :after (org-gtd org-project-capture)
