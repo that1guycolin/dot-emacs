@@ -1,8 +1,8 @@
-#+TITLE: .emacs.d TODO
 :PROPERTIES:
 :ORG_GTD_REFILE: Projects
 :CATEGORY: .emacs.d
 :END:
+#+TITLE: .emacs.d TODO
 
 * Multi-step-projects
 
@@ -11,12 +11,12 @@
 :ORG_GTD_CAPTURED_AT: [2026-04-20 Mon 18:22]
 :ID:       dot-Emacs-README-2026-04-21-13-19-09
 :ORG_GTD:  Projects
-:ORG_GTD_FIRST_TASKS: Ensure-packages-match-dot-2026-04-21-13-25-25
+:ORG_GTD_FIRST_TASKS: Ensure-packages-match-2026-04-21-13-25-25
 :END:
-*** NEXT Ensure packages match.
+*** NEXT Ensure packages match
 :PROPERTIES:
 :ORG_GTD:  Actions
-:ID:       Ensure-packages-match-dot-2026-04-21-13-25-25
+:ID:       Ensure-packages-match-2026-04-21-13-25-25
 :TRIGGER:  self org-gtd-update-project-after-task-done!
 :ORG_GTD_PROJECT_IDS: dot-Emacs-README-2026-04-21-13-19-09
 :ORG_GTD_PROJECT: dot-Emacs README
@@ -76,177 +76,7 @@
 :ORG_GTD_PROJECT: dot-Emacs README
 :ORG_GTD_DEPENDS_ON: README-2026-04-21-13-25-25
 :END:
-** Install org-node [0/9][0%] :emacsd:orgmode:
-:PROPERTIES:
-:ORG_GTD_CAPTURED_AT: [2026-04-21 Tue 13:05]
-:ID:       Install-org-node-2026-04-21-13-27-21
-:ORG_GTD:  Projects
-:ORG_GTD_FIRST_TASKS: Remove-org-roam-use-package-calls-and-restart-2026-04-21-13-28-08
-:END:
-*** NEXT Remove org-roam use-package calls and restart Emacs.
-:PROPERTIES:
-:ORG_GTD:  Actions
-:ID:       Remove-org-roam-use-package-calls-and-restart-2026-04-21-13-28-08
-:TRIGGER:  self org-gtd-update-project-after-task-done!
-:ORG_GTD_PROJECT_IDS: Install-org-node-2026-04-21-13-27-21
-:ORG_GTD_PROJECT: Install org-node
-:ORG_GTD_BLOCKS: Convert-org-roam-files-to-org-node-format-dot-2026-04-21-13-28-08
-:END:
-*** TODO Convert org-roam files to org-node format.
-:PROPERTIES:
-:ORG_GTD:  Actions
-:ID:       Convert-org-roam-files-to-org-node-format-dot-2026-04-21-13-28-08
-:TRIGGER:  self org-gtd-update-project-after-task-done!
-:ORG_GTD_PROJECT_IDS: Install-org-node-2026-04-21-13-27-21
-:ORG_GTD_PROJECT: Install org-node
-:ORG_GTD_DEPENDS_ON: Remove-org-roam-use-package-calls-and-restart-2026-04-21-13-28-08
-:ORG_GTD_BLOCKS: Filenames-2026-04-21-13-28-08
-:END:
-**** TODO Filenames
-:PROPERTIES:
-:ORG_GTD:  Actions
-:ID:       Filenames-2026-04-21-13-28-08
-:TRIGGER:  self org-gtd-update-project-after-task-done!
-:ORG_GTD_PROJECT_IDS: Install-org-node-2026-04-21-13-27-21
-:ORG_GTD_PROJECT: Install org-node
-:ORG_GTD_DEPENDS_ON: Convert-org-roam-files-to-org-node-format-dot-2026-04-21-13-28-08
-:ORG_GTD_BLOCKS: Tags-2026-04-21-13-28-08
-:END:
-Filenames are formatted: "20260402172240-ssh-agent-setup.org". Rename to "ssh-agent-setup.org"
-**** TODO Tags
-:PROPERTIES:
-:ORG_GTD:  Actions
-:ID:       Tags-2026-04-21-13-28-08
-:TRIGGER:  self org-gtd-update-project-after-task-done!
-:ORG_GTD_PROJECT_IDS: Install-org-node-2026-04-21-13-27-21
-:ORG_GTD_PROJECT: Install org-node
-:ORG_GTD_DEPENDS_ON: Filenames-2026-04-21-13-28-08
-:ORG_GTD_BLOCKS: ID-Links-2026-04-21-13-28-08
-:END:
-Remove roam-style tags
-#+begin_src emacs-lisp
-  ,#+ROAM_TAGS: foo bar
-  ,#+ROAM_ALIASES: baz
-  ,#+ROAM_REFS: https://example.com
-#+end_src
 
-For standard org tags
-#+begin_src emacs-lisp
-  ,#+filetags: foo bar
-#+end_src
-
-filetags can go right under title.
-
-**** TODO ID Links
-:PROPERTIES:
-:ORG_GTD:  Actions
-:ID:       ID-Links-2026-04-21-13-28-08
-:TRIGGER:  self org-gtd-update-project-after-task-done!
-:ORG_GTD_PROJECT_IDS: Install-org-node-2026-04-21-13-27-21
-:ORG_GTD_PROJECT: Install org-node
-:ORG_GTD_DEPENDS_ON: Tags-2026-04-21-13-28-08
-:ORG_GTD_BLOCKS: Remove-unused-properties-2026-04-21-13-28-08
-:END:
-Org-roam uses:
-#+begin_src emacs-lisp
-  [[id:abc123][Note Title]]
-#+end_src
-
-Convert these to standard file links.
-#+begin_src emacs-lisp
-  [[file:note-title.org][Note Title]]
-#+end_src
-
-**** TODO Remove unused properties
-:PROPERTIES:
-:ORG_GTD:  Actions
-:ID:       Remove-unused-properties-2026-04-21-13-28-08
-:TRIGGER:  self org-gtd-update-project-after-task-done!
-:ORG_GTD_PROJECT_IDS: Install-org-node-2026-04-21-13-27-21
-:ORG_GTD_PROJECT: Install org-node
-:ORG_GTD_DEPENDS_ON: ID-Links-2026-04-21-13-28-08
-:ORG_GTD_BLOCKS: One-Note-per-file-2026-04-21-13-28-08
-:END:
-Remove blocks like these:
-#+begin_src emacs-lisp
-  :PROPERTIES:
-  :ID: abc123
-  :END:
-#+end_src
-**** TODO One Note per file
-:PROPERTIES:
-:ORG_GTD:  Actions
-:ID:       One-Note-per-file-2026-04-21-13-28-08
-:TRIGGER:  self org-gtd-update-project-after-task-done!
-:ORG_GTD_PROJECT_IDS: Install-org-node-2026-04-21-13-27-21
-:ORG_GTD_PROJECT: Install org-node
-:ORG_GTD_DEPENDS_ON: Remove-unused-properties-2026-04-21-13-28-08
-:ORG_GTD_BLOCKS: Check-if-non-roam-knowledge-can-be-integrated-2026-04-21-13-28-08
-:END:
-If it makes sense, org-node does not emphasize one-note per file like org-roam
-does. It is my belief I was already heading in this direction, but double check.
-*** TODO Check if non-roam-knowledge can be integrated with org-node.
-:PROPERTIES:
-:ORG_GTD:  Actions
-:ID:       Check-if-non-roam-knowledge-can-be-integrated-2026-04-21-13-28-08
-:TRIGGER:  self org-gtd-update-project-after-task-done!
-:ORG_GTD_PROJECT_IDS: Install-org-node-2026-04-21-13-27-21
-:ORG_GTD_PROJECT: Install org-node
-:ORG_GTD_DEPENDS_ON: One-Note-per-file-2026-04-21-13-28-08
-:ORG_GTD_BLOCKS: Use-package-call-for-org-node-2026-04-21-13-28-08
-:END:
-Possibly merge the directories.
-*** TODO Use-package call for org-node
-:PROPERTIES:
-:ORG_GTD:  Actions
-:ID:       Use-package-call-for-org-node-2026-04-21-13-28-08
-:TRIGGER:  self org-gtd-update-project-after-task-done!
-:ORG_GTD_PROJECT_IDS: Install-org-node-2026-04-21-13-27-21
-:ORG_GTD_PROJECT: Install org-node
-:ORG_GTD_DEPENDS_ON: Check-if-non-roam-knowledge-can-be-integrated-2026-04-21-13-28-08
-:END:
-You first need a use-package call for org-mem:
-#+begin_src emacs-lisp
-  (use-package org-mem
-    :custom
-    (org-mem-watch-dirs (list "~/org/knowledge-base/"
-  			    "~/org/non-roam-knowledge/"))
-    :config
-    (org-mem-updater-mode 1))
-#+end_src
-#+begin_src emacs-lisp
-    (use-package org-node
-      :init
-      (bind-keys
-       ("C-c k" . org-node-global-prefix-map)
-       :map org-mode-map
-       ("C-c n" . org-node-org-prefix-map))
-      :custom
-      (org-node-prefer-with-heading t)
-      :config
-      (org-node-cache-mode 1)
-
-      (defun user/org-node-new-file (&optional title id)
-        "Create a new file with a new node.
-  Designed for `org-node-creation-fn'.  Customized insert to contain both
-  a heading and a \"#+TITLE:\" block."
-        (unless title (or (setq title org-node-proposed-title)
-  			(error "Proposed title was nil")))
-        (unless id (or (setq id org-node-proposed-id)
-  		     (error "Proposed ID was nil")))
-        (org-node-pop-to-fresh-file-buffer title)
-        (insert "#+TITLE: " title
-  	      "* " title
-                "\n:PROPERTIES:"
-                "\n:ID:       " id
-                "\n:END:"
-                "\n")
-        (goto-char (point-max))
-        (push (current-buffer) org-node--new-unsaved-buffers)
-        (run-hooks 'org-node-creation-hook))
-      
-      (setq org-node-creation-fn user/org-node-new-file))
-#+end_src
 * Single-Actions
 ** TODO Python Indent Offset
 
