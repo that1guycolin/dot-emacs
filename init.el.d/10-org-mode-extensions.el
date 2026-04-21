@@ -119,8 +119,27 @@
 
 
 ;; =======  KNOWLEDGE  =======
+;; `pdf-tools' (view pdf in Emacs)
 ;; ===========================
+(use-package pdf-tools
+  :ensure (pdf-tools
+	   :source nil
+	   :package "pdf-tools"
+	   :id pdf-tools
+	   :fetcher github
+	   :repo "that1guycolin/pdf-tools"
+	   :files (:defaults "README" ("build" "Makefile") ("build" "server"))
+	   :type git
+	   :protocol https
+	   :inherit t
+	   :depth treeless)
+  :functions pdf-tools-install
   :custom
+  (pdf-view-display-size 'fit-page)
+  (pdf-info-asynchronous t)
+  :config
+  (pdf-tools-install))
+
   :config
 
 
