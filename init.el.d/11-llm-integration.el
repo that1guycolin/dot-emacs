@@ -70,11 +70,18 @@ to the user's device.")
 
 
 ;; =======  MCP  =======
+(use-package org-mcp
+  :config
+  (setq org-mcp-allowed-files
+	(directory-files "~/org/llm" t directory-files-no-dot-files-regexp))
+  (dolist (file '("~/org/.notes" "~/org/tasks/inbox.org"
+		  "~/org/tasks/org-gtd-tasks.org"))
+    (add-to-list 'org-mcp-allowed-files (expand-file-name file))))
+
 (use-package elisp-dev-mcp
   :functions mcp-server-lib-start
   :config
   (mcp-server-lib-start))
-
 
 ;; =======  GPTEL  =======
 (declare-function auth-source-pick-first-password "auth-source")
