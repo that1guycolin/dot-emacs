@@ -222,6 +222,7 @@ With a prefix ARG, remove start location."
 
 ;; =======  MISC  =======
 ;; `org-pomodoro' (manage time)
+;; `org-modern' `org-modern-indent' (improve org l&f)
 ;; `org-caldev' (nextcloud cal sync)
 ;; ======================
 (use-package org-pomodoro
@@ -233,6 +234,29 @@ With a prefix ARG, remove start location."
    :map org-mode-map
    ("C-c P" . org-pomodoro)))
 
+(use-package org-modern
+  :functions global-org-modern-mode
+  :custom
+  (org-auto-align-tags nil)
+  (org-tags-column 0)
+  (org-fold-catch-invisible-edits 'show-and-error)
+  (org-special-ctrl-a/e t)
+  (org-insert-heading-respect-content t)
+  (org-hide-emphasis-markers t)
+  (org-pretty-entities t)
+  (org-agenda-tags-column 0)
+  (org-ellipsis "…")
+  :config
+  (global-org-modern-mode 1))
+
+(use-package org-modern-indent
+  :ensure (org-modern-indent
+	   :host github
+	   :repo "jdtsmith/org-modern-indent"
+	   :files (:defaults)
+	   :method https)
+  :config
+  (add-hook 'org-mode-hook #'org-modern-indent-mode 90))
 
 (use-package org-caldav
   :after (org-gtd org-project-capture)
