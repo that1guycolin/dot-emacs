@@ -41,11 +41,12 @@
 ;; emacs-lisp: 'emacs-lisp' (built-in)
 ;; json: 'jsonlint' (npm install -g jsonlint)*
 ;; markdown: 'rumdl' (pacman -S rumdl)*
+;; toml: 'tombi' (uv tool install tombi)*
 ;; xml: 'xmllint' (pacman -S libxml2)
 ;; yaml: 'yamllint' (pacman -S yamllint)*
 ;; --------------------------
 ;; Extensions:
-;; `flyover' (appear inline)
+;; `flycheck-pos-tip' (popup flycheck errors)
 ;; `flycheck-color-mode-line'
 ;; ==========================
 (use-package flycheck
@@ -99,6 +100,24 @@ See URL `https://github.com/rvben/rumdl'."
   (add-hook 'markdown-mode-hook (lambda ()
                                   (flycheck-select-checker 'markdown-rumdl)))
 
+  (flycheck-define-checker tombi-lint
+    "A powerful toolkit to help you maintain clean and consistent TOML files.
+See URL `https://tombi-toml.github.io/tombi'."
+    :command ("tombi" "lint" "--quiet" "-" source)
+    :error-patterns
+    ((error line-start
+	    "Error: " (message)
+	    "\n"
+	    (+ blank) "at " (file-name) ":" line ":" column line-end)
+     (warning line-start
+	      "Warning: " (message)
+	      "\n"
+	      (+ blank) "at " (file-name) ":" line ":" column line-end))
+    :modes (toml-mode toml-ts-mode))
+  (add-to-list 'flycheck-checkers 'tombi-lint)
+  (add-hook 'toml-ts-mode-hook (lambda ()
+				 (flycheck-select-checker 'tombi-lint)))
+
   (defvar user/vale-config (expand-file-name ".vale.ini" user-emacs-directory)
     "Path to the .vale.ini file to use when running vale with flycheck.")
   (unless (file-exists-p (expand-file-name ".vale-styles" user-emacs-directory))
@@ -133,11 +152,11 @@ See URL `https://github.com/rvben/rumdl'."
 ;; markdown: 'rumdl' (pacman -S rumdl)*
 ;; python: 'ty' (uv tool install ty)*
 ;; python: 'ruff' (uv tool install ruff)*
-;; toml: 'tombi' (uv tool install tombi)*
 ;; -------  OPTIONAL  -------
 ;; [OPTIONAL] bash: 'bash-language-server' (pacman -S bash-language-server)*
 ;; [OPTIONAL] json: 'json-language-server' (pacman -S json-language-server)*
 ;; [OPTIONAL] lua: `lua-language-server'*
+;; [OPTIONAL] toml: 'tombi' (uv tool install tombi)*
 ;; [OPTIONAL] xml: 'lemminx'*
 ;; [OPTIONAL] yaml: 'yaml-language-server' (pacman -S yaml-language-server)*
 ;; ==========================
@@ -378,12 +397,12 @@ mason installs it."
     user/mason--dispatch ()
     "Commands to install external dependencies with `mason'."
     [
-     ["Mason - Install external
-deps for flycheck & lsp-mode"]
+     ["Mason - Install external deps for flycheck & lsp-mode"]
      [("r" "Install required" user/mason-install-required-programs)
       ("o" "Install optional" user/mason-install-optional-programs)]
      [("p" "Install program" user/mason-install-program)
-      ("m" "Mason Manager" mason-manager)]])
+      ("m" "Mason Manager" mason-manager)]
+     ])
 
   (declare-function user/mason--dispatch "06-code-assist")
   (defun user/mason-dispatch ()
