@@ -122,6 +122,7 @@
 ;; `pdf-tools' (view pdf in Emacs)
 ;; `org-noter' (annotate documents)
 ;; `org-pdftools' (integrate org & `pdf-tools')
+;; `org-noter-pdftools' (annotate pdf files)
 ;; ===========================
 (use-package pdf-tools
   :ensure (pdf-tools
@@ -167,7 +168,56 @@
 	   :depth treeless)
   :hook (org-mode . org-pdftools-setup-link))
 
+(use-package org-noter-pdftools
+  :ensure (org-noter-pdftools
+	   :source nil
+	   :package "org-noter-pdftools"
+	   :id org-noter-pdftools
+	   :repo "that1guycolin/org-pdftools"
+	   :fetcher github
+	   :files ("org-noter-pdftools.el")
+	   :type git
+	   :protocol https
+	   :inherit t
+	   :depth treeless)
+
+  :functions
+  org-noter-insert-note org-noter--get-precise-info org-noter--parse-root
+  org-noter--doc-approx-location org-entry-delete org-entry-put
+  org-noter--pretty-print-location org-noter-pdftools-jump-to-note
+  
   :config
+  (defun org-noter-pdftools-insert-precise-note (&optional toggle-no-questions)
+    (interactive "P")
+    (org-noter--with-valid-session
+     (let ((org-noter-insert-note-no-questions
+	    (if toggle-no-questions
+                (not org-noter-insert-note-no-questions)
+              org-noter-insert-note-no-questions))
+           (org-pdftools-use-isearch-link t)
+           (org-pdftools-use-freepointer-annot t))
+       (org-noter-insert-note (org-noter--get-precise-info)))))
+
+  (defun org-noter-set-start-location (&optional arg)
+    "When opening a session with this document, go to the current location.
+With a prefix ARG, remove start location."
+    (interactive "P")
+    (org-noter--with-valid-session
+     (let ((inhibit-read-only t)
+           (ast (org-noter--parse-root))
+           (location (org-noter--doc-approx-location
+		      (when (called-interactively-p 'any) 'interactive))))
+       (with-current-buffer (org-noter--session-notes-buffer session)
+         (org-with-wide-buffer
+          (goto-char (org-element-property :begin ast))
+          (if arg
+              (org-entry-delete nil org-noter-property-note-location)
+            (org-entry-put nil org-noter-property-note-location
+                           (org-noter--pretty-print-location location))))))))
+
+  (with-eval-after-load 'pdf-annot
+    (add-hook 'pdf-annot-activate-handler-functions
+	      #'org-noter-pdftools-jump-to-note)))
 
 
 ;; =======  MISC  =======
