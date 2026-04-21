@@ -224,6 +224,7 @@ With a prefix ARG, remove start location."
 ;; `org-pomodoro' (manage time)
 ;; `org-modern' `org-modern-indent' (improve org l&f)
 ;; `org-caldev' (nextcloud cal sync)
+;; `toc-org' (table-of-contents)
 ;; ======================
 (use-package org-pomodoro
   :functions org-pomodoro
@@ -271,7 +272,18 @@ With a prefix ARG, remove start location."
   (org-caldav-sync-todo t)
   (org-icalendar-categories '(local-tags)))
 
+(defvar markdown-mode-map)
+(use-package toc-org
+  :functions toc-org-markdown-follow-thing-at-point
+  :hook
+  ((org-mode      . toc-org-mode)
+   (markdown-mode . toc-org-mode))
   :config
+  (add-hook 'markdown-mode-hook
+	    #'(lambda ()
+		(bind-keys
+		 :map markdown-mode-map
+		 ("C-c C-o" . toc-org-markdown-follow-thing-at-point)))))
 
 (use-package el2org
   :defer t
