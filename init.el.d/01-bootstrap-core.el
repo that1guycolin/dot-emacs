@@ -140,19 +140,14 @@
    (expand-file-name ".notes" org-directory))
   (org-insert-mode-line-in-empty-file t)
   :config
-  ;;  (setq org-refile-targets '(("~/org/tasks/someday.org"  (:maxlevel . 2))
-  ;;			     ("~/org/tasks/tickler.org"  (:maxlevel . 2))
-  ;;			     ("~/org/tasks/projects.org" (:maxlevel . 3))
-  ;;			     ("~/org/tasks/calendar.org" (:maxlevel . 2))
-  ;;			     ("~/org/tasks/habit.org"    (:maxlevel . 2))))
-
   (bind-keys
    ("C-c o o" . org-mode)
    ("C-c o l" . org-store-link)
    ("C-c o a" . org-agenda)
    ("C-c c"   . org-capture)
    :map org-mode-map
-   ("C-c l" . org-toggle-link-display)))
+   ("C-c l"   . org-toggle-link-display)
+   ("C-c C-q" . org-set-tags-command)))
 
 
 (provide '01-bootstrap-core)
