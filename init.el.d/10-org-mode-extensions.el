@@ -119,11 +119,59 @@
 
 
 ;; =======  KNOWLEDGE  =======
+;; `org-mem' (org metadata index)
+;; `org-node' (fast & simple note management)
 ;; `pdf-tools' (view pdf in Emacs)
 ;; `org-noter' (annotate documents)
 ;; `org-pdftools' (integrate org & `pdf-tools')
 ;; `org-noter-pdftools' (annotate pdf files)
 ;; ===========================
+(use-package org-mem
+  :functions org-mem-updater-mode
+  :custom
+  (org-mem-watch-dirs (list "~/org/knowledge-base/"))
+  :config
+  (org-mem-updater-mode 1))
+
+(use-package org-node
+  :functions
+  org-node-global-prefix-map org-node-org-prefix-map org-node-cache-mode
+  org-node-pop-to-fresh-file-buffer user/org-node-new-file
+  :defines
+  org-node-proposed-title org-node-proposed-id org-node--new-unsaved-buffers
+  org-node-creation-fn
+
+  :init
+  (keymap-global-set "C-c k" org-node-global-prefix-map)
+  (keymap-set org-mode-map "C-c n" org-node-org-prefix-map)
+
+  :custom
+  (org-node-prefer-with-heading t)
+
+  :config
+  (org-node-cache-mode 1)
+  
+  (defun user/org-node-new-file (&optional title id)
+    "Create a new file with a new node.
+  Designed for `org-node-creation-fn'.  This function customizes the
+  insert block from `org-node-new-file'."
+    (unless title (or (setq title org-node-proposed-title)
+  		      (error "Proposed title was nil")))
+    (unless id (or (setq id org-node-proposed-id)
+  		   (error "Proposed ID was nil")))
+    (org-node-pop-to-fresh-file-buffer title)
+    (insert ":PROPERTIES:"
+  	    "\n:ID:       " id
+  	    "\n:END:"
+  	    "#+TITLE: " title
+  	    "\n#+FILETAGS:"
+  	    "\n")
+    (goto-char (point-max))
+    (push (current-buffer) org-node--new-unsaved-buffers)
+    (run-hooks 'org-node-creation-hook))
+  
+  (setq org-node-creation-fn #'user/org-node-new-file))
+
 (use-package pdf-tools
   :ensure (pdf-tools
 	   :source nil
