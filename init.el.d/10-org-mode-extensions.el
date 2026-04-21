@@ -125,12 +125,9 @@
 
 
 ;; =======  MISC  =======
-;; `org-superstar' (pretty bullets)
 ;; `org-caldev' (nextcloud cal sync)
 ;; `org-make-toc' (table-of-contents)
 ;; ======================
-(use-package org-superstar
-  :hook (org-mode . org-superstar-mode)
   :custom
   (org-superstar-special-todo-items t)
   (org-superstar-todo-bullet-alist '(("TODO(t)" . 8226)
