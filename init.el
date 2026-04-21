@@ -21,12 +21,12 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-;; Updated organization of that1guycolin's personal Emacs configuration.
-;; Uses Elpaca as the package manager with optimized load order.
-;; In the interest of clarity, files in init.el.d/* now have numeric prefixes.
+;; that1guycolin's personal Emacs configuration.  Uses Elpaca as the package
+;; manager with optimized load order.
 
 ;;; Languages configured:
-;; Bash, Cmake, Emacs-Lisp, Fish, JSON, Lisp, Markdown, Python, TOML, XML, YAML
+;; Bash, CMake, Emacs-Lisp, Fish, JSON, Markdown, Python, Steel-Bank-Common-Lisp,
+;; TOML, XML, YAML
 
 ;;; Packages included:
 ;; adaptive-wrap, adjust-parens, apheleia, auto-rename-tag, bash-ts-mode, cape,
@@ -105,5 +105,4 @@
 
 
 (provide 'init)
-;;; init.el ends here
-
+;;; init.el ends here.
