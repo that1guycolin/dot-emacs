@@ -110,20 +110,6 @@
    :map markdown-mode-command-map
    ("C-c" . user/switch-markdown-command)))
 
-(use-package markdown-toc
-  :defer t
-  :after markdown-mode
-  :functions
-  markdown-toc-follow-link-at-point markdown-toc-generate-or-refresh-toc
-  markdown-toc-delete-toc markdown-toc-version
-  :config
-  (bind-keys
-   :map markdown-mode-command-map
-   ("C-." . markdown-toc-follow-link-at-point)
-   ("C-t" . markdown-toc-generate-or-refresh-toc)
-   ("C-d" . markdown-toc-delete-toc)
-   ("C-v" . markdown-toc-version)))
-
 (use-package grip-mode
   :defer t
   :after markdown-mode
