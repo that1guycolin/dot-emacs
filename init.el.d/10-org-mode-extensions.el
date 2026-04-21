@@ -120,6 +120,7 @@
 
 ;; =======  KNOWLEDGE  =======
 ;; `pdf-tools' (view pdf in Emacs)
+;; `org-noter' (annotate documents)
 ;; ===========================
 (use-package pdf-tools
   :ensure (pdf-tools
@@ -139,6 +140,16 @@
   (pdf-info-asynchronous t)
   :config
   (pdf-tools-install))
+
+(use-package org-noter
+  :functions org-noter-start-from-dired
+  :custom
+  (org-noter-set-auto-save-last-location t)
+  :config
+  (require 'org-noter-pdftools)
+  (bind-keys
+   :map dired-mode-map
+   ("C-c C-n" . org-noter-start-from-dired)))
 
   :config
 
