@@ -14,6 +14,7 @@
 ;; `org-edna' (cond. task completion)
 ;; `org-gtd' (get-things-done)
 ;; `org-project-capture' (integrate org-mode & projectile)
+;; `magit-org-todos' (display TODO items in magit buffer)
 ;; =======================
 (use-package org-edna
   :after org
@@ -43,7 +44,9 @@
 			     (done     . "DONE")
 			     (canceled . "CNCL")))
   (org-gtd-refile-to-any-target nil)
-  (org-gtd-refile-prompt-for-types '(single-action project-heading project-task))
+  (org-gtd-refile-prompt-for-types '(single-action
+				     project-heading
+				     project-task))
   
   :config
   (org-gtd-mode 1)
@@ -87,8 +90,8 @@
   :config
   (require 'org-projectile)
   (setq
-   org-project-capture-default-backend (make-instance
-					'org-project-capture-projectile-backend)
+   org-project-capture-default-backend
+   (make-instance 'org-project-capture-projectile-backend)
    org-project-capture-per-project-filepath "TODO")
 
   (with-eval-after-load 'projectile
@@ -109,6 +112,10 @@
   (magit-org-todos-filename "TODO")
   :config
   (magit-org-todos-autoinsert))
+
+(unless (boundp 'org-refile-targets)
+  (setq org-refile-targets '((nil :maxlevel . 9)
+                             (org-agenda-files :maxlevel . 9))))
 
 
 ;; =======  KNOWLEDGE  =======
@@ -159,13 +166,13 @@
 				     ("CNCL(c)" . 9702))))
 
 (use-package org-caldav
-  :after (org org-gtd org-project-capture)
+  :after (org-gtd org-project-capture)
   :custom
   (org-caldav-url
    "https://use11.thegood.cloud/remote.php/dav/calendars/colinloeffler%40gmail.com")
   (org-caldav-calendar-id "org-tasks")
   (org-caldav-inbox (expand-file-name "~/org/tasks/inbox.org"))
-  (org-caldav-files nil)
+  (org-caldav-files org-agenda-files)
   (org-icalendar-timezone "America/Chicago")
   (org-icalendar-include-todo 'all)
   (org-caldav-sync-todo t)
@@ -228,9 +235,8 @@ folder."
 	(message "There is no TODO file in the org directory.")))))
 
 (add-hook 'org-mode-hook #'user/remove-org-todo)
-(unless (boundp 'org-refile-targets)
-  (setq org-refile-targets '((nil :maxlevel . 9)
-                             (org-agenda-files :maxlevel . 9))))
+(declare-function org-fold-hide-drawer-all "org")
+(add-hook 'org-mode-hook #'org-fold-hide-drawer-all)
 
 
 (provide '10-org-mode-extensions)
