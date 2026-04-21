@@ -225,6 +225,7 @@ With a prefix ARG, remove start location."
 ;; `org-modern' `org-modern-indent' (improve org l&f)
 ;; `org-caldev' (nextcloud cal sync)
 ;; `toc-org' (table-of-contents)
+;; `el2org' (make .org from .el)
 ;; ======================
 (use-package org-pomodoro
   :functions org-pomodoro
@@ -292,9 +293,6 @@ With a prefix ARG, remove start location."
    ("C-c 2 r" . el2org-generate-readme)
    ("C-c 2 h" . el2org-generate-html)
    ("C-c 2 o" . el2org-generate-org)))
-
-(use-package org-autolist
-  :hook (org-mode . org-autolist-mode))
 
 
 ;; =======  FUNCTIONS & VARIABLES  =======
