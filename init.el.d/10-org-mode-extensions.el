@@ -222,15 +222,8 @@ With a prefix ARG, remove start location."
 
 ;; =======  MISC  =======
 ;; `org-caldev' (nextcloud cal sync)
-;; `org-make-toc' (table-of-contents)
 ;; ======================
   :custom
-  (org-superstar-special-todo-items t)
-  (org-superstar-todo-bullet-alist '(("TODO(t)" . 8226)
-				     ("NEXT(n)" . 8227)
-				     ("WAIT(w)" . 8259)
-				     ("DONE(d)" . 10687)
-				     ("CNCL(c)" . 9702))))
 
 (use-package org-caldav
   :after (org-gtd org-project-capture)
@@ -245,24 +238,7 @@ With a prefix ARG, remove start location."
   (org-caldav-sync-todo t)
   (org-icalendar-categories '(local-tags)))
 
-(use-package org-make-toc
-  :defer t
-  :bind (:map org-mode-map
-	      ("C-c T i" . org-make-toc-insert)
-	      ("C-c T m" . org-make-toc))
-  :custom
-  (org-make-toc-insert-custom-ids t))
-
-(use-package pdf-tools
-  :defer t
-  :mode ("\\.pdf\\'" . pdf-view-mode)
-  :functions pdf-tools-install pdf-view-midnight-minor-mode
-  :custom
-  (pdf-view-display-size 'fit-page)
-  (pdf-info-asynchronous t)
   :config
-  (pdf-tools-install)
-  (add-hook 'pdf-view-mode-hook #'pdf-view-midnight-minor-mode))
 
 (use-package el2org
   :defer t
