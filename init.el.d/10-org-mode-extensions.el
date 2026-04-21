@@ -121,6 +121,7 @@
 ;; =======  KNOWLEDGE  =======
 ;; `pdf-tools' (view pdf in Emacs)
 ;; `org-noter' (annotate documents)
+;; `org-pdftools' (integrate org & `pdf-tools')
 ;; ===========================
 (use-package pdf-tools
   :ensure (pdf-tools
@@ -150,6 +151,21 @@
   (bind-keys
    :map dired-mode-map
    ("C-c C-n" . org-noter-start-from-dired)))
+
+(use-package org-pdftools
+  :ensure (org-pdftools
+	   :source nil
+	   :package "org-pdftools"
+	   :id org-pdftools
+	   :fetcher github
+	   :repo "that1guycolin/org-pdftools"
+	   :files ("org-pdftools.el")
+	   :old-names (org-pdfview)
+	   :type git
+	   :protocol https
+	   :inherit t
+	   :depth treeless)
+  :hook (org-mode . org-pdftools-setup-link))
 
   :config
 
