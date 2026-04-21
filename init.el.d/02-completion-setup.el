@@ -139,8 +139,8 @@
   :bind
   (("C-c x"   . toggle-frame-maximized)
    ("C-c ("   . user/check-parens-with-message)
-   ("C-c n"   . display-line-numbers-mode)
-   ("C-c N"   . global-display-line-numbers-mode)
+   ("C-c #"   . display-line-numbers-mode)
+   ("C-c C-#" . global-display-line-numbers-mode)
    ("C-c C-!" . restart-emacs))
 
   :custom
