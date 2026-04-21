@@ -3,6 +3,4 @@
 
 ((nil . ((fill-column . 80)
          (eval . (display-fill-column-indicator-mode 1))))
- (python-ts-mode . ((fill-column . 88)))
- (markdown-mode . ((fill-column . 100)))
- (org-mode . ((fill-column . 100))))
+ (python-ts-mode . ((fill-column . 88))))
