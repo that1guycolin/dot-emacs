@@ -63,17 +63,17 @@
 
   :config
   (flycheck-define-checker fish-self
-    "The shell for the 90's built-in syntax checker."
+    "The shell for the 90's built-in syntax checker.
+See URL `https://fishshell.com'."
     :command ("fish" "-n" source)
     :error-patterns
     ((error line-start (file-name) " (line " line "): " (message) line-end))
     :modes (fish-mode))
   (add-to-list 'flycheck-checkers 'fish-self)
-  (add-hook 'fish-mode-hook (lambda ()
-			      (flycheck-select-checker 'fish-self)))
 
   (flycheck-define-checker lua-selene
-    "Write correct & idiomatic lua code."
+    "Write correct & idiomatic lua code.
+See URL `https://kampfkarren.github.io/selene'."
     :command ("selene" "--quiet" "-" source )
     :error-patterns
     ((error line-start
@@ -84,8 +84,6 @@
             line-end))
     :modes (lua-ts-mode))
   (add-to-list 'flycheck-checkers 'lua-selene)
-  (add-hook 'lua-ts-mode-hook (lambda ()
-                                (flycheck-select-checker 'lua-selene)))
   
   (flycheck-define-checker markdown-rumdl
     "A fast Markdown linter written in Rust.
@@ -97,8 +95,6 @@ See URL `https://github.com/rvben/rumdl'."
 	    (id (one-or-more (not (any " ")))) " " (message) line-end))
     :modes (markdown-mode gfm-mode))
   (add-to-list 'flycheck-checkers 'markdown-rumdl)
-  (add-hook 'markdown-mode-hook (lambda ()
-                                  (flycheck-select-checker 'markdown-rumdl)))
 
   (flycheck-define-checker tombi-lint
     "A powerful toolkit to help you maintain clean and consistent TOML files.
@@ -115,25 +111,41 @@ See URL `https://tombi-toml.github.io/tombi'."
 	      (+ blank) "at " (file-name) ":" line ":" column line-end))
     :modes (toml-mode toml-ts-mode))
   (add-to-list 'flycheck-checkers 'tombi-lint)
-  (add-hook 'toml-ts-mode-hook (lambda ()
-				 (flycheck-select-checker 'tombi-lint)))
 
-  (defvar user/vale-config (expand-file-name ".vale.ini" user-emacs-directory)
-    "Path to the .vale.ini file to use when running vale with flycheck.")
-  (unless (file-exists-p (expand-file-name ".vale-styles" user-emacs-directory))
-    (let ((command (format "vale --config %s sync >/dev/null" user/vale-config)))
+  (let* ((vale-config (expand-file-name ".vale.ini" user-emacs-directory))
+	 (vale-install (expand-file-name ".vale-styles" user-emacs-directory))
+	 (command (format "vale --config %s sync >/dev/null" vale-config)))
+    (unless (file-exists-p vale-install)
       (shell-command command)))
+
   (flycheck-define-checker text-vale
-    "A Vale checker for prose."
+    "Tool to bring code-like linting to prose.
+See URL `https://vale.sh'."
     :command
-    ("vale" "--config" (eval user/vale-config) "--no-global" "--output" "line"
-     source)
+    ("vale" "--config" (eval (expand-file-name ".vale.ini" user-emacs-directory))
+     "--no-global" "--output" "line" source)
     :error-patterns
     ((warning line-start (file-name) ":" line ":" column ":"
               (id (one-or-more (not (any ":")))) ":" (message) line-end))
     :modes (markdown-mode gfm-mode text-mode org-mode org-gtd-clarify-mode
 			  flycheck-error-message-mode))
-  (add-to-list 'flycheck-checkers 'text-vale))
+  (add-to-list 'flycheck-checkers 'text-vale)
+
+  (defvar user/flycheck-checker-modes-alist
+    '((fish-mode     . fish-self)
+      (lua-ts-mode   . lua-selene)
+      (markdown-mode . markdown-rumdl)
+      (gfm-mode      . markdown-rumdl)
+      (toml-ts-mode  . tombi-lint)
+      (text-mode     . proselint)
+      (org-mode      . org-lint))
+    "A list of cons cells containing a major mode and its flycheck checker.")
+
+  (dolist (mode (mapcar #'car user/flycheck-checker-modes-alist))
+    (let ((hook (intern (concat (symbol-name mode) "-hook")))
+	  (checker (cdr (assoc mode user/flycheck-checker-modes-alist))))
+      (add-hook hook (lambda ()
+		       (flycheck-select-checker checker))))))
 
 (use-package flycheck-pos-tip
   :after flycheck
