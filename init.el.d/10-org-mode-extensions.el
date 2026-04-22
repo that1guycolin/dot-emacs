@@ -22,6 +22,7 @@
   :config
   (org-edna-mode 1))
 
+(declare-function flycheck-add-mode "flycheck")
 (use-package org-gtd
   :after org
   :functions
@@ -51,6 +52,9 @@
   
   :config
   (org-gtd-mode 1)
+  (with-eval-after-load 'flycheck
+    (flycheck-add-mode 'org-lint 'org-gtd-clarify-mode))
+
   (bind-keys
    ("C-c d c" . org-gtd-capture)
    ("C-c d e" . org-gtd-engage)

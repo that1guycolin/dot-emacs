@@ -51,8 +51,9 @@
 ;; ==========================
 (use-package flycheck
   :hook
-  ((prog-mode . flycheck-mode)
-   (text-mode . flycheck-mode))
+  ((prog-mode     . flycheck-mode)
+   (markdown-mode . flycheck-mode)
+   (org-mode      . flycheck-mode))
 
   :functions flycheck-select-checker
 
@@ -137,7 +138,6 @@ See URL `https://vale.sh'."
       (markdown-mode . markdown-rumdl)
       (gfm-mode      . markdown-rumdl)
       (toml-ts-mode  . tombi-lint)
-      (text-mode     . proselint)
       (org-mode      . org-lint))
     "A list of cons cells containing a major mode and its flycheck checker.")
 
