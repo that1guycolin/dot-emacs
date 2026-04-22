@@ -127,8 +127,11 @@
 ;; `org-pdftools' (integrate org & `pdf-tools')
 ;; `org-noter-pdftools' (annotate pdf files)
 ;; ===========================
+(declare-function org-id-update-id-locations "org")
 (use-package org-mem
   :functions org-mem-updater-mode
+  :init
+  (org-id-update-id-locations)
   :custom
   (org-mem-watch-dirs (list "~/org/knowledge-base/"))
   :config
