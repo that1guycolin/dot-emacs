@@ -1,11 +1,6 @@
-:PROPERTIES:
-:ORG_GTD_REFILE: Projects
-:CATEGORY: .emacs.d
-:END:
-#+TITLE: .emacs.d TODO
+#+TITLE: dot-Emacs TODO
 
-* Multi-step-projects
-
+* dot-Emacs: Multi-Step Projects
 ** dot-Emacs README [0/5][0%] :emacsd:
 :PROPERTIES:
 :ORG_GTD_CAPTURED_AT: [2026-04-20 Mon 18:22]
@@ -77,9 +72,8 @@
 :ORG_GTD_DEPENDS_ON: README-2026-04-21-13-25-25
 :END:
 
-* Single-Actions
-** TODO Python Indent Offset
 
+* dot-Emacs: Single-Actions
 ** NEXT Git gist integration with Emacs                              :emacsd:
 :PROPERTIES:
 :ORG_GTD_CAPTURED_AT: [2026-04-20 Mon 17:56]
