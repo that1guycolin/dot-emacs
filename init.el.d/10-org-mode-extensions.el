@@ -334,6 +334,9 @@ With a prefix ARG, remove start location."
 		 :map markdown-mode-map
 		 ("C-c C-o" . toc-org-markdown-follow-thing-at-point)))))
 
+(use-package org-autolist
+  :hook (org-mode . org-autolist-mode))
+
 (use-package el2org
   :defer t
   :bind
