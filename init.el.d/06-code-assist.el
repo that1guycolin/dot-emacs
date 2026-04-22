@@ -249,8 +249,8 @@ See URL `https://vale.sh'."
 ;; bash: 'shfmt' (pacman -S shfmt)*
 ;; cmake: 'neocmakelsp' (cargo install neocmakelsp)*
 ;; fish: 'fish_indent' (bundled with fish shell)
-;; emacs-lisp: 'indent' (built-in)
-;; json: 'prettier'* (npm install --save-dev --save-exact prettier)*
+;; emacs-lisp: 'lisp-indent' (built-in)
+;; json: 'jq' (pacman -S jq)
 ;; lua: `stylua'*
 ;; markdown: 'rumdl'* (pacman -S rumdl)*
 ;; python: 'ruff' (uv tool install ruff)*
@@ -270,12 +270,8 @@ See URL `https://vale.sh'."
 	'("shfmt" "-i" "4" "-ci" "-"))
   (setf (alist-get 'neocmakelsp apheleia-formatters)
         '("neocmakelsp" "format" "-"))
-  (setf (alist-get 'prettier-json apheleia-formatters)
-        '("prettier" "--stdin-filepath" filepath "--parser=json"
-          (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
-  (setf (alist-get 'prettier-yaml apheleia-formatters)
-        '("prettier" "--stdin-filepath" filepath "--parser=yaml"
-          (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+  (setf (alist-get 'jq apheleia-formatters)
+	'("jq" "." "-M" "--indent" "2"))
   (setf (alist-get 'ruff apheleia-formatters)
         '("ruff" "format" "-"))
   (setf (alist-get 'rumdl apheleia-formatters)
@@ -288,12 +284,16 @@ See URL `https://vale.sh'."
   (setf (alist-get 'cmake-ts-mode apheleia-mode-alist) 'neocmakelsp)
   (setf (alist-get 'eask-mode apheleia-mode-alist) 'lisp-indent)
   (setf (alist-get 'fish-mode apheleia-mode-alist) 'fish-indent)
+  (setf (alist-get 'json-mode apheleia-mode-alist) 'jq)
+  (setf (alist-get 'json-ts-mode apheleia-mode-alist) 'jq)
   (setf (alist-get 'markdown-mode apheleia-mode-alist) 'rumdl)
   (setf (alist-get 'gfm-mode apheleia-mode-alist) 'rumdl)
   (setf (alist-get 'python-ts-mode apheleia-mode-alist) 'ruff)
   (setf (alist-get 'toml-ts-mode apheleia-mode-alist) 'tombi)
   (setf (alist-get 'conf-toml-mode apheleia-mode-alist) 'tombi)
-  (setf (alist-get 'nxml-mode apheleia-mode-alist) 'xmlstarlet))
+  (setf (alist-get 'nxml-mode apheleia-mode-alist) 'xmlstarlet)
+  (setf (alist-get 'yaml-mode apheleia-mode-alist) 'yq-yaml)
+  (setf (alist-get 'yaml-ts-mode apheleia-mode-alist) 'yq-yaml))
 
 
 ;; =======  DAP-MODE  =======
