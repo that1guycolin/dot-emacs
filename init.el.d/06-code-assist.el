@@ -347,7 +347,7 @@ See URL `https://vale.sh'."
   :commands
   mason-install mason-manager mason-setup
   :functions
-  mason-installed-p user/mason--install-program
+  mason-ensure mason-installed-p user/mason--install-program
   user/mason-install-optional-program user/mason-install-optional-programs
   user/mason-dispatch
   :defines mason-dir
