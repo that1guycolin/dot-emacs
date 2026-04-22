@@ -32,8 +32,9 @@
   org-gtd-update-ack
   
   :init
-  (setq org-gtd-update-ack "4.0.0")
-  (setq org-gtd-directory (expand-file-name "tasks" org-directory))
+  (setq
+   org-gtd-update-ack "4.0.0"
+   org-gtd-directory (expand-file-name "tasks" org-directory))
 
   :custom
   (org-todo-keywords
@@ -335,11 +336,10 @@ With a prefix ARG, remove start location."
   ((org-mode      . toc-org-mode)
    (markdown-mode . toc-org-mode))
   :config
-  (add-hook 'markdown-mode-hook
-	    #'(lambda ()
-		(bind-keys
-		 :map markdown-mode-map
-		 ("C-c C-o" . toc-org-markdown-follow-thing-at-point)))))
+  (with-eval-after-load 'markdown-mode
+    (bind-keys
+     :map markdown-mode-map
+     ("C-c C-o" . toc-org-markdown-follow-thing-at-point))))
 
 (use-package org-autolist
   :hook (org-mode . org-autolist-mode))
@@ -391,8 +391,6 @@ folder."
 	(message "There is no TODO file in the org directory.")))))
 
 (add-hook 'org-mode-hook #'user/remove-org-todo)
-(declare-function org-fold-hide-drawer-all "org")
-(add-hook 'org-mode-hook #'org-fold-hide-drawer-all)
 
 
 (provide '10-org-mode-extensions)
