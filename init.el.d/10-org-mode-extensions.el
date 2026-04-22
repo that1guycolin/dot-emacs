@@ -136,6 +136,7 @@
 (use-package org-node
   :functions
   org-node-global-prefix-map org-node-org-prefix-map org-node-cache-mode
+  org-node-backlink-mode org-node-complete-at-point-mode
   org-node-pop-to-fresh-file-buffer user/org-node-new-file
   :defines
   org-node-proposed-title org-node-proposed-id org-node--new-unsaved-buffers
@@ -146,10 +147,16 @@
   (keymap-set org-mode-map "C-c n" org-node-org-prefix-map)
 
   :custom
-  (org-node-prefer-with-heading t)
+  (org-node-file-directory-ask t)
+  (org-node-prefer-with-heading nil)
+  (org-node-backlink-do-drawers nil)
+  (auto-save-visited-interval 60)
 
   :config
   (org-node-cache-mode 1)
+  (org-node-backlink-mode 1)
+  (auto-save-visited-mode 1)
+  (org-node-complete-at-point-mode 1)
   
   (defun user/org-node-new-file (&optional title id)
     "Create a new file with a new node.
@@ -163,7 +170,7 @@
     (insert ":PROPERTIES:"
   	    "\n:ID:       " id
   	    "\n:END:"
-  	    "#+TITLE: " title
+  	    "\n#+TITLE: " title
   	    "\n#+FILETAGS:"
   	    "\n")
     (goto-char (point-max))
