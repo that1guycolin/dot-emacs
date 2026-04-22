@@ -347,6 +347,18 @@ With a prefix ARG, remove start location."
 
 
 ;; =======  FUNCTIONS & VARIABLES  =======
+(defvar org-babel-lisp-eval-fn)
+(declare-function sly-eval "sly")
+(org-babel-do-load-languages 'org-babel-load-languages
+			     '((emacs-lisp . t)
+			       (lisp       . t)
+			       (lua        . t)
+			       (makefile   . t)
+			       (org        . t)
+			       (python     . t)
+			       (shell      . t)))
+(setq org-babel-lisp-eval-fn #'sly-eval)
+
 (defun user/convert-md-links-to-org ()
   "Convert all [label](link) patterns in the current buffer to [[link][label]]."
   (interactive)
