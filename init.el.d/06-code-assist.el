@@ -178,8 +178,7 @@ See URL `https://vale.sh'."
    (markdown-mode  . lsp-deferred)
    (python-ts-mode . lsp-deferred)
    (toml-ts-mode   . lsp-deferred))
-  :bind (:map prog-mode-map
-	      ("C-c C-l" . lsp))
+  :bind ("C-c C-l" . lsp)
   :functions
   lsp-mode lsp-register-client make-lsp--client lsp-stdio-connection
   lsp-format-buffer lsp-enable-which-key-integration
