@@ -172,10 +172,34 @@
   :hook
   (emacs-lisp-mode . elisp-def-mode))
 
+(use-package inspector
+  :functions inspector-inspect-expression
+  :custom
+  (inspector-switch-to-buffer nil)
+  :config
+  (bind-keys
+   ("M-I e" . inspector-inspect-expression)))
+
+(use-package tree-inspector
+  :functions
+  tree-inspector-inspect-expression tree-inspector-inspect-last-sexp
+  :config
+  (bind-keys
+   ("M-I t" . tree-inspector-inspect-expression)
+   ("M-I s" . tree-inspector-inspect-last-sexp)))
 
 (use-package eros
   :defer t
   :hook (emacs-lisp-mode . eros-mode))
+
+(use-package eros-inspector
+  :after eros
+  :functions
+  eros-inspector-eval-last-sexp eros-inspector-eval-defun
+  :config
+  (keymap-global-set "<remap> <eros-eval-last-sexp>"
+		     #'eros-inspector-eval-last-sexp)
+  (keymap-global-set "<remap> <eros-eval-defun>" #'eros-inspector-eval-defun))
 
 (use-package suggest
   :defer t
