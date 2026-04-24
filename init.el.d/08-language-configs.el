@@ -136,13 +136,12 @@
 ;; `adjust-parens' (smart '()')
 ;; -------------------------
 ;; EMACS LISP
+;; `morlock' (additional font hl)
 ;; `checkdoc' (style checker)
 ;; `elisp-def' (go directly to symbol def)
-;; `morlock' (additional font hl)
 ;; `eros' (see function results in buffer)
 ;; `suggest' (find function to accomplish X)
 ;; `macrostep' (interactive macro stepper)
-;; `lispxmp' (see results in buffer)
 ;; -------------------------
 ;; SBCL
 ;; `sly' (modern slime)
@@ -151,29 +150,28 @@
   :defer t
   :hook
   ((emacs-lisp-mode . lisp-semantic-hl-mode)
-   (lisp-mode . lisp-semantic-hl-mode)))
+   (lisp-mode       . lisp-semantic-hl-mode)))
 
 (use-package adjust-parens
   :defer t
   :hook
   ((emacs-lisp-mode . adjust-parens-mode)
-   (lisp-mode . adjust-parens-mode)))
-
-(use-package checkdoc
-  :ensure nil
-  :commands
-  checkdoc-defun
-  checkdoc-current-buffer)
-
-(use-package elisp-def
-  :defer t
-  :hook
-  ((emacs-lisp-mode . elisp-def-mode)
-   (ielm-mode . elisp-def-mode)))
+   (lisp-mode       . adjust-parens-mode)))
 
 (use-package morlock
   :defer t
   :hook (emacs-lisp-mode . morlock-mode))
+
+(use-package checkdoc
+  :ensure nil
+  :commands
+  checkdoc-defun checkdoc-current-buffer)
+
+(use-package elisp-def
+  :defer t
+  :hook
+  (emacs-lisp-mode . elisp-def-mode))
+
 
 (use-package eros
   :defer t
@@ -187,7 +185,7 @@
 (use-package macrostep
   :defer t
   :bind (:map emacs-lisp-mode-map
-              ("C-c m" . macrostep-expand)))
+              ("C-c M-s" . macrostep-expand)))
 
 (use-package sly
   :defer t
