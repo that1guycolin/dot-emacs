@@ -42,7 +42,8 @@
 	       "master" "tsx/src")
 	  (typescript "https://github.com/tree-sitter/tree-sitter-typescript"
 		      "master" "typescript/src")
-	  (yaml "https://github.com/ikatyang/tree-sitter-yaml"))))
+	  (yaml "https://github.com/ikatyang/tree-sitter-yaml")
+	  (zsh "https://github.com/georgeharker/tree-sitter-zsh"))))
 
 (use-package treesit-auto
   :functions
