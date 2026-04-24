@@ -8,7 +8,7 @@
 :ORG_GTD:  Projects
 :ORG_GTD_FIRST_TASKS: Ensure-packages-match-2026-04-21-13-25-25
 :END:
-*** NEXT Ensure packages match
+*** TODO Ensure packages match
 :PROPERTIES:
 :ORG_GTD:  Actions
 :ID:       Ensure-packages-match-2026-04-21-13-25-25
@@ -73,10 +73,71 @@
 :END:
 
 
+** Is LSP-Mode the best package for the job? [0/4][0%] :emacsd:
+:PROPERTIES:
+:ORG_GTD_CAPTURED_AT: [2026-04-23 Thu 15:24]
+:ID:       Is-LSP-Mode-the-best-package-for-the-job-2026-04-23-16-45-26
+:ORG_GTD:  Projects
+:ORG_GTD_FIRST_TASKS: lsp-mode-2026-04-23-16-45-42
+:END:
+
+|            | Pros | Cons | URL | Comments |
+|------------+------+------+-----+----------|
+| lsp-mode   |      |      |     |          |
+| eglot      |      |      |     |          |
+| lsp-bridge |      |      |     |          |
+| lspce      |      |      |     |          |
+
+*** TODO lsp-mode
+:PROPERTIES:
+:ORG_GTD:  Actions
+:ID:       lsp-mode-2026-04-23-16-45-42
+:TRIGGER:  self org-gtd-update-project-after-task-done!
+:ORG_GTD_PROJECT_IDS: Is-LSP-Mode-the-best-package-for-the-job-2026-04-23-16-45-26
+:ORG_GTD_PROJECT: Is LSP-Mode the best package for the job?
+:ORG_GTD_BLOCKS: eglot-2026-04-23-16-45-42
+:END:
+*** TODO eglot
+:PROPERTIES:
+:ORG_GTD:  Actions
+:ID:       eglot-2026-04-23-16-45-42
+:TRIGGER:  self org-gtd-update-project-after-task-done!
+:ORG_GTD_PROJECT_IDS: Is-LSP-Mode-the-best-package-for-the-job-2026-04-23-16-45-26
+:ORG_GTD_PROJECT: Is LSP-Mode the best package for the job?
+:ORG_GTD_DEPENDS_ON: lsp-mode-2026-04-23-16-45-42
+:ORG_GTD_BLOCKS: lsp-bridge-2026-04-23-16-45-42
+:END:
+*** TODO lsp-bridge
+:PROPERTIES:
+:ORG_GTD:  Actions
+:ID:       lsp-bridge-2026-04-23-16-45-42
+:TRIGGER:  self org-gtd-update-project-after-task-done!
+:ORG_GTD_PROJECT_IDS: Is-LSP-Mode-the-best-package-for-the-job-2026-04-23-16-45-26
+:ORG_GTD_PROJECT: Is LSP-Mode the best package for the job?
+:ORG_GTD_DEPENDS_ON: eglot-2026-04-23-16-45-42
+:ORG_GTD_BLOCKS: lspce-2026-04-23-16-45-42
+:END:
+*** TODO lspce
+:PROPERTIES:
+:ORG_GTD:  Actions
+:ID:       lspce-2026-04-23-16-45-42
+:TRIGGER:  self org-gtd-update-project-after-task-done!
+:ORG_GTD_PROJECT_IDS: Is-LSP-Mode-the-best-package-for-the-job-2026-04-23-16-45-26
+:ORG_GTD_PROJECT: Is LSP-Mode the best package for the job?
+:ORG_GTD_DEPENDS_ON: lsp-bridge-2026-04-23-16-45-42
+:END:
 * dot-Emacs: Single-Actions
-** NEXT Git gist integration with Emacs                              :emacsd:
+** TODO Python Indent Offset Error :python:
+:PROPERTIES:
+:ORG_GTD_CAPTURED_AT: [2026-04-21 Tue 22:58]
+:ID:       Python-Indent-Offset-Error-2026-04-21-23-01-58
+:ORG_GTD:  Actions
+:END:
+
+** TODO Git gist integration with Emacs                              :emacsd:
 :PROPERTIES:
 :ORG_GTD_CAPTURED_AT: [2026-04-20 Mon 17:56]
 :ID:       Git-gist-integration-with-Emacs-2026-04-20-18-18-57
 :ORG_GTD:  Actions
 :END:
+
