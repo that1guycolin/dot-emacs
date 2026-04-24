@@ -122,7 +122,8 @@
   (dashboard-vertically-center-content t)
   (dashboard-banner-logo-title "Welcome back")
   (dashboard-projects-backend 'projectile)
-  (dashboard-items `((projects . ,(length projectile-known-projects))
+  (dashboard-items `((agenda   . 5)
+		     (projects . ,(length projectile-known-projects))
 		     (recents  . 5)))
   
   :config
