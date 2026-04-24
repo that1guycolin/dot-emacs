@@ -29,8 +29,7 @@
   org-gtd-mode org-gtd-capture org-gtd-engage org-gtd-process-inbox
   org-gtd-show-all-next org-gtd-reflect-stuck-projects org-gtd-organize
   org-gtd-agenda-transient
-  :defines
-  org-gtd-update-ack
+  :defines org-gtd-update-ack
   
   :init
   (setq
@@ -206,6 +205,12 @@
   :config
   (pdf-tools-install))
 
+(use-package nov
+  :defer t)
+
+(use-package djvu
+  :defer t)
+
 (use-package org-noter
   :functions org-noter-start-from-dired
   :custom
@@ -371,7 +376,9 @@ With a prefix ARG, remove start location."
 			       (org        . t)
 			       (python     . t)
 			       (shell      . t)))
-(setq org-babel-lisp-eval-fn #'sly-eval)
+(setq
+ org-babel-lisp-eval-fn #'sly-eval
+ org-use-sub-superscripts '{})
 
 (defun user/convert-md-links-to-org ()
   "Convert all [label](link) patterns in the current buffer to [[link][label]]."
