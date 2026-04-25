@@ -57,6 +57,7 @@
 ;; `eshell-syntax-highlighting' (syntax-hl)
 ;; `esh-autosuggest' (fish-like history-based suggestions)
 ;; `eshell-git-prompt' (themed prompt)
+;; `esh-help' (display help like in .el buffer)
 ;; ========================
 (keymap-global-set "C-c s e" #'eshell)
 
@@ -74,6 +75,25 @@
   :config
   (eshell-git-prompt-use-theme 'multiline2))
 
+(declare-function helpful-callable "helpful")
+(use-package esh-help
+  :after esh-opt
+  :functions
+  setup-esh-help-eldoc esh-help-run-help user/esh-help-run-help-advice
+
+  :init
+  (setup-esh-help-eldoc)
+  :config
+  (require 'cl-lib)
+  (defun user/esh-help-run-help-advice (orig-fn cmd)
+    "Use `helpful-callable' instead of `describe-function' in ORIG-FN."
+    (cl-letf (((symbol-function #'describe-function) #'helpful-callable))
+      (funcall orig-fn cmd)))
+  (advice-add #'esh-help-run-help :around #'user/esh-help-run-help-advice)
+
+  (bind-keys
+   :map eshell-mode-map
+   ("C-c C-h" . esh-help-run-help)))
 
 
 ;; =======  HELPER  =======
