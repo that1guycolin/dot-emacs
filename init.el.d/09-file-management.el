@@ -96,6 +96,19 @@
   :defer t
   :bind ("<f5>" . deadgrep))
 
+(use-package dwim-shell-command
+  :defer t
+  :commands dwim-shell-command-on-marked-files)
+
+(defun user/convert-ts-to-mp4 ()
+  "Convert .ts files to .mp4 using FFmpeg."
+  (interactive)
+  (dwim-shell-command-on-marked-files
+   "Convert to mp4"
+   "ffmpeg -hide_banner -v quiet -stats -y -i '<<f>>' -map 0:v -map 0:a \
+-c copy -movflags +faststart '<<fne>>.mp4'"
+   :utils "ffmpeg"))
+
 
 (provide '09-file-management)
 ;;; 09-file-management.el ends here
