@@ -125,6 +125,7 @@
 ;; =======  TREEMACS  =======
 ;; `treemacs' (functional side panel)
 ;; `project-treemacs' (project.el + treemacs integration)
+;; `treemacs-perspective' (perspective + treemacs integration)
 ;; `treemacs-nerd-icons' (nerd-icons + treemacs integration)
 ;; ==========================
 (use-package treemacs
@@ -168,6 +169,7 @@
   :config
   (project-treemacs-mode 1))
 
+(use-package treemacs-perspective
   :after treemacs)
 
 (use-package treemacs-nerd-icons
