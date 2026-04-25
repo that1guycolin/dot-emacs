@@ -1,7 +1,7 @@
 ;;; 02-completion-setup.el --- Completion stack -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; cape, corfu, marginalia, orderless, savehist, vertico
+;; cape, corfu, emacs, helpful, marginalia, orderless, savehist, vertico
 
 ;;; Commentary:
 ;; Completion UI stack; this needs to load early because many other packages

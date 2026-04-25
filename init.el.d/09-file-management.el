@@ -1,7 +1,7 @@
 ;;; 09-file-management.el --- File explorer functions -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; async, deadgrep, diredfl, dirvish
+;; async, diredfl, dirvish, dwim-shell-command
 
 ;;; Commentary:
 ;; Leverage `dirvish', along with some Dired built-in settings & extensions,

@@ -1,5 +1,8 @@
 ;;; 13-media-player.el --- Listen to music & watch videos -*- lexical-binding: t; -*-
 
+;;; Packages included:
+;; emms, emms-info-mediainfo
+
 ;;; Commentary:
 ;; Uses the package `emms' to allow video/audio playback and control via Emacs.
 ;; Requires FFmpeg, mediainfo, & mpv.

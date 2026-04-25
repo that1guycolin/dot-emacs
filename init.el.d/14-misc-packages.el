@@ -1,7 +1,7 @@
 ;;; 14-misc-packages.el --- Misc & Dashboard -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; dashboard, emacs-everywhere free-keys, mistty, telega, vterm, with-editor
+;; dashboard, emacs-everywhere, free-keys, telega
 
 ;;; Commentary:
 ;; Packages that don't fit nicely into another category or, as is the case with

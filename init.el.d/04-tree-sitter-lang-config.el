@@ -2,7 +2,8 @@
 
 ;;; Packages included:
 ;; bash-ts-mode, cmake-ts-mode, emacs-lisp-mode, ielm, json-ts-mode, lisp-mode,
-;; nxml-mode, python-ts-mode, toml-ts-mode, treesit, treesit-auto, yaml-ts-mode
+;; lua-ts-mode, nxml-mode, python-ts-mode, sh-mode, toml-ts-mode, treesit,
+;; treesit-auto, yaml-ts-mode
 
 ;;; Commentary:
 ;; Activates and configures Emacs' built-in tree-sitter supported languages.

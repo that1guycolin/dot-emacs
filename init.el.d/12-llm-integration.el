@@ -1,7 +1,8 @@
 ;;; 12-llm-integration.el --- LLM Integration -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; elisp-dev-mcp, ellama, gptel, gptel-forge-prs, ollama-magit-commit-message
+;; elisp-dev-mcp, ellama, gptel, gptel-commit, gptel-forge-prs, gptel-magit,
+;; org-mcp
 
 ;;; Commentary:
 ;; Support Emacs in executing tasks not typical of a text editor/IDE, such as

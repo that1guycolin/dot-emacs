@@ -1,10 +1,11 @@
 ;;; 08-language-configs.el --- Packages & settings for select languages -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; adjust-parens, auto-rename-tag, checkdoc, eask-mode, elisp-def, eros,
-;; fish-mode, flycheck-eask, grip-mode, kdl-mode, lisp-semantic-hl, live-py-mode,
-;; macrostep, markdown-mode, markdown-toc, modern-sh, python-x, sly, suggest,
-;; uv-mode, yaml-pro
+;; adjust-parens, auto-rename-tag, auto-virtualenv, checkdoc, eask-mode,
+;; elisp-def, eros, eros-inspector, fish-mode, flycheck-eask, flycheck-package,
+;; glsl-mode, grip-mode, ini-mode, inspector, kdl-mode, lisp-semantic-hl,
+;; live-py-mode, macrostep, markdown-mode, modern-sh, morlock, python-x, sly,
+;; suggest, tree-inspector, yaml-pro
 
 ;;; Commentary:
 ;; Provide packages and settings that enhance Emacs support for specific markup,

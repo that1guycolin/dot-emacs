@@ -1,7 +1,10 @@
 ;;; 11-org-mode-extensions.el --- Extensions for Org-mode -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; org-edna, org-gtd, org-projectile, toc-org
+;; djvu, el2org, magit-org-todos, nov, org-autolist, org-caldav, org-edna,
+;; org-gtd, org-mem, org-modern, org-modern-indent, org-node, org-noter,
+;; org-noter-pdftools, org-pdftools, org-pomodoro, org-project-capture,
+;; pdf-tools, toc-org
 
 ;;; Commentary:
 ;; Provide extensions for Emacs' Org-mode.

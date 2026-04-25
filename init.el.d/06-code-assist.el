@@ -1,9 +1,9 @@
 ;;; 06-code-assist.el --- Linting, formatting, & LSPs -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; adaptive-wrap, apheleia, dap-mode, flycheck, flycheck-color-mode-line,
-;; flyover, lsp-mode, lsp-treemacs, lsp-ui, smartparens, yasnippet,
-;; yasnippet-capf, yasnippet-snippets
+;; adaptive-wrap, apheleia, dap-mode, docstr, flycheck, flycheck-color-mode-line,
+;; flycheck-pos-tip, lsp-mode, lsp-treemacs, lsp-ui, mason, smartparens,
+;; yasnippet, yasnippet-capf, yasnippet-snippets
 
 ;;; Commentary:
 ;; Call packages that support efficient & productive coding at a global scope.

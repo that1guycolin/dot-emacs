@@ -1,8 +1,9 @@
 ;;; 05-project-management.el --- Project management and file navigation -*- lexical-binding: t; -*-
 
-;; Packages included:
-;; disproject, editorconfig, projectile, treemacs, treemacs-nerd-icons,
-;; treemacs-projectile
+;;; Packages included:
+;; deadgrep, disproject, editorconfig, perspective, perspective-project-bridge,
+;; project, project-treemacs, rg, treemacs, treemacs-nerd-icons,
+;; treemacs-perspective
 
 ;;; Commentary:
 ;; Support project functionality in Emacs.  Git integration for said projects
