@@ -54,9 +54,13 @@
 
 
 ;; =======  ESHELL  =======
-;; 
+;; `eshell-syntax-highlighting' (syntax-hl)
 ;; ========================
 (keymap-global-set "C-c s e" #'eshell)
+
+(use-package eshell-syntax-highlighting
+  :defer t
+  :hook (eshell-mode . eshell-syntax-highlighting-global-mode))
 
 
 
