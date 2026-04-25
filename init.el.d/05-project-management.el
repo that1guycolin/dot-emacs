@@ -14,6 +14,7 @@
 ;; `disproject' (transient dispatch for project.el)
 ;; `deadgrep' (global ripgrep search)
 ;; `rg' (project ripgrep search & more)
+;; `perspective' (separate workspaces for separate projects)
 ;; `editorconfig' (support .editorconfig)
 ;; =================================
 (defvar user/projects-directory)
@@ -69,6 +70,36 @@
 
 (dolist (keybind '("C-x b" "C-x k" "C-x C-b" "C-x p"))
   (keymap-global-unset keybind))
+
+(defvar ibuffer-sorting-mode)
+(declare-function ibuffer-do-sort-by-alphabetic "ibuffer")
+(use-package perspective
+  :bind
+  (("C-x b"   . persp-switch-to-buffer*)
+   ("C-x C-b" . persp-ibuffer)
+   ("C-x k"   . persp-kill-buffer*)
+   ("C-x C-B" . persp-buffer-menu))
+  :functions
+  persp-mode persp-is-current-buffer persp-ibuffer-set-filter-groups
+  :custom
+  (persp-mode-prefix-key (kbd "C-c M-p"))
+  (persp-switch-to-buffer-behavior 'switch)
+  :init
+  (persp-mode 1)
+  (setq switch-to-prev-buffer-skip
+	(lambda (win buff bury-or-kill)
+          (not (persp-is-current-buffer buff))))
+  (add-hook 'ibuffer-hook
+            (lambda ()
+	      (persp-ibuffer-set-filter-groups)
+	      (unless (eq ibuffer-sorting-mode 'alphabetic)
+		(ibuffer-do-sort-by-alphabetic))))
+  (require 'bs)
+  (keymap-global-set "C-x B" #'(lambda (arg)
+                                 (interactive "P")
+                                 (if (fboundp 'persp-bs-show)
+                                     (persp-bs-show arg)
+                                   (bs-show "all")))))
 
 (use-package editorconfig
   :hook ((prog-mode . editorconfig-mode)
