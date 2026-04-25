@@ -12,6 +12,7 @@
 ;; =======  PROJECT SUPPORT  =======
 ;; `project.el' (project manager)
 ;; `disproject' (transient dispatch for project.el)
+;; `deadgrep' (global ripgrep search)
 ;; `editorconfig' (support .editorconfig)
 ;; =================================
 (defvar user/projects-directory)
@@ -42,12 +43,22 @@
 		   ,(expand-file-name user-emacs-directory)))
       (project-remember-projects-under dir t))
     (message "Successfully repopulated projects list")))
+
 (use-package disproject
   :defer t
   :bind (:map ctl-x-map
               ("p" . disproject-dispatch)))
 
+(use-package deadgrep
+  :defer t
+  :bind
+  (("<f5>" . deadgrep)
+   (:map ctl-x-map
+	 ("C-g" . deadgrep))))
+
   (bind-keys
+(dolist (keybind '("C-x b" "C-x k" "C-x C-b" "C-x p"))
+  (keymap-global-unset keybind))
 
 (use-package editorconfig
   :hook ((prog-mode . editorconfig-mode)

@@ -21,6 +21,7 @@
   :init
   (require 'dired-async))
 
+(keymap-global-unset "C-x d")
 (declare-function diff-hl-dired-mode "diff-hl")
 (use-package dirvish
   :defer t
@@ -91,10 +92,6 @@
    ("M-s"                             . dirvish-setup-menu)
    ("M-e"                             . dirvish-emerge-menu)
    ("C-c h"                           . diff-hl-dired-mode)))
-
-(use-package deadgrep
-  :defer t
-  :bind ("<f5>" . deadgrep))
 
 (use-package dwim-shell-command
   :defer t
