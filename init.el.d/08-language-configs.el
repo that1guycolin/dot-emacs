@@ -212,12 +212,12 @@
 (use-package suggest
   :defer t
   :bind (:map emacs-lisp-mode-map
-	      ("C-c S" . suggest)))
+	      ("C-c C-S" . suggest)))
 
 (use-package macrostep
   :defer t
   :bind (:map emacs-lisp-mode-map
-              ("C-c M-s" . macrostep-expand)))
+              ("C-c C-m" . macrostep-expand)))
 
 (use-package sly
   :defer t
