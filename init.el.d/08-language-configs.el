@@ -42,6 +42,7 @@
   :custom
   (auto-virtualenv-verbose t))
 
+
 ;; =======  SHELL SCRIPTS  =======
 ;; `modern-sh' (enhaced sh-mode & bash(-ts)-mode)
 ;; `fish-mode' (fish shell support)

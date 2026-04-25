@@ -56,6 +56,8 @@
 ;; =======  ESHELL  =======
 ;; 
 ;; ========================
+(keymap-global-set "C-c s e" #'eshell)
+
 
 
 ;; =======  HELPER  =======
