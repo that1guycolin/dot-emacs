@@ -128,7 +128,9 @@
 
 (use-package sh-mode
   :ensure nil
-  :interpreter ("sh" . sh-mode))
+  :interpreter
+  (("sh"  . sh-mode)
+   ("zsh" . sh-mode)))
 
 (use-package toml-ts-mode
   :defer t
