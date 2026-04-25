@@ -47,6 +47,9 @@
       (project-remember-projects-under dir t))
     (message "Successfully repopulated projects list")))
 
+(dolist (keybind '("C-x b" "C-x k" "C-x C-b" "C-x p"))
+  (keymap-global-unset keybind))
+
 (use-package disproject
   :defer t
   :bind (:map ctl-x-map
@@ -68,9 +71,6 @@
   (bind-keys
    :map isearch-mode-map
    ("M-s r" . rg-isearch-menu)))
-
-(dolist (keybind '("C-x b" "C-x k" "C-x C-b" "C-x p"))
-  (keymap-global-unset keybind))
 
 (defvar ibuffer-sorting-mode)
 (declare-function ibuffer-do-sort-by-alphabetic "ibuffer")
@@ -113,9 +113,6 @@
 	      (if perspective-project-bridge-mode
 		  (perspective-project-bridge-find-perspectives-for-all-buffers)
 		(perspective-project-bridge-kill-perspectives)))))
-
-(declare-function dirvish "dirvish")
-(declare-function transient-define-prefix "transient")
 
 (use-package editorconfig
   :hook ((prog-mode . editorconfig-mode)
