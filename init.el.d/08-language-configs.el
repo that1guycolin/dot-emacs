@@ -68,12 +68,17 @@
 
 
 ;; =======  MARKUP/CONFIG  =======
+;; `glsl-mode' (support OpenGL Shading Language)
 ;; `kdl-mode' (support .kdl)
 ;; `markdown-mode', `markdown-toc',
 ;; `grip-mode' (support md, gfm)
 ;; `auto-rename-tag' (xml tag assistant)
 ;; `yaml-pro' (enhanced .yaml support)
 ;; ===============================
+(use-package glsl-mode
+  :defer t
+  :mode ("\\.glsl\\'" . glsl-mode))
+
 (use-package ini-mode
   :defer t
   :mode
