@@ -50,7 +50,7 @@
 	      ("/" . magit-git-toolbelt)))
 
 (use-package treemacs-magit
-  :after (treemacs magit))
+  :after treemacs magit)
 
 
 (provide '07-git-tools)
