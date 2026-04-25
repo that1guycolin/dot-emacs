@@ -1,14 +1,14 @@
 #+TITLE: dot-Emacs TODO
 
 * dot-Emacs: Multi-Step Projects
-** dot-Emacs README [0/5][0%] :emacsd:
+** dot-Emacs README [1/5][20%] :emacsd:
 :PROPERTIES:
 :ORG_GTD_CAPTURED_AT: [2026-04-20 Mon 18:22]
 :ID:       dot-Emacs-README-2026-04-21-13-19-09
 :ORG_GTD:  Projects
 :ORG_GTD_FIRST_TASKS: Ensure-packages-match-2026-04-21-13-25-25
 :END:
-*** TODO Ensure packages match
+*** NEXT Ensure packages match
 :PROPERTIES:
 :ORG_GTD:  Actions
 :ID:       Ensure-packages-match-2026-04-21-13-25-25
@@ -17,7 +17,9 @@
 :ORG_GTD_PROJECT: dot-Emacs README
 :ORG_GTD_BLOCKS: init-dot-el-dot-d-dot-el-files-2026-04-21-13-25-25
 :END:
-**** TODO init.el.d/*.el files
+- State "DONE"       from "TODO"       [2026-04-25 Sat 06:36]
+**** DONE init.el.d/*.el files
+CLOSED: [2026-04-25 Sat 06:37]
 :PROPERTIES:
 :ORG_GTD:  Actions
 :ID:       init-dot-el-dot-d-dot-el-files-2026-04-21-13-25-25
@@ -27,6 +29,7 @@
 :ORG_GTD_DEPENDS_ON: Ensure-packages-match-dot-2026-04-21-13-25-25
 :ORG_GTD_BLOCKS: init-dot-el-2026-04-21-13-25-25
 :END:
+- State "DONE"       from "TODO"       [2026-04-25 Sat 06:37]
 - "01-bootstrap-core.el"
 - "02-completion-setup.el"
 - "03-visual-settings.el"
