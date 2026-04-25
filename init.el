@@ -85,23 +85,26 @@
 ;; File explorer functions
 (require '09-file-management)
 
+;; Support for terminal and Emacs' shells
+(require '10-shell-modes)
+
 ;; Extensions for Org-mode
-(require '10-org-mode-extensions)
+(require '11-org-mode-extensions)
 
 ;; Configure Emacs to work with LLMs
-(require '11-llm-integration)
+(require '12-llm-integration)
 
 ;; Listen to music & watch videos
-(require '12-media-player)
+(require '13-media-player)
 
 ;; Misc & Dashboard
-(require '13-misc-packages)
+(require '14-misc-packages)
 
 ;; Install themes
-(require '14-install-themes)
+(require '15-install-themes)
 
 ;; Custom variables & functions
-(require '15-user-functions)
+(require '16-user-functions)
 
 
 (provide 'init)
