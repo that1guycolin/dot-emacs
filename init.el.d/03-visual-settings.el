@@ -51,6 +51,16 @@
   :config
   (which-key-mode 1))
 
+;; Fix font displays for various unicode symbols.
+(defun user/display-font-symbols-correctly ()
+  "Use \"Noto Color Emoji\" to display unicode symbols."
+  (dolist (range '((#x1F300 . #x1F5FF)  ;; Misc symbols & pictographs
+                   (#x1F600 . #x1F64F)  ;; Emoticons
+                   (#x1F680 . #x1F6FF)  ;; Transport & map
+                   (#x1F900 . #x1F9FF))) ;; Supplemental symbols
+    (set-fontset-font t range "Noto Color Emoji" nil 'append)))
+(add-hook 'after-setting-font-hook #'user/display-font-symbols-correctly)
+
 
 (provide '03-visual-settings)
 ;;; 03-visual-settings.el ends here

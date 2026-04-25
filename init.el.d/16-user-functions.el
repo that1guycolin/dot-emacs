@@ -154,6 +154,7 @@
                         :family font
                         :height 110
                         :weight 'regular)
+    (run-hooks 'after-setting-font-hook)
     (message "Font set to %s" font)))
 
 (defun user/random-font ()
@@ -168,6 +169,7 @@
 			  :family new-font-fullname
 			  :height 110
 			  :weight 'regular)
+      (run-hooks 'after-setting-font-hook)
       (message "Loaded font: %s" new-font-shortname))))
 
 
