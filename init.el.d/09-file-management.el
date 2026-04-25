@@ -25,36 +25,19 @@
 (declare-function diff-hl-dired-mode "diff-hl")
 (use-package dirvish
   :defer t
+  :bind (:map ctl-x-map
+	      ("d" . dirvish))
   :commands dirvish
   
   :functions
-  dirvish-override-dired-mode
-  dirvish-peek-mode
-  dirvish-dwim
-  dirvish-fd
-  dired-mouse-find-file-other-window
-  dired-mouse-find-file
-  dirvish-quicksort
-  dirvish-ls-switches-menu
-  dirvish-yank-menu
-  dirvish-dispatch
-  dirvish-quit
-  dirvish-quick-access
-  dirvish-file-info-menu
-  dired-do-delete
-  dired-do-flagged-delete
-  dirvish-yank
-  dirvish-subtree-toggle
-  dirvish-layout-toggle
-  dirvish-history-go-backward
-  dirvish-history-go-forward
-  dirvish-narrow
-  dirvish-mark-menu
-  dirvish-setup-menu
-  dirvish-emerge-menu
-  
-  :init
-  (dirvish-override-dired-mode 1)
+  dirvish-override-dired-mode user/dired-use-dirvish dirvish-peek-mode
+  dirvish-dwim dirvish-fd dired-mouse-find-file-other-window
+  dired-mouse-find-file dirvish-quicksort dirvish-ls-switches-menu
+  dirvish-yank-menu dirvish-dispatch dirvish-quit dirvish-quick-access
+  dirvish-file-info-menu dired-do-delete dired-do-flagged-delete dirvish-yank
+  dirvish-new-empty-file-a dirvish-subtree-toggle dirvish-layout-toggle
+  dirvish-history-go-backward dirvish-history-go-forward dirvish-narrow
+  dirvish-mark-menu dirvish-setup-menu dirvish-emerge-menu
   
   :custom
   (dirvish-preview-dispatchers '(archive pdf))
@@ -65,7 +48,17 @@
 --human-readable --group-directories-first --no-group")
   
   :config
+  (dirvish-override-dired-mode 1)
+
+  (defun user/dired-use-dirvish (dirname &optional switches)
+    "Open DIRNAME with `dirvish' instead of `dired'."
+    (if switches
+	(dirvish dirname switches)
+      (dirvish dirname)))
+  (advice-add 'dired :override #'user/dired-use-dirvish)
+  
   (bind-keys
+   ("C-x d"     . dirvish)
    ("C-c D"     . dirvish-dwim)
    ("C-c C-S-d" . dirvish-fd)
    :map dirvish-mode-map
@@ -83,6 +76,32 @@
    ("X"                               . dired-do-flagged-delete)
    ("y"                               . dirvish-yank)
    ("s"                               . dirvish-quicksort)
+   ("."                               . dirvish-new-empty-file-a)
+   ("TAB"                             . dirvish-subtree-toggle)
+   ("M-t"                             . dirvish-layout-toggle)
+   ("M-b"                             . dirvish-history-go-backward)
+   ("M-f"                             . dirvish-history-go-forward)
+   ("M-n"                             . dirvish-narrow)
+   ("M-m"                             . dirvish-mark-menu)
+   ("M-s"                             . dirvish-setup-menu)
+   ("M-e"                             . dirvish-emerge-menu)
+   ("C-c h"                           . diff-hl-dired-mode)
+   :map dired-mode-map
+   ("<mouse-1>"                       . dirvish-subtree-toggle)
+   ("<mouse-2>"                       . dired-mouse-find-file-other-window)
+   ("<mouse-3>"                       . dired-mouse-find-file)
+   ([remap dired-sort-toggle-or-edit] . dirvish-quicksort)
+   ([remap dired-do-redisplay]        . dirvish-ls-switches-menu)
+   ([remap dired-do-copy]             . dirvish-yank-menu)
+   ("?"                               . dirvish-dispatch)
+   ("q"                               . dirvish-quit)
+   ("a"                               . dirvish-quick-access)
+   ("f"                               . dirvish-file-info-menu)
+   ("x"                               . dired-do-delete)
+   ("X"                               . dired-do-flagged-delete)
+   ("y"                               . dirvish-yank)
+   ("s"                               . dirvish-quicksort)
+   ("."                               . dirvish-new-empty-file-a)
    ("TAB"                             . dirvish-subtree-toggle)
    ("M-t"                             . dirvish-layout-toggle)
    ("M-b"                             . dirvish-history-go-backward)
