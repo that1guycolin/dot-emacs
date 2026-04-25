@@ -193,7 +193,7 @@ The keybindings are exactly the same."
     ("m" "MisTTY Buffer @ p root" mistty-in-project)
     ("C" "Clear known \'p\'s" projectile-clear-known-projects)
     ("R" "Reset known \'p\'s" projectile-reset-known-projects)]])
-(keymap-global-set "C-c t" user/projectile-treemacs-anywhere-dispatch)
+(keymap-global-set "C-c t" #'user/projectile-treemacs-anywhere-dispatch)
 
 
 (provide '05-project-management)
