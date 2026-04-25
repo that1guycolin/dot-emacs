@@ -255,7 +255,7 @@ See URL `https://vale.sh'."
 ;; python: 'ruff' (uv tool install ruff)*
 ;; toml: 'tombi' (pacman -S tombi)*
 ;; xml: 'xmlstarlet' (pacman -S xmlstarlet)
-;; yaml: 'prettier'* (npm install --save-dev --save-exact prettier)*
+;; yaml: 'yq-yqml' (pacman -S yq-yaml)
 ;; ============================
 (use-package apheleia
   :bind ("C-c f" . apheleia-format-buffer)
@@ -288,6 +288,7 @@ See URL `https://vale.sh'."
   (setf (alist-get 'markdown-mode apheleia-mode-alist) 'rumdl)
   (setf (alist-get 'gfm-mode apheleia-mode-alist) 'rumdl)
   (setf (alist-get 'python-ts-mode apheleia-mode-alist) 'ruff)
+  (setf (alist-get 'sh-mode apheleia-mode-alist) 'shfmt)
   (setf (alist-get 'toml-ts-mode apheleia-mode-alist) 'tombi)
   (setf (alist-get 'conf-toml-mode apheleia-mode-alist) 'tombi)
   (setf (alist-get 'nxml-mode apheleia-mode-alist) 'xmlstarlet)
