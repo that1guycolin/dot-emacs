@@ -80,7 +80,8 @@
 	   :fetcher github
 	   :files ("org-project-capture.el"
 		   "org-project-capture-backend.el"
-		   "org-projectile.el")
+		   "org-category-capture.el"
+		   "README.org")
 	   :type git
 	   :protocol https
 	   :inherit t
@@ -91,19 +92,16 @@
   org-project-capture-project-todo-completing-read
   org-project-capture-agenda-for-current-project
 
-  :config
-  (require 'org-projectile)
-  (setq
-   org-project-capture-default-backend
-   (make-instance 'org-project-capture-projectile-backend)
-   org-project-capture-per-project-filepath "TODO")
+  :custom
+  (org-project-capture-per-project-filepath "TODO")
 
-  (with-eval-after-load 'projectile
-    (dolist (project projectile-known-projects)
-      (let ((ptodo (expand-file-name "TODO" project)))
-      	(when (file-exists-p ptodo)
-	  (add-to-list 'org-agenda-files ptodo)))))
-  
+  :config
+  (require 'org-category-capture)
+  (dolist (project (project-known-project-roots))
+    (let ((ptodo (expand-file-name "TODO" project)))
+      (when (file-exists-p ptodo)
+	(add-to-list 'org-agenda-files ptodo))))
+
   (bind-keys
    ("C-c p c" . org-project-capture-capture-for-current-project)
    ("C-c p p" . org-project-capture-project-todo-completing-read)
