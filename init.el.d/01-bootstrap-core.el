@@ -164,7 +164,11 @@
    ("C-c c"   . org-capture)
    :map org-mode-map
    ("C-c l"   . org-toggle-link-display)
-   ("C-c C-q" . org-set-tags-command)))
+   ("C-c C-q" . org-set-tags-command))
+
+  (with-eval-after-load 'org-agenda
+    (bind-keys
+     ("C-c o k" . org-agenda-kill-all-agenda-buffers))))
 
 
 (provide '01-bootstrap-core)
