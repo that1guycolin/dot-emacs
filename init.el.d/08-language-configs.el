@@ -51,14 +51,16 @@
   :defer t
   :hook
   ((bash-ts-mode . modern-sh-mode)
-   (sh-mode . modern-sh-mode))
+   (sh-mode      . modern-sh-mode))
   :functions modern-sh-menu
   :config
   (bind-keys
    :map bash-ts-mode-map
-   ("<f8>" . modern-sh-menu)
+   ("<f8>"    . modern-sh-menu)
+   ("C-c C-m" . modern-sh-menu)
    :map sh-mode-map
-   ("<f8>" . modern-sh-menu)))
+   ("<f8>"    . modern-sh-menu)
+   ("C-c C-m" . modern-sh-menu)))
 
 (use-package fish-mode
   :defer t
