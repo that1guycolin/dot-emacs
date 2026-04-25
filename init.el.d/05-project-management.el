@@ -25,9 +25,10 @@
   projectile-reset-known-projects
 
   :custom
-  (projectile-project-search-path '("~/projects/"
-				    "~/scripts/"
-				    "~/org"))
+  (projectile-project-search-path `(,user/projects-directory
+				    ,user/scripts-directory
+				    ,org-directory
+				    ,(expand-file-name user-emacs-directory)))
   (projectile-completion-system 'default)
   (projectile-track-known-projects-automatically t)
   (projectile-enable-caching 'persistent)
@@ -89,14 +90,7 @@ The keybindings are exactly the same."
      [("v" "Open project root in vc-dir or magit." projectile-vc)]])
   (bind-keys
    :map ctl-x-map
-   ("p" . user/projectile-commander-dispatch))
-
-  (defun user/projectile-refresh-include-emacs ()
-    "Refresh projectile known projects and add `user-emacs-directory' to list."
-    (interactive)
-    (projectile-reset-known-projects)
-    (projectile-add-known-project user-emacs-directory))
-  (user/projectile-refresh-include-emacs))
+   ("p" . user/projectile-commander-dispatch)))
 
 (use-package editorconfig
   :hook ((prog-mode . editorconfig-mode)
@@ -197,8 +191,7 @@ The keybindings are exactly the same."
     ("g" "Ripgrep search in p" projectile-ripgrep)
     ("m" "MisTTY Buffer @ p root" mistty-in-project)
     ("C" "Clear known \'p\'s" projectile-clear-known-projects)
-    ("R" "Reset known \'p\'s"
-     user/projectile-refresh-include-emacs)]])
+    ("R" "Reset known \'p\'s" projectile-reset-known-projects)]])
 (bind-keys ("C-c t" . user/projectile-treemacs-anywhere-dispatch))
 
 

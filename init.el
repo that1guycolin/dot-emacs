@@ -48,13 +48,16 @@
 
 ;;; Code:
 ;; =======  LOAD PATHS  =======
-(defvar user-init-directory (expand-file-name "init.el.d" user-emacs-directory)
+(defvar user/init-directory (expand-file-name "init.el.d" user-emacs-directory)
   "Directory from which init files are loaded.")
 
-(defvar user-projects-directory (expand-file-name "~/projects")
+(defvar user/projects-directory (expand-file-name "~/projects")
   "Directory in which the user stores custom projects.")
 
-(add-to-list 'load-path user-init-directory)
+(defvar user/scripts-directory (expand-file-name "~/scripts")
+  "Directory in which the user stores custom scripts by shell-type.")
+
+(add-to-list 'load-path user/init-directory)
 
 
 ;; =======  LOAD PACKAGES  =======
