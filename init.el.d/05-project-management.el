@@ -10,14 +10,38 @@
 
 ;;; Code:
 ;; =======  PROJECT SUPPORT  =======
+;; `project.el' (project manager)
 ;; `disproject' (transient dispatch for project.el)
 ;; `editorconfig' (support .editorconfig)
 ;; =================================
+(defvar user/projects-directory)
+(defvar user/scripts-directory)
+(defvar org-directory)
+(defvar user-emacs-directory)
 
+(use-package project
+  :ensure nil
+  :functions
+  project-remember-projects-under
   :custom
+  (project-list-exclude
+   (list (concat "^" (regexp-quote (expand-file-name elpaca-directory)))))
   :config
   (dolist (dir '("^node_modules$" "^\\.venv$" "^\\.uv$"))
+    (add-to-list 'project-vc-ignores dir))
   
+  (defun user/project-reset-projects ()
+    "Clear the project list and repopulate it."
+    (interactive)
+    (dolist (project (project-known-project-roots))
+      (project-forget-project project))
+    (message "Cleared all projects")
+    (dolist (dir `(,user/projects-directory
+		   ,user/scripts-directory
+		   ,org-directory
+		   ,(expand-file-name user-emacs-directory)))
+      (project-remember-projects-under dir t))
+    (message "Successfully repopulated projects list")))
 (use-package disproject
   :defer t
   :bind (:map ctl-x-map
@@ -78,14 +102,24 @@
   :config
   (treemacs-nerd-icons-config))
 
+(defvar user/project-treemacs-anywhere-dispatch nil)
 (transient-define-prefix
+  user/project-treemacs-anywhere-dispatch ()
+  "Globally available commands for Treemacs & Project.el."
   [
    ["Treemacs" :pad-keys t
     ("t" "Toggle" treemacs)
     ("T" "Refresh" treemacs-refresh)
+    ("A" "Add P" (lambda () (call-interactively #'project-remember-project)))
+    ("R" "Rename P" treemacs-rename-project)]
 
    ["Treemacs - Current View"
     ("v f" "Focus to active file" treemacs-find-file)
+    ("v p" "Add P" treemacs-add-project-to-workspace)
+    ("v c" "Collapse Other Ps" treemacs-collapse-other-projects)
+    ("v C" "Collapse" treemacs-collapse-all-projects)
+    ("v r" "Current P Only"
+     treemacs-create-workspace-from-project)]
    
    ["Treemacs - Workspaces"
     ("w e" "Edit" treemacs-edit-workspaces)
@@ -94,6 +128,28 @@
     ("w r" "Rename" treemacs-rename-workspace)
     ("w d" "Delete" treemacs-remove-workspace)]
    
+   ["Project.el"
+    ("n" "P Name" project-name)
+    ("u" "P Current" project-current)
+    ("s" "P Search" project-search)
+    ("d" "P in Dirvish" project-dired)
+    ("f" "P Find File" project-find-file)]
+   
+   ["Project Shell"
+    ("S" "P Shell" project-shell)
+    ("e" "P EShell" project-shell)
+    ("a" "P Async Shell Command" project-async-shell-command)
+    ("c" "P Shell Command" project-shell-command)
+    ("m" "MisTTY @ P root" mistty-in-project)]
+   
+   ["Other Project Functions"
+    ("o" "Switch P" project-switch-project)
+    ("D" "Set P Dir-Locals" project-customize-dirlocals)
+    ("r" "Ripgrep P" rg-project)
+    ("g" "DWIM Ripgrep P" rg-dwim-project-dir)
+    ("z" "Forget Zombie Ps" project-forget-zombie-projects)
+    ("p r" "Reset Known Ps" user/project-reset-projects)]])
+(keymap-global-set "C-c t" #'user/project-treemacs-anywhere-dispatch)
 
 
 (provide '05-project-management)
