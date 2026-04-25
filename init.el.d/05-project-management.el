@@ -124,7 +124,7 @@
 
 ;; =======  TREEMACS  =======
 ;; `treemacs' (functional side panel)
-;; `treemacs-projectile' (projectile + treemacs integration)
+;; `project-treemacs' (project.el + treemacs integration)
 ;; `treemacs-nerd-icons' (nerd-icons + treemacs integration)
 ;; ==========================
 (use-package treemacs
@@ -161,6 +161,12 @@
    :map treemacs-mode-map
    ("C-x p f" . treemacs-project-follow-mode)
    ("<backspace>" . treemacs-root-up)))
+
+(use-package project-treemacs
+  :after treemacs
+  :functions project-treemacs-mode
+  :config
+  (project-treemacs-mode 1))
 
   :after treemacs)
 
