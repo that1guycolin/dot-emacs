@@ -41,6 +41,15 @@
   (projectile-mode +1)
   (add-hook 'project-find-functions #'project-projectile)
 
+  (defun user/no-ctags-for-sh ()
+    "Prevent creation of ctags for shell script files.
+This function sets local values of `projectile-tags-*' variables to nil."
+    (setq-local
+     projectile-tags-backend nil
+     projectile-tags-command nil
+     projectile-tags-file-name nil))
+  (add-hook 'sh-mode-hook #'user/no-ctags-for-sh)
+
   (defun user/dirvish-at-project-root ()
     "Open dirvish at the current Projectile project root."
     (let ((root (projectile-project-root)))
