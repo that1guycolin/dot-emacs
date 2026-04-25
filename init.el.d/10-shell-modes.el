@@ -56,6 +56,7 @@
 ;; =======  ESHELL  =======
 ;; `eshell-syntax-highlighting' (syntax-hl)
 ;; `esh-autosuggest' (fish-like history-based suggestions)
+;; `eshell-git-prompt' (themed prompt)
 ;; ========================
 (keymap-global-set "C-c s e" #'eshell)
 
@@ -66,6 +67,12 @@
 (use-package esh-autosuggest
   :defer t
   :hook (eshell-mode . esh-autosuggest-mode))
+
+(use-package eshell-git-prompt
+  :after esh-opt
+  :functions eshell-git-prompt-use-theme
+  :config
+  (eshell-git-prompt-use-theme 'multiline2))
 
 
 
