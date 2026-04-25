@@ -41,19 +41,11 @@
   (projectile-mode +1)
   (add-hook 'project-find-functions #'project-projectile)
 
-  (defun user/file-explorer-at-project-root (explr)
-    "Open EXPLR at the current Projectile project root."
-    (when-let ((root (projectile-project-root)))
-      (funcall explr root)))
-
-  (defun user/dired-or-dirvish-at-project-root ()
-    "When active, open Dirvish at the current Projectile project root.
-If not active, call Dired instead of Dirvish."
-    (if (featurep 'dirvish)
-	(user/file-explorer-at-project-root 'dirvish)
-      (user/file-explorer-at-project-root 'dired)))
-  (setq projectile-switch-project-action
-	#'user/dired-or-dirvish-at-project-root)
+  (defun user/dirvish-at-project-root ()
+    "Open dirvish at the current Projectile project root."
+    (let ((root (projectile-project-root)))
+      (dirvish root)))
+  (setq projectile-switch-project-action #'user/dirvish-at-project-root)
 
   (defun user/projectile-ignore-elpaca-packages (project-root)
     "Return non-nil if PROJECT-ROOT is inside the Elpaca directory."
