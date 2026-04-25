@@ -222,6 +222,7 @@
 (use-package sly
   :defer t
   :hook (lisp-mode . sly-editing-mode)
+  :commands sly
   :functions sly-init-string
   :custom
   (inferior-lisp-program "sbcl")
