@@ -55,12 +55,17 @@
 
 ;; =======  ESHELL  =======
 ;; `eshell-syntax-highlighting' (syntax-hl)
+;; `esh-autosuggest' (fish-like history-based suggestions)
 ;; ========================
 (keymap-global-set "C-c s e" #'eshell)
 
 (use-package eshell-syntax-highlighting
   :defer t
   :hook (eshell-mode . eshell-syntax-highlighting-global-mode))
+
+(use-package esh-autosuggest
+  :defer t
+  :hook (eshell-mode . esh-autosuggest-mode))
 
 
 
