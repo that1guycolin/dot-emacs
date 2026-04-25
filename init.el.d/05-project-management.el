@@ -19,11 +19,10 @@
 (declare-function transient-define-prefix "transient")
 (use-package projectile
   :functions
-  projectile-mode projectile-project-root user/file-explorer-at-project-root
-  project-projectile user/projectile-ignore-elpaca-packages
-  user/projectile-commander-dispatch user/dired-or-dirvish-at-project-root
-  projectile-ag projectile-ripgrep projectile-reset-known-projects
-  projectile-add-known-project user/projectile-refresh-include-emacs
+  projectile-mode project-projectile projectile-project-root user/no-ctags-for-sh
+  user/dirvish-at-project-root user/projectile-ignore-elpaca-packages
+  user/projectile-commander-dispatch projectile-ag projectile-ripgrep
+  projectile-reset-known-projects
 
   :custom
   (projectile-project-search-path '("~/projects/"
@@ -35,9 +34,9 @@
   (projectile-indexing-method 'alien)
 
   :config
-  (add-to-list 'projectile-globally-ignored-directories "^node_modules$")
-  (add-to-list 'projectile-globally-ignored-directories "^\\.venv$")
-  (add-to-list 'projectile-globally-ignored-directories "^\\.uv$")
+  (dolist (dir '("^node_modules$" "^\\.venv$" "^\\.uv$"))
+    (add-to-list 'projectile-globally-ignored-directories dir))
+  
   (projectile-mode +1)
   (add-hook 'project-find-functions #'project-projectile)
 
@@ -59,18 +58,8 @@ If not active, call Dired instead of Dirvish."
     "Return non-nil if PROJECT-ROOT is inside the Elpaca directory."
     (let ((elpaca-dir (expand-file-name "elpaca/" user-emacs-directory)))
       (string-prefix-p elpaca-dir project-root)))
-
   (setq projectile-ignored-project-function
         #'user/projectile-ignore-elpaca-packages)
-
-  (defun user/interactive-projectile-ag ()
-    "Call projectile-ag interactively."
-    (interactive)
-    (call-interactively #'projectile-ag))
-  (defun user/interactive-projectile-ripgrep ()
-    "Call projectile-ripgrep interactively."
-    (interactive)
-    (call-interactively #'projectile-ripgrep))
 
   (defvar user/projectile-commander-dispatch nil)
   (transient-define-prefix
@@ -82,7 +71,8 @@ The keybindings are exactly the same."
       ("R" "Regerate the project's [e|g] tags." projectile-regenerate-tags)
       ("T" "Find test file in project." projectile-find-test-file)
       ("V" "Browse dirty projects" projectile-browse-dirty-projects)]
-     [("a" "Run ag on a project." user/interactive-projectile-ag)
+     [("a" "Run ag on a project."  (lambda () (interactive)
+				     (call-interactively #'projectile-ag)))
       ("b" "Switch to project buffer." projectile-switch-to-buffer)
       ("d" "Find directory in project." projectile-find-dir)
       ("e" "Find recently visited file in project." projectile-recentf)]
@@ -91,7 +81,9 @@ The keybindings are exactly the same."
       ("j" "Find tag in project." projectile-find-tag)
       ("k" "Kill all project buffers." projectile-kill-buffers)]
      [("o" "Run mutli-occur on project buffers." projectile-multi-occur)
-      ("p" "Run ripgrep on project." user/interactive-projectile-ripgrep)
+      ("p" "Run ripgrep on project." (lambda () (interactive)
+				       (call-interactively
+					#'projectile-ripgrep)))
       ("r" "Replace a string in the project." projectile-replace)
       ("s" "Switch project." projectile-switch-project)]
      [("v" "Open project root in vc-dir or magit." projectile-vc)]])
@@ -108,10 +100,14 @@ The keybindings are exactly the same."
 
 (use-package editorconfig
   :hook ((prog-mode . editorconfig-mode)
-	 (markdown-mode . editorconfig-mode)))
+	 (text-mode . editorconfig-mode)))
 
 
 ;; =======  TREEMACS  =======
+;; `treemacs' (functional side panel)
+;; `treemacs-projectile' (projectile + treemacs integration)
+;; `treemacs-nerd-icons' (nerd-icons + treemacs integration)
+;; ==========================
 (use-package treemacs
   :commands treemacs treemacs-refresh
   :defer t
@@ -147,8 +143,16 @@ The keybindings are exactly the same."
    ("C-x p f" . treemacs-project-follow-mode)
    ("<backspace>" . treemacs-root-up)))
 
+(use-package treemacs-projectile
+  :after treemacs)
+
+(use-package treemacs-nerd-icons
+  :after treemacs
+  :functions treemacs-nerd-icons-config
+  :config
+  (treemacs-nerd-icons-config))
+
 (defvar user/projectile-treemacs-anywhere-dispatch nil)
-(declare-function user/toggle-treemacs-no-ignored "05-project-management.el")
 (declare-function user/projectile-treemacs-anywhere-dispatch
 		  "05-project-management.el")
 (transient-define-prefix
@@ -196,15 +200,6 @@ The keybindings are exactly the same."
     ("R" "Reset known \'p\'s"
      user/projectile-refresh-include-emacs)]])
 (bind-keys ("C-c t" . user/projectile-treemacs-anywhere-dispatch))
-
-(use-package treemacs-projectile
-  :after (treemacs projectile))
-
-(use-package treemacs-nerd-icons
-  :after (treemacs nerd-icons)
-  :functions treemacs-nerd-icons-config
-  :config
-  (treemacs-nerd-icons-config))
 
 
 (provide '05-project-management)
