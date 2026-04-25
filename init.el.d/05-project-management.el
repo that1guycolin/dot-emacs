@@ -183,8 +183,10 @@
    ["Treemacs" :pad-keys t
     ("t" "Toggle" treemacs)
     ("T" "Refresh" treemacs-refresh)
-    ("A" "Add P" (lambda () (call-interactively #'project-remember-project)))
-    ("R" "Rename P" treemacs-rename-project)]
+    ("A" "Add P" (lambda () (interactive)
+		   (call-interactively #'project-remember-project)))
+    ("R" "Rename P" treemacs-rename-project)
+    ("o" "Switch P" project-switch-project)]
 
    ["Treemacs - Current View"
     ("v f" "Focus to active file" treemacs-find-file)
@@ -202,11 +204,11 @@
     ("w d" "Delete" treemacs-remove-workspace)]
    
    ["Project.el"
-    ("n" "P Name" project-name)
-    ("u" "P Current" project-current)
+    ("f r" "P Find Regexp" project-find-regexp)
+    ("q" "P Replace Regexp" project-query-replace-regexp)
     ("s" "P Search" project-search)
     ("d" "P in Dirvish" project-dired)
-    ("f" "P Find File" project-find-file)]
+    ("f f" "P Find File" project-find-file)]
    
    ["Project Shell"
     ("S" "P Shell" project-shell)
@@ -216,7 +218,6 @@
     ("m" "MisTTY @ P root" mistty-in-project)]
    
    ["Other Project Functions"
-    ("o" "Switch P" project-switch-project)
     ("D" "Set P Dir-Locals" project-customize-dirlocals)
     ("r" "Ripgrep P" rg-project)
     ("g" "DWIM Ripgrep P" rg-dwim-project-dir)
