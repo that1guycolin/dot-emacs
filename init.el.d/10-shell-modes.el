@@ -15,7 +15,7 @@
 ;; =================================
 (use-package mistty
   :defer t
-  :bind ("C-c s m" . mistty)
+  :bind ("C-c S m" . mistty)
   :functions mistty-send-key
   :defines mistty-prompt-map
   :config
@@ -29,8 +29,8 @@
 (use-package vterm
   :defer t
   :bind
-  (("C-c s v" . vterm)
-   ("C-c s V" . vterm-other-window)))
+  (("C-c S v" . vterm)
+   ("C-c S V" . vterm-other-window)))
 
 (use-package ghostel
   :ensure (ghostel
@@ -47,8 +47,8 @@
 	   :depth treeless)
   :defer t
   :bind
-  (("C-c s g" . ghostel)
-   ("C-c s p" . ghostel-project))
+  (("C-c S g" . ghostel)
+   ("C-c S p" . ghostel-project))
   :custom
   (ghostel-module-auto-install 'compile))
 
@@ -59,7 +59,7 @@
 ;; `eshell-git-prompt' (themed prompt)
 ;; `esh-help' (display help like in .el buffer)
 ;; ========================
-(keymap-global-set "C-c s e" #'eshell)
+(keymap-global-set "C-c S e" #'eshell)
 
 (use-package eshell-syntax-highlighting
   :defer t
