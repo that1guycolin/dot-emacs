@@ -13,6 +13,7 @@
 ;; `project.el' (project manager)
 ;; `disproject' (transient dispatch for project.el)
 ;; `deadgrep' (global ripgrep search)
+;; `rg' (project ripgrep search & more)
 ;; `editorconfig' (support .editorconfig)
 ;; =================================
 (defvar user/projects-directory)
@@ -56,7 +57,16 @@
    (:map ctl-x-map
 	 ("C-g" . deadgrep))))
 
+(use-package rg
+  :defer t
+  :bind ("C-c s" . rg-menu)
+  :config
+  (require 'rg-isearch)
+  (declare-function rg-isearch-menu "rg-isearch")
   (bind-keys
+   :map isearch-mode-map
+   ("M-s r" . rg-isearch-menu)))
+
 (dolist (keybind '("C-x b" "C-x k" "C-x C-b" "C-x p"))
   (keymap-global-unset keybind))
 
