@@ -15,6 +15,7 @@
 ;; `deadgrep' (global ripgrep search)
 ;; `rg' (project ripgrep search & more)
 ;; `perspective' (separate workspaces for separate projects)
+;; `perspective-project-bridge' (integrate project.el & perspective)
 ;; `editorconfig' (support .editorconfig)
 ;; =================================
 (defvar user/projects-directory)
@@ -100,6 +101,21 @@
                                  (if (fboundp 'persp-bs-show)
                                      (persp-bs-show arg)
                                    (bs-show "all")))))
+
+(use-package perspective-project-bridge
+  :hook (persp-mode . perspective-project-bridge-mode)
+  :functions
+  perspective-project-bridge-find-perspectives-for-all-buffers
+  perspective-project-bridge-kill-perspectives
+  :init
+  (add-hook 'perspective-project-bridge-mode-hook
+	    (lambda ()
+	      (if perspective-project-bridge-mode
+		  (perspective-project-bridge-find-perspectives-for-all-buffers)
+		(perspective-project-bridge-kill-perspectives)))))
+
+(declare-function dirvish "dirvish")
+(declare-function transient-define-prefix "transient")
 
 (use-package editorconfig
   :hook ((prog-mode . editorconfig-mode)
