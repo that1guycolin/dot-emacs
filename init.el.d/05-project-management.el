@@ -10,7 +10,7 @@
 
 ;;; Code:
 ;; =======  PROJECT SUPPORT  =======
-;; `disproject' (assist navigation btwn projects)
+;; `disproject' (transient dispatch for project.el)
 ;; `editorconfig' (support .editorconfig)
 ;; =================================
 
@@ -18,9 +18,12 @@
   :config
   (dolist (dir '("^node_modules$" "^\\.venv$" "^\\.uv$"))
   
+(use-package disproject
+  :defer t
+  :bind (:map ctl-x-map
+              ("p" . disproject-dispatch)))
+
   (bind-keys
-   :map ctl-x-map
-   ("p" . user/projectile-commander-dispatch)))
 
 (use-package editorconfig
   :hook ((prog-mode . editorconfig-mode)
