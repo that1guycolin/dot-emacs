@@ -43,7 +43,8 @@
   :config
   (minions-mode 1)
   (add-to-list 'minions-prominent-modes 'flycheck-mode)
-  (add-to-list 'minions-prominent-modes 'lsp-mode))
+  (add-to-list 'minions-prominent-modes 'lsp-mode)
+  (add-to-list 'minions-prominent-modes 'persp-mode))
 
 ;; Which-key needs to load before a lot of other editor functions,
 ;; which is why it's invoked here.
