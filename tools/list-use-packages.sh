@@ -4,44 +4,68 @@ IFS=$'\n\t'
 
 usage() {
     cat <<EOF
-USAGE: list-use-pacakges.sh FILE.el
+USAGE: ${0##*/} [OPTIONS] FILE.el
 
-List all packages invoked via use-package in an .el file.
+Alphabetically list pacakges invoked via use-package in FILE.el.
 
-FLAGS:
+OPTIONS:
   -h, --help
-      Print this message and exit.
+      Display this message and exit.
+
 EOF
 }
 
-if [[ $# -eq 0 ]]; then
-    echo "ERROR: Please provide a file with extension .el."
+PARSED=$(getopt -o h -l help -- "$@") || {
     usage
     exit 1
-elif [[ $# -gt 1 ]]; then
-    echo "ERROR: Only one file accepted."
-    usage
-    exit 2
-elif [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
-    usage
-    exit 0
-else
-    ELFILE="$1"
-fi
+}
+eval set -- "$PARSED"
 
-[[ "$ELFILE" == *.el ]] || {
-    echo "ERROR: File must end in .el"
+while true; do
+    case "$1" in
+        -h | --help)
+            usage
+            exit 0
+            ;;
+        --)
+            shift
+            break
+            ;;
+        *)
+            echo "ERROR: Invalid option: $1" >&2
+            usage
+            exit 1
+            ;;
+    esac
+done
+
+[[ $# -eq 1 ]] || {
+    echo "ERROR: Wrong number of arguments."
     usage
-    exit 3
+    exit 42
 }
 
-TEMP="$(mktemp)"
-"${HOME}/projects/dot-emacs/list-use-packages.el" "$ELFILE" | sort >"$TEMP"
-mapfile -t PACKAGE_NAMES <"$TEMP"
+ELFILE="$1"
+[ -f "$ELFILE" ] || {
+    echo "ERROR: ${ELFILE} does not exist."
+    usage
+    exit 42
+}
 
-TEMP="$(mktemp)"
-for PACKAGE in "${PACKAGE_NAMES[@]}"; do
-    echo "${PACKAGE}," >>"$TEMP"
+ESCRIPT="${HOME}/.emacs.d/tools/list-use-packages.el"
+
+mapfile -t PACKAGES < <(
+    emacs --script "$ESCRIPT" "$ELFILE" | sort | uniq
+)
+
+printf ';;; Packages included:\n'
+printf ';; '
+
+for i in "${!PACKAGES[@]}"; do
+    if ((i > 0)); then
+        printf ', '
+    fi
+    printf '%s' "${PACKAGES[i]}"
 done
-mapfile -t PACKAGES <"$TEMP"
-echo "${PACKAGES[@]}"
+
+printf '\n'
