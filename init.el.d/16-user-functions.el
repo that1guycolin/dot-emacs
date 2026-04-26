@@ -30,19 +30,19 @@
   (let* ((theme-name-full (concat (symbol-name theme) "-theme"))
 	 (theme-directory
 	  (expand-file-name theme-name-full elpaca-builds-directory)))
+    (mapc #'disable-theme custom-enabled-themes)
     (unless (member theme-directory custom-theme-load-path)
       (add-to-list 'custom-theme-load-path theme-directory))
-    (load-theme theme t)))
+    (load-theme theme t)
+    (message "Loaded theme: %s" theme)))
 
 (defun user/cycle-themes ()
   "Cycle through themes in `user/themes-list'."
   (interactive)
-  (disable-theme (nth user/themes-index user/themes-list))
   (setq user/themes-index
         (mod (1+ user/themes-index) (length user/themes-list)))
   (let ((theme (nth user/themes-index user/themes-list)))
-    (user/smart-load-theme theme)
-    (message "Loaded theme: %s" theme)))
+    (user/smart-load-theme theme)))
 
 (defun user/select-theme (theme)
   "Switch to a THEME from `user/themes-list'."
@@ -51,127 +51,121 @@
 				  user/themes-list nil t))))
   (let ((new-index (seq-position user/themes-list theme)))
     (when new-index
-      (disable-theme (nth user/themes-index user/themes-list))
       (setq user/themes-index new-index)
-      (user/smart-load-theme theme)
-      (message "Loaded theme: %s" theme))))
+      (user/smart-load-theme theme))))
 
 (defun user/random-theme ()
   "Activate a random theme from `user/themes-list'."
   (interactive)
-  (let* ((new-theme (user/pick-random user/themes-list))
-	 (new-index (seq-position user/themes-list new-theme)))
+  (let* ((theme (user/pick-random user/themes-list))
+	 (new-index (seq-position user/themes-list theme)))
     (when new-index
-      (disable-theme (nth user/themes-index user/themes-list))
       (setq user/themes-index new-index)
-      (user/smart-load-theme new-theme)
-      (message "Loaded theme: %s" new-theme))))
+      (user/smart-load-theme theme))))
 
 
 ;; =======  FONTS  =======
-(defvar user/font-alist
-  '(("0xProto NFM"          . "0xProto Nerd Font Mono")
-    ("03270 NFM"            . "03270 Nerd Font Mono")
-    ("AdwaitaMono NFM"      . "AdwaitaMono Nerd Font Mono")
-    ("Agave NFM"            . "Agave Nerd Font Mono")
-    ("AnonymicePro NFM"     . "AnonymicePro Nerd Font Mono")
-    ("BigBlueTerm437 NFM"   . "BigBlueTerm437 Nerd Font Mono")
-    ("BigBlueTermPlus NFM"  . "BigBlueTermPlus Nerd Font Mono")
-    ("BitstromWera NFM"     . "BitstromWera Nerd Font Mono")
-    ("BlexMono NFM"         . "BlexMono Nerd Font Mono")
-    ("CaskaydiaCove NFM"    . "CaskaydiaCove Nerd Font Mono")
-    ("CaskaydiaMono NFM"    . "CaskaydiaMono Nerd Font Mono")
-    ("Cousine NFM"          . "Cousine Nerd Font Mono")
-    ("D2CodingLigature NFM" . "D2CodingLigature Nerd Font Mono")
-    ("DaddyTimeMono NFM"    . "DaddyTimeMono Nerd Font Mono")
-    ("DejaVuSansM NFM"      . "DejaVuSansM Nerd Font Mono")
-    ("EnvyCodeR NFM"        . "EnvyCodeR Nerd Font Mono")
-    ("FantasqueSansM NFM"   . "FantasqueSansM Nerd Font Mono")
-    ("FiraCode NFM"         . "FiraCode Nerd Font Mono")
-    ("GohuFont11 NFM"       . "GohuFont11 Nerd Font Mono")
-    ("GohuFont14 NFM"       . "GohuFont14 Nerd Font Mono")
-    ("GohuFontuni11 NFM"    . "GohuFontuni11 Nerd Font Mono")
-    ("GohuFontuni14 NFM"    . "GohuFontuni14 Nerd Font Mono")
-    ("GoMono NFM"           . "GoMono Nerd Font Mono")
-    ("Hack NFM"             . "Hack Nerd Font Mono")
-    ("iMWritingMono NFM"    . "iMWritingMono Nerd Font Mono")
-    ("InconsolataGo NFM"    . "InconsolataGo Nerd Font Mono")
-    ("InconsolataLGC NFM"   . "InconsolataLGC Nerd Font Mono")
-    ("Inconsolata NFM"      . "Inconsolata Nerd Font Mono")
-    ("IntoneMono NFM"       . "IntoneMono Nerd Font Mono")
-    ("Iosevka NFM"          . "Iosevka Nerd Font Mono")
-    ("IosevkaTerm NFM"      . "IosevkaTerm Nerd Font Mono")
-    ("IosevkaTermSlab NFM"  . "IosevkaTermSlab Nerd Font Mono")
-    ("JetBrainsMono NFM"    . "JetBrainsMono Nerd Font Mono")
-    ("JetBrainsMonoNL NFM"  . "JetBrainsMonoNL Nerd Font Mono")
-    ("Lekton NFM"           . "Lekton Nerd Font Mono")
-    ("Lilex NFM"            . "Lilex Nerd Font Mono")
-    ("LiterationMono NFM"   . "LiterationMono Nerd Font Mono")
-    ("M+1Code NFM"          . "M+1Code Nerd Font Mono")
-    ("M+CodeLat50 NFM"      . "M+CodeLat50 Nerd Font Mono")
-    ("M+CodeLat60 NFM"      . "M+CodeLat60 Nerd Font Mono")
-    ("MartianMono NFM"      . "MartianMono Nerd Font Mono")
-    ("MesloLGLDZ NFM"       . "MesloLGLDZ Nerd Font Mono")
-    ("MesloLGL NFM"         . "MesloLGL Nerd Font Mono")
-    ("MesloLGMDZ NFM"       . "MesloLGMDZ Nerd Font Mono")
-    ("MesloLGM NFM"         . "MesloLGM Nerd Font Mono")
-    ("MesloLGSDZ NFM"       . "MesloLGSDZ Nerd Font Mono")
-    ("MesloLGS NFM"         . "MesloLGS Nerd Font Mono")
-    ("Monofur NFM"          . "Monofur Nerd Font Mono")
-    ("Monoid NFM"           . "Monoid Nerd Font Mono")
-    ("Mononoki NFM"         . "Mononoki Nerd Font Mono")
-    ("NotoMono NFM"         . "NotoMono Nerd Font Mono")
-    ("NotoSansM NFM"        . "NotoSansM Nerd Font Mono")
-    ("ProFontIIx NFM"       . "ProFontIIx Nerd Font Mono")
-    ("ProFontWindows NFM"   . "ProFontWindows Nerd Font Mono")
-    ("ProggyCleanCE NFM"    . "ProggyCleanCE Nerd Font Mono")
-    ("ProggyClean NFM"      . "ProggyClean Nerd Font Mono")
-    ("ProggyCleanSZ NFM"    . "ProggyCleanSZ Nerd Font Mono")
-    ("RecMonoCasual NFM"    . "RecMonoCasual Nerd Font Mono")
-    ("RecMonoDuotone NFM"   . "RecMonoDuotone Nerd Font Mono")
-    ("RecMonoLinear NFM"    . "RecMonoLinear Nerd Font Mono")
-    ("RecMonoSmCasual NFM"  . "RecMonoSmCasual Nerd Font Mono")
-    ("RobotoMono NFM"       . "RobotoMono Nerd Font Mono")
-    ("SauceCodePro NFM"     . "SauceCodePro Nerd Font Mono")
-    ("ShureTechMono NFM"    . "ShureTechMono Nerd Font Mono")
-    ("SpaceMono NFM"        . "SpaceMono Nerd Font Mono")
-    ("Symbols NFM"          . "Symbols Nerd Font Mono")
-    ("Terminess NFM"        . "Terminess Nerd Font Mono")
-    ("UbuntuMono NFM"       . "UbuntuMono Nerd Font Mono")
-    ("VictorMono NFM"       . "VictorMono Nerd Font Mono")
-    ("ZedMono NFM"           . "ZedMono Nerd Font Mono"))
-  "Short name → Nerd Font family mapping.")
+(defvar user/font-height-alist
+  '(("0xProto Nerd Font Mono"          . 110)
+    ("AdwaitaMono Nerd Font Mono"      . 110)
+    ("Agave Nerd Font Mono"            . 130)
+    ("AnonymicePro Nerd Font Mono"     . 130)
+    ("BigBlueTerm437 Nerd Font Mono"   . 110)
+    ("BigBlueTermPlus Nerd Font Mono"  . 110)
+    ("BitstromWera Nerd Font Mono"     . 110)
+    ("BlexMono Nerd Font Mono"         . 110)
+    ;; Not checked.
+    ("CaskaydiaCove Nerd Font Mono"    . 110)
+    ("CaskaydiaMono Nerd Font Mono"    . 110)
+    ("Cousine Nerd Font Mono"          . 110)
+    ("D2CodingLigature Nerd Font Mono" . 110)
+    ("DaddyTimeMono Nerd Font Mono"    . 110)
+    ("DejaVuSansM Nerd Font Mono"      . 110)
+    ("EnvyCodeR Nerd Font Mono"        . 110)
+    ("FantasqueSansM Nerd Font Mono"   . 110)
+    ("FiraCode Nerd Font Mono"         . 110)
+    ("GohuFont11 Nerd Font Mono"       . 110)
+    ("GohuFont14 Nerd Font Mono"       . 110)
+    ("GohuFontuni11 Nerd Font Mono"    . 110)
+    ("GohuFontuni14 Nerd Font Mono"    . 110)
+    ("GoMono Nerd Font Mono"           . 110)
+    ("Hack Nerd Font Mono"             . 110)
+    ("iMWritingMono Nerd Font Mono"    . 110)
+    ("InconsolataGo Nerd Font Mono"    . 110)
+    ("InconsolataLGC Nerd Font Mono"   . 110)
+    ("Inconsolata Nerd Font Mono"      . 110)
+    ("IntoneMono Nerd Font Mono"       . 110)
+    ("Iosevka Nerd Font Mono"          . 110)
+    ("IosevkaTerm Nerd Font Mono"      . 110)
+    ("IosevkaTermSlab Nerd Font Mono"  . 110)
+    ("JetBrainsMono Nerd Font Mono"    . 110)
+    ("JetBrainsMonoNL Nerd Font Mono"  . 110)
+    ("Lekton Nerd Font Mono"           . 110)
+    ("Lilex Nerd Font Mono"            . 110)
+    ("LiterationMono Nerd Font Mono"   . 110)
+    ("M+1Code Nerd Font Mono"          . 110)
+    ("M+CodeLat50 Nerd Font Mono"      . 110)
+    ("M+CodeLat60 Nerd Font Mono"      . 110)
+    ("MartianMono Nerd Font Mono"      . 110)
+    ("MesloLGLDZ Nerd Font Mono"       . 110)
+    ("MesloLGL Nerd Font Mono"         . 110)
+    ("MesloLGMDZ Nerd Font Mono"       . 110)
+    ("MesloLGM Nerd Font Mono"         . 110)
+    ("MesloLGSDZ Nerd Font Mono"       . 110)
+    ("MesloLGS Nerd Font Mono"         . 110)
+    ("Monofur Nerd Font Mono"          . 110)
+    ("Monoid Nerd Font Mono"           . 110)
+    ("Mononoki Nerd Font Mono"         . 110)
+    ("NotoMono Nerd Font Mono"         . 110)
+    ("NotoSansM Nerd Font Mono"        . 110)
+    ("ProFontIIx Nerd Font Mono"       . 110)
+    ("ProFontWindows Nerd Font Mono"   . 110)
+    ("ProggyCleanCE Nerd Font Mono"    . 110)
+    ("ProggyClean Nerd Font Mono"      . 110)
+    ("ProggyCleanSZ Nerd Font Mono"    . 110)
+    ("RecMonoCasual Nerd Font Mono"    . 110)
+    ("RecMonoDuotone Nerd Font Mono"   . 110)
+    ("RecMonoLinear Nerd Font Mono"    . 110)
+    ("RecMonoSmCasual Nerd Font Mono"  . 110)
+    ("RobotoMono Nerd Font Mono"       . 110)
+    ("SauceCodePro Nerd Font Mono"     . 110)
+    ("ShureTechMono Nerd Font Mono"    . 110)
+    ("SpaceMono Nerd Font Mono"        . 110)
+    ("Terminess Nerd Font Mono"        . 110)
+    ("UbuntuMono Nerd Font Mono"       . 110)
+    ("VictorMono Nerd Font Mono"       . 110)
+    ("ZedMono Nerd Font Mono"          . 110))
+  "List of cons cells mapping nerd font families to their ideal height.")
 
-(defun user/switch-font (name)
-  "Switch font using a short NAME like \"Space\" or \"Zed\"."
+(defun user/switch-font (font)
+  "Set global \"face-attribute\" :font-family to FONT.
+Also sets global \"face-attribute\" :height to value mapped in
+user/font-height-alist."
   (interactive
    (list (completing-read
 	  "Font: "
-	  (mapcar #'car user/font-alist)
+	  (mapcar #'car user/font-height-alist)
 	  nil t)))
-  (let ((font (cdr (assoc name user/font-alist))))
+  (let ((height (cdr (assoc font user/font-height-alist))))
     (set-face-attribute 'default nil
                         :family font
-                        :height 110
+                        :height height
                         :weight 'regular)
     (run-hooks 'after-setting-font-hook)
     (message "Font set to %s" font)))
 
 (defun user/random-font ()
-  "Activate a random theme from `user/font-alist'."
+  "Activate a random font from `user/font-height-alist'."
   (interactive)
-  (let* ((new-font-cons (user/pick-random user/font-alist))
-	 (new-index (seq-position user/font-alist new-font-cons))
-	 (new-font-fullname (cdr new-font-cons))
-	 (new-font-shortname (car new-font-cons)))
-    (when new-index
-      (set-face-attribute 'default nil
-			  :family new-font-fullname
-			  :height 110
-			  :weight 'regular)
-      (run-hooks 'after-setting-font-hook)
-      (message "Loaded font: %s" new-font-shortname))))
-
+  (let* ((font-cons (user/pick-random user/font-height-alist))
+	 (font-family (car font-cons))
+	 (font-height (cdr font-cons)))
+    (set-face-attribute 'default nil
+			:family font-family
+			:height font-height
+			:weight 'regular)
+    (run-hooks 'after-setting-font-hook)
+    (message "Loaded font: %s" font-family)))
 
 
 ;; =======  SIDE-WINDOW  =======
@@ -190,6 +184,7 @@ If not in a side window, jump to the first found side window."
      (t
       (select-window side-window)))))
 (bind-keys ("M-0" . user/toggle-side-window))
+
 
 ;; =======  TREESIT FALLBACK  =======
 (defun user/major-ts-mode-fallback ()
@@ -253,7 +248,7 @@ If not in a side window, jump to the first found side window."
 	  (push (intern package) package-list))))
     (nreverse package-list)))
 
-(declare-function user/get-themes "14-install-themes")
+(declare-function user/get-themes "15-install-themes")
 (defun user/packages-themes ()
   "Return a list of installed packages & themes."
   (let* ((packages (user/get-package-list))
