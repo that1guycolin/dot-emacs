@@ -84,11 +84,13 @@
    ("C-x C-B" . persp-buffer-menu))
   :functions
   persp-mode persp-is-current-buffer persp-ibuffer-set-filter-groups
+  user/buffer-by-filename persp-add-buffer
+  :init
+  (persp-mode 1)
   :custom
   (persp-mode-prefix-key (kbd "C-c M-p"))
   (persp-switch-to-buffer-behavior 'switch)
-  :init
-  (persp-mode 1)
+  :config
   (setq switch-to-prev-buffer-skip
 	(lambda (win buff bury-or-kill)
           (not (persp-is-current-buffer buff))))
@@ -102,7 +104,51 @@
                                  (interactive "P")
                                  (if (fboundp 'persp-bs-show)
                                      (persp-bs-show arg)
-                                   (bs-show "all")))))
+                                   (bs-show "all"))))
+
+  (require 'seq)
+
+  (defun user/buffer-by-filename (loc expr)
+    "Filter all buffers whose filename contains EXPR.
+
+LOC can be one of:
+:prefix   Match files whose filename starts with EXPR.
+:suffix   Match files whose filename ends with EXPR.
+:full     Match files whose filename equals EXPR.
+:ext      Match files whose extension equals EXPR (do not include the '.').
+:contains Match files whose filename contains EXPR."
+    (mapcar #'buffer-name
+	    (seq-filter
+	     (lambda (buf)
+	       (let* ((fname (buffer-file-name buf)))
+		 (when fname
+		   (pcase loc
+		     (:prefix (string-prefix-p expr
+					       (file-name-nondirectory fname)))
+		     (:suffix (string-suffix-p expr
+					       (file-name-nondirectory fname)))
+		     (:full   (string= expr (file-name-nondirectory fname)))
+		     (:ext    (if (string-prefix-p expr ".")
+				  (string= expr (file-name-extension fname t))
+				(string= expr (file-name-extension fname))))
+		     (:contains (string-match-p (regexp-quote expr)
+						(file-name-nondirectory fname)))
+		     (_ (error "%s is not a valid value for loc" loc))))))
+	     (buffer-list))))
+
+  (defun user/add-list-to-persp (loc expr)
+    "Add list of buffers returned by `user/buffer-by-filename' to active persp.
+Takes arguments EXPR and LOC to pass to `user/buffer-by-filename'."
+    (interactive
+     (list
+      (intern (completing-read "Select scope: "
+                               '(":prefix" ":suffix" ":full" ":ext"
+				 ":conditional")
+                               nil t))
+      (read-string "Enter string to search for: ")))
+    (dolist (buf (user/buffer-by-filename loc expr))
+      (persp-add-buffer buf)
+      (message "Added %s to current persp" buf))))
 
 (use-package perspective-project-bridge
   :hook (persp-mode . perspective-project-bridge-mode)
