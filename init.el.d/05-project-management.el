@@ -17,6 +17,7 @@
 ;; `rg' (project ripgrep search & more)
 ;; `perspective' (separate workspaces for separate projects)
 ;; `perspective-project-bridge' (integrate project.el & perspective)
+;; `docker' (Docker support for Emacs)
 ;; `editorconfig' (support .editorconfig)
 ;; =================================
 (defvar user/projects-directory)
@@ -114,6 +115,10 @@
 	      (if perspective-project-bridge-mode
 		  (perspective-project-bridge-find-perspectives-for-all-buffers)
 		(perspective-project-bridge-kill-perspectives)))))
+
+(use-package docker
+  :defer t
+  :bind ("C-c D" . docker))
 
 (use-package editorconfig
   :hook ((prog-mode . editorconfig-mode)
