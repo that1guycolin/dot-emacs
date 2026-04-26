@@ -96,7 +96,7 @@
   (("\\.lisp\\'" . lisp-mode)
    ("\\.cl\\'"   . lisp-mode)
    ("\\.asd\\'"  . lisp-mode))
-  :interpreter ("ros"  . lisp-mode))
+  :interpreter ("sbcl"  . lisp-mode))
 
 (use-package lua-ts-mode
   :defer t
