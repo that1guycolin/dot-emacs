@@ -73,6 +73,8 @@
 
 ;; =======  MARKUP/CONFIG  =======
 ;; `glsl-mode' (support OpenGL Shading Language)
+;; `ini-mode' (config file support)
+;; `dockerfile-mode' (support Dockerfiles)
 ;; `kdl-mode' (support .kdl)
 ;; `markdown-mode', `markdown-toc',
 ;; `grip-mode' (support md, gfm)
@@ -90,6 +92,10 @@
    ("\\.desktop\\'" . ini-mode)
    ("\\.hook\\'"    . ini-mode))
   :bind ("C-c i" . ini-mode))
+
+(use-package dockerfile-mode
+  :defer t
+  :mode ("^Dockerfile\\'"))
 
 (use-package kdl-mode
   :defer t
