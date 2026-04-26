@@ -144,6 +144,7 @@
   (org-id-prefix "unk")
 
   :config
+  (org-id-update-id-locations)
   (defun user/get-parent-directory ()
     "Return parent directory name for current buffer."
     (when buffer-file-name
