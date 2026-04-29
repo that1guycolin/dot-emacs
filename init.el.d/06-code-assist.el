@@ -277,7 +277,8 @@ See URL `https://vale.sh'."
   (setf (alist-get 'conf-toml-mode apheleia-mode-alist) 'tombi)
   (setf (alist-get 'nxml-mode apheleia-mode-alist) 'xmlstarlet)
   (setf (alist-get 'yaml-mode apheleia-mode-alist) 'yq-yaml)
-  (setf (alist-get 'yaml-ts-mode apheleia-mode-alist) 'yq-yaml))
+  (setf (alist-get 'yaml-ts-mode apheleia-mode-alist) 'yq-yaml)
+  (setf (alist-get 'sh-mode apheleia-mode-alist) nil))
 
 
 ;; =======  DAP-MODE  =======
