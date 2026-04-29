@@ -129,6 +129,152 @@ CLOSED: [2026-04-25 Sat 06:37]
 :ORG_GTD_PROJECT: Is LSP-Mode the best package for the job?
 :ORG_GTD_DEPENDS_ON: lsp-bridge-2026-04-23-16-45-42
 :END:
+** Packages to try [0/14][0%] :emacsd:
+:PROPERTIES:
+:ORG_GTD_CAPTURED_AT: [2026-04-27 Mon 19:13]
+:ID:       Packages-to-try-2026-04-27-19-14-53
+:ORG_GTD:  Projects
+:ORG_GTD_FIRST_TASKS: ef-themes-2026-04-27-19-15-37
+:END:
+*** NEXT [[https://protesilaos.com/emacs/ef-themes][ef-themes]]
+:PROPERTIES:
+:ORG_GTD:  Actions
+:ID:       ef-themes-2026-04-27-19-15-37
+:TRIGGER:  self org-gtd-update-project-after-task-done!
+:ORG_GTD_PROJECT_IDS: Packages-to-try-2026-04-27-19-14-53
+:ORG_GTD_PROJECT: Packages to try
+:ORG_GTD_BLOCKS: breadcrumb-2026-04-27-19-15-37
+:END:
+*** TODO [[https://protesilaos.com/emacs/ef-themes][breadcrumb]]
+:PROPERTIES:
+:ORG_GTD:  Actions
+:ID:       breadcrumb-2026-04-27-19-15-37
+:TRIGGER:  self org-gtd-update-project-after-task-done!
+:ORG_GTD_PROJECT_IDS: Packages-to-try-2026-04-27-19-14-53
+:ORG_GTD_PROJECT: Packages to try
+:ORG_GTD_DEPENDS_ON: ef-themes-2026-04-27-19-15-37
+:ORG_GTD_BLOCKS: comment-dwim-2-2026-04-27-19-15-37
+:END:
+*** TODO [[https://github.com/remyferre/comment-dwim-2][comment-dwim-2]]
+:PROPERTIES:
+:ORG_GTD:  Actions
+:ID:       comment-dwim-2-2026-04-27-19-15-37
+:TRIGGER:  self org-gtd-update-project-after-task-done!
+:ORG_GTD_PROJECT_IDS: Packages-to-try-2026-04-27-19-14-53
+:ORG_GTD_PROJECT: Packages to try
+:ORG_GTD_DEPENDS_ON: breadcrumb-2026-04-27-19-15-37
+:ORG_GTD_BLOCKS: visual-regexp-steroids-2026-04-27-19-15-37
+:END:
+*** TODO [[https://github.com/benma/visual-regexp-steroids.el][visual-regexp-steroids]]
+:PROPERTIES:
+:ORG_GTD:  Actions
+:ID:       visual-regexp-steroids-2026-04-27-19-15-37
+:TRIGGER:  self org-gtd-update-project-after-task-done!
+:ORG_GTD_PROJECT_IDS: Packages-to-try-2026-04-27-19-14-53
+:ORG_GTD_PROJECT: Packages to try
+:ORG_GTD_DEPENDS_ON: comment-dwim-2-2026-04-27-19-15-37
+:ORG_GTD_BLOCKS: diff-hl-2026-04-27-19-15-37
+:END:
+*** TODO [[https://github.com/dgutov/diff-hl][diff-hl]]
+:PROPERTIES:
+:ORG_GTD:  Actions
+:ID:       diff-hl-2026-04-27-19-15-37
+:TRIGGER:  self org-gtd-update-project-after-task-done!
+:ORG_GTD_PROJECT_IDS: Packages-to-try-2026-04-27-19-14-53
+:ORG_GTD_PROJECT: Packages to try
+:ORG_GTD_DEPENDS_ON: visual-regexp-steroids-2026-04-27-19-15-37
+:ORG_GTD_BLOCKS: dired-preview-2026-04-27-19-15-37
+:END:
+*** TODO [[https://protesilaos.com/emacs/dired-preview][dired-preview]]
+:PROPERTIES:
+:ORG_GTD:  Actions
+:ID:       dired-preview-2026-04-27-19-15-37
+:TRIGGER:  self org-gtd-update-project-after-task-done!
+:ORG_GTD_PROJECT_IDS: Packages-to-try-2026-04-27-19-14-53
+:ORG_GTD_PROJECT: Packages to try
+:ORG_GTD_DEPENDS_ON: diff-hl-2026-04-27-19-15-37
+:ORG_GTD_BLOCKS: ready-player-2026-04-27-19-15-37
+:END:
+*** TODO [[https://github.com/xenodium/ready-player][ready-player]]
+:PROPERTIES:
+:ORG_GTD:  Actions
+:ID:       ready-player-2026-04-27-19-15-37
+:TRIGGER:  self org-gtd-update-project-after-task-done!
+:ORG_GTD_PROJECT_IDS: Packages-to-try-2026-04-27-19-14-53
+:ORG_GTD_PROJECT: Packages to try
+:ORG_GTD_DEPENDS_ON: dired-preview-2026-04-27-19-15-37
+:ORG_GTD_BLOCKS: eat-2026-04-27-19-15-37
+:END:
+*** TODO [[https://codeberg.org/akib/emacs-eat][eat]]
+:PROPERTIES:
+:ORG_GTD:  Actions
+:ID:       eat-2026-04-27-19-15-37
+:TRIGGER:  self org-gtd-update-project-after-task-done!
+:ORG_GTD_PROJECT_IDS: Packages-to-try-2026-04-27-19-14-53
+:ORG_GTD_PROJECT: Packages to try
+:ORG_GTD_DEPENDS_ON: ready-player-2026-04-27-19-15-37
+:ORG_GTD_BLOCKS: shackle-2026-04-27-19-15-37
+:END:
+- Purse emacs-lisp terminal emulator.
+*** TODO [[https://depp.brause.cc/shackle/][shackle]]
+:PROPERTIES:
+:ORG_GTD:  Actions
+:ID:       shackle-2026-04-27-19-15-37
+:TRIGGER:  self org-gtd-update-project-after-task-done!
+:ORG_GTD_PROJECT_IDS: Packages-to-try-2026-04-27-19-14-53
+:ORG_GTD_PROJECT: Packages to try
+:ORG_GTD_DEPENDS_ON: eat-2026-04-27-19-15-37
+:ORG_GTD_BLOCKS: popper-2026-04-27-19-15-37
+:END:
+*** TODO [[https://github.com/karthink/popper][popper]]
+:PROPERTIES:
+:ORG_GTD:  Actions
+:ID:       popper-2026-04-27-19-15-37
+:TRIGGER:  self org-gtd-update-project-after-task-done!
+:ORG_GTD_PROJECT_IDS: Packages-to-try-2026-04-27-19-14-53
+:ORG_GTD_PROJECT: Packages to try
+:ORG_GTD_DEPENDS_ON: shackle-2026-04-27-19-15-37
+:ORG_GTD_BLOCKS: git-link-2026-04-27-19-15-37
+:END:
+*** TODO [[https://github.com/sshaw/git-link][git-link]]
+:PROPERTIES:
+:ORG_GTD:  Actions
+:ID:       git-link-2026-04-27-19-15-37
+:TRIGGER:  self org-gtd-update-project-after-task-done!
+:ORG_GTD_PROJECT_IDS: Packages-to-try-2026-04-27-19-14-53
+:ORG_GTD_PROJECT: Packages to try
+:ORG_GTD_DEPENDS_ON: popper-2026-04-27-19-15-37
+:ORG_GTD_BLOCKS: python-pytest-2026-04-27-19-15-37
+:END:
+*** TODO [[https://github.com/wbolster/emacs-python-pytest][python-pytest]]
+:PROPERTIES:
+:ORG_GTD:  Actions
+:ID:       python-pytest-2026-04-27-19-15-37
+:TRIGGER:  self org-gtd-update-project-after-task-done!
+:ORG_GTD_PROJECT_IDS: Packages-to-try-2026-04-27-19-14-53
+:ORG_GTD_PROJECT: Packages to try
+:ORG_GTD_DEPENDS_ON: git-link-2026-04-27-19-15-37
+:ORG_GTD_BLOCKS: python-coverage-2026-04-27-19-15-37
+:END:
+*** TODO [[https://github.com/wbolster/emacs-python-coverage][python-coverage]]
+:PROPERTIES:
+:ORG_GTD:  Actions
+:ID:       python-coverage-2026-04-27-19-15-37
+:TRIGGER:  self org-gtd-update-project-after-task-done!
+:ORG_GTD_PROJECT_IDS: Packages-to-try-2026-04-27-19-14-53
+:ORG_GTD_PROJECT: Packages to try
+:ORG_GTD_DEPENDS_ON: python-pytest-2026-04-27-19-15-37
+:ORG_GTD_BLOCKS: avy-2026-04-27-19-15-37
+:END:
+*** TODO [[https://karthinks.com/software/avy-can-do-anything/#wait-what-s-avy][avy]]
+:PROPERTIES:
+:ORG_GTD:  Actions
+:ID:       avy-2026-04-27-19-15-37
+:TRIGGER:  self org-gtd-update-project-after-task-done!
+:ORG_GTD_PROJECT_IDS: Packages-to-try-2026-04-27-19-14-53
+:ORG_GTD_PROJECT: Packages to try
+:ORG_GTD_DEPENDS_ON: python-coverage-2026-04-27-19-15-37
+:END:
 * dot-Emacs: Single-Actions
 ** TODO Python Indent Offset Error :python:
 :PROPERTIES:
