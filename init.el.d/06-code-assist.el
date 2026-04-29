@@ -40,6 +40,7 @@
 ;; bash: 'shellcheck' (pacman -S shellcheck)*
 ;; emacs-lisp: 'emacs-lisp' (built-in)
 ;; json: 'jsonlint' (npm install -g jsonlint)*
+;; lua: 'luacheck' (pacman -S luacheck)*
 ;; markdown: 'rumdl' (pacman -S rumdl)*
 ;; toml: 'tombi' (uv tool install tombi)*
 ;; xml: 'xmllint' (pacman -S libxml2)
@@ -60,7 +61,7 @@
   :custom
   (flycheck-emacs-lisp-load-path 'inherit)
   (flycheck-disabled-checkers
-   '(emacs-lisp-elsa lua-luacheck lua sh-bash yaml-jsyaml yaml-ruby))
+   '(emacs-lisp-elsa sh-bash yaml-jsyaml yaml-ruby))
 
   :config
   (flycheck-define-checker fish-self
@@ -71,20 +72,6 @@ See URL `https://fishshell.com'."
     ((error line-start (file-name) " (line " line "): " (message) line-end))
     :modes (fish-mode))
   (add-to-list 'flycheck-checkers 'fish-self)
-
-  (flycheck-define-checker lua-selene
-    "Write correct & idiomatic lua code.
-See URL `https://kampfkarren.github.io/selene'."
-    :command ("selene" "--quiet" "-" source )
-    :error-patterns
-    ((error line-start
-            (file-name) ":" line ":" column ": "
-            (or "error" "warning" "info")
-            "[" (id (one-or-more (not (any "]")))) "]: "
-            (message)
-            line-end))
-    :modes (lua-ts-mode))
-  (add-to-list 'flycheck-checkers 'lua-selene)
   
   (flycheck-define-checker markdown-rumdl
     "A fast Markdown linter written in Rust.
@@ -132,20 +119,18 @@ See URL `https://vale.sh'."
 			  flycheck-error-message-mode))
   (add-to-list 'flycheck-checkers 'text-vale)
 
-  (defvar user/flycheck-checker-modes-alist
-    '((fish-mode     . fish-self)
-      (lua-ts-mode   . lua-selene)
-      (markdown-mode . markdown-rumdl)
-      (gfm-mode      . markdown-rumdl)
-      (toml-ts-mode  . tombi-lint)
-      (org-mode      . org-lint))
-    "A list of cons cells containing a major mode and its flycheck checker.")
 
-  (dolist (mode (mapcar #'car user/flycheck-checker-modes-alist))
-    (let ((hook (intern (concat (symbol-name mode) "-hook")))
-	  (checker (cdr (assoc mode user/flycheck-checker-modes-alist))))
-      (add-hook hook (lambda ()
-		       (flycheck-select-checker checker))))))
+  (let ((flycheck-modes-alist
+	 '((fish-mode     . fish-self)
+	   (markdown-mode . markdown-rumdl)
+	   (gfm-mode      . markdown-rumdl)
+	   (toml-ts-mode  . tombi-lint)
+	   (org-mode      . org-lint))))
+    (dolist (mode (mapcar #'car flycheck-modes-alist))
+      (let ((hook (intern (concat (symbol-name mode) "-hook")))
+	    (checker (cdr (assoc mode flycheck-modes-alist))))
+	(add-hook hook (lambda ()
+			 (flycheck-select-checker checker)))))))
 
 (use-package flycheck-pos-tip
   :after flycheck
