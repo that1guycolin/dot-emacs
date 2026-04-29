@@ -406,6 +406,21 @@ folder."
 
 (add-hook 'org-mode-hook #'user/remove-org-todo)
 
+(declare-function persp-new "perspectives.el")
+(declare-function persp-switch "perspectives.el")
+(declare-function user/add-list-to-persp "05-project-management.el")
+(declare-function persp-switch-last "perspectives.el")
+(defun user/create-org-persp ()
+  "Create a persp called \"org\", and add open TODO and .org files to the persp."
+  (interactive)
+  (persp-new "org")
+  (persp-switch "org")
+  (user/add-list-to-persp :ext "org")
+  (user/add-list-to-persp :full "TODO")
+  (persp-switch-last))
+
+(add-hook 'emacs-startup-hook #'user/create-org-persp)
+
 
 (provide '11-org-mode-extensions)
 ;;; 11-org-mode-extensions.el ends here
