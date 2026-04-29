@@ -3,6 +3,8 @@ auto-save-list/
 backups/
 bookmarks
 .cache/
+CLAUDE.md
+.codex
 .dap-breakpoints
 dirvish/
 *.eask/
@@ -29,6 +31,7 @@ projectile-bookmarks.eld
 *projects
 recentf*
 .rumdl_cache
+.serena
 tramp*
 transient/
 tree-sitter/
@@ -37,3 +40,4 @@ url/
 .vale-styles/
 .vscode/
 wip/
+.env
