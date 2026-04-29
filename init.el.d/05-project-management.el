@@ -57,6 +57,25 @@
   :bind (:map ctl-x-map
               ("p" . disproject-dispatch)))
 
+(use-package project-cmake
+  :functions project-cmake-find-root
+  :custom
+  (project-cmake-default-cmake-options
+   '("CMAKE_BUILD_TYPE:STRING=Release"
+     "CMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON"
+     "CMAKE_C_COMPILER:STRING=clang"
+     "CMAKE_CXX_COMPILER:STRING=clang++"
+     "CMAKE_INSTALL_PREFIX:STRING=/usr/local/"
+     "CMAKE_GENERATOR:STRING=Ninja"))
+  :config
+  (add-hook 'project-find-functions #'project-cmake-find-root -1)
+  (setopt project-cmake-build-directory
+	  (lambda (source)
+	    (let ((proj-name (file-name-nondirectory source))
+		  (build-base (expand-file-name "~/bld/")))
+	      (concat build-base proj-name)))))
+
+
 (use-package deadgrep
   :defer t
   :bind
