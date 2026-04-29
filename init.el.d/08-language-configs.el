@@ -47,6 +47,7 @@
 ;; =======  SHELL SCRIPTS  =======
 ;; `modern-sh' (enhaced sh-mode & bash(-ts)-mode)
 ;; `fish-mode' (fish shell support)
+;; `eldoc-cmake' (doc support in cmake-ts-mode)
 ;; ===============================
 (use-package modern-sh
   :defer t
@@ -69,6 +70,10 @@
   :interpreter ("fish")
   :config
   (setq fish-enable-auto-indent t))
+
+(use-package eldoc-cmake
+  :defer t
+  :hook (cmake-ts-mode . eldoc-cmake-enable))
 
 
 ;; =======  MARKUP/CONFIG  =======
