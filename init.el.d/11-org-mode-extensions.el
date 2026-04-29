@@ -133,36 +133,35 @@
 ;; ===========================
 (declare-function org-id-update-id-locations "org")
 (use-package org-mem
-  :functions org-mem-updater-mode
-  :custom
-  (org-mem-watch-dirs (list "~/org/knowledge-base/"))
-  :config
-  (org-mem-updater-mode 1))
-
-(declare-function org-id-new "org")
-(use-package org-node
+  :after org
   :functions
-  org-node-global-prefix-map org-node-org-prefix-map org-node-cache-mode
-  org-node-backlink-mode org-node-complete-at-point-mode
+  org-mem-updater-mode
+  :custom
+  (org-mem-watch-dirs '("~/org/knowledge-base/")))
+
+(declare-function org-id-new "org-id")
+(declare-function org-id-get-create "org-id")
+(use-package org-node
+  :after org-mem
+  :init
+  (keymap-global-set "M-o" org-node-global-prefix-map)
+  (with-eval-after-load 'org
+    (keymap-set org-mode-map "M-o" org-node-org-prefix-map))
+  :functions
+  org-node-cache-mode org-node-backlink-mode org-node-complete-at-point-mode
+  org-node-cache-ensure org-node-ensure-crtime-property
   org-node-pop-to-fresh-file-buffer user/org-node-new-file
   :defines
-  org-node-proposed-title org-node-proposed-id org-node--new-unsaved-buffers
-  org-node-creation-fn
-
-  :init
-  (keymap-global-set "C-c k" org-node-global-prefix-map)
-  (keymap-set org-mode-map "C-c n" org-node-org-prefix-map)
-
+  org-node-backlink-do-drawers org-node-proposed-title org-node-proposed-id
+  org-node--new-unsaved-buffers org-node-creation-fn
+  
   :custom
   (org-node-file-directory-ask t)
   (org-node-prefer-with-heading nil)
-  (org-node-backlink-do-drawers nil)
-  (auto-save-visited-interval 60)
-
   :config
-  (org-node-cache-mode 1)
+  (org-node-cache-ensure t t)
   (org-node-backlink-mode 1)
-  (auto-save-visited-mode 1)
+  (setq org-node-backlink-do-drawers nil)
   (org-node-complete-at-point-mode 1)
   
   (defun user/org-node-new-file (&optional title id)
@@ -172,15 +171,23 @@ This user-defined function customizes the \=':PROPERTIES:' block from
     (unless title (or (setq title org-node-proposed-title)
   		      (error "Proposed title was nil")))
     (org-node-pop-to-fresh-file-buffer title)
-    (unless id (or (setq id (org-id-new))
-		   (error "Failed to create new org-id")))
-    (insert ":PROPERTIES:"
-  	    "\n:ID:       " id
-  	    "\n:END:"
-  	    "\n#+TITLE: " title
-  	    "\n#+FILETAGS:"
-  	    "\n")
-    (goto-char (point-max))
+    (if id
+	(insert "#+TITLE: " title
+  		"\n#+FILETAGS:"
+  		"\n"
+		"\n* " title
+		"\n:PROPERTIES:"
+		"\n:ID:       " id
+  		"\n:END:")
+      
+      (insert "#+TITLE: " title
+  	      "\n#+FILETAGS:"
+  	      "\n"
+	      "\n* " title
+	      "\n:PROPERTIES:"
+  	      "\n:END:"))
+    (goto-char (point-min))
+    (org-id-get-create)
     (push (current-buffer) org-node--new-unsaved-buffers)
     (run-hooks 'org-node-creation-hook))
   
