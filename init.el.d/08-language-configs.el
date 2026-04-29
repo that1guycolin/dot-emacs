@@ -77,15 +77,19 @@
 
 
 ;; =======  MARKUP/CONFIG  =======
+;; `dockerfile-mode' (support Dockerfiles)
 ;; `glsl-mode' (support OpenGL Shading Language)
 ;; `ini-mode' (config file support)
-;; `dockerfile-mode' (support Dockerfiles)
 ;; `kdl-mode' (support .kdl)
 ;; `markdown-mode', `markdown-toc',
 ;; `grip-mode' (support md, gfm)
 ;; `auto-rename-tag' (xml tag assistant)
 ;; `yaml-pro' (enhanced .yaml support)
 ;; ===============================
+(use-package dockerfile-mode
+  :defer t
+  :mode ("^Dockerfile\\'"))
+
 (use-package glsl-mode
   :defer t
   :mode ("\\.glsl\\'" . glsl-mode))
@@ -95,16 +99,13 @@
   :mode
   (("\\.ini\\'"     . ini-mode)
    ("\\.desktop\\'" . ini-mode)
-   ("\\.hook\\'"    . ini-mode))
-  :bind ("C-c i" . ini-mode))
+   ("\\.hook\\'"    . ini-mode)))
 
-(use-package dockerfile-mode
   :defer t
-  :mode ("^Dockerfile\\'"))
 
 (use-package kdl-mode
   :defer t
-  :mode ("\\.kdl\\'"))
+  :mode ("\\.kdl\\'" . kdl-mode))
 
 (use-package markdown-mode
   :defer t
@@ -131,7 +132,6 @@
    ("C-c" . user/switch-markdown-command)))
 
 (use-package grip-mode
-  :defer t
   :after markdown-mode
   :functions grip-mode
   :defines grip-command
