@@ -79,9 +79,8 @@
 (use-package deadgrep
   :defer t
   :bind
-  (("<f5>" . deadgrep)
-   (:map ctl-x-map
-	 ("C-g" . deadgrep))))
+  (("<f5>"  . deadgrep)
+   ("C-c r" . deadgrep)))
 
 (use-package rg
   :defer t
@@ -107,7 +106,7 @@
   :init
   (persp-mode 1)
   :custom
-  (persp-mode-prefix-key (kbd "C-c M-p"))
+  (persp-mode-prefix-key (kbd "M-p"))
   (persp-switch-to-buffer-behavior 'switch)
   :config
   (setq switch-to-prev-buffer-skip
