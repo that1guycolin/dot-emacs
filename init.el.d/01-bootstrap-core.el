@@ -140,23 +140,31 @@
   (org-default-notes-file
    (expand-file-name ".notes" org-directory))
   (org-insert-mode-line-in-empty-file t)
-  (org-id-method 'org)
-  (org-id-prefix "unk")
 
   :config
-  (org-id-update-id-locations)
-  (defun user/get-parent-directory ()
-    "Return parent directory name for current buffer."
-    (when buffer-file-name
-      (file-name-nondirectory
-       (directory-file-name
-	(file-name-directory buffer-file-name)))))
+  (with-eval-after-load 'org-id
+    (defvar user/org-id-files
+      (directory-files-recursively "~/org/knowledge-base" "\\.org$")
+      "List of files to search for org-ids.")
 
-  (defun user/org-id-dynamic-prefix (orig-fn &rest args)
-    "Dynamically compute `org-id-prefix' each time an ID is created."
-    (let ((org-id-prefix (or (user/get-parent-directory) org-id-prefix)))
-      (apply orig-fn args)))
-  (advice-add 'org-id-new :around #'user/org-id-dynamic-prefix)
+    (setq
+     org-id-method 'org
+     org-id-prefix "unk"
+     org-id-extra-files user/org-id-files)
+    (org-id-update-id-locations user/org-id-files)
+    
+    (defun user/get-parent-directory ()
+      "Return parent directory name for current buffer."
+      (when buffer-file-name
+	(file-name-nondirectory
+	 (directory-file-name
+	  (file-name-directory buffer-file-name)))))
+
+    (defun user/org-id-dynamic-prefix (orig-fn &rest args)
+      "Dynamically compute `org-id-prefix' each time an ID is created."
+      (let ((org-id-prefix (or (user/get-parent-directory) org-id-prefix)))
+	(apply orig-fn args)))
+    (advice-add 'org-id-new :around #'user/org-id-dynamic-prefix))
   
   (bind-keys
    ("C-c o o" . org-mode)
