@@ -80,6 +80,7 @@
 ;; `dockerfile-mode' (support Dockerfiles)
 ;; `glsl-mode' (support OpenGL Shading Language)
 ;; `ini-mode' (config file support)
+;; `json-mode' (needed for json to work in org)
 ;; `kdl-mode' (support .kdl)
 ;; `markdown-mode', `markdown-toc',
 ;; `grip-mode' (support md, gfm)
@@ -101,7 +102,9 @@
    ("\\.desktop\\'" . ini-mode)
    ("\\.hook\\'"    . ini-mode)))
 
+(use-package json-mode
   :defer t
+  :mode ("\\.json\\'" . json-mode))
 
 (use-package kdl-mode
   :defer t
