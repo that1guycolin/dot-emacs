@@ -253,7 +253,7 @@ See URL `https://vale.sh'."
   (setf (alist-get 'shfmt apheleia-formatters)
 	'("shfmt" "-i" "4" "-ci" "-"))
   (setf (alist-get 'neocmakelsp apheleia-formatters)
-        '("neocmakelsp" "format" "-"))
+        '("neocmakelsp" "format" (buffer-file-name)))
   (setf (alist-get 'jq apheleia-formatters)
 	'("jq" "." "-M" "--indent" "2"))
   (setf (alist-get 'ruff apheleia-formatters)
