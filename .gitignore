@@ -16,7 +16,7 @@ elpaca/
 .emacs.d-autoloads.el
 emacs-mcp-stdio.sh
 emms
-.env
+.envrc
 eshell
 forge-database.sqlite
 *ghostel
