@@ -68,14 +68,12 @@
 ;; =======  OTHER BOOTSTRAPS  =======
 ;; `gcmh' (smart garbage collection)
 ;; `exec-path-from-shell' `envrc' (environment)
-;; `transient' `org'
-;; (load latest early, override built-in)
+;; `transient' `org' (load latest early, override built-in)
 ;; ==================================
 (use-package gcmh
   :demand t
   :functions
-  gcmh-mode
-  user/restore-sane-gcmh-values
+  gcmh-mode user/restore-sane-gcmh-values
   :config
   (gcmh-mode 1)
   (setopt gcmh-high-cons-threshold most-positive-fixnum
@@ -95,8 +93,9 @@
 (use-package exec-path-from-shell
   :demand t
   :functions exec-path-from-shell-initialize
-  :custom
-  (exec-path-from-shell-shell-name "fish")
+  :defines exec-path-from-shell-shell-name
+  :init
+  (setq exec-path-from-shell-shell-name "/usr/bin/zsh")
   :config
   (dolist (var '("CC" "CXX" "PKG_CONFIG_PATH" "SSH_AGENT_PID" "SSH_AUTH_SOCK"
 		 "LSP_USE_PLISTS"))
@@ -113,7 +112,7 @@
   :demand t)
 
 (use-package org
-  :ensure (
+  :ensure (org
 	   :package "org"
 	   :source "Org"
 	   :protocol https
@@ -133,39 +132,54 @@
   (("\\.org\\'"   . org-mode)
    ("TODO\\'"     . org-mode)
    ("\\.notes\\'" . org-mode))
+  :defines org-mode-map
+  
   :init
   (setq org-directory (expand-file-name "~/org"))
 
   :custom
   (org-default-notes-file
    (expand-file-name ".notes" org-directory))
+  (org-id-locations-file (expand-file-name ".id-locations" org-directory))
   (org-insert-mode-line-in-empty-file t)
+  (org-use-sub-superscripts '{})
 
   :config
-  (with-eval-after-load 'org-id
-    (defvar user/org-id-files
-      (directory-files-recursively "~/org/knowledge-base" "\\.org$")
-      "List of files to search for org-ids.")
+  (with-eval-after-load 'org-babel
+    (org-babel-do-load-languages 'org-babel-load-languages
+				 '((emacs-lisp . t)
+				   (lisp       . t)
+				   (lua        . t)
+				   (makefile   . t)
+				   (org        . t)
+				   (python     . t)
+				   (shell      . t)))
+    (setq org-babel-lisp-eval-fn #'sly-eval)
+    (setq-default org-confirm-babel-evaluate nil))
 
-    (setq
-     org-id-method 'org
-     org-id-prefix "unk"
-     org-id-extra-files user/org-id-files)
-    (org-id-update-id-locations user/org-id-files)
-    
-    (defun user/get-parent-directory ()
-      "Return parent directory name for current buffer."
-      (when buffer-file-name
-	(file-name-nondirectory
-	 (directory-file-name
-	  (file-name-directory buffer-file-name)))))
+  (setq
+   org-id-method 'org
+   org-id-prefix "unk")
 
-    (defun user/org-id-dynamic-prefix (orig-fn &rest args)
-      "Dynamically compute `org-id-prefix' each time an ID is created."
-      (let ((org-id-prefix (or (user/get-parent-directory) org-id-prefix)))
-	(apply orig-fn args)))
-    (advice-add 'org-id-new :around #'user/org-id-dynamic-prefix))
+  (setq org-id-extra-files
+	(directory-files-recursively
+	 (expand-file-name org-directory "knowledge-base")
+	 "\\.org$"))
+  (org-id-update-id-locations org-id-extra-files)
   
+  (defun user/get-parent-directory ()
+    "Return parent directory name for current buffer."
+    (when buffer-file-name
+      (file-name-nondirectory
+       (directory-file-name
+	(file-name-directory buffer-file-name)))))
+
+  (defun user/org-id-dynamic-prefix (orig-fn &rest args)
+    "Dynamically compute `org-id-prefix' each time an ID is created."
+    (let ((org-id-prefix (or (user/get-parent-directory) org-id-prefix)))
+      (apply orig-fn args)))
+  (advice-add 'org-id-new :around #'user/org-id-dynamic-prefix)
+
   (bind-keys
    ("C-c o o" . org-mode)
    ("C-c o l" . org-store-link)
