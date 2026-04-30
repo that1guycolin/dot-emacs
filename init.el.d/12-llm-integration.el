@@ -72,6 +72,8 @@ to the user's device.")
 
 ;; =======  MCP  =======
 (use-package org-mcp
+  :defer t
+  :commands org-mcp-enable
   :config
   (setq org-mcp-allowed-files
 	(directory-files "~/org/llm" t directory-files-no-dot-files-regexp))
@@ -80,9 +82,8 @@ to the user's device.")
     (add-to-list 'org-mcp-allowed-files (expand-file-name file))))
 
 (use-package elisp-dev-mcp
-  :functions mcp-server-lib-start
-  :config
-  (mcp-server-lib-start))
+  :defer t
+  :commands elisp-dev-mcp-enable)
 
 ;; =======  GPTEL  =======
 (declare-function auth-source-pick-first-password "auth-source")
