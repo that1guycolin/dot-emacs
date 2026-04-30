@@ -56,6 +56,7 @@
 
 ;; =======  DASHBOARD  =======
 (use-package dashboard
+  :ensure (:wait t)
   :demand t
   
   :functions

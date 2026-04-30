@@ -13,6 +13,8 @@
 (defvar treesit-language-source-alist)
 (use-package treesit
   :ensure nil
+  :custom
+  (treesit-extra-load-path '("/data/data/com.termux/files/usr/lib/tree_sitter/"))
   :config
   (setq treesit-language-source-alist
 	'((bash "https://github.com/tree-sitter/tree-sitter-bash")
@@ -47,6 +49,7 @@
 	  (zsh "https://github.com/georgeharker/tree-sitter-zsh"))))
 
 (use-package treesit-auto
+  :ensure (:wait t)
   :functions
   global-treesit-auto-mode
   treesit-auto-add-to-auto-mode-alist

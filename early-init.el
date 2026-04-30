@@ -11,6 +11,13 @@
   "When non-nil, enable CPU profiling during startup.")
 ;; (setq debug-on-error t)
 
+(setenv "PATH" (format "%s:%s" "/data/data/com.termux/files/usr/bin"
+		       (getenv "PATH")))
+(push "/data/data/com.termux/files/usr/bin" exec-path)
+
+(setenv "PKG_CONFIG_PATH"
+	"/data/data/com.termux/files/usr/lib/pkgconfig/")
+
 (setq
  ;; No garbage collection during startup
  gc-cons-threshold most-positive-fixnum

@@ -179,6 +179,7 @@ doubles as a model-switcher."
 
 ;; =======  ELLAMA  =======
 (use-package ellama
+  :ensure (:wait t)
   :defer t
   :commands ellama-transient-main-menu
   :functions

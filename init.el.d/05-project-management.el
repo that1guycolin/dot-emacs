@@ -60,9 +60,8 @@
 (use-package deadgrep
   :defer t
   :bind
-  (("<f5>" . deadgrep)
-   (:map ctl-x-map
-	 ("C-g" . deadgrep))))
+  (("<f5>"    . deadgrep)
+   ("C-c C-d" . deadgrep)))
 
 (use-package rg
   :defer t
@@ -222,6 +221,7 @@ Takes arguments EXPR and LOC to pass to `user/buffer-by-filename'."
   :after treemacs)
 
 (use-package treemacs-nerd-icons
+  :ensure (:wait t)
   :after treemacs
   :functions treemacs-nerd-icons-config
   :config

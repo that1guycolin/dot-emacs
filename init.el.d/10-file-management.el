@@ -1,4 +1,4 @@
-;;; 09-file-management.el --- File explorer functions -*- lexical-binding: t; -*-
+;;; 10-file-management.el --- File explorer functions -*- lexical-binding: t; -*-
 
 ;;; Packages included:
 ;; async, diredfl, dirvish, dwim-shell-command
@@ -113,6 +113,7 @@
    ("C-c h"                           . diff-hl-dired-mode)))
 
 (use-package dwim-shell-command
+  :ensure t
   :defer t
   :commands dwim-shell-command-on-marked-files)
 
@@ -126,5 +127,5 @@
    :utils "ffmpeg"))
 
 
-(provide '09-file-management)
-;;; 09-file-management.el ends here
+(provide '10-file-management)
+;;; 10-file-management.el ends here

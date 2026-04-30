@@ -111,6 +111,7 @@
 (keymap-global-unset "C-h F")
 
 (use-package helpful
+  :ensure (:wait t)
   :functions
   helpful-callable
   helpful-variable
@@ -137,7 +138,8 @@
 (use-package emacs
   :ensure nil
   :bind
-  (("C-c x"   . toggle-frame-maximized)
+  (("M-n"     . eval-expression)
+   ("C-c x"   . toggle-frame-maximized)
    ("C-c ("   . user/check-parens-with-message)
    ("C-c #"   . display-line-numbers-mode)
    ("C-c C-#" . global-display-line-numbers-mode)

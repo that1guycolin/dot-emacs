@@ -1,4 +1,4 @@
-;;; 07-git-tools.el --- Git(hub) integration & tooling -*- lexical-binding: t; -*-
+;;; 09-git-tools.el --- Git(hub) integration & tooling -*- lexical-binding: t; -*-
 
 ;;; Packages included:
 ;; diff-hl, forge, git-commit-ts-mode, git-modes, magit, magit-git-toolbelt,
@@ -50,8 +50,9 @@
 	      ("/" . magit-git-toolbelt)))
 
 (use-package treemacs-magit
+  :ensure (:wait t)
   :after treemacs magit)
 
 
-(provide '07-git-tools)
-;;; 07-git-tools.el ends here
+(provide '09-git-tools)
+;;; 09-git-tools.el ends here

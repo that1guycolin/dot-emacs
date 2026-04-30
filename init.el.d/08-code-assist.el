@@ -1,4 +1,4 @@
-;;; 06-code-assist.el --- Linting, formatting, & LSPs -*- lexical-binding: t; -*-
+;;; 08-code-assist.el --- Linting, formatting, & LSPs -*- lexical-binding: t; -*-
 
 ;;; Packages included:
 ;; adaptive-wrap, apheleia, dap-mode, docstr, flycheck, flycheck-color-mode-line,
@@ -40,6 +40,7 @@
 ;; bash: 'shellcheck' (pacman -S shellcheck)*
 ;; emacs-lisp: 'emacs-lisp' (built-in)
 ;; json: 'jsonlint' (npm install -g jsonlint)*
+;; lua: 'luacheck' (pacman -S luacheck)*
 ;; markdown: 'rumdl' (pacman -S rumdl)*
 ;; toml: 'tombi' (uv tool install tombi)*
 ;; xml: 'xmllint' (pacman -S libxml2)
@@ -48,6 +49,8 @@
 ;; Extensions:
 ;; `flycheck-pos-tip' (popup flycheck errors)
 ;; `flycheck-color-mode-line'
+;; `flycheck-eask' (Support Eask files)
+;; `flycheck-package' (Support Emacs' pacakges)
 ;; ==========================
 (use-package flycheck
   :hook
@@ -60,7 +63,7 @@
   :custom
   (flycheck-emacs-lisp-load-path 'inherit)
   (flycheck-disabled-checkers
-   '(emacs-lisp-elsa lua-luacheck lua sh-bash yaml-jsyaml yaml-ruby))
+   '(emacs-lisp-elsa sh-bash yaml-jsyaml yaml-ruby))
 
   :config
   (flycheck-define-checker fish-self
@@ -71,20 +74,6 @@ See URL `https://fishshell.com'."
     ((error line-start (file-name) " (line " line "): " (message) line-end))
     :modes (fish-mode))
   (add-to-list 'flycheck-checkers 'fish-self)
-
-  (flycheck-define-checker lua-selene
-    "Write correct & idiomatic lua code.
-See URL `https://kampfkarren.github.io/selene'."
-    :command ("selene" "--quiet" "-" source )
-    :error-patterns
-    ((error line-start
-            (file-name) ":" line ":" column ": "
-            (or "error" "warning" "info")
-            "[" (id (one-or-more (not (any "]")))) "]: "
-            (message)
-            line-end))
-    :modes (lua-ts-mode))
-  (add-to-list 'flycheck-checkers 'lua-selene)
   
   (flycheck-define-checker markdown-rumdl
     "A fast Markdown linter written in Rust.
@@ -134,7 +123,6 @@ See URL `https://vale.sh'."
 
   (defvar user/flycheck-checker-modes-alist
     '((fish-mode     . fish-self)
-      (lua-ts-mode   . lua-selene)
       (markdown-mode . markdown-rumdl)
       (gfm-mode      . markdown-rumdl)
       (toml-ts-mode  . tombi-lint)
@@ -156,6 +144,14 @@ See URL `https://vale.sh'."
 (use-package flycheck-color-mode-line
   :after flycheck
   :hook (flycheck-mode . flycheck-color-mode-line-mode))
+
+(use-package flycheck-eask
+  :defer t
+  :hook (eask-mode . flycheck-eask-setup))
+
+(use-package flycheck-package
+  :defer t
+  :hook (emacs-lisp-mode . flycheck-package-setup))
 
 
 ;; =======  LSP-MODE  =======
@@ -288,7 +284,6 @@ See URL `https://vale.sh'."
   (setf (alist-get 'markdown-mode apheleia-mode-alist) 'rumdl)
   (setf (alist-get 'gfm-mode apheleia-mode-alist) 'rumdl)
   (setf (alist-get 'python-ts-mode apheleia-mode-alist) 'ruff)
-  (setf (alist-get 'sh-mode apheleia-mode-alist) 'shfmt)
   (setf (alist-get 'toml-ts-mode apheleia-mode-alist) 'tombi)
   (setf (alist-get 'conf-toml-mode apheleia-mode-alist) 'tombi)
   (setf (alist-get 'nxml-mode apheleia-mode-alist) 'xmlstarlet)
@@ -344,6 +339,7 @@ See URL `https://vale.sh'."
 ;; =======================
 (declare-function transient-define-prefix "transient")
 (use-package mason
+  :ensure (:wait t)
   :commands
   mason-install mason-manager mason-setup
   :functions
@@ -416,7 +412,7 @@ mason installs it."
       ("m" "Mason Manager" mason-manager)]
      ])
 
-  (declare-function user/mason--dispatch "06-code-assist")
+  (declare-function user/mason--dispatch "08-code-assist")
   (defun user/mason-dispatch ()
     "Load mason if not loaded then run user/mason--dispatch."
     (interactive)
@@ -428,5 +424,5 @@ mason installs it."
   (bind-keys ("C-c m" . user/mason-dispatch)))
 
 
-(provide '06-code-assist)
-;;; 06-code-assist.el ends here
+(provide '08-code-assist)
+;;; 08-code-assist.el ends here

@@ -104,7 +104,8 @@
 	   :host github
 	   :repo "that1guycolin/emms-info-mediainfo"
 	   :files (:defaults)
-	   :method https)
+	   :method https
+	   :wait t)
   :after emms
   :config
   (setq emms-info-functions (append '(emms-info-mediainfo) emms-info-functions)))
