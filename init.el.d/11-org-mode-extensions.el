@@ -118,80 +118,49 @@
 ;; `org-noter-pdftools' (annotate pdf files)
 ;; ===========================
 (declare-function org-id-update-id-locations "org")
-(declare-function org-id-new "org-id")
 (declare-function org-id-get-create "org-id")
 
 (use-package org-mem
   :after org
   :functions
   org-mem-updater-mode org-mem-reset org-mem-await org-mem-tip-if-empty
-  :init
-  (org-id-update-id-locations)
   :custom
   (org-mem-watch-dirs '("~/org/knowledge-base/"))
   (org-mem-roamy-do-overwrite-real-db nil)
   :custom
-  (org-mem-roamy-db-mode 1))
+  (add-hook 'emacs-startup-hook (lambda ()
+				  (org-id-update-id-locations)
+				  (org-mem-roamy-db-mode 1)
+				  (org-mem-updater-mode 1))))
 
 (use-package org-node
-  :after org-mem
-  :init
-  (keymap-global-set "M-o" org-node-global-prefix-map)
-  (with-eval-after-load 'org
-    (keymap-set org-mode-map "M-o" org-node-org-prefix-map))
+  :bind-keymap ("M-o" . org-node-global-prefix-map)
+  :commands org-node-org-prefix-map
+
   :functions
   org-node-cache-mode org-node-backlink-mode org-node-complete-at-point-mode
   org-node-ensure-crtime-property org-node-pop-to-fresh-file-buffer
   user/org-node-new-file user/org-node-cache-ensure
   :defines
-  org-node-backlink-do-drawers org-node-proposed-title org-node-proposed-id
-  org-node--new-unsaved-buffers org-node-creation-fn
+  org-node-proposed-title org-node-proposed-id org-node--new-unsaved-buffers
+  org-node-creation-fn org-node-backlink-do-drawers
+  
+  :init
+  (with-eval-after-load 'org
+    (keymap-set org-mode-map "M-o" org-node-org-prefix-map))
   
   :custom
   (org-node-file-directory-ask t)
   (org-node-prefer-with-heading nil)
   
   :config
-  (defun user/org-node-cache-ensure (&optional block force)
-    "Ensure that org-node is ready for use.
-Ensure that modes `org-node-cache-mode' and `org-mem-updater-mode' are
-enabled.  If FORCE, trigger org-mem to rebuild cache.  If BLOCK and a
-cache build is underway \(perhaps started by FORCE), block Emacs until
-it finishes \(or 60 seconds elapse\).
-
-If cache has never been built, act as if both FORCE and BLOCK.
-
-It is good to call this function at the start of autoloaded commands.
-Most of the time, you can expect it to no-op.
-
-These cache builds are normally async, so without BLOCK, this returns
-immediately and can mean that the data you will next query from org-mem
-is still out of date.  That usually only matters if you had done
-something to change the facts on the ground just prior.
-
-This is a customized version of the function defined in org-node.el that
-automatically enables org-node-cache-mode & org-mem-updater-mode instead of
-prompting the user for yes or no."
-    (interactive)
-    (setq org-node--first-init nil)
-    (unless org-node-cache-mode
-      (progn
-	(org-node-cache-mode)
-	(setq force t)))
-    (unless org-mem-updater-mode
-      (progn
-	(org-mem-updater-mode)
-	(setq force t)))
-    (when (hash-table-empty-p org-node--candidate<>entry)
-      (setq block t)
-      (setq force t))
-    (when force
-      (org-mem-reset nil "Org-node waiting for org-mem..."))
-    (when block
-      (org-mem-await "Org-node waiting for org-mem..." 60))
-    (org-mem-tip-if-empty))
-  (add-hook 'emacs-startup-hook #'user/org-node-cache-ensure)
-  
+  (setq org-node--first-init nil)
+  (org-node-cache-mode 1)
+  (unless org-mem-updater-mode
+    (org-mem-updater-mode 1))
+  (org-mem-reset nil "Org-node waiting for org-mem...")
+  (org-mem-await "Org-node waiting for org-mem..." 60)
+  (org-mem-tip-if-empty)
   (org-node-complete-at-point-mode 1)
   
   (defun user/org-node-new-file (&optional title id)
