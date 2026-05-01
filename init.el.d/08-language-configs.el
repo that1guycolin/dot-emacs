@@ -246,7 +246,7 @@
            :coding-system utf-8-unix)))
 
   :config
-  (let ((ql-setup "~/quicklisp/setup.lisp"))
+  (let ((ql-setup "~/.quicklisp/setup.lisp"))
     (when (file-exists-p ql-setup)
       (setq sly-lisp-implementations
             (mapcar (lambda (impl)

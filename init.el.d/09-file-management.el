@@ -14,9 +14,7 @@
 
 (use-package async
   :defer t
-  :commands
-  async-start
-  async-start-process
+  :commands async-start async-start-process
   :hook (dired-mode . dired-async-mode)
   :init
   (require 'dired-async))

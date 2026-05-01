@@ -42,15 +42,11 @@
   :custom
   (org-todo-keywords
    '((sequence "TODO(t)" "NEXT(n)" "WAIT(w@/!)" "|" "DONE(d!)" "CNCL(c)")))
-  (org-gtd-keyword-mapping '((todo     . "TODO")
-			     (next     . "NEXT")
-			     (wait     . "WAIT")
-			     (done     . "DONE")
+  (org-gtd-keyword-mapping '((todo . "TODO") (next . "NEXT")
+			     (wait . "WAIT") (done . "DONE")
 			     (canceled . "CNCL")))
   (org-gtd-refile-to-any-target nil)
-  (org-gtd-refile-prompt-for-types '(single-action
-				     project-heading
-				     project-task))
+  (org-gtd-refile-prompt-for-types '(single-action project-heading project-task))
   
   :config
   (org-gtd-mode 1)
@@ -76,20 +72,11 @@
 
 (use-package org-project-capture
   :ensure (org-project-capture
-	   :source "MELPA"
-	   :package "org-project-capture"
-	   :id org-project-capture
-	   :repo "colonelpanic8/org-project-capture"
-	   :fetcher github
-	   :files ("org-project-capture.el"
-		   "org-project-capture-backend.el"
-		   "org-category-capture.el"
-		   "README.org")
-	   :type git
-	   :protocol https
-	   :inherit t
-	   :depth treeless)
-  :after org
+	   :source "MELPA" :package "org-project-capture" :id org-project-capture
+	   :repo "colonelpanic8/org-project-capture" :fetcher github
+	   :files ("org-project-capture.el" "org-project-capture-backend.el"
+		   "org-category-capture.el" "README.org")
+	   :type git :protocol https :inherit t :depth treeless)
   :functions
   org-project-capture-capture-for-current-project
   org-project-capture-project-todo-completing-read
@@ -244,16 +231,10 @@ This user-defined function customizes the \=':PROPERTIES:' block from
 
 (use-package pdf-tools
   :ensure (pdf-tools
-	   :source nil
-	   :package "pdf-tools"
-	   :id pdf-tools
-	   :fetcher github
+	   :source nil :package "pdf-tools" :id pdf-tools :fetcher github
 	   :repo "that1guycolin/pdf-tools"
 	   :files (:defaults "README" ("build" "Makefile") ("build" "server"))
-	   :type git
-	   :protocol https
-	   :inherit t
-	   :depth treeless)
+	   :type git :protocol https :inherit t :depth treeless)
   :functions pdf-tools-install
   :custom
   (pdf-view-display-size 'fit-page)
@@ -279,31 +260,18 @@ This user-defined function customizes the \=':PROPERTIES:' block from
 
 (use-package org-pdftools
   :ensure (org-pdftools
-	   :source nil
-	   :package "org-pdftools"
-	   :id org-pdftools
-	   :fetcher github
-	   :repo "that1guycolin/org-pdftools"
-	   :files ("org-pdftools.el")
-	   :old-names (org-pdfview)
-	   :type git
-	   :protocol https
-	   :inherit t
+	   :source nil :package "org-pdftools" :id org-pdftools :fetcher github
+	   :repo "that1guycolin/org-pdftools" :files ("org-pdftools.el")
+	   :old-names (org-pdfview) :type git :protocol https :inherit t
 	   :depth treeless)
   :hook (org-mode . org-pdftools-setup-link))
 
 (use-package org-noter-pdftools
   :ensure (org-noter-pdftools
-	   :source nil
-	   :package "org-noter-pdftools"
-	   :id org-noter-pdftools
-	   :repo "that1guycolin/org-pdftools"
-	   :fetcher github
+	   :source nil :package "org-noter-pdftools" :id org-noter-pdftools
+	   :repo "that1guycolin/org-pdftools" :fetcher github
 	   :files ("org-noter-pdftools.el")
-	   :type git
-	   :protocol https
-	   :inherit t
-	   :depth treeless)
+	   :type git :protocol https :inherit t :depth treeless)
 
   :functions
   org-noter-insert-note org-noter--get-precise-info org-noter--parse-root
@@ -377,15 +345,13 @@ With a prefix ARG, remove start location."
 
 (use-package org-modern-indent
   :ensure (org-modern-indent
-	   :host github
-	   :repo "jdtsmith/org-modern-indent"
-	   :files (:defaults)
+	   :host github :repo "jdtsmith/org-modern-indent" :files (:defaults)
 	   :method https)
   :config
   (add-hook 'org-mode-hook #'org-modern-indent-mode 90))
 
 (use-package org-caldav
-  :after (org-gtd org-project-capture)
+  :after org-gtd org-project-capture
   :custom
   (org-caldav-url
    "https://use11.thegood.cloud/remote.php/dav/calendars/colinloeffler%40gmail.com")

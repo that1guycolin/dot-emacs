@@ -113,17 +113,12 @@
 
 (use-package org
   :ensure (org
-	   :package "org"
-	   :source "Org"
-	   :protocol https
-	   :inherit t
-	   :depth 1
-	   :pre-build (progn (require 'elpaca-menu-org)
-			     (setq elpaca-menu-org-make-manual nil)
-			     (elpaca-menu-org--build))
-	   :host github
-	   :repo "emacsmirror/org"
-	   :autoloads "org-loaddefs.el"
+	   :package "org" :source "Org" :protocol https :inherit t :depth 1
+	   :pre-build (progn
+			(require 'elpaca-menu-org)
+			(setq elpaca-menu-org-make-manual nil)
+			(elpaca-menu-org--build))
+	   :host github :repo "emacsmirror/org" :autoloads "org-loaddefs.el"
 	   :build (:not elpaca--generate-autoloads-async)
 	   :files (:defaults ("etc/styles/" "etc/styles/*" "doc/*.texi"))
 	   :wait t)

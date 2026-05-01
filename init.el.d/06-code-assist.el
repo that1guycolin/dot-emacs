@@ -209,14 +209,9 @@ See URL `https://vale.sh'."
   (bind-keys
    :map lsp-mode-map
    ("C-c F" . lsp-format-buffer))
-  (dolist (dir '("[/\\\\]node_modules\\'"
-                 "[/\\\\]\\.git\\'"
-                 "[/\\\\]dist\\'"
-                 "[/\\\\]build\\'"
-                 "[/\\\\]target\\'"
-                 "[/\\\\]\\.direnv\\'"
-                 "[/\\\\]\\.cache\\'"
-                 "[/\\\\]vendor\\'"))
+  (dolist (dir '("[/\\\\]node_modules\\'" "[/\\\\]\\.git\\'" "[/\\\\]dist\\'"
+                 "[/\\\\]build\\'" "[/\\\\]target\\'" "[/\\\\]\\.direnv\\'"
+                 "[/\\\\]\\.cache\\'" "[/\\\\]vendor\\'"))
     (add-to-list 'lsp-file-watch-ignored-directories dir))
   (add-hook 'fish-mode-hook
             (lambda ()
@@ -227,6 +222,17 @@ See URL `https://vale.sh'."
 
 (use-package lsp-treemacs
   :after (lsp-mode treemacs))
+(use-package dap-mode
+  :defer t
+  :commands
+  dap-debug dap-debug-edit-template dap-auto-configure-mode
+  :defines dap-python-debugger
+  :custom
+  (dap-auto-configure-features '(sessions locals controls tooltip))
+  (dap-lldb-debug-program "/usr/bin/lldb-dap")
+  :config
+  (require 'dap-python)
+  (setq dap-python-debugger 'debugpy))
 
 
 ;; =======  FORMATTING  =======
@@ -280,23 +286,6 @@ See URL `https://vale.sh'."
   (setf (alist-get 'yaml-ts-mode apheleia-mode-alist) 'yq-yaml)
   (setf (alist-get 'sh-mode apheleia-mode-alist) nil))
 
-
-;; =======  DAP-MODE  =======
-;; python: 'debugpy' (uv tool install debugpy)*
-;; ==========================
-(use-package dap-mode
-  :defer t
-  :commands
-  dap-debug dap-debug-edit-template dap-auto-configure-mode
-  :defines dap-python-debugger
-  :custom
-  (dap-auto-configure-features '(sessions locals controls tooltip))
-  (dap-lldb-debug-program "/usr/bin/lldb-dap")
-  :config
-  (require 'dap-python)
-  (setq dap-python-debugger 'debugpy))
-
-
 ;; =======  SNIPPETS  =======
 ;; 'yasnippet' (functions)
 ;; 'yasnippet-snippets' (library)
@@ -334,14 +323,13 @@ See URL `https://vale.sh'."
   :functions
   mason-ensure mason-installed-p user/mason--install-program
   user/mason-install-optional-program user/mason-install-optional-programs
-  user/mason-dispatch
+  user/mason--dispatch user/mason-dispatch
   :defines mason-dir
 
   :init
+  (mason-setup)
   (setq mason-dir (expand-file-name "~/.local"))
   :config
-  (mason-setup)
-  
   ;; Variables
   (defvar user/required-mason-programs
     '("debugpy" "fish-lsp" "jsonlint" "lua-language-server" "neocmakelsp"
@@ -400,8 +388,7 @@ mason installs it."
      [("p" "Install program" user/mason-install-program)
       ("m" "Mason Manager" mason-manager)]
      ])
-
-  (declare-function user/mason--dispatch "06-code-assist")
+  
   (defun user/mason-dispatch ()
     "Load mason if not loaded then run user/mason--dispatch."
     (interactive)
@@ -410,7 +397,7 @@ mason installs it."
       (progn
 	(mason-setup)
 	(user/mason--dispatch))))
-  (bind-keys ("C-c m" . user/mason-dispatch)))
+  (bind-keys ("C-c M" . user/mason-dispatch)))
 
 
 (provide '06-code-assist)

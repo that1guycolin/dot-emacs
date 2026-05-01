@@ -27,8 +27,7 @@
 
 (use-package project
   :ensure nil
-  :functions
-  project-remember-projects-under
+  :functions project-remember-projects-under
   :custom
   (project-list-exclude
    (list (concat "^" (regexp-quote (expand-file-name elpaca-directory)))))
@@ -214,8 +213,6 @@ Takes arguments EXPR and LOC to pass to `user/buffer-by-filename'."
   (treemacs-filewatch-mode 1)
   (treemacs-git-mode 'deferred)
   (treemacs-git-commit-diff-mode 1)
-  (add-hook 'treemacs-post-buffer-init-hook
-	    #'treemacs-hide-gitignored-files-mode)
 
   (defun user/treemacs-switch-workspace-and-focus ()
     "Run `treemacs-switch-workspace' and ensure the Treemacs window is focused."

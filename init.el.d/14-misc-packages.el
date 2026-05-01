@@ -46,23 +46,18 @@
   :config
   ;; Customizing the frame appearance for a "popup" feel
   (setq emacs-everywhere-frame-parameters
-        '((name . "emacs-everywhere")
-          (width . 80)
-          (height . 20)
-          (menu-bar-lines . 0)
-          (tool-bar-lines . 0)
-          (vertical-scroll-bars . nil))))
+        '((name . "emacs-everywhere") (width . 80) (height . 20)
+	  (menu-bar-lines . 0) (tool-bar-lines . 0)
+	  (vertical-scroll-bars . nil))))
 
 
 ;; =======  DASHBOARD  =======
 (use-package dashboard
   :demand t
-  
   :functions
   dashboard-insert-startupify-lists dashboard-initialize
   dashboard-setup-startup-hook dashboard-refresh-buffer
-  dashboard-display-icons-p user/dashboard-cleanup-org-buffers
-  user/emacsclient-dashboard
+  dashboard-display-icons-p user/emacsclient-dashboard
 
   :custom
   (dashboard-startup-banner 'logo)
