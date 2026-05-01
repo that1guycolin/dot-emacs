@@ -74,7 +74,6 @@
 		  (build-base (expand-file-name "~/bld/")))
 	      (concat build-base proj-name)))))
 
-
 (use-package deadgrep
   :defer t
   :bind
@@ -194,6 +193,7 @@ Takes arguments EXPR and LOC to pass to `user/buffer-by-filename'."
 ;; `treemacs-perspective' (perspective + treemacs integration)
 ;; `treemacs-nerd-icons' (nerd-icons + treemacs integration)
 ;; ==========================
+(defvar treemacs-mode-map)
 (use-package treemacs
   :commands treemacs treemacs-refresh
   :defer t
@@ -237,6 +237,7 @@ Takes arguments EXPR and LOC to pass to `user/buffer-by-filename'."
   :after treemacs)
 
 (use-package treemacs-nerd-icons
+  :ensure (:wait t)
   :after treemacs
   :functions treemacs-nerd-icons-config
   :config

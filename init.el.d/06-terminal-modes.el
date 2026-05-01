@@ -1,4 +1,4 @@
-;;; 10-shell-modes.el --- Support for terminal and Emacs' shells -*- lexical-binding: t; -*-
+;;; 06-terminal-modes.el --- Support for terminal and Emacs' shells -*- lexical-binding: t; -*-
 
 ;;; Packages included:
 ;; esh-autosuggest, eshell-git-prompt, eshell-syntax-highlighting, esh-help,
@@ -102,6 +102,7 @@
    (vterm-mode  . with-editor-export-editor)))
 
 (use-package native-complete
+  :ensure (:wait)
   :defer t
   :commands native-complete-at-point
   :config
@@ -110,5 +111,5 @@
 	      (add-to-list 'completion-at-point-functions
 			   #'native-complete-at-point))))
 
-(provide '10-shell-modes)
-;;; 10-shell-modes.el ends here
+(provide '06-terminal-modes)
+;;; 06-terminal-modes.el ends here

@@ -10,17 +10,18 @@
 ;;; Code:
 ;; =======  MISC  =======
 ;; `telega' - (chat in Emacs)
-;; `popper' (toggle popups)
 ;; `free-keys' (buffer of available keybinds)
 ;; `emacs-everywhere'
 ;; ======================
 (use-package telega
+  :defer t
   :bind ("C-c g" . telega)
   :functions
-  telega-mode-line-mode
-  user/telega-setup
-  telega-notifications-mode
-  :defer t
+  telega-mode-line-mode user/telega-setup telega-appindicator-mode
+  telega-auto-download-mode telega-autoplay-mode telega-chat-auto-fill-mode
+  telega-highlight-text-mode telega-notifications-mode telega-root-auto-fill-mode
+  telega-transient-keymaps-mode
+  
   :init
   (setq telega-use-images t)
   (defun user/telega-setup (&optional frame)
@@ -33,8 +34,15 @@
     (add-hook 'telega-load-hook #'user/telega-setup))
 
   :config
-  (setq telega-completing-read-function 'completing-read)
+  (telega-appindicator-mode 1)
+  (telega-auto-download-mode 1)
+  (telega-autoplay-mode 1)
+  (telega-chat-auto-fill-mode 1)
+  (telega-highlight-text-mode 1)
   (telega-notifications-mode 1)
+  (telega-root-auto-fill-mode 1)
+  (telega-transient-keymaps-mode 1)
+  
   (message "Telega loaded successfully."))
 
 (use-package free-keys
@@ -53,6 +61,7 @@
 
 ;; =======  DASHBOARD  =======
 (use-package dashboard
+  :ensure (:wait t)
   :demand t
   :functions
   dashboard-insert-startupify-lists dashboard-initialize
@@ -77,16 +86,14 @@
   (add-hook 'elpaca-after-init-hook #'dashboard-insert-startupify-lists)
   (add-hook 'elpaca-after-init-hook #'dashboard-initialize)
   (dashboard-setup-startup-hook)
-
-  (bind-keys
-   :map dashboard-mode-map
-   ("c" . user/dashboard-cleanup-org-buffers))
   
   (defun user/emacsclient-dashboard (frame)
     "Show the dashboard every time a new FRAME is opened."
     (with-selected-frame frame
       (dashboard-refresh-buffer)))
-  (add-hook 'after-make-frame-functions #'user/emacsclient-dashboard))
+  (add-to-list 'after-make-frame-functions #'user/emacsclient-dashboard)
+  (let ((order (reverse (seq-into-sequence after-make-frame-functions))))
+    (setq after-make-frame-functions order)))
 
 
 (provide '14-misc-packages)

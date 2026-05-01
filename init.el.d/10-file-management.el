@@ -1,4 +1,4 @@
-;;; 09-file-management.el --- File explorer functions -*- lexical-binding: t; -*-
+;;; 10-file-management.el --- File explorer functions -*- lexical-binding: t; -*-
 
 ;;; Packages included:
 ;; async, diredfl, dirvish, dwim-shell-command
@@ -36,6 +36,9 @@
   dirvish-new-empty-file-a dirvish-subtree-toggle dirvish-layout-toggle
   dirvish-history-go-backward dirvish-history-go-forward dirvish-narrow
   dirvish-mark-menu dirvish-setup-menu dirvish-emerge-menu
+
+  :init
+  (dirvish-override-dired-mode 1)
   
   :custom
   (dirvish-preview-dispatchers '(archive pdf))
@@ -46,8 +49,6 @@
 --human-readable --group-directories-first --no-group")
   
   :config
-  (dirvish-override-dired-mode 1)
-
   (defun user/dired-use-dirvish (dirname &optional switches)
     "Open DIRNAME with `dirvish' instead of `dired'."
     (if switches
@@ -111,6 +112,7 @@
    ("C-c h"                           . diff-hl-dired-mode)))
 
 (use-package dwim-shell-command
+  :ensure (:wait t)
   :defer t
   :commands dwim-shell-command-on-marked-files)
 
@@ -124,5 +126,5 @@
    :utils "ffmpeg"))
 
 
-(provide '09-file-management)
-;;; 09-file-management.el ends here
+(provide '10-file-management)
+;;; 10-file-management.el ends here

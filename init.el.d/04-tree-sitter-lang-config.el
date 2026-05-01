@@ -47,6 +47,7 @@
 	  (zsh "https://github.com/georgeharker/tree-sitter-zsh"))))
 
 (use-package treesit-auto
+  :ensure (:wait t)
   :functions
   global-treesit-auto-mode treesit-auto-add-to-auto-mode-alist
   :custom
@@ -116,7 +117,6 @@
   python-indent-offset python-indent-guess-indent-offset python-ts-mode-map
 
   :custom
-  (lsp-python-vulture-enabled nil)
   (python-indent-offset 4)
   (python-indent-guess-indent-offset nil)
   (python-shell-interpreter "python3"))

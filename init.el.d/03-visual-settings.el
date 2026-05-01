@@ -49,6 +49,7 @@
 ;; Which-key needs to load before a lot of other editor functions,
 ;; which is why it's invoked here.
 (use-package which-key
+  :ensure (:wait t)
   :config
   (which-key-mode 1))
 

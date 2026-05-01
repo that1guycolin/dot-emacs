@@ -18,6 +18,7 @@
 (declare-function elpaca-use-package-mode "elpaca-use-package")
 (defvar elpaca-use-package)
 (defvar use-package-always-ensure)
+
 (defvar elpaca-installer-version 0.12)
 (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
@@ -56,6 +57,7 @@
     (let ((load-source-file-function nil)) (load "./elpaca-autoloads"))))
 (add-hook 'after-init-hook #'elpaca-process-queues)
 (elpaca `(,@elpaca-order))
+
 (keymap-global-set "C-c M-c" #'elpaca-manager)
 
 (elpaca elpaca-use-package
@@ -93,9 +95,8 @@
 (use-package exec-path-from-shell
   :demand t
   :functions exec-path-from-shell-initialize
-  :defines exec-path-from-shell-shell-name
-  :init
-  (setq exec-path-from-shell-shell-name "/usr/bin/zsh")
+  :custom
+  (exec-path-from-shell-shell-name "zsh")
   :config
   (dolist (var '("CC" "CXX" "PKG_CONFIG_PATH" "SSH_AGENT_PID" "SSH_AUTH_SOCK"
 		 "LSP_USE_PLISTS"))
@@ -133,34 +134,22 @@
   (setq org-directory (expand-file-name "~/org"))
 
   :custom
-  (org-default-notes-file
-   (expand-file-name ".notes" org-directory))
+  (org-babel-lisp-eval-fn #'sly-eval)
+  (org-confirm-babel-evaluate nil)
+  (org-default-notes-file (expand-file-name ".notes" org-directory))
+  (org-id-extra-files (directory-files-recursively org-directory "\\.org$"))
   (org-id-locations-file (expand-file-name ".id-locations" org-directory))
+  (org-id-method 'org)
+  (org-id-prefix "unk")
   (org-insert-mode-line-in-empty-file t)
   (org-use-sub-superscripts '{})
-
+  
   :config
-  (with-eval-after-load 'org-babel
-    (org-babel-do-load-languages 'org-babel-load-languages
-				 '((emacs-lisp . t)
-				   (lisp       . t)
-				   (lua        . t)
-				   (makefile   . t)
-				   (org        . t)
-				   (python     . t)
-				   (shell      . t)))
-    (setq org-babel-lisp-eval-fn #'sly-eval)
-    (setq-default org-confirm-babel-evaluate nil))
-
-  (setq
-   org-id-method 'org
-   org-id-prefix "unk")
-
-  (setq org-id-extra-files
-	(directory-files-recursively
-	 (expand-file-name org-directory "knowledge-base")
-	 "\\.org$"))
-  (org-id-update-id-locations org-id-extra-files)
+  (with-eval-after-load 'ob
+    (org-babel-do-load-languages
+     'org-babel-load-languages '((emacs-lisp . t) (lisp . t) (lua . t)
+				 (makefile . t) (org . t) (python . t)
+				 (shell . t))))
   
   (defun user/get-parent-directory ()
     "Return parent directory name for current buffer."
@@ -182,11 +171,7 @@
    ("C-c c"   . org-capture)
    :map org-mode-map
    ("C-c l"   . org-toggle-link-display)
-   ("C-c C-q" . org-set-tags-command))
-
-  (with-eval-after-load 'org-agenda
-    (bind-keys
-     ("C-c o k" . org-agenda-kill-all-agenda-buffers))))
+   ("C-c C-q" . org-set-tags-command)))
 
 
 (provide '01-bootstrap-core)

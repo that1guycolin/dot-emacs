@@ -217,7 +217,7 @@ This user-defined function customizes the \=':PROPERTIES:' block from
 	      "\n* " title
 	      "\n:PROPERTIES:"
   	      "\n:END:"))
-    (goto-char (point-min))
+    (goto-char (point-max))
     (org-id-get-create)
     (push (current-buffer) org-node--new-unsaved-buffers)
     (run-hooks 'org-node-creation-hook))
@@ -379,6 +379,7 @@ With a prefix ARG, remove start location."
   :hook (org-mode . org-autolist-mode))
 
 (use-package el2org
+  :ensure (:wait t)
   :defer t
   :bind
   (("C-c 2 f" . el2org-generate-file)

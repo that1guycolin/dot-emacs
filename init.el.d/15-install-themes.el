@@ -34,9 +34,9 @@
 ;; Install themes
 (declare-function elpaca-wait "elpaca")
 (dolist (theme (user/get-themes))
-  (eval `(elpaca ,theme)))
+  (eval `(elpaca ,theme))
+  (elpaca-wait))
 
-(elpaca-wait)
 (load-theme 'weyland-yutani t)
 
 

@@ -186,20 +186,6 @@ If not in a side window, jump to the first found side window."
 (bind-keys ("M-0" . user/toggle-side-window))
 
 
-;; =======  TREESIT FALLBACK  =======
-(defun user/major-ts-mode-fallback ()
-  "Set major-modes to *-ts-mode if treesit-auto fails to activate."
-  (interactive)
-  (dolist (pair '((bash-mode   . bash-ts-mode)
-		  (cmake-mode  . cmake-ts-mode)
-		  (json-mode   . json-ts-mode)
-		  (python-mode . python-ts-mode)
-		  (toml-mode   . toml-ts-mode)
-		  (yaml-mode   . yaml-ts-mode)))
-    (when (fboundp (cdr pair))
-      (setf (alist-get (car pair) major-mode-remap-alist) (cdr pair)))))
-
-
 ;; =======  ELPACA  =======
 (declare-function elpaca-update-menus "elpaca")
 (declare-function feature-file "savehist")
@@ -280,14 +266,13 @@ If not in a side window, jump to the first found side window."
   user/custom-functions-dispatch ()
   "Display functions defined by the user."
   [["Custom Functions"
-    ("f" "Switch font" user/switch-font)
-    ("R" "Random font" user/random-font)]
+    ("f" "Switch font" user/switch-font)]
    [("c" "Cycle themes" user/cycle-themes)
-    ("t" "Select theme" user/select-theme)
-    ("r" "Random theme" user/random-theme)]
+    ("t" "Select theme" user/select-theme)]
+   [("r" "Random theme" user/random-theme)
+    ("R" "Random font" user/random-font)]
    [("E" "Update elpaca menus" user/update-elpaca-menus)
-    ("p" "Update packages" user/elpaca-update-packages)
-    ("s" "Major -ts-mode fallback" user/major-ts-mode-fallback)]])
+    ("p" "Update packages" user/elpaca-update-packages)]])
 (declare-function user/custom-functions-dispatch "16-user-functions")
 (bind-keys ("C-c u" . user/custom-functions-dispatch))
 

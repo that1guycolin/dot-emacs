@@ -84,20 +84,20 @@
 ;; Project management and file navigation
 (require '05-project-management)
 
-;; Linting, formatting, & LSPs
-(require '06-code-assist)
-
-;; Git(hub) integration & tooling
-(require '07-git-tools)
+;; Support for terminal and Emacs' shells
+(require '06-terminal-modes)
 
 ;; Packages & settings for select languages
-(require '08-language-configs)
+(require '07-language-configs)
+
+;; Linting, formatting, & LSPs
+(require '08-code-assist)
+
+;; Git(hub) integration & tooling
+(require '09-git-tools)
 
 ;; File explorer functions
-(require '09-file-management)
-
-;; Support for terminal and Emacs' shells
-(require '10-shell-modes)
+(require '10-file-management)
 
 ;; Extensions for Org-mode
 (require '11-org-mode-extensions)

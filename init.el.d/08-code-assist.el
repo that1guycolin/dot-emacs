@@ -1,9 +1,9 @@
-;;; 06-code-assist.el --- Linting, formatting, & LSPs -*- lexical-binding: t; -*-
+;;; 08-code-assist.el --- Linting, formatting, & LSPs -*- lexical-binding: t; -*-
 
 ;;; Packages included:
 ;; adaptive-wrap, apheleia, dap-mode, docstr, flycheck, flycheck-color-mode-line,
-;; flycheck-pos-tip, lsp-mode, lsp-treemacs, lsp-ui, mason, smartparens,
-;; yasnippet, yasnippet-capf, yasnippet-snippets
+;; flycheck-eask, flycheck-inline, flycheck-package, lsp-mode, lsp-treemacs,
+;; mason, smartparens, yasnippet, yasnippet-capf, yasnippet-snippets
 
 ;;; Commentary:
 ;; Call packages that support efficient & productive coding at a global scope.
@@ -47,8 +47,10 @@
 ;; yaml: 'yamllint' (pacman -S yamllint)*
 ;; --------------------------
 ;; Extensions:
-;; `flycheck-pos-tip' (popup flycheck errors)
+;; `flycheck-inline' (display errors in buffer)
 ;; `flycheck-color-mode-line'
+;; `flycheck-eask' (Support Eask files)
+;; `flycheck-package' (Support Emacs' pacakges)
 ;; ==========================
 (use-package flycheck
   :hook
@@ -132,34 +134,46 @@ See URL `https://vale.sh'."
 	(add-hook hook (lambda ()
 			 (flycheck-select-checker checker)))))))
 
-(use-package flycheck-pos-tip
-  :after flycheck
-  :functions flycheck-pos-tip-mode
-  :config
-  (flycheck-pos-tip-mode 1))
+(use-package flycheck-inline
+  :defer t
+  :hook (flycheck-mode . flycheck-inline-mode))
 
 (use-package flycheck-color-mode-line
-  :after flycheck
+  :defer t
   :hook (flycheck-mode . flycheck-color-mode-line-mode))
+
+(use-package flycheck-eask
+  :defer t
+  :hook (eask-mode . flycheck-eask-setup))
+
+(use-package flycheck-package
+  :defer t
+  :hook (emacs-lisp-mode . flycheck-package-setup))
 
 
 ;; =======  LSP-MODE  =======
 ;; cmake: 'neocmakelsp' (cargo install neocmakelsp)*
 ;; fish: 'fish-lsp' (npm install -g fish-lsp)*
+;; lua: 'lua-language-server' (pacman -S lua-language-server)*
 ;; markdown: 'rumdl' (pacman -S rumdl)*
 ;; python: 'ty' (uv tool install ty)*
 ;; python: 'ruff' (uv tool install ruff)*
 ;; -------  OPTIONAL  -------
 ;; [OPTIONAL] bash: 'bash-language-server' (pacman -S bash-language-server)*
 ;; [OPTIONAL] json: 'json-language-server' (pacman -S json-language-server)*
-;; [OPTIONAL] lua: `lua-language-server'*
 ;; [OPTIONAL] toml: 'tombi' (uv tool install tombi)*
 ;; [OPTIONAL] xml: 'lemminx'*
 ;; [OPTIONAL] yaml: 'yaml-language-server' (pacman -S yaml-language-server)*
+;; ------  EXTENSIONS  ------
+;; `lsp-treemacs' (treemacs integration)
+;; `dap-mode' (debug protocol)
+;; -- Requires 'debugpy': (uv tool install debugpy)
 ;; ==========================
 (use-package lsp-mode
   :hook
   ((cmake-ts-mode  . lsp-deferred)
+   (fish-mode      . lsp-deferred)
+   (lua-ts-mode    . lsp-deferred)
    (markdown-mode  . lsp-deferred)
    (python-ts-mode . lsp-deferred)
    (toml-ts-mode   . lsp-deferred))
@@ -170,16 +184,17 @@ See URL `https://vale.sh'."
   :defines lsp-language-id-configuration
 
   :custom
-  (lsp-use-plists t)
+  (lsp-auto-guess-root t)
+  (lsp-disabled-clients
+   '(cmake-language-server marksman pylsp pyright semgrep-ls taplo))
+  (lsp-enable-file-watchers nil)
+  (lsp-enable-on-type-formatting nil)
+  (lsp-headerline-breadcrumb-enable t)
   (lsp-idle-delay 0.8)
   (lsp-log-io nil)
-  (lsp-enable-file-watchers nil)
-  (lsp-headerline-breadcrumb-enable t)
-  (lsp-auto-guess-root t)
-  (lsp-enable-on-type-formatting nil)
-  (lsp-disabled-clients
-   '(cmake-language-server marksman pylsp pyright taplo))
-  
+  (lsp-lua-runtime-version "LuaJIT")
+  (lsp-lua-diagnostics-globals ["mp"])
+  (lsp-use-plists t)
   :config
   (lsp-register-client
    (make-lsp--client
@@ -217,11 +232,9 @@ See URL `https://vale.sh'."
             (lambda ()
 	      (setq-local lsp-enable-file-watchers nil))))
 
-(use-package lsp-ui
+(use-package lsp-treemacs
   :after lsp-mode)
 
-(use-package lsp-treemacs
-  :after (lsp-mode treemacs))
 (use-package dap-mode
   :defer t
   :commands
@@ -286,6 +299,7 @@ See URL `https://vale.sh'."
   (setf (alist-get 'yaml-ts-mode apheleia-mode-alist) 'yq-yaml)
   (setf (alist-get 'sh-mode apheleia-mode-alist) nil))
 
+
 ;; =======  SNIPPETS  =======
 ;; 'yasnippet' (functions)
 ;; 'yasnippet-snippets' (library)
@@ -293,12 +307,13 @@ See URL `https://vale.sh'."
 ;; ==========================
 (use-package yasnippet
   :hook
-  ((prog-mode . yas-minor-mode)
+  ((prog-mode     . yas-minor-mode)
    (markdown-mode . yas-minor-mode))
-  yas-reload-all
+  :functions yas-reload-all
   :config
   (add-to-list 'yas-snippet-dirs
-	       (expand-file-name "snippets" user-emacs-directory)))
+	       (expand-file-name "snippets" user-emacs-directory))
+  (yas-reload-all))
 
 (use-package yasnippet-snippets
   :after yasnippet
@@ -318,6 +333,7 @@ See URL `https://vale.sh'."
 ;; =======================
 (declare-function transient-define-prefix "transient")
 (use-package mason
+  :ensure (:wait t)
   :commands
   mason-install mason-manager mason-setup
   :functions
@@ -400,5 +416,5 @@ mason installs it."
   (bind-keys ("C-c M" . user/mason-dispatch)))
 
 
-(provide '06-code-assist)
-;;; 06-code-assist.el ends here
+(provide '08-code-assist)
+;;; 08-code-assist.el ends here
