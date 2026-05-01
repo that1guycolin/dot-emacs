@@ -29,8 +29,10 @@
   :ensure nil
   :functions project-remember-projects-under
   :custom
-  (project-list-exclude
-   (list (concat "^" (regexp-quote (expand-file-name elpaca-directory)))))
+  (project-list-exclude (list (concat "^"
+				      (regexp-quote
+				       (expand-file-name
+					"elpaca" user-emacs-directory)))))
   :config
   (dolist (dir '("^node_modules$" "^\\.venv$" "^\\.uv$"))
     (add-to-list 'project-vc-ignores dir))
