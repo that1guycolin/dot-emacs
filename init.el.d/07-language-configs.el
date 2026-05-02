@@ -153,10 +153,9 @@
               (add-hook 'hack-local-variables-hook
 			(lambda () (user/smart-set-fill-column 100))
 			nil t)))
-  
+
+  (keymap-set markdown-mode-map "C-c i" 'markdown-mode-command-map)
   (bind-keys
-   :map markdown-mode-map
-   ("C-c i" . markdown-mode-command-map)
    :map markdown-mode-command-map
    ("C-c"   . user/switch-markdown-command)))
 
