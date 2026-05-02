@@ -2,10 +2,10 @@
 
 ;;; Packages included:
 ;; adjust-parens, auto-rename-tag, auto-virtualenv, checkdoc, dockerfile-mode,
-;; eask-mode, eldoc-cmake, elisp-def, eros, eros-inspector, fish-mode, glsl-mode,
-;; grip-mode, ini-mode, inspector, kdl-mode, lisp-semantic-hl, live-py-mode,
-;; macrostep, markdown-mode, modern-sh, morlock, python-x, sly, suggest,
-;; tree-inspector, yaml-pro
+;; dwim-coder-mode eask-mode, eldoc-cmake, elisp-def, eros, eros-inspector,
+;; fish-mode, glsl-mode, grip-mode, ini-mode, inspector, kdl-mode,
+;; lisp-semantic-hl, live-py-mode, macrostep, markdown-mode, modern-sh, morlock,
+;; python-x, sly, suggest, tree-inspector, yaml-pro
 
 ;;; Commentary:
 ;; Provide packages and settings that enhance Emacs support for specific markup,
@@ -173,6 +173,7 @@
 
 ;; =======  PYTHON  =======
 ;; `auto-virtualenv' (virtual env support)
+;; `dwim-coder-mode' (hacks to reduce effort)
 ;; `live-py-mode' (live coding)
 ;; `python-x' (enhance built-in python(-ts)-mode)
 ;; ========================
@@ -188,6 +189,11 @@
   :custom
   (auto-virtualenv-verbose t))
 
+(use-package dwim-coder-mode
+  :hook
+  ((c-ts-mode      . dwim-coder-mode)
+   (python-ts-mode . dwim-coder-mode)
+   (rust-ts-mode   . dwim-coder-mode)))
 
 (use-package live-py-mode
   :defer t
