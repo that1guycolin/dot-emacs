@@ -204,17 +204,25 @@
 ;; ===============================
 (use-package modern-sh
   :defer t
-  :hook
-  ((bash-ts-mode . modern-sh-mode)
-   (sh-mode      . modern-sh-mode))
-  :functions modern-sh-menu
+  :hook (sh-mode . modern-sh-mode)
+  :functions
+  modern-sh-after-save-hook modern-sh-format-buffer
+  user/modern-sh-after-save-hook modern-sh-menu
   :config
+  (defun user/modern-sh-after-save-hook ()
+    "Custom version of `modern-sh-after-save-hook' that does not generate TAGS.
+Modern-sh will still format on save."
+    (when (eq major-mode 'sh-mode)
+      (modern-sh-format-buffer)))
+
+  (add-hook 'modern-sh-mode-hook
+	    #'(lambda ()
+		(remove-hook 'after-save-hook #'modern-sh-after-save-hook)
+		(add-hook 'after-save-hook #'user/modern-sh-after-save-hook)))
+  
   (bind-keys
-   :map bash-ts-mode-map
-   ("<f8>"    . modern-sh-menu)
-   ("C-c y" . modern-sh-menu)
    :map sh-mode-map
-   ("<f8>"    . modern-sh-menu)
+   ("<f8>"  . modern-sh-menu)
    ("C-c y" . modern-sh-menu)))
 
 (use-package fish-mode
