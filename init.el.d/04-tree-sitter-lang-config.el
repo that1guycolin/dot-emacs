@@ -14,7 +14,7 @@
 (use-package treesit
   :ensure nil
   :custom
-  (treesit-extra-load-path '("/data/data/com.termux/files/usr/lib/tree_sitter/"))
+  (treesit-extra-load-path '("/data/data/com.termux/files/usr/lib/tree_sitter"))
   :config
   (setq treesit-language-source-alist
 	'((bash "https://github.com/tree-sitter/tree-sitter-bash")
