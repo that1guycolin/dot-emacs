@@ -145,12 +145,19 @@
   (org-use-sub-superscripts '{})
   
   :config
+  (setq org-src-lang-modes (assoc-delete-all "bash" org-src-lang-modes))
+  (dolist (lang-mode-cons '(("bash" . bash-ts) ("cmake" . cmake-ts)
+  			    ("json" . json-ts) ("lua" . lua-ts)
+  			    ("python" . python-ts) ("toml" . toml-ts)
+  			    ("yaml" . yaml-ts)))
+    (add-to-list 'org-src-lang-modes lang-mode-cons))
+
   (with-eval-after-load 'ob
     (org-babel-do-load-languages
      'org-babel-load-languages '((emacs-lisp . t) (lisp . t) (lua . t)
 				 (makefile . t) (org . t) (python . t)
 				 (shell . t))))
-  
+
   (defun user/get-parent-directory ()
     "Return parent directory name for current buffer."
     (when buffer-file-name
@@ -159,7 +166,9 @@
 	(file-name-directory buffer-file-name)))))
 
   (defun user/org-id-dynamic-prefix (orig-fn &rest args)
-    "Dynamically compute `org-id-prefix' each time an ID is created."
+    "Dynamically compute rg-id-prefix' each time an ID is created.
+Designed to wrap around ORIG-FN `org-id-new' (accepting the same ARGS) when
+creating org nodes."
     (let ((org-id-prefix (or (user/get-parent-directory) org-id-prefix)))
       (apply orig-fn args)))
   (advice-add 'org-id-new :around #'user/org-id-dynamic-prefix)
