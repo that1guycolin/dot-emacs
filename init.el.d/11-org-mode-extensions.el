@@ -127,7 +127,7 @@
   :custom
   (org-mem-watch-dirs '("~/org/knowledge-base/"))
   (org-mem-roamy-do-overwrite-real-db nil)
-  :custom
+  :config
   (add-hook 'emacs-startup-hook (lambda ()
 				  (org-id-update-id-locations)
 				  (org-mem-roamy-db-mode 1)
