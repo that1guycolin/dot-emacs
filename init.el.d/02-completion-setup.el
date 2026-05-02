@@ -99,7 +99,7 @@
   :ensure (:wait t)
   :functions
   helpful-callable helpful-variable helpful-key helpful-command helpful-at-point
-  helpful-function
+  helpful-function helpful-kill-buffers
   :config
   (bind-keys
    ("C-h f" . helpful-callable)
@@ -107,7 +107,8 @@
    ("C-h k" . helpful-key)
    ("C-h x" . helpful-command)
    ("C-h ;" . helpful-at-point)
-   ("C-h F" . helpful-function)))
+   ("C-h F" . helpful-function)
+   ("C-h z" . helpful-kill-buffers)))
 
 (defun user/check-parens-with-message ()
   "Run `check-parens'.  Print a message when all parentheses match."
