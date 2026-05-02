@@ -117,6 +117,8 @@
     (message "All parentheses match!")))
 
 (keymap-global-unset "C-z")
+(defvar Info-directory-list)
+(defvar elpaca-builds-directory)
 (use-package emacs
   :ensure nil
   :bind
@@ -138,7 +140,11 @@
   :config
   (context-menu-mode 1)
   (global-visual-line-mode 1)
-  (auto-save-visited-mode 1))
+  (auto-save-visited-mode 1)
+
+  (with-eval-after-load 'info
+    (add-to-list 'Info-directory-list
+		 (expand-file-name elpaca-builds-directory))))
 
 
 (provide '02-completion-setup)
