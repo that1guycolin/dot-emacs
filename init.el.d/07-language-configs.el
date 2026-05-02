@@ -172,24 +172,16 @@
 
 
 ;; =======  PYTHON  =======
-;; `python-x' (enhance built-in python(-ts)-mode)
-;; `live-py-mode' (live coding)
 ;; `auto-virtualenv' (virtual env support)
+;; `live-py-mode' (live coding)
+;; `python-x' (enhance built-in python(-ts)-mode)
 ;; ========================
+(defvar python-ts-mode-map)
 (add-hook 'python-ts-mode-hook
           (lambda ()
             (add-hook 'hack-local-variables-hook
                       (lambda () (user/smart-set-fill-column 72)
 			nil t))))
-
-(use-package python-x
-  :defer t
-  :hook (python-ts-mode . python-x-setup))
-
-(use-package live-py-mode
-  :defer t
-  :bind (:map python-ts-mode-map
-              ("C-c L" . live-py-mode)))
 
 (use-package auto-virtualenv
   :hook (python-ts-mode . auto-virtualenv-setup)
@@ -197,44 +189,25 @@
   (auto-virtualenv-verbose t))
 
 
-;; =======  SHELL SCRIPTS  =======
-;; `modern-sh' (enhanced sh-mode & bash(-ts)-mode)
-;; `fish-mode' (fish shell support)
-;; `eldoc-cmake' (doc support in cmake-ts-mode)
-;; ===============================
-(use-package modern-sh
+(use-package live-py-mode
   :defer t
-  :hook (sh-mode . modern-sh-mode)
-  :functions
-  modern-sh-after-save-hook modern-sh-format-buffer
-  user/modern-sh-after-save-hook modern-sh-menu
-  :config
-  (defun user/modern-sh-after-save-hook ()
-    "Custom version of `modern-sh-after-save-hook' that does not generate TAGS.
-Modern-sh will still format on save."
-    (when (eq major-mode 'sh-mode)
-      (modern-sh-format-buffer)))
+  :bind (:map python-ts-mode-map
+              ("C-c L" . live-py-mode)))
 
-  (add-hook 'modern-sh-mode-hook
-	    #'(lambda ()
-		(remove-hook 'after-save-hook #'modern-sh-after-save-hook)
-		(add-hook 'after-save-hook #'user/modern-sh-after-save-hook)))
-  
-  (bind-keys
-   :map sh-mode-map
-   ("<f8>"  . modern-sh-menu)
-   ("C-c y" . modern-sh-menu)))
+(use-package python-x
+  :defer t
+  :hook (python-ts-mode . python-x-setup))
 
+
+;; =======  SHELL SCRIPTS  =======
+;; `fish-mode' (fish shell support)
+;; ===============================
 (use-package fish-mode
   :defer t
   :mode ("\\.fish\\'")
   :interpreter ("fish")
   :custom
   (fish-enable-auto-indent t))
-
-(use-package eldoc-cmake
-  :defer t
-  :hook (cmake-ts-mode . eldoc-cmake-enable))
 
 
 ;; =======  CONFIG FILE MODES  =======
@@ -270,12 +243,40 @@ Modern-sh will still format on save."
 
 ;; =======  ENHANCE BUILT-INS  =======
 ;; `auto-rename-tag' (xml tag assistant)
+;; `eldoc-cmake' (doc support in cmake-ts-mode)
+;; `modern-sh' (enhanced sh-mode support
 ;; `yaml-pro' (enhanced .yaml support)
 ;; ===================================
-
 (use-package auto-rename-tag
   :defer t
   :hook (nxml-mode . auto-rename-tag-mode))
+
+(use-package eldoc-cmake
+  :defer t
+  :hook (cmake-ts-mode . eldoc-cmake-enable))
+
+(use-package modern-sh
+  :defer t
+  :hook (sh-mode . modern-sh-mode)
+  :functions
+  modern-sh-after-save-hook modern-sh-format-buffer
+  user/modern-sh-after-save-hook modern-sh-menu
+  :config
+  (defun user/modern-sh-after-save-hook ()
+    "Custom version of `modern-sh-after-save-hook' that does not generate TAGS.
+Modern-sh will still format on save."
+    (when (eq major-mode 'sh-mode)
+      (modern-sh-format-buffer)))
+
+  (add-hook 'modern-sh-mode-hook
+	    #'(lambda ()
+		(remove-hook 'after-save-hook #'modern-sh-after-save-hook)
+		(add-hook 'after-save-hook #'user/modern-sh-after-save-hook)))
+  
+  (bind-keys
+   :map sh-mode-map
+   ("<f8>"  . modern-sh-menu)
+   ("C-c y" . modern-sh-menu)))
 
 (use-package yaml-pro
   :ensure (:wait)
