@@ -54,10 +54,8 @@
 ;; ==========================
 (use-package flycheck
   :hook
-  ((prog-mode     . flycheck-mode)
-   (markdown-mode . flycheck-mode)
-   (org-mode      . flycheck-mode))
-
+  ((prog-mode . flycheck-mode)
+   (text-mode . flycheck-mode))
   :functions flycheck-select-checker
 
   :custom
