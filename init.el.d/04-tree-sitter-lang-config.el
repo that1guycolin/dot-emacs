@@ -61,8 +61,7 @@
 (use-package bash-ts-mode
   :defer t
   :ensure nil
-  :mode
-  ("\\.bash\\'" . bash-ts-mode)
+  :mode ("\\.bash\\'"  . bash-ts-mode)
   :interpreter ("bash" . bash-ts-mode))
 
 (use-package cmake-ts-mode
@@ -70,7 +69,7 @@
   :ensure nil
   :mode
   (("\\.cmake\\'" . cmake-ts-mode)
-   ("CMakeLists\\.txt\\'" . cmake-ts-mode)))
+   ("^CMakeLists\\.txt\\'" . cmake-ts-mode)))
 
 (use-package emacs-lisp-mode
   :defer t
@@ -152,7 +151,7 @@
   :defer t
   :ensure nil
   :mode
-  (("\\.yml\\'" . yaml-ts-mode)
+  (("\\.yml\\'"  . yaml-ts-mode)
    ("\\.yaml\\'" . yaml-ts-mode)))
 
 
