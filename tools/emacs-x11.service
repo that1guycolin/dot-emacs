@@ -1,0 +1,14 @@
+[Unit]
+Description=Emacs daemon (X11 Lucid)
+After=import-env.service
+Requires=import-env.service
+ConditionEnvironment=XDG_SESSION_TYPE=x11
+
+[Service]
+Type=forking
+ExecStart=/usr/local/emacs-gtk/bin/emacs-gtk --daemon
+ExecStop=/usr/local/emacs-gtk/bin/emacsclient-gtk --eval "(kill-emacs)"
+Restart=on-failure
+
+[Install]
+WantedBy=default.target

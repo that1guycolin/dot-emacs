@@ -1,0 +1,11 @@
+[Unit]
+Description=Import environment to systemd user session
+Before=emacs-x11.service emacs-wayland.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/systemctl --user import-environment XDG_SESSION_TYPE
+RemainAfterExit=yes
+
+[Install]
+WantedBy=default.target

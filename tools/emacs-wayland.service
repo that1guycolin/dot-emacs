@@ -1,0 +1,14 @@
+[Unit]
+Description=Emacs daemon (Wayland PGTK)
+After=import-env.service
+Requires=import-env.service
+ConditionEnvironment=XDG_SESSION_TYPE=wayland
+
+[Service]
+Type=forking
+ExecStart=/usr/local/emacs-pgtk/bin/emacs-pgtk --daemon
+ExecStop=/usr/local/emacs-pgtk/bin/emacsclient-pgtk --eval "(kill-emacs)"
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
