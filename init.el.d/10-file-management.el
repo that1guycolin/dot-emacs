@@ -14,9 +14,7 @@
 
 (use-package async
   :defer t
-  :commands
-  async-start
-  async-start-process
+  :commands async-start async-start-process
   :hook (dired-mode . dired-async-mode)
   :init
   (require 'dired-async))
@@ -28,7 +26,7 @@
   :bind (:map ctl-x-map
 	      ("d" . dirvish))
   :commands dirvish
-  
+
   :functions
   dirvish-override-dired-mode user/dired-use-dirvish dirvish-peek-mode
   dirvish-dwim dirvish-fd dired-mouse-find-file-other-window
@@ -39,6 +37,8 @@
   dirvish-history-go-backward dirvish-history-go-forward dirvish-narrow
   dirvish-mark-menu dirvish-setup-menu dirvish-emerge-menu
   
+  :init
+  (dirvish-override-dired-mode 1)
   :custom
   (dirvish-preview-dispatchers '(archive pdf))
   (dirvish-attributes '(file-size file-time nerd-icons))
@@ -48,8 +48,6 @@
 --human-readable --group-directories-first --no-group")
   
   :config
-  (dirvish-override-dired-mode 1)
-
   (defun user/dired-use-dirvish (dirname &optional switches)
     "Open DIRNAME with `dirvish' instead of `dired'."
     (if switches

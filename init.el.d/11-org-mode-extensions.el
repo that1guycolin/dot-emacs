@@ -40,15 +40,11 @@
   :custom
   (org-todo-keywords
    '((sequence "TODO(t)" "NEXT(n)" "WAIT(w@/!)" "|" "DONE(d!)" "CNCL(c)")))
-  (org-gtd-keyword-mapping '((todo     . "TODO")
-			     (next     . "NEXT")
-			     (wait     . "WAIT")
-			     (done     . "DONE")
+  (org-gtd-keyword-mapping '((todo . "TODO") (next . "NEXT")
+			     (wait . "WAIT") (done . "DONE")
 			     (canceled . "CNCL")))
   (org-gtd-refile-to-any-target nil)
-  (org-gtd-refile-prompt-for-types '(single-action
-				     project-heading
-				     project-task))
+  (org-gtd-refile-prompt-for-types '(single-action project-heading project-task))
   
   :config
   (org-gtd-mode 1)
@@ -74,19 +70,11 @@
 
 (use-package org-project-capture
   :ensure (org-project-capture
-	   :source "MELPA"
-	   :package "org-project-capture"
-	   :id org-project-capture
-	   :repo "colonelpanic8/org-project-capture"
-	   :fetcher github
-	   :files ("org-project-capture.el"
-		   "org-project-capture-backend.el"
-		   "org-category-capture.el"
-		   "README.org")
-	   :type git
-	   :protocol https
-	   :inherit t
-	   :depth treeless)
+	   :source "MELPA" :package "org-project-capture" :id org-project-capture
+	   :repo "colonelpanic8/org-project-capture" :fetcher github
+	   :files ("org-project-capture.el" "org-project-capture-backend.el"
+		   "org-category-capture.el" "README.org")
+	   :type git :protocol https :inherit t :depth treeless)
   :after org
   :functions
   org-project-capture-capture-for-current-project
@@ -126,37 +114,44 @@
 ;; `org-node' (fast & simple note management)
 ;; ===========================
 (declare-function org-id-update-id-locations "org")
+(declare-function org-id-get-create "org-id")
+
 (use-package org-mem
-  :functions org-mem-updater-mode
+  :after org
+  :functions
+  org-mem-updater-mode org-mem-reset org-mem-await org-mem-tip-if-empty
   :custom
-  (org-mem-watch-dirs (list "~/org/knowledge-base/"))
-  :config
-  (org-mem-updater-mode 1))
+  (org-mem-watch-dirs '("~/org/knowledge-base/"))
+  (org-mem-roamy-do-overwrite-real-db nil)
+  :custom
+  (add-hook 'emacs-startup-hook (lambda ()
+				  (org-id-update-id-locations)
+				  (org-mem-roamy-db-mode 1)
+				  (org-mem-updater-mode 1))))
 
 (declare-function org-id-new "org")
 (use-package org-node
+  :bind-keymap ("M-o" . org-node-global-prefix-map)
+  :commands org-node-org-prefix-map
+  
   :functions
   org-node-global-prefix-map org-node-org-prefix-map org-node-cache-mode
   org-node-backlink-mode org-node-complete-at-point-mode
   org-node-pop-to-fresh-file-buffer user/org-node-new-file
   :defines
   org-node-proposed-title org-node-proposed-id org-node--new-unsaved-buffers
-  org-node-creation-fn
+  org-node-creation-fn org-node-backlink-do-drawers
 
   :init
-  (keymap-global-set "C-c k" org-node-global-prefix-map)
-  (keymap-set org-mode-map "C-c n" org-node-org-prefix-map)
+  (with-eval-after-load 'org
+    (keymap-set org-mode-map "M-o" org-node-org-prefix-map))
 
   :custom
   (org-node-file-directory-ask t)
   (org-node-prefer-with-heading nil)
-  (org-node-backlink-do-drawers nil)
-  (auto-save-visited-interval 60)
 
   :config
   (org-node-cache-mode 1)
-  (org-node-backlink-mode 1)
-  (auto-save-visited-mode 1)
   (org-node-complete-at-point-mode 1)
   
   (defun user/org-node-new-file (&optional title id)
@@ -166,19 +161,32 @@ This user-defined function customizes the \=':PROPERTIES:' block from
     (unless title (or (setq title org-node-proposed-title)
   		      (error "Proposed title was nil")))
     (org-node-pop-to-fresh-file-buffer title)
-    (unless id (or (setq id (org-id-new))
-		   (error "Failed to create new org-id")))
-    (insert ":PROPERTIES:"
-  	    "\n:ID:       " id
-  	    "\n:END:"
-  	    "\n#+TITLE: " title
-  	    "\n#+FILETAGS:"
-  	    "\n")
+    (if id
+	(insert "#+TITLE: " title
+  		"\n#+FILETAGS:"
+  		"\n"
+		"\n* " title
+		"\n:PROPERTIES:"
+		"\n:ID:       " id
+  		"\n:END:")
+      
+      (insert "#+TITLE: " title
+  	      "\n#+FILETAGS:"
+  	      "\n"
+	      "\n* " title
+	      "\n:PROPERTIES:"
+  	      "\n:END:"))
     (goto-char (point-max))
+    (org-id-get-create)
     (push (current-buffer) org-node--new-unsaved-buffers)
     (run-hooks 'org-node-creation-hook))
   
-  (setq org-node-creation-fn #'user/org-node-new-file))
+  (setq org-node-creation-fn #'user/org-node-new-file)
+
+  (require 'org-node-backlink)
+  (with-eval-after-load 'org-node-backlink
+    (setq org-node-backlink-do-drawers nil)
+    (org-node-backlink-mode 1)))
 
 
 ;; =======  MISC  =======
@@ -214,9 +222,7 @@ This user-defined function customizes the \=':PROPERTIES:' block from
 
 (use-package org-modern-indent
   :ensure (org-modern-indent
-	   :host github
-	   :repo "jdtsmith/org-modern-indent"
-	   :files (:defaults)
+	   :host github :repo "jdtsmith/org-modern-indent" :files (:defaults)
 	   :method https)
   :config
   (add-hook 'org-mode-hook #'org-modern-indent-mode 90))
@@ -260,20 +266,6 @@ This user-defined function customizes the \=':PROPERTIES:' block from
 
 
 ;; =======  FUNCTIONS & VARIABLES  =======
-(defvar org-babel-lisp-eval-fn)
-(declare-function sly-eval "sly")
-(org-babel-do-load-languages 'org-babel-load-languages
-			     '((emacs-lisp . t)
-			       (lisp       . t)
-			       (lua        . t)
-			       (makefile   . t)
-			       (org        . t)
-			       (python     . t)
-			       (shell      . t)))
-(setq
- org-babel-lisp-eval-fn #'sly-eval
- org-use-sub-superscripts '{})
-
 (defun user/convert-md-links-to-org ()
   "Convert all [label](link) patterns in the current buffer to [[link][label]]."
   (interactive)
@@ -299,6 +291,21 @@ folder."
 	(message "There is no TODO file in the org directory.")))))
 
 (add-hook 'org-mode-hook #'user/remove-org-todo)
+
+(declare-function persp-new "perspectives.el")
+(declare-function persp-switch "perspectives.el")
+(declare-function user/add-list-to-persp "05-project-management.el")
+(declare-function persp-switch-last "perspectives.el")
+(defun user/create-org-persp ()
+  "Create a persp called \"org\", and add open TODO and .org files to the persp."
+  (interactive)
+  (persp-new "org")
+  (persp-switch "org")
+  (user/add-list-to-persp :ext "org")
+  (user/add-list-to-persp :full "TODO")
+  (persp-switch-last))
+
+(add-hook 'emacs-startup-hook #'user/create-org-persp)
 
 
 (provide '11-org-mode-extensions)

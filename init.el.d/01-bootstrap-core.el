@@ -68,14 +68,12 @@
 ;; =======  OTHER BOOTSTRAPS  =======
 ;; `gcmh' (smart garbage collection)
 ;; `exec-path-from-shell' `envrc' (environment)
-;; `transient' `org'
-;; (load latest early, override built-in)
+;; `transient' `org' (load latest early, override built-in)
 ;; ==================================
 (use-package gcmh
   :demand t
   :functions
-  gcmh-mode
-  user/restore-sane-gcmh-values
+  gcmh-mode user/restore-sane-gcmh-values
   :config
   (gcmh-mode 1)
   (setopt gcmh-high-cons-threshold most-positive-fixnum
@@ -96,7 +94,7 @@
   :demand t
   :functions exec-path-from-shell-initialize
   :custom
-  (exec-path-from-shell-shell-name "fish")
+  (exec-path-from-shell-shell-name "zsh")
   :config
   (dolist (var '("CC" "CXX" "PKG_CONFIG_PATH" "SSH_AGENT_PID" "SSH_AUTH_SOCK"
 		 "LSP_USE_PLISTS"))
@@ -113,18 +111,13 @@
   :demand t)
 
 (use-package org
-  :ensure (
-	   :package "org"
-	   :source "Org"
-	   :protocol https
-	   :inherit t
-	   :depth 1
-	   :pre-build (progn (require 'elpaca-menu-org)
-			     (setq elpaca-menu-org-make-manual nil)
-			     (elpaca-menu-org--build))
-	   :host github
-	   :repo "emacsmirror/org"
-	   :autoloads "org-loaddefs.el"
+  :ensure (org
+	   :package "org" :source "Org" :protocol https :inherit t :depth 1
+	   :pre-build (progn
+			(require 'elpaca-menu-org)
+			(setq elpaca-menu-org-make-manual nil)
+			(elpaca-menu-org--build))
+	   :host github :repo "emacsmirror/org" :autoloads "org-loaddefs.el"
 	   :build (:not elpaca--generate-autoloads-async)
 	   :files (:defaults ("etc/styles/" "etc/styles/*" "doc/*.texi"))
 	   :wait t)
@@ -133,18 +126,36 @@
   (("\\.org\\'"   . org-mode)
    ("TODO\\'"     . org-mode)
    ("\\.notes\\'" . org-mode))
+  :defines org-mode-map
+  
   :init
   (setq org-directory (expand-file-name "~/org"))
 
   :custom
-  (org-default-notes-file
-   (expand-file-name ".notes" org-directory))
-  (org-insert-mode-line-in-empty-file t)
+  (org-babel-lisp-eval-fn #'sly-eval)
+  (org-confirm-babel-evaluate nil)
+  (org-default-notes-file (expand-file-name ".notes" org-directory))
+  (org-id-extra-files (directory-files-recursively org-directory "\\.org$"))
+  (org-id-locations-file (expand-file-name ".id-locations" org-directory))
   (org-id-method 'org)
   (org-id-prefix "unk")
-
+  (org-insert-mode-line-in-empty-file t)
+  (org-use-sub-superscripts '{})
+  
   :config
-  (org-id-update-id-locations)
+  (setq org-src-lang-modes (assoc-delete-all "bash" org-src-lang-modes))
+  (dolist (lang-mode-cons '(("bash" . bash-ts) ("cmake" . cmake-ts)
+			    ("json" . json-ts) ("lua" . lua-ts)
+			    ("python" . python-ts) ("toml" . toml-ts)
+			    ("yaml" . yaml-ts)))
+    (add-to-list 'org-src-lang-modes lange-mode-cons))
+  
+  (with-eval-after-load 'ob
+    (org-babel-do-load-languages
+     'org-babel-load-languages '((emacs-lisp . t) (lisp . t) (lua . t)
+				 (makefile . t) (org . t) (python . t)
+				 (shell . t))))
+  
   (defun user/get-parent-directory ()
     "Return parent directory name for current buffer."
     (when buffer-file-name
@@ -157,7 +168,7 @@
     (let ((org-id-prefix (or (user/get-parent-directory) org-id-prefix)))
       (apply orig-fn args)))
   (advice-add 'org-id-new :around #'user/org-id-dynamic-prefix)
-  
+
   (bind-keys
    ("C-c o o" . org-mode)
    ("C-c o l" . org-store-link)
@@ -165,11 +176,7 @@
    ("C-c c"   . org-capture)
    :map org-mode-map
    ("C-c l"   . org-toggle-link-display)
-   ("C-c C-q" . org-set-tags-command))
-
-  (with-eval-after-load 'org-agenda
-    (bind-keys
-     ("C-c o k" . org-agenda-kill-all-agenda-buffers))))
+   ("C-c C-q" . org-set-tags-command)))
 
 
 (provide '01-bootstrap-core)

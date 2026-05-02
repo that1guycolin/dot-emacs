@@ -57,11 +57,29 @@
   :bind (:map ctl-x-map
               ("p" . disproject-dispatch)))
 
+(use-package project-cmake
+  :functions project-cmake-find-root
+  :custom
+  (project-cmake-default-cmake-options
+   '("CMAKE_BUILD_TYPE:STRING=Release"
+     "CMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON"
+     "CMAKE_C_COMPILER:STRING=clang"
+     "CMAKE_CXX_COMPILER:STRING=clang++"
+     "CMAKE_INSTALL_PREFIX:STRING=/usr/local/"
+     "CMAKE_GENERATOR:STRING=Ninja"))
+  :config
+  (add-hook 'project-find-functions #'project-cmake-find-root -1)
+  (setopt project-cmake-build-directory
+	  (lambda (source)
+	    (let ((proj-name (file-name-nondirectory source))
+		  (build-base (expand-file-name "~/bld/")))
+	      (concat build-base proj-name)))))
+
 (use-package deadgrep
   :defer t
   :bind
   (("<f5>"    . deadgrep)
-   ("C-c C-d" . deadgrep)))
+   ("C-c r" . deadgrep)))
 
 (use-package rg
   :defer t
@@ -87,7 +105,7 @@
   :init
   (persp-mode 1)
   :custom
-  (persp-mode-prefix-key (kbd "C-c M-p"))
+  (persp-mode-prefix-key (kbd "M-p"))
   (persp-switch-to-buffer-behavior 'switch)
   :config
   (setq switch-to-prev-buffer-skip
@@ -176,6 +194,7 @@ Takes arguments EXPR and LOC to pass to `user/buffer-by-filename'."
 ;; `treemacs-perspective' (perspective + treemacs integration)
 ;; `treemacs-nerd-icons' (nerd-icons + treemacs integration)
 ;; ==========================
+(defvar treemacs-mode-map)
 (use-package treemacs
   :commands treemacs treemacs-refresh
   :defer t
@@ -195,8 +214,6 @@ Takes arguments EXPR and LOC to pass to `user/buffer-by-filename'."
   (treemacs-filewatch-mode 1)
   (treemacs-git-mode 'deferred)
   (treemacs-git-commit-diff-mode 1)
-  (add-hook 'treemacs-post-buffer-init-hook
-	    #'treemacs-hide-gitignored-files-mode)
 
   (defun user/treemacs-switch-workspace-and-focus ()
     "Run `treemacs-switch-workspace' and ensure the Treemacs window is focused."

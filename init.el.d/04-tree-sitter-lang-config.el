@@ -51,8 +51,7 @@
 (use-package treesit-auto
   :ensure (:wait t)
   :functions
-  global-treesit-auto-mode
-  treesit-auto-add-to-auto-mode-alist
+  global-treesit-auto-mode treesit-auto-add-to-auto-mode-alist
   :custom
   (treesit-auto-install 'prompt)
   :config
@@ -113,24 +112,19 @@
   :ensure nil
   :mode ("\\.py\\'" . python-ts-mode)
   :interpreter
-  (("uv" . python-ts-mode)
+  (("uv"      . python-ts-mode)
    ("python3" . python-ts-mode))
 
   :defines
-  python-indent-offset
-  python-indent-guess-indent-offset
-  python-ts-mode-map
+  python-indent-offset python-indent-guess-indent-offset python-ts-mode-map
 
   :custom
-  (lsp-python-vulture-enabled nil)
   (python-shell-interpreter "python3")
-
-  :config
-  (setq
-   python-indent-offset 4
-   python-indent-guess-indent-offset nil))
+  (python-indent-offset 4)
+  (python-indent-guess-indent-offset nil))
 
 (use-package sh-mode
+  :defer t
   :ensure nil
   :interpreter
   (("sh"  . sh-mode)

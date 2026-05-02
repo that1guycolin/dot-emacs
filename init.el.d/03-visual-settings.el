@@ -12,9 +12,9 @@
 ;; icons: `nerd-icons'
 ;; =======================
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
-(when (member "CommitMono Nerd Font Mono" (font-family-list))
+(when (member "BlexMono Nerd Font Mono" (font-family-list))
   (set-face-attribute 'default nil
-                      :family "CommitMono Nerd Font Mono"
+                      :family "BlexMono Nerd Font Mono"
                       :foundry "NerdFont"
                       :slant 'normal
                       :weight 'regular

@@ -12,21 +12,27 @@
 
 ;;; Code:
 (use-package magit
+  :ensure (magit :source "MELPA" :package "magit" :id magit :fetcher github
+		 :repo "magit/magit"
+		 :files ("lisp/magit*.el" "lisp/git-*.el" "docs/*"
+			 "docs/AUTHORS.md" "LICENSE" ".dir-locals.el"
+			 ("git-hooks" "git-hooks/*")
+			 (:exclude "lisp/magit-section.el"))
+		 :type git :protocol https :inherit t :depth treeless)
   :bind
   (("C-x g"   . magit-status)
    ("C-x M-g" . magit-dispatch)
    ("C-c M-g" . magit-file-dispatch))
   :custom
-  (magit-refresh-status-buffer nil)
+  (magit-refresh-status-buffer t)
   (magit-define-global-key-bindings 'default)
   (magit-save-repository-buffers t))
 
 (use-package forge
   :after magit
-  :hook
-  (magit-status-mode . (lambda ()
-			 (when (fboundp 'forge-pull)
-                           (call-interactively #'forge-pull))))
+  :hook (magit-status-mode . (lambda ()
+			       (when (fboundp 'forge-pull)
+				 (call-interactively #'forge-pull))))
   :custom
   (forge-pull-notifications t))
 
@@ -44,6 +50,7 @@
   :defer t
   :mode ("\\.dockerignore\\'" . gitignore-mode))
 
+(defvar magit-mode-map)
 (use-package magit-git-toolbelt
   :after magit
   :bind (:map magit-mode-map

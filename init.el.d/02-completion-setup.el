@@ -40,8 +40,7 @@
 
 (use-package marginalia
   :functions
-  marginalia-mode
-  marginalia-cycle
+  marginalia-mode marginalia-cycle
   :config
   (marginalia-mode 1)
   (bind-keys
@@ -53,18 +52,10 @@
 
 (use-package corfu
   :functions
-  global-corfu-mode
-  corfu-history-mode
-  corfu-popupinfo-mode
-  corfu-next
-  corfu-previous
-  corfu-complete
-  corfu-quit
-  corfu-reset
-  corfu-popupinfo-toggle
-  corfu-popupinfo-scroll-down
-  corfu-popupinfo-scroll-up
-  
+  global-corfu-mode corfu-history-mode corfu-popupinfo-mode corfu-next
+  corfu-previous corfu-complete corfu-quit corfu-reset corfu-popupinfo-toggle
+  corfu-popupinfo-scroll-down corfu-popupinfo-scroll-up
+
   :custom
   (corfu-auto t)
   (corfu-auto-prefix 4)
@@ -94,30 +85,20 @@
 (use-package cape
   :bind ("C-c TAB" . cape-prefix-map)
   :functions
-  cape-dabbrev
-  cape-file
-  cape-elisp-block
-  cape-history
+  cape-dabbrev cape-file cape-elisp-block cape-history
   :init
   (add-hook 'completion-at-point-functions #'cape-dabbrev)
   (add-hook 'completion-at-point-functions #'cape-file)
   (add-hook 'completion-at-point-functions #'cape-elisp-block)
   (add-hook 'completion-at-point-functions #'cape-history))
 
-(keymap-global-unset "C-h f")
-(keymap-global-unset "C-h v")
-(keymap-global-unset "C-h k")
-(keymap-global-unset "C-h x")
-(keymap-global-unset "C-h F")
+(dolist (bind '("C-h f" "C-h v" "C-h k" "C-h x" "C-h F"))
+  (keymap-global-unset bind))
 
 (use-package helpful
   :ensure (:wait t)
   :functions
-  helpful-callable
-  helpful-variable
-  helpful-key
-  helpful-command
-  helpful-at-point
+  helpful-callable helpful-variable helpful-key helpful-command helpful-at-point
   helpful-function
   :config
   (bind-keys
@@ -152,10 +133,12 @@
   (read-extended-command-predicate #'command-completion-default-include-p)
   (minibuffer-prompt-properties
    '(read-only t cursor-intangible t face minibuffer-prompt))
+  (auto-save-visited-interval 60)
 
   :config
   (context-menu-mode 1)
-  (global-visual-line-mode 1))
+  (global-visual-line-mode 1)
+  (auto-save-visited-mode 1))
 
 
 (provide '02-completion-setup)

@@ -2,8 +2,8 @@
 
 ;;; Packages included:
 ;; adaptive-wrap, apheleia, dap-mode, docstr, flycheck, flycheck-color-mode-line,
-;; flycheck-pos-tip, lsp-mode, lsp-treemacs, lsp-ui, mason, smartparens,
-;; yasnippet, yasnippet-capf, yasnippet-snippets
+;; flycheck-eask, flycheck-inline, flycheck-package, lsp-mode, lsp-treemacs,
+;; mason, smartparens, yasnippet, yasnippet-capf, yasnippet-snippets
 
 ;;; Commentary:
 ;; Call packages that support efficient & productive coding at a global scope.
@@ -47,17 +47,15 @@
 ;; yaml: 'yamllint' (pacman -S yamllint)*
 ;; --------------------------
 ;; Extensions:
-;; `flycheck-pos-tip' (popup flycheck errors)
+;; `flycheck-inline' (display errors in buffer)
 ;; `flycheck-color-mode-line'
 ;; `flycheck-eask' (Support Eask files)
 ;; `flycheck-package' (Support Emacs' pacakges)
 ;; ==========================
 (use-package flycheck
   :hook
-  ((prog-mode     . flycheck-mode)
-   (markdown-mode . flycheck-mode)
-   (org-mode      . flycheck-mode))
-
+  ((prog-mode . flycheck-mode)
+   (text-mode . flycheck-mode))
   :functions flycheck-select-checker
 
   :custom
@@ -121,28 +119,25 @@ See URL `https://vale.sh'."
 			  flycheck-error-message-mode))
   (add-to-list 'flycheck-checkers 'text-vale)
 
-  (defvar user/flycheck-checker-modes-alist
-    '((fish-mode     . fish-self)
-      (markdown-mode . markdown-rumdl)
-      (gfm-mode      . markdown-rumdl)
-      (toml-ts-mode  . tombi-lint)
-      (org-mode      . org-lint))
-    "A list of cons cells containing a major mode and its flycheck checker.")
 
-  (dolist (mode (mapcar #'car user/flycheck-checker-modes-alist))
-    (let ((hook (intern (concat (symbol-name mode) "-hook")))
-	  (checker (cdr (assoc mode user/flycheck-checker-modes-alist))))
-      (add-hook hook (lambda ()
-		       (flycheck-select-checker checker))))))
+  (let ((flycheck-modes-alist
+	 '((fish-mode     . fish-self)
+	   (markdown-mode . markdown-rumdl)
+	   (gfm-mode      . markdown-rumdl)
+	   (toml-ts-mode  . tombi-lint)
+	   (org-mode      . org-lint))))
+    (dolist (mode (mapcar #'car flycheck-modes-alist))
+      (let ((hook (intern (concat (symbol-name mode) "-hook")))
+	    (checker (cdr (assoc mode flycheck-modes-alist))))
+	(add-hook hook (lambda ()
+			 (flycheck-select-checker checker)))))))
 
-(use-package flycheck-pos-tip
-  :after flycheck
-  :functions flycheck-pos-tip-mode
-  :config
-  (flycheck-pos-tip-mode 1))
+(use-package flycheck-inline
+  :defer t
+  :hook (flycheck-mode . flycheck-inline-mode))
 
 (use-package flycheck-color-mode-line
-  :after flycheck
+  :defer t
   :hook (flycheck-mode . flycheck-color-mode-line-mode))
 
 (use-package flycheck-eask
@@ -157,20 +152,26 @@ See URL `https://vale.sh'."
 ;; =======  LSP-MODE  =======
 ;; cmake: 'neocmakelsp' (cargo install neocmakelsp)*
 ;; fish: 'fish-lsp' (npm install -g fish-lsp)*
+;; lua: 'lua-language-server' (pacman -S lua-language-server)*
 ;; markdown: 'rumdl' (pacman -S rumdl)*
 ;; python: 'ty' (uv tool install ty)*
 ;; python: 'ruff' (uv tool install ruff)*
 ;; -------  OPTIONAL  -------
 ;; [OPTIONAL] bash: 'bash-language-server' (pacman -S bash-language-server)*
 ;; [OPTIONAL] json: 'json-language-server' (pacman -S json-language-server)*
-;; [OPTIONAL] lua: `lua-language-server'*
 ;; [OPTIONAL] toml: 'tombi' (uv tool install tombi)*
 ;; [OPTIONAL] xml: 'lemminx'*
 ;; [OPTIONAL] yaml: 'yaml-language-server' (pacman -S yaml-language-server)*
+;; ------  EXTENSIONS  ------
+;; `lsp-treemacs' (treemacs integration)
+;; `dap-mode' (debug protocol)
+;; -- Requires 'debugpy': (uv tool install debugpy)
 ;; ==========================
 (use-package lsp-mode
   :hook
   ((cmake-ts-mode  . lsp-deferred)
+   (fish-mode      . lsp-deferred)
+   (lua-ts-mode    . lsp-deferred)
    (markdown-mode  . lsp-deferred)
    (python-ts-mode . lsp-deferred)
    (toml-ts-mode   . lsp-deferred))
@@ -181,16 +182,17 @@ See URL `https://vale.sh'."
   :defines lsp-language-id-configuration
 
   :custom
-  (lsp-use-plists t)
+  (lsp-auto-guess-root t)
+  (lsp-disabled-clients
+   '(cmake-language-server marksman pylsp pyright semgrep-ls taplo))
+  (lsp-enable-file-watchers nil)
+  (lsp-enable-on-type-formatting nil)
+  (lsp-headerline-breadcrumb-enable t)
   (lsp-idle-delay 0.8)
   (lsp-log-io nil)
-  (lsp-enable-file-watchers nil)
-  (lsp-headerline-breadcrumb-enable t)
-  (lsp-auto-guess-root t)
-  (lsp-enable-on-type-formatting nil)
-  (lsp-disabled-clients
-   '(cmake-language-server marksman pylsp pyright taplo))
-  
+  (lsp-lua-runtime-version "LuaJIT")
+  (lsp-lua-diagnostics-globals ["mp"])
+  (lsp-use-plists t)
   :config
   (lsp-register-client
    (make-lsp--client
@@ -220,24 +222,28 @@ See URL `https://vale.sh'."
   (bind-keys
    :map lsp-mode-map
    ("C-c F" . lsp-format-buffer))
-  (dolist (dir '("[/\\\\]node_modules\\'"
-                 "[/\\\\]\\.git\\'"
-                 "[/\\\\]dist\\'"
-                 "[/\\\\]build\\'"
-                 "[/\\\\]target\\'"
-                 "[/\\\\]\\.direnv\\'"
-                 "[/\\\\]\\.cache\\'"
-                 "[/\\\\]vendor\\'"))
+  (dolist (dir '("[/\\\\]node_modules\\'" "[/\\\\]\\.git\\'" "[/\\\\]dist\\'"
+                 "[/\\\\]build\\'" "[/\\\\]target\\'" "[/\\\\]\\.direnv\\'"
+                 "[/\\\\]\\.cache\\'" "[/\\\\]vendor\\'"))
     (add-to-list 'lsp-file-watch-ignored-directories dir))
   (add-hook 'fish-mode-hook
             (lambda ()
 	      (setq-local lsp-enable-file-watchers nil))))
 
-(use-package lsp-ui
+(use-package lsp-treemacs
   :after lsp-mode)
 
-(use-package lsp-treemacs
-  :after (lsp-mode treemacs))
+(use-package dap-mode
+  :defer t
+  :commands
+  dap-debug dap-debug-edit-template dap-auto-configure-mode
+  :defines dap-python-debugger
+  :custom
+  (dap-auto-configure-features '(sessions locals controls tooltip))
+  (dap-lldb-debug-program "/usr/bin/lldb-dap")
+  :config
+  (require 'dap-python)
+  (setq dap-python-debugger 'debugpy))
 
 
 ;; =======  FORMATTING  =======
@@ -264,7 +270,7 @@ See URL `https://vale.sh'."
   (setf (alist-get 'shfmt apheleia-formatters)
 	'("shfmt" "-i" "4" "-ci" "-"))
   (setf (alist-get 'neocmakelsp apheleia-formatters)
-        '("neocmakelsp" "format" "-"))
+        '("neocmakelsp" "format" (buffer-file-name)))
   (setf (alist-get 'jq apheleia-formatters)
 	'("jq" "." "-M" "--indent" "2"))
   (setf (alist-get 'ruff apheleia-formatters)
@@ -288,23 +294,8 @@ See URL `https://vale.sh'."
   (setf (alist-get 'conf-toml-mode apheleia-mode-alist) 'tombi)
   (setf (alist-get 'nxml-mode apheleia-mode-alist) 'xmlstarlet)
   (setf (alist-get 'yaml-mode apheleia-mode-alist) 'yq-yaml)
-  (setf (alist-get 'yaml-ts-mode apheleia-mode-alist) 'yq-yaml))
-
-
-;; =======  DAP-MODE  =======
-;; python: 'debugpy' (uv tool install debugpy)*
-;; ==========================
-(use-package dap-mode
-  :defer t
-  :commands
-  dap-debug dap-debug-edit-template dap-auto-configure-mode
-  :defines dap-python-debugger
-  :custom
-  (dap-auto-configure-features '(sessions locals controls tooltip))
-  (dap-lldb-debug-program "/usr/bin/lldb-dap")
-  :config
-  (require 'dap-python)
-  (setq dap-python-debugger 'debugpy))
+  (setf (alist-get 'yaml-ts-mode apheleia-mode-alist) 'yq-yaml)
+  (setf (alist-get 'sh-mode apheleia-mode-alist) nil))
 
 
 ;; =======  SNIPPETS  =======
@@ -314,12 +305,13 @@ See URL `https://vale.sh'."
 ;; ==========================
 (use-package yasnippet
   :hook
-  ((prog-mode . yas-minor-mode)
+  ((prog-mode     . yas-minor-mode)
    (markdown-mode . yas-minor-mode))
-  yas-reload-all
+  :functions yas-reload-all
   :config
   (add-to-list 'yas-snippet-dirs
-	       (expand-file-name "snippets" user-emacs-directory)))
+	       (expand-file-name "snippets" user-emacs-directory))
+  (yas-reload-all))
 
 (use-package yasnippet-snippets
   :after yasnippet
@@ -339,20 +331,18 @@ See URL `https://vale.sh'."
 ;; =======================
 (declare-function transient-define-prefix "transient")
 (use-package mason
-  :ensure (:wait t)
   :commands
   mason-install mason-manager mason-setup
   :functions
   mason-ensure mason-installed-p user/mason--install-program
   user/mason-install-optional-program user/mason-install-optional-programs
-  user/mason-dispatch
+  user/mason--dispatch user/mason-dispatch
   :defines mason-dir
 
   :init
+  (mason-setup)
   (setq mason-dir (expand-file-name "~/.local"))
   :config
-  (mason-setup)
-  
   ;; Variables
   (defvar user/required-mason-programs
     '("debugpy" "fish-lsp" "jsonlint" "lua-language-server" "neocmakelsp"
@@ -411,8 +401,7 @@ mason installs it."
      [("p" "Install program" user/mason-install-program)
       ("m" "Mason Manager" mason-manager)]
      ])
-
-  (declare-function user/mason--dispatch "08-code-assist")
+  
   (defun user/mason-dispatch ()
     "Load mason if not loaded then run user/mason--dispatch."
     (interactive)
@@ -421,7 +410,7 @@ mason installs it."
       (progn
 	(mason-setup)
 	(user/mason--dispatch))))
-  (bind-keys ("C-c m" . user/mason-dispatch)))
+  (bind-keys ("C-c M" . user/mason-dispatch)))
 
 
 (provide '08-code-assist)

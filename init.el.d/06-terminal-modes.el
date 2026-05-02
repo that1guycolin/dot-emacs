@@ -35,17 +35,12 @@
 
 (use-package ghostel
   :ensure (ghostel
-	   :source nil
-	   :package "ghostel"
-	   :id ghostel
-	   :fetcher github
+	   :source nil :package "ghostel" :id ghostel :fetcher github
 	   :repo "dakra/ghostel"
-	   :files (:defaults "README.md" "etc" "src" "vendor" "build.zig"
-			     "build.zig.zon" "symbols.map" ("build" "Makefile"))
-	   :type git
-	   :protocol https
-	   :inherit t
-	   :depth treeless)
+	   :files (:defaults "README.md" "etc" "src"
+			     "vendor" "build.zig" "build.zig.zon" "symbols.map"
+			     ("build" "Makefile"))
+	   :type git :protocol https :inherit t :depth treeless)
   :defer t
   :bind
   (("C-c S g" . ghostel)
