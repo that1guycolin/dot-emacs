@@ -102,20 +102,17 @@
 ;; Extensions for Org-mode
 (require '11-org-mode-extensions)
 
-;; Configure Emacs to work with LLMs
-(require '12-llm-integration)
-
 ;; Listen to music & watch videos
-(require '13-media-player)
+(require '12-media-player)
 
 ;; Misc & Dashboard
-(require '14-misc-packages)
+(require '13-misc-packages)
 
 ;; Install themes
-(require '15-install-themes)
+(require '14-install-themes)
 
 ;; Custom variables & functions
-(require '16-user-functions)
+(require '15-user-functions)
 
 
 (provide 'init)

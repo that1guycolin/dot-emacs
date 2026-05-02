@@ -1,4 +1,4 @@
-;;; 15-install-themes.el --- Install themes -*- lexical-binding: t; -*-
+;;; 14-install-themes.el --- Install themes -*- lexical-binding: t; -*-
 
 ;;; Themes included:
 ;; ancient-one-dark, caroline, curry-on, dakrone, darkokai, dream, edna,
@@ -34,11 +34,11 @@
 ;; Install themes
 (declare-function elpaca-wait "elpaca")
 (dolist (theme (user/get-themes))
-  (eval `(elpaca ,theme)))
+  (eval `(elpaca ,theme))
+  (elpaca-wait))
 
-(elpaca-wait)
 (load-theme 'weyland-yutani t)
 
 
-(provide '15-install-themes)
-;;; 15-install-themes.el ends here.
+(provide '14-install-themes)
+;;; 14-install-themes.el ends here.

@@ -1,4 +1,4 @@
-;;; 16-user-functions.el --- Custom variables & functions -*- lexical-binding: t; -*-
+;;; 15-user-functions.el --- Custom variables & functions -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 ;; Variables, functions, and transient dispatches defined by the user.
@@ -66,75 +66,12 @@
 
 ;; =======  FONTS  =======
 (defvar user/font-height-alist
-  '(("0xProto Nerd Font Mono"          . 110)
-    ("AdwaitaMono Nerd Font Mono"      . 110)
-    ("Agave Nerd Font Mono"            . 130)
-    ("AnonymicePro Nerd Font Mono"     . 130)
-    ("BigBlueTerm437 Nerd Font Mono"   . 110)
-    ("BigBlueTermPlus Nerd Font Mono"  . 110)
-    ("BitstromWera Nerd Font Mono"     . 110)
-    ("BlexMono Nerd Font Mono"         . 110)
-    ;; Not checked.
-    ("CaskaydiaCove Nerd Font Mono"    . 110)
-    ("CaskaydiaMono Nerd Font Mono"    . 110)
-    ("Cousine Nerd Font Mono"          . 110)
-    ("D2CodingLigature Nerd Font Mono" . 110)
+  '(("BlexMono Nerd Font Mono"         . 110)
     ("DaddyTimeMono Nerd Font Mono"    . 110)
-    ("DejaVuSansM Nerd Font Mono"      . 110)
-    ("EnvyCodeR Nerd Font Mono"        . 110)
     ("FantasqueSansM Nerd Font Mono"   . 110)
-    ("FiraCode Nerd Font Mono"         . 110)
-    ("GohuFont11 Nerd Font Mono"       . 110)
-    ("GohuFont14 Nerd Font Mono"       . 110)
-    ("GohuFontuni11 Nerd Font Mono"    . 110)
-    ("GohuFontuni14 Nerd Font Mono"    . 110)
-    ("GoMono Nerd Font Mono"           . 110)
-    ("Hack Nerd Font Mono"             . 110)
-    ("iMWritingMono Nerd Font Mono"    . 110)
-    ("InconsolataGo Nerd Font Mono"    . 110)
-    ("InconsolataLGC Nerd Font Mono"   . 110)
-    ("Inconsolata Nerd Font Mono"      . 110)
     ("IntoneMono Nerd Font Mono"       . 110)
-    ("Iosevka Nerd Font Mono"          . 110)
-    ("IosevkaTerm Nerd Font Mono"      . 110)
-    ("IosevkaTermSlab Nerd Font Mono"  . 110)
-    ("JetBrainsMono Nerd Font Mono"    . 110)
-    ("JetBrainsMonoNL Nerd Font Mono"  . 110)
-    ("Lekton Nerd Font Mono"           . 110)
-    ("Lilex Nerd Font Mono"            . 110)
-    ("LiterationMono Nerd Font Mono"   . 110)
-    ("M+1Code Nerd Font Mono"          . 110)
-    ("M+CodeLat50 Nerd Font Mono"      . 110)
-    ("M+CodeLat60 Nerd Font Mono"      . 110)
-    ("MartianMono Nerd Font Mono"      . 110)
-    ("MesloLGLDZ Nerd Font Mono"       . 110)
-    ("MesloLGL Nerd Font Mono"         . 110)
-    ("MesloLGMDZ Nerd Font Mono"       . 110)
-    ("MesloLGM Nerd Font Mono"         . 110)
-    ("MesloLGSDZ Nerd Font Mono"       . 110)
-    ("MesloLGS Nerd Font Mono"         . 110)
-    ("Monofur Nerd Font Mono"          . 110)
-    ("Monoid Nerd Font Mono"           . 110)
-    ("Mononoki Nerd Font Mono"         . 110)
-    ("NotoMono Nerd Font Mono"         . 110)
-    ("NotoSansM Nerd Font Mono"        . 110)
-    ("ProFontIIx Nerd Font Mono"       . 110)
-    ("ProFontWindows Nerd Font Mono"   . 110)
-    ("ProggyCleanCE Nerd Font Mono"    . 110)
-    ("ProggyClean Nerd Font Mono"      . 110)
-    ("ProggyCleanSZ Nerd Font Mono"    . 110)
     ("RecMonoCasual Nerd Font Mono"    . 110)
-    ("RecMonoDuotone Nerd Font Mono"   . 110)
-    ("RecMonoLinear Nerd Font Mono"    . 110)
-    ("RecMonoSmCasual Nerd Font Mono"  . 110)
-    ("RobotoMono Nerd Font Mono"       . 110)
-    ("SauceCodePro Nerd Font Mono"     . 110)
-    ("ShureTechMono Nerd Font Mono"    . 110)
-    ("SpaceMono Nerd Font Mono"        . 110)
-    ("Terminess Nerd Font Mono"        . 110)
-    ("UbuntuMono Nerd Font Mono"       . 110)
-    ("VictorMono Nerd Font Mono"       . 110)
-    ("ZedMono Nerd Font Mono"          . 110))
+    ("SauceCodePro Nerd Font Mono"     . 110))
   "List of cons cells mapping nerd font families to their ideal height.")
 
 (defun user/switch-font (font)
@@ -184,20 +121,6 @@ If not in a side window, jump to the first found side window."
      (t
       (select-window side-window)))))
 (bind-keys ("M-0" . user/toggle-side-window))
-
-
-;; =======  TREESIT FALLBACK  =======
-(defun user/major-ts-mode-fallback ()
-  "Set major-modes to *-ts-mode if treesit-auto fails to activate."
-  (interactive)
-  (dolist (pair '((bash-mode   . bash-ts-mode)
-		  (cmake-mode  . cmake-ts-mode)
-		  (json-mode   . json-ts-mode)
-		  (python-mode . python-ts-mode)
-		  (toml-mode   . toml-ts-mode)
-		  (yaml-mode   . yaml-ts-mode)))
-    (when (fboundp (cdr pair))
-      (setf (alist-get (car pair) major-mode-remap-alist) (cdr pair)))))
 
 
 ;; =======  ELPACA  =======
@@ -288,9 +211,9 @@ If not in a side window, jump to the first found side window."
    [("E" "Update elpaca menus" user/update-elpaca-menus)
     ("p" "Update packages" user/elpaca-update-packages)
     ("s" "Major -ts-mode fallback" user/major-ts-mode-fallback)]])
-(declare-function user/custom-functions-dispatch "16-user-functions")
+(declare-function user/custom-functions-dispatch "15-user-functions")
 (bind-keys ("C-c u" . user/custom-functions-dispatch))
 
 
-(provide '16-user-functions)
-;;; 16-user-functions.el ends here
+(provide '15-user-functions)
+;;; 15-user-functions.el ends here

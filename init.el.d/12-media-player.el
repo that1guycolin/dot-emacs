@@ -1,4 +1,4 @@
-;;; 13-media-player.el --- Listen to music & watch videos -*- lexical-binding: t; -*-
+;;; 12-media-player.el --- Listen to music & watch videos -*- lexical-binding: t; -*-
 
 ;;; Packages included:
 ;; emms, emms-info-mediainfo
@@ -101,15 +101,12 @@
 
 (use-package emms-info-mediainfo
   :ensure (emms-info-mediainfo
-	   :host github
-	   :repo "that1guycolin/emms-info-mediainfo"
-	   :files (:defaults)
-	   :method https
-	   :wait t)
+	   :host github :repo "that1guycolin/emms-info-mediainfo"
+	   :files (:defaults) :method https :wait t)
   :after emms
   :config
   (setq emms-info-functions (append '(emms-info-mediainfo) emms-info-functions)))
 
 
-(provide '13-media-player)
-;;; 13-media-player.el ends here
+(provide '12-media-player)
+;;; 12-media-player.el ends here
