@@ -19,23 +19,61 @@
   :init
   (require 'dired-async))
 
+(use-package dwim-shell-command
+  :bind (([remap shell-command] . dwim-shell-command)
+         :map dired-mode-map
+         ([remap dired-do-async-shell-command] . dwim-shell-command)
+         ([remap dired-do-shell-command]       . dwim-shell-command)
+         ([remap dired-smart-shell-command]    . dwim-shell-command))
+  :functions
+  dwim-shell-command-on-marked-files user/convert-ts-to-mp4
+  user/extract-video-only user/extract-audio-only
+  
+  :config
+  (defun user/convert-ts-to-mp4 ()
+    "Convert .ts files to .mp4 using FFmpeg."
+    (interactive)
+    (dwim-shell-command-on-marked-files
+     "Convert to mp4"
+     "ffmpeg -hide_banner -v quiet -stats -y -i '<<f>>' -map 0:v -map 0:a \
+-c copy -movflags +faststart '<<fne>>.mp4'"
+     :utils "ffmpeg"))
+
+  (defun user/extract-video-only ()
+    "Extract only video streams from file using FFmpeg."
+    (interactive)
+    (dwim-shell-command-on-marked-files
+     "Extract video streams."
+     "ffmpeg -hide_banner -v quiet -stats -y -i '<<f>>' -map 0:v -c copy \
+-movflags +faststart '<<fne>>-video.mp4'"
+     :utils "ffmpeg"))
+
+  (defun user/extract-audio-only ()
+    "Extract only audio streams from file using FFmpeg."
+    (interactive)
+    (dwim-shell-command-on-marked-files
+     "Extract audio streams."
+     "ffmpeg -hide_banner -v quiet -stats -y -i '<<f>>' -map 0:a -c copy \
+-movflags +faststart '<<fne>>-audio.m4a'"
+     :utils "ffmpeg")))
+
 (keymap-global-unset "C-x d")
 (declare-function diff-hl-dired-mode "diff-hl")
 (use-package dirvish
   :defer t
-  :bind (:map ctl-x-map
-	      ("d" . dirvish))
+  :bind (:map ctl-x-map ("d" . dirvish))
   :commands dirvish
   
   :functions
   dirvish-override-dired-mode user/dired-use-dirvish dirvish-peek-mode
   dirvish-dwim dirvish-fd dired-mouse-find-file-other-window
-  dired-mouse-find-file dirvish-quicksort dirvish-ls-switches-menu
-  dirvish-yank-menu dirvish-dispatch dirvish-quit dirvish-quick-access
-  dirvish-file-info-menu dired-do-delete dired-do-flagged-delete dirvish-yank
-  dirvish-new-empty-file-a dirvish-subtree-toggle dirvish-layout-toggle
-  dirvish-history-go-backward dirvish-history-go-forward dirvish-narrow
-  dirvish-mark-menu dirvish-setup-menu dirvish-emerge-menu
+  dired-mouse-find-file dirvish-quicksort user/dired-ffmpeg-actions-map
+  dirvish-ls-switches-menu dirvish-yank-menu dirvish-dispatch dirvish-quit
+  dirvish-quick-access dirvish-file-info-menu dired-do-delete
+  dired-do-flagged-delete dirvish-yank dired-create-empty-file
+  dirvish-subtree-toggle dirvish-layout-toggle dirvish-history-go-backward
+  dirvish-history-go-forward dirvish-narrow dirvish-mark-menu dirvish-setup-menu
+  dirvish-emerge-menu
 
   :init
   (dirvish-override-dired-mode 1)
@@ -55,6 +93,13 @@
 	(dirvish dirname switches)
       (dirvish dirname)))
   (advice-add 'dired :override #'user/dired-use-dirvish)
+
+  (defvar-keymap user/dired-ffmpeg-actions-map
+    :prefix t
+    :doc "Keymap with FFmpeg actions to run on marked files in dired/dirvish."
+    "4" #'user/convert-ts-to-mp4
+    "v" #'user/extract-video-only
+    "a" #'user/extract-audio-only)
   
   (bind-keys
    ("C-x d"     . dirvish)
@@ -75,7 +120,8 @@
    ("X"                               . dired-do-flagged-delete)
    ("y"                               . dirvish-yank)
    ("s"                               . dirvish-quicksort)
-   ("."                               . dirvish-new-empty-file-a)
+   ("F"                               . user/dired-ffmpeg-actions-map)
+   ("."                               . dired-create-empty-file)
    ("TAB"                             . dirvish-subtree-toggle)
    ("M-t"                             . dirvish-layout-toggle)
    ("M-b"                             . dirvish-history-go-backward)
@@ -100,7 +146,8 @@
    ("X"                               . dired-do-flagged-delete)
    ("y"                               . dirvish-yank)
    ("s"                               . dirvish-quicksort)
-   ("."                               . dirvish-new-empty-file-a)
+   ("F"                               . user/dired-ffmpeg-actions-map)
+   ("."                               . dired-create-empty-file)
    ("TAB"                             . dirvish-subtree-toggle)
    ("M-t"                             . dirvish-layout-toggle)
    ("M-b"                             . dirvish-history-go-backward)
@@ -110,20 +157,6 @@
    ("M-s"                             . dirvish-setup-menu)
    ("M-e"                             . dirvish-emerge-menu)
    ("C-c h"                           . diff-hl-dired-mode)))
-
-(use-package dwim-shell-command
-  :ensure (:wait t)
-  :defer t
-  :commands dwim-shell-command-on-marked-files)
-
-(defun user/convert-ts-to-mp4 ()
-  "Convert .ts files to .mp4 using FFmpeg."
-  (interactive)
-  (dwim-shell-command-on-marked-files
-   "Convert to mp4"
-   "ffmpeg -hide_banner -v quiet -stats -y -i '<<f>>' -map 0:v -map 0:a \
--c copy -movflags +faststart '<<fne>>.mp4'"
-   :utils "ffmpeg"))
 
 
 (provide '10-file-management)
