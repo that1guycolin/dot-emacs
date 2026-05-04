@@ -96,7 +96,7 @@
   :demand t
   :functions exec-path-from-shell-initialize
   :custom
-  (exec-path-from-shell-shell-name "zsh")
+  (exec-path-from-shell-shell-name "fish")
   :config
   (dolist (var '("CC" "CXX" "PKG_CONFIG_PATH" "SSH_AGENT_PID" "SSH_AUTH_SOCK"
 		 "LSP_USE_PLISTS"))
