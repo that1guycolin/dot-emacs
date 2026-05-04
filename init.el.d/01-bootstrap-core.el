@@ -148,9 +148,13 @@
   (setq org-src-lang-modes (assoc-delete-all "bash" org-src-lang-modes))
   (dolist (lang-mode-cons '(("bash" . bash-ts) ("cmake" . cmake-ts)
   			    ("json" . json-ts) ("lua" . lua-ts)
-  			    ("python" . python-ts) ("toml" . toml-ts)
-  			    ("yaml" . yaml-ts)))
+  			    ("python" . python-ts) ("sh" . sh) ("toml" . toml-ts)
+  			    ("yaml" . yaml-ts) ("zsh" . sh)))
     (add-to-list 'org-src-lang-modes lang-mode-cons))
+
+  (setq org-babel-default-header-args
+	(cons '(:results . "output")
+	      (assq-delete-all :results org-babel-default-header-args)))
 
   (with-eval-after-load 'ob
     (org-babel-do-load-languages
