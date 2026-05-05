@@ -96,7 +96,7 @@
   :demand t
   :functions exec-path-from-shell-initialize
   :custom
-  (exec-path-from-shell-shell-name "fish")
+  (exec-path-from-shell-shell-name "zsh")
   :config
   (dolist (var '("CC" "CXX" "PKG_CONFIG_PATH" "SSH_AGENT_PID" "SSH_AUTH_SOCK"
 		 "LSP_USE_PLISTS"))
@@ -113,16 +113,7 @@
   :demand t)
 
 (use-package org
-  :ensure (org
-	   :package "org" :source "Org" :protocol https :inherit t :depth 1
-	   :pre-build (progn
-			(require 'elpaca-menu-org)
-			(setq elpaca-menu-org-make-manual nil)
-			(elpaca-menu-org--build))
-	   :host github :repo "emacsmirror/org" :autoloads "org-loaddefs.el"
-	   :build (:not elpaca--generate-autoloads-async)
-	   :files (:defaults ("etc/styles/" "etc/styles/*" "doc/*.texi"))
-	   :wait t)
+  :ensure (:wait t)
   :demand t
   :mode
   (("\\.org\\'"   . org-mode)
@@ -142,6 +133,7 @@
   (org-id-method 'org)
   (org-id-prefix "unk")
   (org-insert-mode-line-in-empty-file t)
+  (org-startup-folded 'content)
   (org-use-sub-superscripts '{})
   
   :config
@@ -170,7 +162,7 @@
 	(file-name-directory buffer-file-name)))))
 
   (defun user/org-id-dynamic-prefix (orig-fn &rest args)
-    "Dynamically compute rg-id-prefix' each time an ID is created.
+    "Dynamically compute org-id-prefix' each time an ID is created.
 Designed to wrap around ORIG-FN `org-id-new' (accepting the same ARGS) when
 creating org nodes."
     (let ((org-id-prefix (or (user/get-parent-directory) org-id-prefix)))
