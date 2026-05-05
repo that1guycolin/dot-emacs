@@ -59,6 +59,9 @@
 (defvar user/init-directory (expand-file-name "init.el.d" user-emacs-directory)
   "Directory from which init files are loaded.")
 
+(defvar user/tools-directory (expand-file-name "tools" user-emacs-directory)
+  "Directory in which the user stores helpful tools for working in Emacs.")
+
 (defvar user/projects-directory (expand-file-name "~/projects")
   "Directory in which the user stores custom projects.")
 
@@ -111,11 +114,8 @@
 ;; Misc & Dashboard
 (require '14-misc-packages)
 
-;; Install themes
-(require '15-install-themes)
-
 ;; Custom variables & functions
-(require '16-user-functions)
+(require '15-user-functions)
 
 
 (provide 'init)
