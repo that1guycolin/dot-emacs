@@ -56,7 +56,7 @@
   :hook
   ((prog-mode . flycheck-mode)
    (text-mode . flycheck-mode))
-  :functions flycheck-select-checker
+  :functions flycheck-select-checker flycheck-add-mode
 
   :custom
   (flycheck-emacs-lisp-load-path 'inherit)
@@ -119,6 +119,7 @@ See URL `https://vale.sh'."
 			  flycheck-error-message-mode))
   (add-to-list 'flycheck-checkers 'text-vale)
 
+  (flycheck-add-mode 'org-lint 'org-gtd-clarify-mode)
 
   (let ((flycheck-modes-alist
 	 '((fish-mode     . fish-self)
