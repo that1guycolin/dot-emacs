@@ -91,12 +91,7 @@
     "Refresh dashboard after a real emacsclient frame is created."
     (let ((frame (selected-frame)))
       (when (and (display-graphic-p frame)
-		 (frame-parameter frame 'client)
-		 (member
-		  (buffer-name
-		   (window-buffer
-		    (frame-selected-window frame)))
-                  '("*scratch*" "*dashboard*")))
+		 (frame-parameter frame 'client))
 	(dashboard-refresh-buffer))))
   
   (add-hook 'server-after-make-frame-hook
