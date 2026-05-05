@@ -4,14 +4,14 @@
 ** dot-Emacs README [1/5][20%] :emacsd:
 :PROPERTIES:
 :ORG_GTD_CAPTURED_AT: [2026-04-20 Mon 18:22]
-:ID:       dot-Emacs-README-2026-04-21-13-19-09
+:ID:       .emacs.d:mrx5sk81lxk0
 :ORG_GTD:  Projects
 :ORG_GTD_FIRST_TASKS: Ensure-packages-match-2026-04-21-13-25-25
 :END:
 *** NEXT Ensure packages match
 :PROPERTIES:
 :ORG_GTD:  Actions
-:ID:       Ensure-packages-match-2026-04-21-13-25-25
+:ID:       .emacs.d:ufwfkk81lxk0
 :TRIGGER:  self org-gtd-update-project-after-task-done!
 :ORG_GTD_PROJECT_IDS: dot-Emacs-README-2026-04-21-13-19-09
 :ORG_GTD_PROJECT: dot-Emacs README
@@ -22,7 +22,7 @@
 CLOSED: [2026-04-25 Sat 06:37]
 :PROPERTIES:
 :ORG_GTD:  Actions
-:ID:       init-dot-el-dot-d-dot-el-files-2026-04-21-13-25-25
+:ID:       .emacs.d:l8kaak81lxk0
 :TRIGGER:  self org-gtd-update-project-after-task-done!
 :ORG_GTD_PROJECT_IDS: dot-Emacs-README-2026-04-21-13-19-09
 :ORG_GTD_PROJECT: dot-Emacs README
@@ -48,7 +48,7 @@ CLOSED: [2026-04-25 Sat 06:37]
 **** TODO init.el
 :PROPERTIES:
 :ORG_GTD:  Actions
-:ID:       init-dot-el-2026-04-21-13-25-25
+:ID:       .emacs.d:b8qh3k81lxk0
 :TRIGGER:  self org-gtd-update-project-after-task-done!
 :ORG_GTD_PROJECT_IDS: dot-Emacs-README-2026-04-21-13-19-09
 :ORG_GTD_PROJECT: dot-Emacs README
@@ -58,7 +58,7 @@ CLOSED: [2026-04-25 Sat 06:37]
 **** TODO README
 :PROPERTIES:
 :ORG_GTD:  Actions
-:ID:       README-2026-04-21-13-25-25
+:ID:       .emacs.d:sl28ti81lxk0
 :TRIGGER:  self org-gtd-update-project-after-task-done!
 :ORG_GTD_PROJECT_IDS: dot-Emacs-README-2026-04-21-13-19-09
 :ORG_GTD_PROJECT: dot-Emacs README
@@ -68,7 +68,7 @@ CLOSED: [2026-04-25 Sat 06:37]
 *** TODO Function to automate package matching.
 :PROPERTIES:
 :ORG_GTD:  Actions
-:ID:       Function-to-automate-package-matching-dot-2026-04-21-13-25-25
+:ID:       .emacs.d:c1gcpi81lxk0
 :TRIGGER:  self org-gtd-update-project-after-task-done!
 :ORG_GTD_PROJECT_IDS: dot-Emacs-README-2026-04-21-13-19-09
 :ORG_GTD_PROJECT: dot-Emacs README
@@ -77,9 +77,10 @@ CLOSED: [2026-04-25 Sat 06:37]
 
 
 ** Is LSP-Mode the best package for the job? [0/4][0%] :emacsd:
+SCHEDULED: <2026-05-12 Tue>
 :PROPERTIES:
 :ORG_GTD_CAPTURED_AT: [2026-04-23 Thu 15:24]
-:ID:       Is-LSP-Mode-the-best-package-for-the-job-2026-04-23-16-45-26
+:ID:       .emacs.d:un0gii81lxk0
 :ORG_GTD:  Projects
 :ORG_GTD_FIRST_TASKS: lsp-mode-2026-04-23-16-45-42
 :END:
@@ -94,7 +95,7 @@ CLOSED: [2026-04-25 Sat 06:37]
 *** TODO lsp-mode
 :PROPERTIES:
 :ORG_GTD:  Actions
-:ID:       lsp-mode-2026-04-23-16-45-42
+:ID:       .emacs.d:gw53ci81lxk0
 :TRIGGER:  self org-gtd-update-project-after-task-done!
 :ORG_GTD_PROJECT_IDS: Is-LSP-Mode-the-best-package-for-the-job-2026-04-23-16-45-26
 :ORG_GTD_PROJECT: Is LSP-Mode the best package for the job?
@@ -103,7 +104,7 @@ CLOSED: [2026-04-25 Sat 06:37]
 *** TODO eglot
 :PROPERTIES:
 :ORG_GTD:  Actions
-:ID:       eglot-2026-04-23-16-45-42
+:ID:       .emacs.d:vrg39i81lxk0
 :TRIGGER:  self org-gtd-update-project-after-task-done!
 :ORG_GTD_PROJECT_IDS: Is-LSP-Mode-the-best-package-for-the-job-2026-04-23-16-45-26
 :ORG_GTD_PROJECT: Is LSP-Mode the best package for the job?
@@ -113,7 +114,7 @@ CLOSED: [2026-04-25 Sat 06:37]
 *** TODO lsp-bridge
 :PROPERTIES:
 :ORG_GTD:  Actions
-:ID:       lsp-bridge-2026-04-23-16-45-42
+:ID:       .emacs.d:c93h3i81lxk0
 :TRIGGER:  self org-gtd-update-project-after-task-done!
 :ORG_GTD_PROJECT_IDS: Is-LSP-Mode-the-best-package-for-the-job-2026-04-23-16-45-26
 :ORG_GTD_PROJECT: Is LSP-Mode the best package for the job?
@@ -123,13 +124,14 @@ CLOSED: [2026-04-25 Sat 06:37]
 *** TODO lspce
 :PROPERTIES:
 :ORG_GTD:  Actions
-:ID:       lspce-2026-04-23-16-45-42
+:ID:       .emacs.d:uk3cth81lxk0
 :TRIGGER:  self org-gtd-update-project-after-task-done!
 :ORG_GTD_PROJECT_IDS: Is-LSP-Mode-the-best-package-for-the-job-2026-04-23-16-45-26
 :ORG_GTD_PROJECT: Is LSP-Mode the best package for the job?
 :ORG_GTD_DEPENDS_ON: lsp-bridge-2026-04-23-16-45-42
 :END:
 ** Packages to try [0/14][0%] :emacsd:
+SCHEDULED: <2026-05-04 Mon>
 :PROPERTIES:
 :ORG_GTD_CAPTURED_AT: [2026-04-27 Mon 19:13]
 :ID:       Packages-to-try-2026-04-27-19-14-53
@@ -279,14 +281,14 @@ CLOSED: [2026-04-25 Sat 06:37]
 ** TODO Python Indent Offset Error :python:
 :PROPERTIES:
 :ORG_GTD_CAPTURED_AT: [2026-04-21 Tue 22:58]
-:ID:       Python-Indent-Offset-Error-2026-04-21-23-01-58
+:ID:       .emacs.d:zyfbeh81lxk0
 :ORG_GTD:  Actions
 :END:
 
 ** TODO Git gist integration with Emacs                              :emacsd:
 :PROPERTIES:
 :ORG_GTD_CAPTURED_AT: [2026-04-20 Mon 17:56]
-:ID:       Git-gist-integration-with-Emacs-2026-04-20-18-18-57
 :ORG_GTD:  Actions
+:ID:       .emacs.d:a0o9v251lxk0
 :END:
 
