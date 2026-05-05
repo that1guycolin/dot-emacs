@@ -1,81 +1,6 @@
 #+TITLE: dot-Emacs TODO
 
 * dot-Emacs: Multi-Step Projects
-** dot-Emacs README [1/5][20%] :emacsd:
-:PROPERTIES:
-:ORG_GTD_CAPTURED_AT: [2026-04-20 Mon 18:22]
-:ID:       .emacs.d:mrx5sk81lxk0
-:ORG_GTD:  Projects
-:ORG_GTD_FIRST_TASKS: Ensure-packages-match-2026-04-21-13-25-25
-:END:
-*** NEXT Ensure packages match
-:PROPERTIES:
-:ORG_GTD:  Actions
-:ID:       .emacs.d:ufwfkk81lxk0
-:TRIGGER:  self org-gtd-update-project-after-task-done!
-:ORG_GTD_PROJECT_IDS: dot-Emacs-README-2026-04-21-13-19-09
-:ORG_GTD_PROJECT: dot-Emacs README
-:ORG_GTD_BLOCKS: init-dot-el-dot-d-dot-el-files-2026-04-21-13-25-25
-:END:
-- State "DONE"       from "TODO"       [2026-04-25 Sat 06:36]
-**** DONE init.el.d/*.el files
-CLOSED: [2026-04-25 Sat 06:37]
-:PROPERTIES:
-:ORG_GTD:  Actions
-:ID:       .emacs.d:l8kaak81lxk0
-:TRIGGER:  self org-gtd-update-project-after-task-done!
-:ORG_GTD_PROJECT_IDS: dot-Emacs-README-2026-04-21-13-19-09
-:ORG_GTD_PROJECT: dot-Emacs README
-:ORG_GTD_DEPENDS_ON: Ensure-packages-match-dot-2026-04-21-13-25-25
-:ORG_GTD_BLOCKS: init-dot-el-2026-04-21-13-25-25
-:END:
-- State "DONE"       from "TODO"       [2026-04-25 Sat 06:37]
-- "01-bootstrap-core.el"
-- "02-completion-setup.el"
-- "03-visual-settings.el"
-- "04-tree-sitter-lang-config.el"
-- "05-project-management.el"
-- "06-code-assist.el"
-- "07-git-tools.el"
-- "08-language-configs.el"
-- "09-file-management.el"
-- "10-org-mode-extensions.el"
-- "11-llm-integration.el"
-- "12-media-player.el"
-- "13-misc-packages.el"
-- "14-install-themes.el"
-- "15-user-functions.el"
-**** TODO init.el
-:PROPERTIES:
-:ORG_GTD:  Actions
-:ID:       .emacs.d:b8qh3k81lxk0
-:TRIGGER:  self org-gtd-update-project-after-task-done!
-:ORG_GTD_PROJECT_IDS: dot-Emacs-README-2026-04-21-13-19-09
-:ORG_GTD_PROJECT: dot-Emacs README
-:ORG_GTD_DEPENDS_ON: init-dot-el-dot-d-dot-el-files-2026-04-21-13-25-25
-:ORG_GTD_BLOCKS: README-2026-04-21-13-25-25
-:END:
-**** TODO README
-:PROPERTIES:
-:ORG_GTD:  Actions
-:ID:       .emacs.d:sl28ti81lxk0
-:TRIGGER:  self org-gtd-update-project-after-task-done!
-:ORG_GTD_PROJECT_IDS: dot-Emacs-README-2026-04-21-13-19-09
-:ORG_GTD_PROJECT: dot-Emacs README
-:ORG_GTD_DEPENDS_ON: init-dot-el-2026-04-21-13-25-25
-:ORG_GTD_BLOCKS: Function-to-automate-package-matching-dot-2026-04-21-13-25-25
-:END:
-*** TODO Function to automate package matching.
-:PROPERTIES:
-:ORG_GTD:  Actions
-:ID:       .emacs.d:c1gcpi81lxk0
-:TRIGGER:  self org-gtd-update-project-after-task-done!
-:ORG_GTD_PROJECT_IDS: dot-Emacs-README-2026-04-21-13-19-09
-:ORG_GTD_PROJECT: dot-Emacs README
-:ORG_GTD_DEPENDS_ON: README-2026-04-21-13-25-25
-:END:
-
-
 ** Is LSP-Mode the best package for the job? [0/4][0%] :emacsd:
 SCHEDULED: <2026-05-12 Tue>
 :PROPERTIES:
@@ -130,7 +55,7 @@ SCHEDULED: <2026-05-12 Tue>
 :ORG_GTD_PROJECT: Is LSP-Mode the best package for the job?
 :ORG_GTD_DEPENDS_ON: lsp-bridge-2026-04-23-16-45-42
 :END:
-** Packages to try [0/14][0%] :emacsd:
+** Packages to try [1/14][7%] :emacsd:
 SCHEDULED: <2026-05-04 Mon>
 :PROPERTIES:
 :ORG_GTD_CAPTURED_AT: [2026-04-27 Mon 19:13]
@@ -138,7 +63,8 @@ SCHEDULED: <2026-05-04 Mon>
 :ORG_GTD:  Projects
 :ORG_GTD_FIRST_TASKS: ef-themes-2026-04-27-19-15-37
 :END:
-*** NEXT [[https://protesilaos.com/emacs/ef-themes][ef-themes]]
+*** DONE [[https://protesilaos.com/emacs/ef-themes][ef-themes]]
+CLOSED: [2026-05-05 Tue 17:41]
 :PROPERTIES:
 :ORG_GTD:  Actions
 :ID:       ef-themes-2026-04-27-19-15-37
@@ -147,7 +73,8 @@ SCHEDULED: <2026-05-04 Mon>
 :ORG_GTD_PROJECT: Packages to try
 :ORG_GTD_BLOCKS: breadcrumb-2026-04-27-19-15-37
 :END:
-*** TODO [[https://protesilaos.com/emacs/ef-themes][breadcrumb]]
+- State "DONE"       from "NEXT"       [2026-05-05 Tue 17:41]
+*** NEXT [[https://protesilaos.com/emacs/ef-themes][breadcrumb]]
 :PROPERTIES:
 :ORG_GTD:  Actions
 :ID:       breadcrumb-2026-04-27-19-15-37
