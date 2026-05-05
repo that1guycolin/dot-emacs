@@ -86,14 +86,21 @@
   (add-hook 'elpaca-after-init-hook #'dashboard-insert-startupify-lists)
   (add-hook 'elpaca-after-init-hook #'dashboard-initialize)
   (dashboard-setup-startup-hook)
+
+  (defun user/dashboard-after-emacsclient-frame ()
+    "Refresh dashboard after a real emacsclient frame is created."
+    (let ((frame (selected-frame)))
+      (when (and (display-graphic-p frame)
+		 (frame-parameter frame 'client)
+		 (member
+		  (buffer-name
+		   (window-buffer
+		    (frame-selected-window frame)))
+                  '("*scratch*" "*dashboard*")))
+	(dashboard-refresh-buffer))))
   
-  (defun user/emacsclient-dashboard (frame)
-    "Show the dashboard every time a new FRAME is opened."
-    (with-selected-frame frame
-      (dashboard-refresh-buffer)))
-  (add-to-list 'after-make-frame-functions #'user/emacsclient-dashboard)
-  (let ((order (reverse (seq-into-sequence after-make-frame-functions))))
-    (setq after-make-frame-functions order)))
+  (add-hook 'server-after-make-frame-hook
+	    #'user/dashboard-after-emacsclient-frame))
 
 
 (provide '14-misc-packages)
