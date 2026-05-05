@@ -116,7 +116,8 @@
 (use-package org-mem
   :after org
   :functions
-  org-mem-updater-mode org-mem-reset org-mem-await org-mem-tip-if-empty
+  org-mem-roamy-db-mode org-mem-updater-mode org-mem-reset org-mem-await
+  org-mem-tip-if-empty
   :custom
   (org-mem-watch-dirs '("~/org/knowledge-base/"))
   (org-mem-roamy-do-overwrite-real-db nil)
@@ -390,6 +391,32 @@ folder."
   (persp-switch-last))
 
 (add-hook 'emacs-startup-hook #'user/create-org-persp)
+
+(declare-function org-map-entries "org")
+(declare-function org-get-heading "org")
+(defun user/org-get-heading-location ()
+  "Prompt to select a heading in the current document, and return its location.
+Location is the value of the character at which the heading begins in
+the current document."
+  (interactive)
+  (let* ((options (org-map-entries
+		   (lambda ()
+		     (let ((heading (org-get-heading t t t t))
+			   (pos (point)))
+		       (cons heading pos)))
+		   nil 'file))
+	 (choice (completing-read "Heading: " options nil t)))
+    (cdr (assoc choice options))))
+
+(defun user/org-node-create-properties-block ()
+  "Create an org-node properties block at an interactively-selected heading."
+  (interactive)
+  (unless (derived-mode-p 'org-mode)
+    (user-error "This buffer is not in org-mode"))
+  (goto-char (user/org-get-heading-location))
+  (org-id-get-create)
+  (org-node-ensure-crtime-property))
+
 
 
 (provide '11-org-mode-extensions)
