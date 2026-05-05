@@ -1,10 +1,9 @@
 ;;; 11-org-mode-extensions.el --- Extensions for Org-mode -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; djvu, el2org, magit-org-todos, nov, org-autolist, org-caldav, org-edna,
-;; org-gtd, org-mem, org-modern, org-modern-indent, org-node, org-noter,
-;; org-noter-pdftools, org-pdftools, org-pomodoro, org-project-capture,
-;; pdf-tools, toc-org
+;; djvu, el2org, magit-org-todos, nov, org-caldav, org-edna, org-gtd, org-mem,
+;; org-modern, org-modern-indent, org-node, org-noter, org-noter-pdftools,
+;; org-pdftools, org-pomodoro, org-project-capture, pdf-tools, toc-org
 
 ;;; Commentary:
 ;; Provide extensions for Emacs' Org-mode.
@@ -336,9 +335,6 @@ With a prefix ARG, remove start location."
     (bind-keys
      :map markdown-mode-map
      ("C-c C-o" . toc-org-markdown-follow-thing-at-point))))
-
-(use-package org-autolist
-  :hook (org-mode . org-autolist-mode))
 
 (use-package el2org
   :ensure (:wait t)
