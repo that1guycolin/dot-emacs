@@ -293,7 +293,7 @@ Takes arguments EXPR and LOC to pass to `user/buffer-by-filename'."
     ("g" "DWIM Ripgrep P" rg-dwim-project-dir)
     ("z" "Forget Zombie Ps" project-forget-zombie-projects)
     ("p r" "Reset Known Ps" user/project-reset-projects)]])
-(keymap-global-set "C-c t" #'user/project-treemacs-anywhere-dispatch)
+(keymap-global-set "C-c n" #'user/project-treemacs-anywhere-dispatch)
 
 
 (provide '05-project-management)
