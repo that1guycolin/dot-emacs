@@ -27,13 +27,6 @@
 
 (declare-function flycheck-add-mode "flycheck")
 (use-package org-gtd
-  :defer t
-  :bind
-  (("C-c d c" . org-gtd-capture)
-   ("C-c d e" . org-gtd-engage)
-   ("C-c d p" . org-gtd-process-inbox)
-   ("C-c d n" . org-gtd-show-all-next)
-   ("C-c d s" . org-gtd-reflect-stuck-projects))
   :functions
   org-gtd-mode org-gtd-capture org-gtd-engage org-gtd-process-inbox
   org-gtd-show-all-next org-gtd-reflect-stuck-projects org-gtd-organize
@@ -57,15 +50,17 @@
   :config
   (org-gtd-mode 1)
   (with-eval-after-load 'flycheck
-    (flycheck-add-mode 'org-lint 'org-gtd-clarify-mode)))
-
-(with-eval-after-load 'org-gtd
-  (setq org-agenda-files (list org-gtd-directory))
+    (flycheck-add-mode 'org-lint 'org-gtd-clarify-mode))
+  (add-to-list 'org-agenda-files org-gtd-directory)
+  
   (bind-keys
+   ("C-c d c" . org-gtd-capture)
+   ("C-c d e" . org-gtd-engage)
+   ("C-c d p" . org-gtd-process-inbox)
+   ("C-c d n" . org-gtd-show-all-next)
+   ("C-c d s" . org-gtd-reflect-stuck-projects)
    :map org-gtd-clarify-mode-map
-   ("C-c c" . org-gtd-organize)))
-(with-eval-after-load 'org-agenda
-  (bind-keys
+   ("C-c c" . org-gtd-organize)
    :map org-agenda-mode-map
    ("C-c ." . org-gtd-agenda-transient)))
 
@@ -74,13 +69,7 @@
 	   :source "MELPA" :package "org-project-capture" :id org-project-capture
 	   :repo "colonelpanic8/org-project-capture" :fetcher github
 	   :files ("org-project-capture.el" "org-project-capture-backend.el"
-		   "org-category-capture.el" "README.org")
-	   :type git :protocol https :inherit t :depth treeless)
-  :defer t
-  :bind
-  (("C-c p c" . org-project-capture-capture-for-current-project)
-   ("C-c p p" . org-project-capture-project-todo-completing-read)
-   ("C-c p a" . org-project-capture-agenda-for-current-project))
+		   "org-category-capture.el" "README.org"))
   :functions
   org-project-capture-capture-for-current-project
   org-project-capture-project-todo-completing-read
@@ -94,7 +83,11 @@
   (dolist (project (project-known-project-roots))
     (let ((ptodo (expand-file-name "TODO" project)))
       (when (file-exists-p ptodo)
-	(add-to-list 'org-agenda-files ptodo)))))
+	(add-to-list 'org-agenda-files ptodo))))
+  (bind-keys
+   ("C-c p c" . org-project-capture-capture-for-current-project)
+   ("C-c p p" . org-project-capture-project-todo-completing-read)
+   ("C-c p a" . org-project-capture-agenda-for-current-project)))
 
 (use-package magit-org-todos
   :after magit
