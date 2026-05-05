@@ -262,6 +262,10 @@
   :hook (cmake-ts-mode . eldoc-cmake-enable))
 
 (use-package modern-sh
+  :ensure (modern-sh :package "modern-sh" :id modern-sh :fetcher github
+		     :repo "that1guycolin/modern-sh" :branch "temp-fix"
+		     :files ("*.el" (:exclude "README*"))
+		     :type git :protocol https :inherit t :depth treeless)
   :defer t
   :hook (sh-mode . modern-sh-mode)
   :functions
