@@ -9,6 +9,7 @@
 ;;; Code:
 ;; =======  HELPER FUNCTIONS  =======
 (require 'cl-lib)
+(declare-function user/function-after-emacsclient-frame "01-bootstrap-core.el")
 
 ;; Ensure theme message prints after startup
 (defvar user/ef-themes-startup-messages nil)
@@ -71,8 +72,10 @@ as well."
    ("C-c t" . user/theme-functions))
 
   (user/delay-messages-around #'modus-themes-load-random 'dark)
-  (add-hook 'server-after-make-frame-hook (lambda ()
-					    (modus-themes-load-random 'dark))))
+  (add-hook 'server-after-make-frame-hook
+	    #'(lambda ()
+		(user/function-after-emacsclient-frame
+		 #'modus-themes-load-random 'dark))))
 
 
 ;; =======  ICONS  =======

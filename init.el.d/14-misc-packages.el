@@ -1,5 +1,4 @@
 ;;; 14-misc-packages.el --- Misc & Dashboard -*- lexical-binding: t; -*-
-
 ;;; Packages included:
 ;; dashboard, emacs-everywhere, free-keys, telega
 
@@ -13,6 +12,7 @@
 ;; `free-keys' (buffer of available keybinds)
 ;; `emacs-everywhere'
 ;; ======================
+(declare-function user/function-after-emacsclient-frame "01-bootstrap-core.el")
 (use-package telega
   :defer t
   :bind ("C-c g" . telega)
@@ -87,15 +87,10 @@
   (add-hook 'elpaca-after-init-hook #'dashboard-initialize)
   (dashboard-setup-startup-hook)
 
-  (defun user/dashboard-after-emacsclient-frame ()
-    "Refresh dashboard after a real emacsclient frame is created."
-    (let ((frame (selected-frame)))
-      (when (and (display-graphic-p frame)
-		 (frame-parameter frame 'client))
-	(dashboard-refresh-buffer))))
-  
   (add-hook 'server-after-make-frame-hook
-	    #'user/dashboard-after-emacsclient-frame))
+	    #'(lambda ()
+		(user/function-after-emacsclient-frame
+		 #'dashboard-refresh-buffer))))
 
 
 (provide '14-misc-packages)
