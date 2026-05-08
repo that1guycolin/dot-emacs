@@ -123,6 +123,15 @@ as well."
   :config
   (which-key-mode 1))
 
+(use-package folding-mode
+  :ensure nil
+  :defines folding-mode-prefix-key
+  :hook
+  ((prog-mode . folding-mode)
+   (text-mode . folding-mode))
+  :init
+  (setq folding-mode-prefix-key "C-c @"))
+
 
 (provide '03-visual-settings)
 ;;; 03-visual-settings.el ends here
