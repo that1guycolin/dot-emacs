@@ -219,7 +219,6 @@
 ;; =======  ENHANCE BUILT-INS  =======
 ;; `auto-rename-tag' (xml tag assistant)
 ;; `eldoc-cmake' (doc support in cmake-ts-mode)
-;; `modern-sh' (enhanced sh-mode support
 ;; `yaml-pro' (enhanced .yaml support)
 ;; ===================================
 (use-package auto-rename-tag
@@ -230,32 +229,9 @@
   :defer t
   :hook (cmake-ts-mode . eldoc-cmake-enable))
 
-(use-package modern-sh
-  :ensure (modern-sh :package "modern-sh" :id modern-sh :fetcher github
-		     :repo "that1guycolin/modern-sh" :branch "temp-fix"
-		     :files ("*.el" (:exclude "README*"))
-		     :type git :protocol https :inherit t :depth treeless)
   :defer t
-  :hook (sh-mode . modern-sh-mode)
-  :functions
-  modern-sh-after-save-hook modern-sh-format-buffer
-  user/modern-sh-after-save-hook modern-sh-menu
   :config
-  (defun user/modern-sh-after-save-hook ()
-    "Custom version of `modern-sh-after-save-hook' that does not generate TAGS.
-Modern-sh will still format on save."
-    (when (eq major-mode 'sh-mode)
-      (modern-sh-format-buffer)))
-
-  (add-hook 'modern-sh-mode-hook
-	    #'(lambda ()
-		(remove-hook 'after-save-hook #'modern-sh-after-save-hook)
-		(add-hook 'after-save-hook #'user/modern-sh-after-save-hook)))
-  
   (bind-keys
-   :map sh-mode-map
-   ("<f8>"  . modern-sh-menu)
-   ("C-c y" . modern-sh-menu)))
 
 (use-package yaml-pro
   :ensure (:wait)
