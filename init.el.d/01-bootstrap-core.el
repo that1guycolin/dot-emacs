@@ -145,7 +145,7 @@
     (add-to-list 'org-src-lang-modes lang-mode-cons))
 
   (setq org-babel-default-header-args
-	(cons '(:results . "output")
+	(cons '(:results . "value verbatim")
 	      (assq-delete-all :results org-babel-default-header-args)))
 
   (with-eval-after-load 'ob
@@ -178,6 +178,8 @@ creating org nodes."
    ("C-c l"   . org-toggle-link-display)
    ("C-c C-q" . org-set-tags-command)))
 
+
+;; =======  EMACSCLIENT FRAME FUNCTION  =======
 (defun user/function-after-emacsclient-frame (func &optional args)
   "Run FUNC and any ARGS only after a real emacsclient frame is created."
   (let ((frame (selected-frame)))
