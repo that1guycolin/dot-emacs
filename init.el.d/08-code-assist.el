@@ -306,8 +306,8 @@ See URL `https://vale.sh'."
 ;; ==========================
 (use-package yasnippet
   :hook
-  ((prog-mode     . yas-minor-mode)
-   (markdown-mode . yas-minor-mode))
+  ((prog-mode . yas-minor-mode)
+   (text-mode . yas-minor-mode))
   :functions yas-reload-all
   :config
   (add-to-list 'yas-snippet-dirs
