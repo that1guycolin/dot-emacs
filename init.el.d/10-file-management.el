@@ -87,13 +87,6 @@
 --human-readable --group-directories-first --no-group")
   
   :config
-  (defun user/dired-use-dirvish (dirname &optional switches)
-    "Open DIRNAME with `dirvish' instead of `dired'."
-    (if switches
-	(dirvish dirname switches)
-      (dirvish dirname)))
-  (advice-add 'dired :override #'user/dired-use-dirvish)
-
   (defvar-keymap user/dired-ffmpeg-actions-map
     :prefix t
     :doc "Keymap with FFmpeg actions to run on marked files in dired/dirvish."
