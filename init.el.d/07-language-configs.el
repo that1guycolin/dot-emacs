@@ -125,21 +125,6 @@
   (add-to-list 'sly-contribs 'sly-mrepl))
 
 
-;; =======  MARKDOWN  =======
-;; `grip-mode' (support md, gfm)
-;; ==========================
-(defvar markdown-mode-command-map)
-(use-package grip-mode
-  :after markdown-mode
-  :functions grip-mode
-  :defines grip-command
-  :config
-  (bind-keys
-   :map markdown-mode-command-map
-   ("g" . grip-mode))
-  (setq grip-command 'auto))
-
-
 ;; =======  PYTHON  =======
 ;; `auto-virtualenv' (virtual env support)
 ;; `dwim-coder-mode' (hacks to reduce effort)
@@ -219,6 +204,7 @@
 ;; =======  ENHANCE BUILT-INS  =======
 ;; `auto-rename-tag' (xml tag assistant)
 ;; `eldoc-cmake' (doc support in cmake-ts-mode)
+;; `grip-mode' (support for gfm)
 ;; `yaml-pro' (enhanced .yaml support)
 ;; ===================================
 (use-package auto-rename-tag
@@ -229,9 +215,16 @@
   :defer t
   :hook (cmake-ts-mode . eldoc-cmake-enable))
 
+(defvar markdown-ts-mode-map)
+(use-package grip-mode
   :defer t
+  :commands grip-mode
+  :defines grip-command
   :config
   (bind-keys
+   :map markdown-ts-mode-map
+   ("C-c j" . grip-mode))
+  (setq grip-command 'auto))
 
 (use-package yaml-pro
   :ensure (:wait)
