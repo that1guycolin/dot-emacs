@@ -223,7 +223,7 @@ Takes arguments EXPR and LOC to pass to `user/buffer-by-filename'."
   treemacs-select-window treemacs-project-follow-mode treemacs-root-up
   treemacs-get-local-window treemacs-hide-gitignored-files-mode
   treemacs--select-workspace-by-name treemacs-switch-workspace
-  user/treemacs-switch-workspace-and-focus
+  user/treemacs-switch-workspace-and-focus user/toggle-gitignored-wait-5
 
   :custom
   (treemacs-width 35)
@@ -242,6 +242,22 @@ Takes arguments EXPR and LOC to pass to `user/buffer-by-filename'."
     (let ((treemacs-win (treemacs-get-local-window)))
       (when (and treemacs-win (not (eq treemacs-win (selected-window))))
 	(select-window treemacs-win))))
+
+  (defun user/toggle-gitignored-wait-5 (&rest _args)
+    "Toggle `treemacs-hide-gitignored-files-mode' if treemacs window.
+Wait five seconds before activating the mode."
+    (pcase (treemacs-current-visibility)
+      ('visible
+       (run-at-time 5 nil
+		    #'(lambda ()
+			(treemacs-hide-gitignored-files-mode 1))))
+      ('exists
+       (run-at-time 5 nil
+		    #'(lambda ()
+			(treemacs-hide-gitignored-files-mode 1))))
+      ('none (ignore))))
+  (advice-add 'treemacs :after #'user/toggle-gitignored-wait-5)
+
   
   (bind-keys
    :map treemacs-mode-map
