@@ -51,10 +51,9 @@ Models on this list are either cloud-based or have already been downloaded
 to the user's device.")
 
 (defvar user/openrouter-list
-  '(
-    openai/gpt-oss-120b:free qwen/qwen3-coder:free
-    meta-llama/llama-3.3-70b-instruct:free qwen/qwen3-4b:free
-    google/gemma-3-27b-it:free openrouter/free)
+  '(openai/gpt-oss-120b:free
+    qwen/qwen3-coder:free meta-llama/llama-3.3-70b-instruct:free
+    qwen/qwen3-4b:free google/gemma-3-27b-it:free openrouter/free)
   "A list of user-selected LLMs available through OpenRouter.")
 
 (defun user/ensure-ollama-system-service ()
@@ -148,12 +147,7 @@ doubles as a model-switcher."
 
 (use-package gptel-magit
   :defer t
-  :functions gptel-magit-install
-  :after gptel
-  :config
-  (add-hook 'magit-mode-hook (lambda ()
-			       (when (featurep 'gptel)
-				 (gptel-magit-install)))))
+  :hook (magit-mode . gptel-magit-install))
 
 (defvar git-commit-mode-map)
 (use-package gptel-commit
