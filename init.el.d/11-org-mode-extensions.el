@@ -378,15 +378,19 @@ folder."
 (declare-function user/add-list-to-persp "05-project-management.el")
 (declare-function persp-switch-last "perspectives.el")
 (defun user/create-org-persp ()
-  "Create a persp called \"org\", and add open TODO and .org files to the persp."
+  "Create a persp called \"org\".  Add open TODO and .org files to the persp."
   (interactive)
-  (persp-new "org")
   (persp-switch "org")
   (user/add-list-to-persp :ext "org")
   (user/add-list-to-persp :full "TODO")
   (persp-switch-last))
 
 (add-hook 'emacs-startup-hook #'user/create-org-persp)
+(declare-function user/function-after-emacsclient-frame "01-bootstrap-core.el")
+(add-hook 'server-after-make-frame-hook
+	  #'(lambda ()
+	      (user/function-after-emacsclient-frame
+	       #'user/create-org-persp)))
 
 (declare-function org-map-entries "org")
 (declare-function org-get-heading "org")
@@ -412,7 +416,6 @@ the current document."
   (goto-char (user/org-get-heading-location))
   (org-id-get-create)
   (org-node-ensure-crtime-property))
-
 
 
 (provide '11-org-mode-extensions)
