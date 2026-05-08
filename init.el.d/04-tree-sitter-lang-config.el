@@ -104,6 +104,14 @@
   :custom
   (lua-ts-inferior-lua "luajit"))
 
+(use-package markdown-ts-mode
+  :defer t
+  :ensure nil
+  :mode
+  (("\\.md\\'"    . markdown-ts-mode)
+   ("^README\\'"  . markdown-ts-mode)
+   ("^INSTALL\\'" . markdown-ts-mode)))
+
 (use-package python-ts-mode
   :defer t
   :ensure nil

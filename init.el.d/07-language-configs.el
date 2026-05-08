@@ -126,39 +126,8 @@
 
 
 ;; =======  MARKDOWN  =======
-;; `markdown-mode' (md support)
 ;; `grip-mode' (support md, gfm)
 ;; ==========================
-(use-package markdown-mode
-  :defer t
-  :mode
-  (("\\.md\\'"        . markdown-mode)
-   ("^README\\.md\\'" . gfm-mode)
-   ("^README\\'"      . gfm-mode)
-   ("^INSTALL\\'"     . gfm-mode))
-  :functions user/switch-markdown-command
-  
-  :init
-  (setq markdown-command "cmark")
-  :config
-  (defun user/switch-markdown-command (command)
-    "Change the value of `markdown-command' to COMMAND."
-    (interactive
-     (list (completing-read "Select md backend: "
-                            '("cmark" "cmark-gfm" "pandoc") nil t)))
-    (setq markdown-command command))
-
-  (add-hook 'markdown-mode-hook
-            (lambda ()
-              (add-hook 'hack-local-variables-hook
-			(lambda () (user/smart-set-fill-column 100))
-			nil t)))
-
-  (keymap-set markdown-mode-map "C-c i" 'markdown-mode-command-map)
-  (bind-keys
-   :map markdown-mode-command-map
-   ("C-c"   . user/switch-markdown-command)))
-
 (defvar markdown-mode-command-map)
 (use-package grip-mode
   :after markdown-mode

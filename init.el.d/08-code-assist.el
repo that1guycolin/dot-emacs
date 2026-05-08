@@ -81,7 +81,7 @@ See URL `https://github.com/rvben/rumdl'."
     ((error line-start (file-name)
 	    ":" line ":" column ": "
 	    (id (one-or-more (not (any " ")))) " " (message) line-end))
-    :modes (markdown-mode gfm-mode))
+    :modes (markdown-ts-mode)) ;; markdown-mode gfm-mode
   (add-to-list 'flycheck-checkers 'markdown-rumdl)
 
   (flycheck-define-checker tombi-lint
