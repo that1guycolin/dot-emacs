@@ -96,7 +96,7 @@ In this iteration, all the fonts on the list are monospaced nerd fonts.")
    (list (completing-read
 	  "Font: " (mapcar #'car user/font-alist)
 	  nil t)))
-  (set-frame-font (cdr (assoc font user/font-alist)) t t t)
+  (set-frame-font (cdr (assoc font user/font-alist)) nil t t)
   (message "Font set to %s" font))
 
 (defun user/random-font ()
@@ -104,7 +104,7 @@ In this iteration, all the fonts on the list are monospaced nerd fonts.")
   (interactive)
   (let* ((font-cons (nth (random (length user/font-alist)) user/font-alist))
 	 (font (cdr font-cons)))
-    (set-frame-font font t t t)
+    (set-frame-font font nil t t)
     (message "Font set to %s" (car font-cons))))
 
 
