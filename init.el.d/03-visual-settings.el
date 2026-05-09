@@ -119,12 +119,7 @@ as well."
 
 (use-package folding-mode
   :ensure nil
-  :defines folding-mode-prefix-key
-  :hook
-  ((prog-mode . folding-mode)
-   (text-mode . folding-mode))
-  :init
-  (setq folding-mode-prefix-key "C-c @"))
+  :bind ("C-|" . folding-mode))
 
 
 (provide '03-visual-settings)
