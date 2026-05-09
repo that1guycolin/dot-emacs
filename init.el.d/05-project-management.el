@@ -293,8 +293,7 @@ Wait three seconds before activating the mode."
    ["Project"
     ("t" "Toggle" treemacs)
     ("T" "Refresh" treemacs-refresh)
-    ("a" "Add Project" (lambda () (interactive)
-			 (call-interactively #'project-remember-project)))
+    ("d" "Disproject" disproject-dispatch)
     ("r" "Rename Project" treemacs-rename-project)
     ("c" "Change Project" (lambda () (interactive)
 			    (call-interactively
@@ -321,7 +320,8 @@ Wait three seconds before activating the mode."
     ("q" "Project Replace Regexp" project-query-replace-regexp)
     ("f" "Project Find File" project-find-file)
     ("s" "Project Search" project-search)
-    ("d" "Disproject" disproject-dispatch)]
+    ("a" "Add Project" (lambda () (interactive)
+			 (call-interactively #'project-remember-project)))]
    
    ["Shell"
     ("S" "Project Shell" project-shell)
@@ -336,7 +336,7 @@ Wait three seconds before activating the mode."
     ("G" "DWIM Ripgrep Project" rg-dwim-project-dir)
     ("Z" "Forget Zombie Projects" project-forget-zombie-projects)
     ("p r" "Reset Known Projects" user/project-reset-projects)]])
-(keymap-global-set "C-c n" #'user/project-treemacs-anywhere-dispatch)
+(keymap-global-set "C-c t" #'user/project-treemacs-anywhere-dispatch)
 
 
 (provide '05-project-management)
