@@ -81,18 +81,10 @@ as well."
 
 
 ;; =======  ICONS  =======
-;; font: `CommitMonoNFM'
-;; icons: `nerd-icons'
+;; `nerd-icons' (icons)
+;; `tab-line-nerd-icons' (nerd-icons in tab-line)
+;; `nerd-icons-corfu' (nerd-icons in corfu)
 ;; =======================
-(when (member "CommitMono Nerd Font Mono" (font-family-list))
-  (set-face-attribute 'default nil
-                      :family "CommitMono Nerd Font Mono"
-                      :foundry "NerdFont"
-                      :slant 'normal
-                      :weight 'regular
-                      :height 110
-                      :width 'normal))
-
 (use-package nerd-icons
   :functions nerd-icons-install-fonts
   :config
