@@ -119,6 +119,7 @@
 (keymap-global-unset "C-z")
 (defvar Info-directory-list)
 (defvar elpaca-builds-directory)
+(defvar elpaca-sources-directory)
 (use-package emacs
   :ensure nil
   :bind
@@ -144,7 +145,9 @@
 
   (with-eval-after-load 'info
     (add-to-list 'Info-directory-list
-		 (expand-file-name elpaca-builds-directory))))
+		 (expand-file-name elpaca-builds-directory))
+    (add-to-list 'Info-directory-list
+		 (expand-file-name elpaca-sources-directory))))
 
 
 (provide '02-completion-setup)
