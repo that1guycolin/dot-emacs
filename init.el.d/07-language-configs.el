@@ -200,6 +200,11 @@
   :defer t
   :mode ("\\.kdl\\'" . kdl-mode))
 
+(use-package systemd
+  :defer t
+  :mode
+  (("\\.service\\'" . systemd-mode)
+   ("\\.socket\\'"  . systemd-mode)))
 
 ;; =======  ENHANCE BUILT-INS  =======
 ;; `auto-rename-tag' (xml tag assistant)
