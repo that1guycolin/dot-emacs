@@ -150,7 +150,8 @@ If not in a side window, jump to the first found side window."
 	(add-to-list 'load-path ,elpaca-path)
         (require 'elpaca-autoloads nil t)
         (dolist (menu ',menus)
-          (elpaca-update-menus menu))
+          (elpaca-update-menus menu)
+	  (elpaca-wait))
         "All menus updated!")
      (lambda (result)
        (message result)))))
@@ -210,18 +211,26 @@ The returned list does not include packages with :ensure explicitly set to nil."
 
 ;; =======  TRANSIENT  =======
 (declare-function transient-define-prefix "transient")
-(defvar user/custom-functions-dispatch nil)
+(defvar user/visual-settings-dispatch nil)
 (transient-define-prefix
-  user/custom-functions-dispatch ()
-  "Display functions defined by the user."
-  ["Custom Functions"
+  user/visual-settings-dispatch ()
+  "Display functions that change how the user-interface looks."
+  ["Modify UI"
    ["Fonts"
-    ("f" "Switch font" user/switch-font)
-    ("r" "Random font" user/random-font)]
-   ["Elpaca"
-    ("m" "Update elpaca menus" user/update-elpaca-menus)
-    ("p" "Update packages" user/elpaca-update-packages)]])
-(keymap-global-set "C-c u" 'user/custom-functions-dispatch)
+    ("f s" "Switch font" user/switch-font)
+    ("f r" "Random font" user/random-font)]
+   ["Theme"
+    ("t s" "Switch theme" modus-themes-select-dark)
+    ("t r" "Random theme" modus-themes-load-random-dark)
+    ("t n" "Rotate theme" modus-themes-rotate)]])
+(keymap-global-set "C-c u" 'user/visual-settings-dispatch)
+
+(defvar-keymap user/update-elpaca-map
+  :prefix t
+  :doc "Functions for updating Elpaca package manager"
+  "m" #'user/update-elpaca-menus
+  "p" #'user/elpaca-update-packages)
+(keymap-global-set "M-E" 'user/update-elpaca-map)
 
 
 (provide '15-user-functions)

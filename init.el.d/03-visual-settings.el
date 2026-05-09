@@ -49,6 +49,9 @@ as well."
 ;; `ef-themes' (Additional & enhanced Emacs' themes)
 ;; ================
 (use-package modus-themes
+  :functions
+  modus-themes-include-derivatives-mode modus-themes-load-random-dark
+  modus-themes-select-dark modus-themes-load-random modus-themes-rotate
   :demand t)
 
 (use-package ef-themes
@@ -61,15 +64,14 @@ as well."
    modus-themes-mixed-fonts t
    modus-themes-italic-constructs t)
 
+  ;; This keymap is bound in the custom transient defined in
+  ;; 15-user-functions.el
   (defvar-keymap user/theme-functions
     :prefix t
     :doc "Keymap of functions affecting the theme."
+    "s" #'modus-themes-select-dark
     "r" #'modus-themes-load-random-dark
-    "n" #'modus-themes-rotate
-    "s" #'modus-themes-select)
-
-  (bind-keys
-   ("C-c t" . user/theme-functions))
+    "n" #'modus-themes-rotate)
 
   (user/delay-messages-around #'modus-themes-load-random 'dark)
   (add-hook 'server-after-make-frame-hook
