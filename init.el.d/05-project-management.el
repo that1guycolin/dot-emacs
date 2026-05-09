@@ -184,7 +184,6 @@ into the message."
     (interactive)
     (persp-switch (project-name))
     (perspective-project-bridge-find-perspectives-for-all-buffers))
-
   (advice-add 'project-switch-project :after #'user/project-switch-perspective))
 
 (use-package docker
@@ -213,7 +212,8 @@ into the message."
   treemacs-select-window treemacs-project-follow-mode treemacs-root-up
   treemacs-get-local-window treemacs-hide-gitignored-files-mode
   treemacs--select-workspace-by-name treemacs-switch-workspace
-  user/treemacs-switch-workspace-and-focus user/toggle-gitignored-wait-5
+  user/treemacs-switch-workspace-and-focus user/toggle-gitignored-wait-3
+  user/close-treemacs
 
   :custom
   (treemacs-width 35)
@@ -233,21 +233,29 @@ into the message."
       (when (and treemacs-win (not (eq treemacs-win (selected-window))))
 	(select-window treemacs-win))))
 
-  (defun user/toggle-gitignored-wait-5 (&rest _args)
+  (defun user/toggle-gitignored-wait-3 (&rest _args)
     "Toggle `treemacs-hide-gitignored-files-mode' if treemacs window.
-Wait five seconds before activating the mode."
+Wait three seconds before activating the mode."
     (pcase (treemacs-current-visibility)
       ('visible
-       (run-at-time 5 nil
+       (run-at-time 3 nil
 		    #'(lambda ()
 			(treemacs-hide-gitignored-files-mode 1))))
       ('exists
-       (run-at-time 5 nil
+       (run-at-time 3 nil
 		    #'(lambda ()
 			(treemacs-hide-gitignored-files-mode 1))))
       ('none (ignore))))
-  (advice-add 'treemacs :after #'user/toggle-gitignored-wait-5)
+  (advice-add 'treemacs :after #'user/toggle-gitignored-wait-3)
 
+  (defun user/close-treemacs (&rest _args)
+    "If a treemacs window exists, close it."
+    (pcase (treemacs-current-visibility)
+      ('visible (treemacs))
+      ('exists  (treemacs))
+      ('none    (ignore))))
+
+  (advice-add 'disproject-dispatch :before #'user/close-treemacs)
   
   (bind-keys
    :map treemacs-mode-map
