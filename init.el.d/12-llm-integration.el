@@ -151,18 +151,17 @@ doubles as a model-switcher."
 
 (defvar git-commit-mode-map)
 (use-package gptel-commit
-  :defer t
   :after gptel
   :functions
   gptel-commit gptel-commit-rationale
   :custom
   (gptel-commit-stream t)
   :config
-  (when (featurep 'gptel)
-    (bind-keys
-     :map git-commit-mode-map
-     ("C-c g" . gptel-commit)
-     ("C-c G" . gptel-commit-rationale))))
+  (with-eval-after-load 'git-commit
+    (transient-append-suffix
+      'git-commit-insert-trailer
+      "C-d"
+      '("C-g" "Gptel Commit" gptel-commit-rationale))))
 
 (use-package gptel-forge-prs
   :after forge
@@ -273,11 +272,11 @@ doubles as a model-switcher."
 	   (choice-sym (intern choice))
            (ctx (cdr (assoc choice-sym user/ollama-alist))))
       (setopt ellama-provider
-              (make-llm-ollama
-               :chat-model choice
-               :embedding-model "nomic-embed-text"
-               :default-chat-non-standard-params
-               `(("num_ctx" . ,ctx))))
+	      (make-llm-ollama
+	       :chat-model choice
+	       :embedding-model "nomic-embed-text"
+	       :default-chat-non-standard-params
+	       `(("num_ctx" . ,ctx))))
       (message "Ellama model → %s" choice)))
 
   ;; ----------- DISPLAY -----------
