@@ -31,10 +31,8 @@
   project-remember-projects-under project-prompt-project-dir
 
   :custom
-  (project-list-exclude (list (concat "^"
-				      (regexp-quote
-				       (expand-file-name
-					"elpaca" user-emacs-directory)))))
+  (project-list-exclude
+   (list (concat "^" (regexp-quote (expand-file-name elpaca-directory)))))
   :config
   (dolist (dir '("^node_modules$" "^\\.venv$" "^\\.uv$"))
     (add-to-list 'project-vc-ignores dir))
@@ -59,25 +57,7 @@
 (use-package disproject
   :defer t
   :bind (:map ctl-x-map
-              ("p" . disproject-dispatch)))
-
-(use-package project-cmake
-  :functions project-cmake-find-root
-  :custom
-  (project-cmake-default-cmake-options
-   '("CMAKE_BUILD_TYPE:STRING=Release"
-     "CMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON"
-     "CMAKE_C_COMPILER:STRING=clang"
-     "CMAKE_CXX_COMPILER:STRING=clang++"
-     "CMAKE_INSTALL_PREFIX:STRING=/usr/local/"
-     "CMAKE_GENERATOR:STRING=Ninja"))
-  :config
-  (add-hook 'project-find-functions #'project-cmake-find-root -1)
-  (setopt project-cmake-build-directory
-	  (lambda (source)
-	    (let ((proj-name (file-name-nondirectory source))
-		  (build-base (expand-file-name "~/bld/")))
-	      (concat build-base proj-name)))))
+	      ("p" . disproject-dispatch)))
 
 (use-package deadgrep
   :defer t
