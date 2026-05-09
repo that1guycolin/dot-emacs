@@ -57,6 +57,8 @@
 (setq-default
  cursor-type 'bar
  fill-column 80)
+(when (fboundp 'global-tab-line-mode)
+  (global-tab-line-mode 1))
 (when (fboundp 'tool-bar-mode)
   (tool-bar-mode -1))
 (when (fboundp 'scroll-bar-mode)
