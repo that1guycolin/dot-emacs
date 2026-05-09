@@ -141,27 +141,37 @@ LOC can be one of:
 		     (_ (error "%s is not a valid value for loc" loc))))))
 	     (buffer-list))))
 
-  (defun user/add-list-to-persp (loc expr)
+  (defun user/add-list-to-persp (loc expr &optional msg)
     "Add list of buffers returned by `user/buffer-by-filename' to active persp.
-Takes arguments EXPR and LOC to pass to `user/buffer-by-filename'."
+Takes arguments EXPR and LOC to pass to `user/buffer-by-filename'.
+Optionally, override the built-in message by including MSG in the
+arguments.  Custom messages can include \"%s\" to insert the buffer name
+into the message."
     (interactive
      (list
-      (let ((loc-type-alist '(("Filename starts with: " . :prefix)
-			      ("Filename ends with: "   . :suffix)
-			      ("Filename is equal to: " . :full)
-			      ("File has extension: "   . :ext)
-			      ("Filename contains: "    . :contains))))
+      (let ((loc-type-alist
+	     '(("Filename starts with: " . :prefix)
+	       ("Filename ends with: "   . :suffix)
+	       ("Filename is equal to: " . :full)
+	       ("File has extension: "   . :ext)
+	       ("Filename contains: "    . :contains))))
 	(cdr
 	 (assoc
-	  (completing-read "Search style: " (mapcar #'car loc-type-alist) nil t)
+	  (completing-read "Search style: "
+			   (mapcar #'car loc-type-alist) nil t)
 	  loc-type-alist)))
       (read-string "Enter string to search for: ")))
     (dolist (buf (user/buffer-by-filename loc expr))
       (persp-add-buffer buf)
-      (message "Added %s to %s persp" buf (persp-curr)))))
+      (cond
+       ((and msg (string-match-p "\\%s" msg))
+	(message msg buf))
+       (msg
+	(message msg))
+       (t
+	(message "Added %s" buf))))))
 
 (use-package perspective-project-bridge
-  :after perspective
   :functions
   perspective-project-bridge-mode
   perspective-project-bridge-find-perspectives-for-all-buffers
