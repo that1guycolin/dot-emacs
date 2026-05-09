@@ -377,12 +377,13 @@ folder."
 (declare-function persp-switch "perspectives.el")
 (declare-function user/add-list-to-persp "05-project-management.el")
 (declare-function persp-switch-last "perspectives.el")
-(defun user/create-org-persp ()
+(defun user/create-org-persp (&optional _args)
   "Create a persp called \"org\".  Add open TODO and .org files to the persp."
   (interactive)
+  (persp-new "org")
   (persp-switch "org")
-  (user/add-list-to-persp :ext "org")
-  (user/add-list-to-persp :full "TODO")
+  (user/add-list-to-persp :ext "org" "Added %s to org persp")
+  (user/add-list-to-persp :full "TODO" "Added %s to org persp")
   (persp-switch-last))
 
 (add-hook 'emacs-startup-hook #'user/create-org-persp)
