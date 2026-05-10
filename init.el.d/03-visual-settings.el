@@ -40,9 +40,13 @@ as well."
     (apply orig-fun args)))
 
 
-;; =======  START MAXIMIZED  =======
+;; =======  INIT  =======
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
+(set-face-attribute 'default nil :height 131)
 
+(let* ((font (face-attribute 'default :family))
+       (alist-entry (concat font "-13")))
+  (add-to-list 'default-frame-alist `(font . ,alist-entry)))
 
 ;; =======  THEMES  =======
 ;; `modus-themes' (Collection of readable Emacs' themes)
