@@ -212,7 +212,7 @@ into the message."
   treemacs-select-window treemacs-project-follow-mode treemacs-root-up
   treemacs-get-local-window treemacs-hide-gitignored-files-mode
   treemacs--select-workspace-by-name treemacs-switch-workspace
-  user/treemacs-switch-workspace-and-focus user/toggle-gitignored-wait-3
+  user/treemacs-switch-workspace-and-focus user/toggle-gitignored-wait-2
   user/close-treemacs
 
   :custom
@@ -233,20 +233,20 @@ into the message."
       (when (and treemacs-win (not (eq treemacs-win (selected-window))))
 	(select-window treemacs-win))))
 
-  (defun user/toggle-gitignored-wait-3 (&rest _args)
+  (defun user/toggle-gitignored-wait-2 (&rest _args)
     "Toggle `treemacs-hide-gitignored-files-mode' if treemacs window.
 Wait three seconds before activating the mode."
     (pcase (treemacs-current-visibility)
       ('visible
-       (run-at-time 3 nil
+       (run-at-time 2 nil
 		    #'(lambda ()
 			(treemacs-hide-gitignored-files-mode 1))))
       ('exists
-       (run-at-time 3 nil
+       (run-at-time 2 nil
 		    #'(lambda ()
 			(treemacs-hide-gitignored-files-mode 1))))
       ('none (ignore))))
-  (advice-add 'treemacs :after #'user/toggle-gitignored-wait-3)
+  (advice-add 'treemacs :after #'user/toggle-gitignored-wait-2)
 
   (defun user/close-treemacs (&rest _args)
     "If a treemacs window exists, close it."
