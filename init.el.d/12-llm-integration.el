@@ -266,7 +266,7 @@ doubles as a model-switcher."
 (setopt ellama-instant-display-action-function #'display-buffer-at-bottom)
 
 (advice-add 'pixel-scroll-precision :before #'ellama-disable-scroll)
-(advice-add 'end-of-buffer :after #'ellama-enable-scroll))
+(advice-add 'end-of-buffer :after #'ellama-enable-scroll)
 
 
 ;; =======  TRANSIENT  =======
