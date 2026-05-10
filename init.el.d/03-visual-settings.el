@@ -106,6 +106,10 @@ as well."
   :config
   (add-to-list 'corfu-margin-formatters 'nerd-icons-corfu-formatter))
 
+;; =======  MODELINE  =======
+;; `minons' (declutter modeline w/ menu for minor-modes)
+;; `breadcrumb' (navigate directory maze)
+;; ==========================
 (use-package minions
   :functions minions-mode
   :config
@@ -113,6 +117,10 @@ as well."
   (add-to-list 'minions-prominent-modes 'flycheck-mode)
   (add-to-list 'minions-prominent-modes 'lsp-mode)
   (add-to-list 'minions-prominent-modes 'persp-mode))
+
+(use-package breadcrumb
+  :config
+  (breadcrumb-opinionated-mode 1))
 
 ;; Which-key needs to load before a lot of other editor functions,
 ;; which is why it's invoked here.
