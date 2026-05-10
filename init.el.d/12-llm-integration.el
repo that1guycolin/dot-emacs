@@ -71,19 +71,23 @@ to the user's device.")
 
 ;; =======  MCP  =======
 (use-package org-mcp
-  :defer t
-  :commands org-mcp-enable
+  :functions org-mcp-enable
   :config
   (setq org-mcp-allowed-files
 	(directory-files "~/org/llm" t directory-files-no-dot-files-regexp))
   (dolist (file '("~/org/.notes" "~/org/tasks/inbox.org"
 		  "~/org/tasks/org-gtd-tasks.org"))
-    (add-to-list 'org-mcp-allowed-files (expand-file-name file))))
+    (add-to-list 'org-mcp-allowed-files (expand-file-name file)))
+  (org-mcp-enable))
 
 (use-package elisp-dev-mcp
-  :defer t
-  :commands elisp-dev-mcp-enable)
+  :functions elisp-dev-mcp-enable
+  :config
+  (elisp-dev-mcp-enable))
 
+(defun user/switch-active-mcp ()
+  "Switch active mcp from `elisp-dev-mcp' to `org-mcp' and back."
+  (if ))
 ;; =======  GPTEL  =======
 (declare-function auth-source-pick-first-password "auth-source")
 (use-package gptel
@@ -255,36 +259,14 @@ doubles as a model-switcher."
        (setopt ellama-provider user/ellama-model-heavy-chat)
        (setopt ellama-coding-provider user/ellama-model-heavy-code)
        (setopt ellama-summarization-provider user/ellama-model-balanced-summary)
-       (message "Ellama tier → HEAVY"))))
+       (message "Ellama tier → HEAVY")))))
 
-  (defun user/ellama-switch-tier ()
-    (interactive)
-    (let ((choice (completing-read
-                   "Select ellama tier: "
-                   '("fast" "balanced" "heavy"))))
-      (user/ellama-set-tier (intern choice))))
+;; ----------- DISPLAY -----------
+(setopt ellama-chat-display-action-function #'display-buffer-full-frame)
+(setopt ellama-instant-display-action-function #'display-buffer-at-bottom)
 
-  (defun user/ellama-switch-model ()
-    "Interactively select a model."
-    (interactive)
-    (let* ((model-names (mapcar #'car user/ollama-alist))
-           (choice (completing-read "Select model: " model-names nil t))
-	   (choice-sym (intern choice))
-           (ctx (cdr (assoc choice-sym user/ollama-alist))))
-      (setopt ellama-provider
-	      (make-llm-ollama
-	       :chat-model choice
-	       :embedding-model "nomic-embed-text"
-	       :default-chat-non-standard-params
-	       `(("num_ctx" . ,ctx))))
-      (message "Ellama model → %s" choice)))
-
-  ;; ----------- DISPLAY -----------
-  (setopt ellama-chat-display-action-function #'display-buffer-full-frame)
-  (setopt ellama-instant-display-action-function #'display-buffer-at-bottom)
-
-  (advice-add 'pixel-scroll-precision :before #'ellama-disable-scroll)
-  (advice-add 'end-of-buffer :after #'ellama-enable-scroll))
+(advice-add 'pixel-scroll-precision :before #'ellama-disable-scroll)
+(advice-add 'end-of-buffer :after #'ellama-enable-scroll))
 
 
 ;; =======  TRANSIENT  =======
@@ -296,12 +278,12 @@ doubles as a model-switcher."
   ["LLM Integrations"
    ["Gptel"
     ("g ." "Activate @ cursor" gptel-send)
-    ("g b" "Chat buffer" gptel)
-    ("g s" "Switch backend" user/gptel-switch-backend)]
-   ["Ellama"
-    ("e e" "Ellama Menu" ellama-transient-main-menu)
-    ("e t" "Switch Tier" user/ellama-switch-tier)
-    ("e m" "Switch Model" user/ellama-switch-model)]])
+    ("g b" "Chat buffer"       gptel)
+    ("g s" "Switch backend"    user/gptel-switch-backend)]
+   ["Ellama / MCP"
+    ("e"   "Ellama Menu"       ellama-transient-main-menu)
+    ("m s" "Server Start"      mcp-server-lib-start)
+    ("m e" "Server Stop"       mcp-server-lib-stop)]])
 (declare-function user/llm-dispatch "12-llm-integration")
 (bind-keys ("C-c a" . user/llm-dispatch))
 
