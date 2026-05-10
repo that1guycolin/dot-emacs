@@ -44,10 +44,6 @@ as well."
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 (set-face-attribute 'default nil :height 131)
 
-(let* ((font (face-attribute 'default :family))
-       (alist-entry (concat font "-13")))
-  (add-to-list 'default-frame-alist `(font . ,alist-entry)))
-
 ;; =======  THEMES  =======
 ;; `modus-themes' (Collection of readable Emacs' themes)
 ;; `ef-themes' (Additional & enhanced Emacs' themes)
