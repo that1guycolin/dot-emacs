@@ -18,7 +18,6 @@
 ;; `perspective' (separate workspaces for separate projects)
 ;; `perspective-project-bridge' (integrate project.el & perspective)
 ;; `docker' (Docker support for Emacs)
-;; `editorconfig' (support .editorconfig)
 ;; =================================
 (defvar user/projects-directory)
 (defvar user/scripts-directory)
@@ -189,12 +188,6 @@ into the message."
 (use-package docker
   :defer t
   :bind ("C-c D" . docker))
-
-(use-package editorconfig
-  :ensure nil
-  :hook
-  ((prog-mode . editorconfig-mode)
-   (text-mode . editorconfig-mode)))
 
 
 ;; =======  TREEMACS  =======

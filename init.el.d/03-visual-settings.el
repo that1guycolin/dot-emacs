@@ -124,7 +124,6 @@ as well."
 ;; `visual-fill-column' (fill-column for visual-line-mode)
 ;; =============================
 (use-package editorconfig
-  :ensure nil
   :functions editorconfig-core-get-properties-hash
   :config
   (editorconfig-mode 1))
