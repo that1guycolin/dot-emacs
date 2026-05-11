@@ -333,86 +333,19 @@ See URL `https://vale.sh'."
 (declare-function transient-define-prefix "transient")
 (use-package mason
   :ensure (:wait t)
+  :defer t
   :commands
   mason-install mason-manager
-  :functions
-  mason-ensure mason-installed-p user/mason--install-program
-  user/mason-install-optional-program user/mason-install-optional-programs
-  user/mason--dispatch user/mason-dispatch
-  :defines mason-dir
-
-  :init
-  (mason-setup)
-  (setq mason-dir (expand-file-name "~/.local"))
+  :custom
+  (mason-dir (expand-file-name "~/.local"))
   :config
-  ;; Variables
-  (defvar user/required-mason-programs
-    '("debugpy" "fish-lsp" "jsonlint" "lua-language-server" "neocmakelsp"
-      "prettier" "ruff" "rumdl" "selene" "shellcheck" "shfmt" "stylua" "tombi"
-      "ty" "yamllint")
-    "List of programs required in this setup that mason is able to install.")
-  
-  (defvar user/optional-mason-programs
-    '("bash-language-server" "json-language-server" "lemminx" "systemdlsp"
-      "systemdlint" "textlint" "textlsp" "yaml-language-server")
-    "List of optional programs in this setup that mason is able to install.")
-
-  ;; Functions
-  (defun user/mason--install-program (program)
-    "Checks installation status of PROGRAM. If PROGRAM is not installed,
-mason installs it."
-    (condition-case err
-        (if (mason-installed-p program)
-            (message "%s is already installed." program)
-          (message "Installing %s ..." program)
-          (mason-install program))
-      (error
-       (message "Mason failed to install %s: %s"
-                program (error-message-string err)))))
-
-  (defun user/mason-install-program (program)
-    "Use mason to install a PROGRAM.
- Installation options come from the lists
- \"user/required-mason-programs\" & \"user/optional-mason-programs\"."
-    (interactive
-     (list (completing-read "Select program: "
-			    (append user/required-mason-programs
-				    user/optional-mason-programs) nil t)))
-    (user/mason--install-program program))
-
-  (defun user/mason-install-required-programs ()
-    "Leverages mason to install required programs if not installed."
-    (interactive)
-    (dolist (program user/required-mason-programs)
-      (user/mason--install-program program)))
-  
-  (defun user/mason-install-optional-programs ()
-    "Use mason to install all optional programs."
-    (interactive)
-    (dolist (program user/optional-mason-programs)
-      (user/mason--install-program program)))
-
-  (defvar user/mason--dispatch nil)
-  (transient-define-prefix
-    user/mason--dispatch ()
-    "Commands to install external dependencies with `mason'."
-    [
-     ["Mason - Install external deps for flycheck & lsp-mode"]
-     [("r" "Install required" user/mason-install-required-programs)
-      ("o" "Install optional" user/mason-install-optional-programs)]
-     [("p" "Install program" user/mason-install-program)
-      ("m" "Mason Manager" mason-manager)]
-     ])
-  
-  (defun user/mason-dispatch ()
-    "Load mason if not loaded then run user/mason--dispatch."
-    (interactive)
-    (if (featurep 'mason)
-	(user/mason--dispatch)
-      (progn
-	(mason-setup)
-	(user/mason--dispatch))))
-  (bind-keys ("C-c M" . user/mason-dispatch)))
+  (mason-setup)
+  (defvar-keymap user/mason-commands
+    :prefix t
+    :doc "Frequently-used commands for the mason package manager."
+    "i" #'mason-install
+    "m" #'mason-manager)
+  (keymap-global-set "C-c M" 'user/mason-commands))
 
 
 (provide '08-code-assist)
