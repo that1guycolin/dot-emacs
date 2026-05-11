@@ -47,7 +47,6 @@
 	  (zsh "https://github.com/georgeharker/tree-sitter-zsh"))))
 
 (use-package treesit-auto
-  :ensure (:wait t)
   :functions
   global-treesit-auto-mode treesit-auto-add-to-auto-mode-alist
   :custom

@@ -96,7 +96,6 @@
   (keymap-global-unset bind))
 
 (use-package helpful
-  :ensure (:wait t)
   :functions
   helpful-callable helpful-variable helpful-key helpful-command helpful-at-point
   helpful-function helpful-kill-buffers

@@ -20,6 +20,7 @@
 			 ("git-hooks" "git-hooks/*")
 			 (:exclude "lisp/magit-section.el"))
 		 :type git :protocol https :inherit t :depth treeless)
+  :defines magit-mode-map
   :bind
   (("C-x g"   . magit-status)
    ("C-x M-g" . magit-dispatch)
@@ -51,14 +52,12 @@
   :defer t
   :mode ("\\.dockerignore\\'" . gitignore-mode))
 
-(defvar magit-mode-map)
 (use-package magit-git-toolbelt
   :after magit
   :bind (:map magit-mode-map
 	      ("/" . magit-git-toolbelt)))
 
 (use-package treemacs-magit
-  :ensure (:wait t)
   :after treemacs magit)
 
 

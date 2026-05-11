@@ -115,13 +115,54 @@ as well."
   (add-to-list 'minions-prominent-modes 'persp-mode))
 
 (use-package breadcrumb
+  :functions breadcrumb-opinionated-mode
   :config
   (breadcrumb-opinionated-mode 1))
 
-;; Which-key needs to load before a lot of other editor functions,
-;; which is why it's invoked here.
+;; =======  VISUAL LINE  =======
+;; `editorconfig' (support .editorconfig)
+;; `visual-fill-column' (fill-column for visual-line-mode)
+;; =============================
+(use-package editorconfig
+  :ensure nil
+  :functions editorconfig-core-get-properties-hash
+  :config
+  (editorconfig-mode 1))
+
+(use-package visual-fill-column
+  :functions
+  user/editorconfig-max-line-length user/visual-fill-column-from-editorconfig
+  :config
+  (defun user/editorconfig-max-line-length ()
+    "Return EditorConfig max_line_length for current buffer, or nil."
+    (when-let* ((file buffer-file-name)
+		(props (editorconfig-core-get-properties-hash file)))
+      (let ((value (gethash 'max_line_length props)))
+	(cond
+	 ((numberp value) value)
+	 ((and (stringp value)
+	       (string-match-p "\\'[0-9]+\\'" value))
+	  (string-to-number value))
+	 ((equal value "off") nil)
+	 (nil)))))
+
+  (defun user/visual-fill-column-from-editorconfig ()
+    "Set visual fill column width from EditorConfig, defaulting to 80."
+    (setq-local visual-fill-column-width
+		(or (user/editorconfig-max-line-length)
+		    80))
+    (visual-line-mode 1)
+    (visual-fill-column-mode 1))
+
+  (add-hook 'prog-mode-hook #'user/visual-fill-column-from-editorconfig)
+  (add-hook 'text-mode-hook #'user/visual-fill-column-from-editorconfig)
+  (add-hook 'conf-mode-hook #'user/visual-fill-column-from-editorconfig))
+
+
+;; =======  WHICH-KEY  =======
+;; `which-key' (needs to load before many other functions)
+;; ===========================
 (use-package which-key
-  :ensure (:wait t)
   :config
   (which-key-mode 1))
 

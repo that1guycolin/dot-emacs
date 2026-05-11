@@ -61,12 +61,11 @@
 
 ;; =======  DASHBOARD  =======
 (use-package dashboard
-  :ensure (:wait t)
   :demand t
   :functions
   dashboard-insert-startupify-lists dashboard-initialize
   dashboard-setup-startup-hook dashboard-refresh-buffer
-  dashboard-display-icons-p user/emacsclient-dashboard
+  dashboard-display-icons-p
 
   :custom
   (dashboard-startup-banner 'logo)

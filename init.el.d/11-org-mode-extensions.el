@@ -337,7 +337,6 @@ With a prefix ARG, remove start location."
      ("C-c C-o" . toc-org-markdown-follow-thing-at-point))))
 
 (use-package el2org
-  :ensure (:wait t)
   :defer t
   :bind
   (("C-c 2 f" . el2org-generate-file)
