@@ -129,6 +129,17 @@ as well."
   (editorconfig-mode 1))
 
 (use-package visual-fill-column
+  :defer t
+  :hook
+  ((prog-mode . (lambda ()
+		  (visual-line-mode 1)
+		  (visual-fill-column-mode 1)))
+   (text-mode . (lambda ()
+		  (visual-line-mode 1)
+		  (visual-fill-column-mode 1)))
+   (conf-mode . (lambda ()
+		  (visual-line-mode 1)
+		  (visual-fill-column-mode 1))))
   :functions
   user/editorconfig-max-line-length user/visual-fill-column-from-editorconfig
   :config
@@ -147,15 +158,10 @@ as well."
 
   (defun user/visual-fill-column-from-editorconfig ()
     "Set visual fill column width from EditorConfig, defaulting to 80."
+    (interactive)
     (setq-local visual-fill-column-width
 		(or (user/editorconfig-max-line-length)
-		    80))
-    (visual-line-mode 1)
-    (visual-fill-column-mode 1))
-
-  (add-hook 'prog-mode-hook #'user/visual-fill-column-from-editorconfig)
-  (add-hook 'text-mode-hook #'user/visual-fill-column-from-editorconfig)
-  (add-hook 'conf-mode-hook #'user/visual-fill-column-from-editorconfig))
+		    80))))
 
 
 ;; =======  WHICH-KEY  =======
