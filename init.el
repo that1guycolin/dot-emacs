@@ -56,16 +56,20 @@
 
 ;;; Code:
 ;; =======  LOAD PATHS  =======
-(defvar user/init-directory (expand-file-name "init.el.d" user-emacs-directory)
+(defvar user/init-directory
+  (expand-file-name "init.el.d" user-emacs-directory)
   "Directory from which init files are loaded.")
 
-(defvar user/tools-directory (expand-file-name "tools" user-emacs-directory)
+(defvar user/tools-directory
+  (expand-file-name "tools" user-emacs-directory)
   "Directory in which the user stores helpful tools for working in Emacs.")
 
-(defvar user/projects-directory (expand-file-name "~/projects")
+(defvar user/projects-directory
+  (expand-file-name "~/projects")
   "Directory in which the user stores custom projects.")
 
-(defvar user/scripts-directory (expand-file-name "~/scripts")
+(defvar user/scripts-directory
+  (expand-file-name "~/scripts")
   "Directory in which the user stores custom scripts by shell-type.")
 
 (add-to-list 'load-path user/init-directory)
@@ -116,6 +120,12 @@
 
 ;; Custom variables & functions
 (require '15-user-functions)
+
+(add-hook 'emacs-startup-hook
+	  #'(lambda ()
+	      (setq
+	       inhibit-message nil
+	       inhibit-redisplay nil)))
 
 
 (provide 'init)

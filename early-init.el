@@ -6,15 +6,14 @@
 ;; and applies early UI optimizations before the main config loads.
 
 ;;; Code:
-;;(profiler-start 'cpu)
-(defvar user/profile-startup nil
+;; (profiler-start 'cpu)
+(defvar user/profile-startup t
   "When non-nil, enable CPU profiling during startup.")
 ;; (setq debug-on-error t)
 
 (setq
  ;; No garbage collection during startup
  gc-cons-threshold most-positive-fixnum
- gc-cons-percentage 0.8
 
  ;;Prefer loading newest file
  load-prefer-newer t
@@ -69,7 +68,9 @@
 ;; Other
 (setq
  ;; Reduce startup "noise"
+ inhibit-message t
  inhibit-startup-message t
+ inhibit-redisplay t
  inhibit-startup-echo-area-message user-login-name
  inhibit-startup-screen t
  initial-scratch-message nil
