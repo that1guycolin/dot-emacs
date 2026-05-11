@@ -232,7 +232,7 @@
   (setq grip-command 'auto))
 
 (use-package yaml-pro
-  :ensure
+  :ensure (:wait t)
   :defer t
   :hook (yaml-ts-mode . yaml-pro-mode))
 

@@ -102,6 +102,7 @@
    (vterm-mode  . with-editor-export-editor)))
 
 (use-package native-complete
+  :ensure (:wait t)
   :defer t
   :commands native-complete-at-point
   :config

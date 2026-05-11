@@ -332,6 +332,7 @@ See URL `https://vale.sh'."
 ;; =======================
 (declare-function transient-define-prefix "transient")
 (use-package mason
+  :ensure (:wait t)
   :commands
   mason-install mason-manager
   :functions

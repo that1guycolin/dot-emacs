@@ -60,6 +60,7 @@
 (keymap-global-unset "C-x d")
 (declare-function diff-hl-dired-mode "diff-hl")
 (use-package dirvish
+  :ensure (:wait t)
   :defer t
   :bind (:map ctl-x-map ("d" . dirvish))
   :commands dirvish

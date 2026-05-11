@@ -58,6 +58,7 @@
 	      ("/" . magit-git-toolbelt)))
 
 (use-package treemacs-magit
+  :ensure (:wait t)
   :after treemacs magit)
 
 

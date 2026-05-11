@@ -262,7 +262,7 @@ Wait three seconds before activating the mode."
   :after treemacs)
 
 (use-package treemacs-nerd-icons
-  :ensure
+  :ensure (:wait t)
   :after treemacs
   :functions treemacs-nerd-icons-config
   :config

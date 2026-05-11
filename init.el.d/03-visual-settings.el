@@ -168,6 +168,7 @@ as well."
 ;; `which-key' (needs to load before many other functions)
 ;; ===========================
 (use-package which-key
+  :ensure (:wait t)
   :config
   (which-key-mode 1))
 
