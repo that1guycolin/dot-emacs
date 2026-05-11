@@ -181,8 +181,8 @@ doubles as a model-switcher."
   :defer t
   :commands ellama-transient-main-menu
   :functions
-  make-llm-ollama user/ellama-set-tier user/ellama-switch-tier
-  user/ellama-switch-model ellama-disable-scroll ellama-enable-scroll
+  make-llm-ollama user/ellama-set-tier ellama-disable-scroll
+  ellama-enable-scroll
   :init
   (setopt ellama-language "English")
   :config

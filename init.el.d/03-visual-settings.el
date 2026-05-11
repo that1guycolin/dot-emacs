@@ -64,11 +64,11 @@ as well."
    modus-themes-mixed-fonts t
    modus-themes-italic-constructs t)
 
-  ;; This keymap is bound in the custom transient defined in
+  ;; This keymap is bound in a custom transient defined in
   ;; 15-user-functions.el
   (defvar-keymap user/theme-functions
     :prefix t
-    :doc "Keymap of functions affecting the theme."
+    :doc "Functions to change the theme."
     "s" #'modus-themes-select-dark
     "r" #'modus-themes-load-random-dark
     "n" #'modus-themes-rotate)

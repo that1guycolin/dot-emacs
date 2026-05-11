@@ -66,12 +66,11 @@
   :commands dirvish
   
   :functions
-  dirvish-override-dired-mode user/dired-use-dirvish dirvish-peek-mode
-  dirvish-dwim dirvish-fd dired-mouse-find-file-other-window
-  dired-mouse-find-file dirvish-quicksort user/dired-ffmpeg-actions-map
-  dirvish-ls-switches-menu dirvish-yank-menu dirvish-dispatch dirvish-quit
-  dirvish-quick-access dirvish-file-info-menu dired-do-delete
-  dired-do-flagged-delete dirvish-yank dired-create-empty-file
+  dirvish-override-dired-mode dirvish-peek-mode dirvish-dwim dirvish-fd
+  dired-mouse-find-file-other-window dired-mouse-find-file dirvish-quicksort
+  user/dired-ffmpeg-actions-map dirvish-ls-switches-menu dirvish-yank-menu
+  dirvish-dispatch dirvish-quit dirvish-quick-access dirvish-file-info-menu
+  dired-do-delete dired-do-flagged-delete dirvish-yank dired-create-empty-file
   dirvish-subtree-toggle dirvish-layout-toggle dirvish-history-go-backward
   dirvish-history-go-forward dirvish-narrow dirvish-mark-menu dirvish-setup-menu
   dirvish-emerge-menu
