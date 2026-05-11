@@ -114,7 +114,7 @@ See URL `https://vale.sh'."
      "--no-global" "--output" "line" source)
     :error-patterns
     ((warning line-start (file-name) ":" line ":" column ":"
-              (id (one-or-more (not (any ":")))) ":" (message) line-end))
+	      (id (one-or-more (not (any ":")))) ":" (message) line-end))
     :modes (markdown-mode gfm-mode text-mode org-mode org-gtd-clarify-mode
 			  flycheck-error-message-mode))
   (add-to-list 'flycheck-checkers 'text-vale)
@@ -333,7 +333,7 @@ See URL `https://vale.sh'."
 (declare-function transient-define-prefix "transient")
 (use-package mason
   :commands
-  mason-install mason-manager mason-setup
+  mason-install mason-manager
   :functions
   mason-ensure mason-installed-p user/mason--install-program
   user/mason-install-optional-program user/mason-install-optional-programs

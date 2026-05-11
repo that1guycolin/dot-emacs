@@ -29,11 +29,9 @@
   emms-info-functions emms-playlist-mode-map emms-player-mpv-command-name
   emms-player-mpv-parameters emms-browser-default-browse-type
   emms-browser-info-title-format
-
-  :init
-  (require 'emms-setup)
   
   :config
+  (require 'emms-setup)
   (emms-all)
   (setq emms-info-functions '(emms-info-native emms-info-exiftool)
 	emms-player-list '(emms-player-mpv)
