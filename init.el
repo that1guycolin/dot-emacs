@@ -126,11 +126,7 @@
 ;; Custom variables & functions
 (require '15-user-functions)
 
-(add-hook 'emacs-startup-hook
-	  #'(lambda ()
-	      (setq
-	       inhibit-message nil
-	       inhibit-redisplay nil)))
+(add-hook 'emacs-startup-hook #'(lambda () (setq inhibit-message nil)))
 
 
 (provide 'init)

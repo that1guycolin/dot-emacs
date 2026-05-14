@@ -105,6 +105,7 @@
   (add-hook 'elpaca-after-init-hook #'dashboard-insert-startupify-lists)
   (add-hook 'elpaca-after-init-hook #'dashboard-initialize)
   (dashboard-setup-startup-hook)
+  (setq inhibit-redisplay nil)
 
   (add-hook 'server-after-make-frame-hook
 	    #'(lambda ()
