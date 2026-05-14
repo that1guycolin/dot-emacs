@@ -84,9 +84,9 @@
       (when (file-exists-p ptodo)
 	(add-to-list 'org-agenda-files ptodo))))
   (bind-keys
-   ("C-c p c" . org-project-capture-capture-for-current-project)
-   ("C-c p p" . org-project-capture-project-todo-completing-read)
-   ("C-c p a" . org-project-capture-agenda-for-current-project)))
+   ("C-c C-p c" . org-project-capture-capture-for-current-project)
+   ("C-c C-p p" . org-project-capture-project-todo-completing-read)
+   ("C-c C-p a" . org-project-capture-agenda-for-current-project)))
 
 (use-package magit-org-todos
   :after magit
