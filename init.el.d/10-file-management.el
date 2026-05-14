@@ -1,13 +1,51 @@
 ;;; 10-file-management.el --- File explorer functions -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; async, diredfl, dired-preview, dwim-shell-command, ready-player
+;; async, dired, diredfl, dired-preview, dwim-shell-command, ready-player
 
 ;;; Commentary:
 ;; Leverage Dired built-in settings & extensions to provide a functional file
 ;; explorer inside Emacs.
 
 ;;; Code:
+(use-package dired
+  :ensure nil
+  :bind ("C-x d" . dired)
+  :functions
+  dired-omit-mode dired-next-dirline dired-prev-dirline dired-next-subdir
+  dired-prev-subdir dired-next-marked-file dired-prev-marked-file
+  dired-goto-subdir image-dired-display-next image-dired-display-previous
+  :defines image-dired-thumbnail-mode-map
+  :config
+  (require 'dired-x)
+  (require 'wdired)
+  (require 'image-dired)
+  (require 'image-dired-dired)
+
+  (add-hook 'dired-mode-hook
+	    #'(lambda ()
+		(hl-line-mode)
+		(context-menu-mode)
+		(setq-local mouse-1-click-follows-link 'double)))
+  (bind-keys
+   :map dired-mode-map
+   ("M-o"           . dired-omit-mode)
+   ("E"             . wdired-change-to-wdired-mode)
+   ("M-n"           . dired-next-dirline)
+   ("M-p"           . dired-prev-dirline)
+   ("]"             . dired-next-subdir)
+   ("["             . dired-prev-subdir)
+   ("M-]"           . dired-next-marked-file)
+   ("M-["           . dired-prev-marked-file)
+   ("A-M-<mouse-1>" . browse-url-of-dired-file)
+   ("<backtab>"     . dired-prev-subdir)
+   ("TAB"           . dired-next-subdir)
+   ("M-j"           . dired-goto-subdir)
+   (";"             . image-dired-dired-toggle-marked-thumbs)
+   :map image-dired-thumbnail-mode-map
+   ("n"             . image-dired-display-next)
+   ("p"             . image-dired-display-previous)))
+
 (use-package dwim-shell-command
   :after dired
   :functions
@@ -87,146 +125,7 @@
   :init
   (require 'dired-async))
 
-(declare-function transient-define-prefix "transient")
-(defvar user/dired-dispatch)
-(with-eval-after-load 'dired
-  (transient-define-prefix user/dired-dispatch ()
-    "Display standard dired keybindings in a helpful transient menu."
-    ["Dired"
-     ["Navigation"
-      :pad-keys t
-      ("<" "Prev. Dirline"              dired-prev-dirline)
-      (">" "Next Dirline"               dired-next-dirline)
-      ("p" "Prev. Line"                 dired-previous-line)
-      ("n" "Next Line"                  dired-next-line)
-      ("S-SPC" "Prev. Line"             dired-previous-line)
-      ("SPC" "Next Line"                dired-next-line)
-      ("^" "Up Directory"               dired-up-directory)
-      ("M-G" "Goto Subdir"              dired-goto-subdir)
-      "Tree Commands"
-      ("C-M-d" "Tree Down"              dired-tree-down)
-      ("C-M-u" "Tree Up"                dired-tree-up)
-      ("C-M-p" "Prev. Subdir."          dired-prev-subdir)
-      ("C-M-n" "Next Subdir."           dired-next-subdir)]
-     ["File Operations"
-      :pad-keys t
-      ("a" "Find Alternate"             dired-find-alternate-file)
-      ("d" "Flag for Deletion"          dired-flag-file-deletion)
-      ("e" "Find File"                  dired-find-file)
-      ("C-m" "Preview Find File"        dired-preview-find-file)
-      ("o" "Find (Other Window)"        dired-find-file-other-window)
-      ("f 4" "Convert .ts To .mp4"      user/convert-ts-to-mp4)
-      ("f v" "Extract Video"            user/extract-video-only)
-      ("f a" "Extract Audio"            user/extract-audio-only)
-      ("C-M-p" "Preview Page Up"        dired-preview-page-up)
-      ("C-M-n" "Preview Page Down"      dired-preview-page-down)
-      ("g" "Revert Buffer"              revert-buffer)
-      ("i" "Insert Subdir."             dired-maybe-insert-subdir)]
-     ["File Operations"
-      :pad-keys t
-      ("j" "Goto File"                  dired-goto-file)
-      ("k" "Kill Lines"                 dired-do-kill-lines)
-      ("l" "Redisplay"                  dired-do-redisplay)
-      ("C-o" "Display File"             dired-display-file)
-      ("s" "Sort Toggle Edit"           dired-sort-toggle-or-edit)
-      ("v" "View File"                  dired-view-file)
-      ("w" "Copy Filename"              dired-copy-filename-as-kill)
-      ("W" "Browse URL"                 browse-url-of-dired-file)
-      ("x" "Del. Flagged"               dired-do-flagged-delete)
-      ("y" "File Type"                  dired-show-file-type)
-      ("+" "Create Directory"           dired-create-directory)
-      ("@" "Find With Sudo"             tramp-dired-find-file-with-sudo)]
-     ["Regexp Commands"
-      :pad-keys t
-      ("% u" "Upcase"                   dired-upcase)
-      ("% l" "Downcase"                 dired-downcase)
-      ("% d" "Flag"                     dired-flag-files-regexp)
-      ("% g" "Mark Containing"          dired-mark-files-containing-regexp)
-      ("% m" "Mark"                     dired-mark-files-regexp)
-      ("% r" "Rename"                   dired-do-rename-regexp)
-      ("% R" "Rename"                   dired-do-rename-regexp)
-      ("% C" "Copy"                     dired-do-copy-regexp)
-      ("% H" "Hardlink"                 dired-do-hardlink-regexp)
-      ("% S" "Symlink"                  dired-do-symlink-regexp)
-      ("% Y" "RelSymlink"               dired-do-relsymlink-regexp)
-      ("% &" "Flag Garbage"             dired-flag-garbage-files)]
-     ["Hidden"
-      :pad-keys t
-      ("$" "Hide Subdir."               dired-hide-subdir)
-      ("M-$" "Hide All"                 dired-hide-all)
-      ("(" "Hide Details"               dired-hide-details-mode)
-      "Isearch"
-      ("M-s a C-s" "Isearch"            dired-do-isearch)
-      ("M-s a C-M-s" "Regexp"           dired-do-isearch-regexp)
-      ("M-s f C-s" "Filename"           dired-isearch-filenames)
-      ("M-s f C-M-s" "Filename Regexep" dired-isearch-filenames-regexp)]]
-    [:class transient-row]
-    [["Mark or Flag Categories"
-      :pad-keys t
-      ("#" "Flag Auto-Save Files"       dired-flag-auto-save-files)
-      ("." "Clean Directory"            dired-clean-directory)
-      ("~" "Flag Backups"               dired-flag-backup-files)
-      ("M-{" "Prev. Marked File"        dired-prev-marked-file)
-      ("M-}" "Next Marked  File"        dired-next-marked-file)
-      "Mark Files"
-      ("* m" "Mark"                     dired-mark)
-      ("* u" "Unmark"                   dired-unmark)
-      ("* *" "Executables"              dired-mark-executables)
-      ("* /" "Directories"              dired-mark-directories)
-      ("* @" "Symlinks"                 dired-mark-symlinks)
-      ("* %" "Regexp"                   dired-mark-files-regexp)]
-     ["Marked Files"
-      :pad-keys t
-      ("* N" "# Marked"                 dired-number-of-marked-files)
-      ("* c" "Change Marks"             dired-change-marks)
-      ("* s" "Subdir"                   dired-mark-subdir-files)
-      ("* ?" "Unmark All"               dired-unmark-all-files)
-      ("M-DEL" "Unmark All"             dired-unmark-all-files)
-      ("* !" "Unmark All Marks"         dired-unmark-all-marks)
-      ("U" "Unmark All Marks"           dired-unmark-all-marks)
-      ("DEL" "Unmark Backward"          dired-unmark-backward)
-      ("* C-n" "Next Marked"            dired-next-marked-file)
-      ("* C-p" "Prev. Marked"           dired-prev-marked-file)
-      ("* t" "Toggle Marks"             dired-toggle-marks)]
-     ["Marked Files Operations"
-      :pad-keys t
-      ("A" "Find Regexp"                dired-do-find-regexp)
-      ("B" "Byte Compile"               dired-do-byte-compile)
-      ("C" "Copy"                       dired-do-copy)
-      ("D" "Delete"                     dired-do-delete)
-      ("E" "Open"                       dired-do-open)
-      ("P" "Open Preview File"          dired-preview-open-dwim)
-      ("G" "Change Group"               dired-do-chgrp)
-      ("H" "Hardlink"                   dired-do-hardlink)
-      ("I" "Info"                       dired-do-info)
-      ("L" "Load"                       dired-do-load)
-      ("M" "Chmod"                      dired-do-chmod)
-      ("O" "Chown"                      dired-do-chown)]
-     ["Marked Files Operations"
-      :pad-keys t
-      ("N" "Man"                        dired-do-man)
-      ("Q" "Find/Replace Regexp"        dired-do-find-regexp-and-replace)
-      ("R" "Rename"                     dired-do-rename)
-      ("S" "Symlink"                    dired-do-symlink)
-      ("T" "Touch"                      dired-do-touch)
-      ("X" "Shell Command"              dired-do-shell-command)
-      ("Y" "Relative Symlink"           dired-do-relsymlink)
-      ("Z" "Compress"                   dired-do-compress)
-      ("c" "Compress-to"                dired-do-compress-to)
-      ("!" "Shell Command"              dwim-shell-command)
-      ("&" "Async Shell Command"        dwim-shell-command)]
-     ["GPG"
-      :pad-keys t
-      (": d" "Decrypt"                  epa-dired-do-decrypt)
-      (": v" "Verify"                   epa-dired-do-verify)
-      (": s" "Sign"                     epa-dired-do-sign)
-      (": e" "Encrypt"                  epa-dired-do-encrypt)
-      "Misc"
-      ("=" "Diff"                       dired-diff)
-      ("?" "Summary"                    dired-summary)]])
 
-  (keymap-unset dired-mode-map "?")
-  (keymap-set dired-mode-map "?" 'user/dired-dispatch))
 
 
 (provide '10-file-management)
