@@ -13,6 +13,7 @@
 ;; `mistty' (commit shell layer)
 ;; `vterm' (fully functional terminal shell)
 ;; `ghostel' (terminal shell based on libghostty)
+;; `eat' (Emulate A Terminal)
 ;; =================================
 (use-package mistty
   :defer t
@@ -22,9 +23,9 @@
   :config
   (bind-keys
    :map mistty-prompt-map
-   ("M-<up>" . mistty-send-key)
-   ("M-<down>" . mistty-send-key)
-   ("M-<left>" . mistty-send-key)
+   ("M-<up>"    . mistty-send-key)
+   ("M-<down>"  . mistty-send-key)
+   ("M-<left>"  . mistty-send-key)
    ("M-<right>" . mistty-send-key)))
 
 (use-package vterm
@@ -47,6 +48,10 @@
    ("C-c S p" . ghostel-project))
   :custom
   (ghostel-module-auto-install 'compile))
+(use-package eat
+  :defer t
+  :bind ("C-c S e"   . eat)
+  :hook (eshell-mode . eat-eshell-visual-command-mode))
 
 
 ;; =======  ESHELL  =======
@@ -55,7 +60,7 @@
 ;; `eshell-git-prompt' (themed prompt)
 ;; `esh-help' (display help like in .el buffer)
 ;; ========================
-(keymap-global-set "C-c S e" #'eshell)
+(keymap-global-set "C-c S E" #'eshell)
 
 (use-package eshell-syntax-highlighting
   :defer t
