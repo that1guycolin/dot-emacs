@@ -61,8 +61,8 @@
 (use-package deadgrep
   :defer t
   :bind
-  (("<f5>"  . deadgrep)
-   ("C-c r" . deadgrep)))
+  (("<f5>"    . deadgrep)
+   ("C-c C-r" . deadgrep)))
 
 (use-package rg
   :defer t
