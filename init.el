@@ -21,8 +21,8 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-;; that1guycolin's personal Emacs configuration.  Uses Elpaca as the package
-;; manager with optimized load order.
+;; that1guycolin's personal Emacs configuration.  Uses Elpaca as package manager
+;; with an optimized load order.
 
 ;;; Languages configured:
 ;; Bash, CMake, Common Lisp, Emacs Lisp, Fish, JSON, Lua, Markdown, Python,
@@ -30,33 +30,33 @@
 
 ;;; Packages included:
 ;; adaptive-wrap, adjust-parens, apheleia, async, auto-rename-tag,
-;; auto-virtualenv, bash-ts-mode, breadcrumb, cape, checkdoc, cmake-ts-mode,
-;; comment-dwim-2, corfu, dap-mode, dashboard, deadgrep, diff-hl, diredfl,
-;; dired-preview, disproject, djvu, docker, dockerfile-mode, docstr,
-;; dwim-coder-mode, dwim-shell-command, eask-mode, eat, editorconfig,
-;; ef-themes, el2org, eldoc-cmake, elisp-def, elisp-dev-mcp, ellama, emacs,
-;; emacs-everywhere, emacs-lisp-mode, emms, emms-info-mediainfo, envrc, eros,
-;; eros-inspector, esh-autosuggest, eshell-git-prompt,
-;; eshell-syntax-highlighting, esh-help, exec-path-from-shell, fish-mode,
-;; flycheck, flycheck-color-mode-line, flycheck-eask, flycheck-inline,
-;; flycheck-package, folding-mode, forge, free-keys, gcmh, ghostel,
-;; git-commit-ts-mode, git-modes, glsl-mode, gptel, gptel-commit,
-;; gptel-forge-prs, gptel-magit, grip-mode, helpful, ielm, ini-mode, inspector,
-;; json-ts-mode, kdl-mode, lisp-mode, lisp-semantic-hl, live-py-mode, lsp-mode,
-;; lsp-treemacs, lua-ts-mode, macrostep, magit, magit-git-toolbelt,
-;; magit-org-todos, marginalia, markdown-ts-mode, mason, minions, mistty,
-;; modus-themes, morlock, native-complete, nerd-icons, nerd-icons-corfu, nov,
-;; nxml-mode, orderless, org, org-caldav, org-edna, org-gtd, org-mcp, org-mem,
-;; org-modern, org-modern-indent, org-node, org-noter, org-noter-pdftools,
-;; org-pdftools, org-pomodoro, org-project-capture, pdf-tools, perspective,
-;; perspective-project-bridge, popper, project, project-treemacs,
-;; python-pytest, python-ts-mode, python-x, ready-player, rg, savehist,
-;; sh-mode, sly, smartparens, suggest, systemd, tab-line-nerd-icons, telega,
-;; toc-org, toml-ts-mode, transient, tree-inspector, treemacs, treemacs-magit,
-;; treemacs-nerd-icons, treemacs-perspective, treesit, treesit-auto, vertico,
-;; visual-fill-column, visual-regexp, visual-regexp-steroids, vterm, which-key,
-;; with-editor, yaml-pro, yaml-ts-mode, yasnippet, yasnippet-capf,
-;; yasnippet-snippets
+;; auto-virtualenv, bash-ts-mode, breadcrumb, cape, casual, casual-avy,
+;; checkdoc, cmake-ts-mode, comment-dwim-2, corfu, csv-mode, dap-mode,
+;; dashboard, deadgrep, diff-hl, dired, diredfl, dired-preview, disproject,
+;; djvu, docker, dockerfile-mode, docstr, dwim-coder-mode, dwim-shell-command,
+;; eask-mode, eat, editorconfig, ef-themes, el2org, eldoc-cmake, elisp-def,
+;; elisp-dev-mcp, ellama, emacs, emacs-everywhere, emacs-lisp-mode, emms,
+;; emms-info-mediainfo, envrc, eros, eros-inspector, esh-autosuggest,
+;; eshell-git-prompt, eshell-syntax-highlighting, esh-help,
+;; exec-path-from-shell, fish-mode, flycheck, flycheck-color-mode-line,
+;; flycheck-eask, flycheck-inline, flycheck-package, folding-mode, forge,
+;; free-keys, gcmh, ghostel, git-commit-ts-mode, git-modes, glsl-mode, gptel,
+;; gptel-commit, gptel-forge-prs, gptel-magit, grip-mode, helpful, ielm,
+;; ini-mode, inspector, json-ts-mode, kdl-mode, lisp-mode, lisp-semantic-hl,
+;; live-py-mode, lsp-mode, lsp-treemacs, lua-ts-mode, macrostep, magit,
+;; magit-git-toolbelt, magit-org-todos, marginalia, markdown-ts-mode, mason,
+;; minions, mistty, modus-themes, morlock, native-complete, nerd-icons,
+;; nerd-icons-corfu, nov, nxml-mode, orderless, org, org-caldav, org-edna,
+;; org-gtd, org-mcp, org-mem, org-modern, org-modern-indent, org-node,
+;; org-noter, org-noter-pdftools, org-pdftools, org-pomodoro,
+;; org-project-capture, pdf-tools, perspective, perspective-project-bridge,
+;; popper, project, project-treemacs, python-pytest, python-ts-mode, python-x,
+;; ready-player, rg, savehist, sh-mode, sly, smartparens, suggest, systemd,
+;; tab-line-nerd-icons, telega, toc-org, toml-ts-mode, transient,
+;; tree-inspector, treemacs, treemacs-magit, treemacs-nerd-icons,
+;; treemacs-perspective, treesit, treesit-auto, vertico, visual-fill-column,
+;; visual-regexp, visual-regexp-steroids, vterm, which-key, with-editor,
+;; yaml-pro, yaml-ts-mode, yasnippet, yasnippet-capf, yasnippet-snippets
 
 
 ;;; Code:

@@ -22,14 +22,17 @@
   - [[#license][License]]
 
 ** Packages Included
-*** [[file:init.el.d/01-bootstrap-core.el][01 bootstrap core]]
+
+*** [[https://github.com/that1guycolin/dot-emacs/blob/main/init.el.d/01-bootstrap-core.el][01 bootstrap core]]
+
 - [[https://gitlab.com/koral/gcmh][gcmh]]
 - [[https://github.com/purcell/exec-path-from-shell][exec-path-from-shell]]
 - [[https://github.com/purcell/envrc][envrc]]
 - [[https://github.com/magit/transient][transient]]
 - [[https://github.com/emacsmirror/org][org]]
 
-*** [[file:init.el.d/02-completion-setup.el][02 completion setup]]
+*** [[https://github.com/that1guycolin/dot-emacs/blob/main/init.el.d/02-completion-setup.el][02 completion setup]]
+
 - [[https://github.com/oantolin/orderless][orderless]]
 - [[https://github.com/minad/vertico][vertico]]
 - [[https://github.com/minad/marginalia][marginalia]]
@@ -37,37 +40,42 @@
 - [[https://github.com/minad/cape][cape]]
 - [[https://github.com/Wilfred/helpful][helpful]]
 
-*** [[file:init.el.d/03-visual-settings.el][03 visual settings]]
+*** [[https://github.com/that1guycolin/dot-emacs/blob/main/init.el.d/03-visual-settings.el][03 visual settings]]
+
 - [[https://github.com/protesilaos/modus-themes][modus-themes]]
 - [[https://github.com/protesilaos/ef-themes][ef-themes]]
 - [[https://github.com/rainstormstudio/nerd-icons.el][nerd-icons]]
 - [[https://github.com/lucius-martius/tab-line-nerd-icons][tab-line-nerd-icons]]
 - [[https://github.com/LuigiPiucco/nerd-icons-corfu][nerd-icons-corfu]]
 - [[https://github.com/tarsius/minions][minions]]
+- [[https://github.com/joaotavora/breadcrumb][breadcrumb]]
+- [[https://github.com/editorconfig/editorconfig-emacs][editorconfig]]
+- [[https://codeberg.org/joostkremers/visual-fill-column][visual-fill-column]]
 - [[https://github.com/justbur/emacs-which-key][which-key]]
 
-  
-*** [[file:init.el.d/04-tree-sitter-lang-config.el][04 tree sitter lang config]]
+*** [[https://github.com/that1guycolin/dot-emacs/blob/main/init.el.d/04-tree-sitter-lang-config.el][04 tree sitter lang config]]
+
 - [[https://github.com/renzmann/treesit-auto][treesit-auto]]
 
-*** [[file:init.el.d/05-project-management.el][05 project management]]
+*** [[https://github.com/that1guycolin/dot-emacs/blob/main/init.el.d/05-project-management.el][05 project management]]
+
 - [[https://github.com/aurtzy/disproject][disproject]]
-- [[https://github.com/lucius-martius/project-cmake][project-cmake]]
 - [[https://github.com/Wilfred/deadgrep][deadgrep]]
 - [[https://github.com/dajva/rg.el][rg]]
 - [[https://github.com/nex3/perspective-el][perspective]]
 - [[https://github.com/arunkmv/perspective-project-bridge][perspective-project-bridge]]
 - [[https://github.com/Silex/docker.el][docker]]
-- [[https://github.com/editorconfig/editorconfig-emacs][editorconfig]]
 - [[https://github.com/Alexander-Miller/treemacs][treemacs]]
 - [[https://github.com/cmccloud/project-treemacs][project-treemacs]]
 - [[https://github.com/Alexander-Miller/treemacs][treemacs-perspective]]
 - [[https://github.com/rainstormstudio/treemacs-nerd-icons][treemacs-nerd-icons]]
 
-*** [[file:init.el.d/06-terminal-modes.el][06 terminal modes]]
+*** [[https://github.com/that1guycolin/dot-emacs/blob/main/init.el.d/06-terminal-modes.el][06 terminal modes]]
+
 - [[https://github.com/szermatt/mistty][mistty]]
 - [[https://github.com/akermu/emacs-libvterm][vterm]]
 - [[https://github.com/dakra/ghostel][ghostel]]
+- [[https://codeberg.org/akib/emacs-eat][eat]]
 - [[https://github.com/akreisher/eshell-syntax-highlighting][eshell-syntax-highlighting]]
 - [[https://github.com/dieggsy/esh-autosuggest][esh-autosuggest]]
 - [[https://github.com/xuchunyang/eshell-git-prompt][eshell-git-prompt]]
@@ -75,7 +83,8 @@
 - [[https://github.com/magit/with-editor][with-editor]]
 - [[https://github.com/CeleritasCelery/emacs-native-shell-complete][native-complete]]
 
-*** [[file:init.el.d/07-language-configs.el][07 language configs]]
+*** [[https://github.com/that1guycolin/dot-emacs/blob/main/init.el.d/07-language-configs.el][07 language configs]]
+
 - [[https://github.com/emacsmirror/gnu_elpa][adjust-parens]]
 - [[https://github.com/calsys456/lisp-semantic-hl.el][lisp-semantic-hl]]
 - [[https://github.com/Wilfred/elisp-def][elisp-def]]
@@ -87,27 +96,32 @@
 - [[https://github.com/Wilfred/suggest.el][suggest]]
 - [[https://github.com/mmontone/emacs-tree-inspector][tree-inspector]]
 - [[https://github.com/joaotavora/sly][sly]]
-- [[https://github.com/jrblevin/markdown-mode][markdown-mode]]
-- [[https://github.com/seagle0128/grip-mode][grip-mode]]
 - [[https://github.com/marcwebbie/auto-virtualenv][auto-virtualenv]]
 - [[https://gitlab.com/sadiq/dwim-coder-mode][dwim-coder-mode]]
 - [[https://github.com/donkirkby/live-py-plugin][live-py-mode]]
+- [[https://github.com/wbolster/emacs-python-pytest][python-pytest]]
 - [[https://gitlab.com/wavexx/python-x.el][python-x]]
 - [[https://github.com/wwwjfy/emacs-fish][fish-mode]]
+- [[https://github.com/emacsmirror/gnu_elpa][csv-mode]]
 - [[https://github.com/spotify/dockerfile-mode][dockerfile-mode]]
 - [[https://github.com/emacs-eask/eask-mode][eask-mode]]
 - [[https://github.com/jimhourihan/glsl-mode][glsl-mode]]
 - [[https://github.com/Lindydancer/ini-mode][ini-mode]]
 - [[https://github.com/taquangtrung/emacs-kdl-mode][kdl-mode]]
+- [[https://github.com/holomorph/systemd-mode][systemd]]
 - [[https://github.com/emacs-vs/auto-rename-tag][auto-rename-tag]]
 - [[https://github.com/ikirill/eldoc-cmake][eldoc-cmake]]
-- [[https://github.com/damon-kwok/modern-sh][modern-sh]]
+- [[https://github.com/seagle0128/grip-mode][grip-mode]]
 - [[https://github.com/zkry/yaml-pro][yaml-pro]]
 
-*** [[file:init.el.d/08-code-assist.el][08 code assist]]
+*** [[https://github.com/that1guycolin/dot-emacs/blob/main/init.el.d/08-code-assist.el][08 code assist]]
+
+- [[https://github.com/benma/visual-regexp.el][visual-regexp]]
+- [[https://github.com/benma/visual-regexp-steroids.el][visual-regexp-steroids]]
 - [[https://github.com/Fuco1/smartparens][smartparens]]
 - [[https://github.com/emacsmirror/gnu_elpa][adaptive-wrap]]
 - [[https://github.com/emacs-vs/docstr][docstr]]
+- [[https://github.com/remyferre/comment-dwim-2][comment-dwim-2]]
 - [[https://github.com/flycheck/flycheck][flycheck]]
 - [[https://github.com/flycheck/flycheck-inline][flycheck-inline]]
 - [[https://github.com/flycheck/flycheck-color-mode-line][flycheck-color-mode-line]]
@@ -122,7 +136,8 @@
 - [[https://github.com/elken/yasnippet-capf][yasnippet-capf]]
 - [[https://github.com/mason-org/mason.el][mason]]
 
-*** [[file:init.el.d/09-git-tools.el][09 git tools]]
+*** [[https://github.com/that1guycolin/dot-emacs/blob/main/init.el.d/09-git-tools.el][09 git tools]]
+
 - [[https://github.com/magit/magit][magit]]
 - [[https://github.com/magit/forge][forge]]
 - [[https://github.com/danilshvalov/git-commit-ts-mode][git-commit-ts-mode]]
@@ -130,14 +145,17 @@
 - [[https://github.com/magit/git-modes][git-modes]]
 - [[https://github.com/jonathanchu/magit-git-toolbelt][magit-git-toolbelt]]
 - [[https://github.com/Alexander-Miller/treemacs][treemacs-magit]]
-  
-*** [[file:init.el.d/10-file-management.el][10 file management]]
+
+*** [[https://github.com/that1guycolin/dot-emacs/blob/main/init.el.d/10-file-management.el][10 file management]]
+
+- [[https://github.com/xenodium/dwim-shell-command][dwim-shell-command]]
+- [[https://github.com/protesilaos/dired-preview][dired-preview]]
+- [[https://github.com/xenodium/ready-player][ready-player]]
 - [[https://github.com/purcell/diredfl][diredfl]]
 - [[https://github.com/jwiegley/emacs-async][async]]
-- [[https://github.com/xenodium/dwim-shell-command][dwim-shell-command]]
-- [[https://github.com/alexluigit/dirvish][dirvish]]
 
-*** [[file:init.el.d/11-org-mode-extensions.el][11 org mode extensions]]
+*** [[https://github.com/that1guycolin/dot-emacs/blob/main/init.el.d/11-org-mode-extensions.el][11 org mode extensions]]
+
 - [[https://github.com/emacsmirror/gnu_elpa][org-edna]]
 - [[https://github.com/Trevoke/org-gtd.el][org-gtd]]
 - [[https://github.com/colonelpanic8/org-project-capture][org-project-capture]]
@@ -157,7 +175,8 @@
 - [[https://github.com/snosov1/toc-org][toc-org]]
 - [[https://github.com/tumashu/el2org][el2org]]
 
-*** [[file:init.el.d/12-llm-integration.el][12 llm integration]]
+*** [[https://github.com/that1guycolin/dot-emacs/blob/main/init.el.d/12-llm-integration.el][12 llm integration]]
+
 - [[https://github.com/laurynas-biveinis/org-mcp][org-mcp]]
 - [[https://github.com/laurynas-biveinis/elisp-dev-mcp][elisp-dev-mcp]]
 - [[https://github.com/karthink/gptel][gptel]]
@@ -166,21 +185,30 @@
 - [[https://github.com/ArthurHeymans/gptel-forge-prs][gptel-forge-prs]]
 - [[https://github.com/s-kostyaev/ellama][ellama]]
 
-*** [[file:init.el.d/13-media-player.el][13 media player]]
-- [[https://git.savannah.gnu.org/git/emms.git][emms]]
-- [[https://github.com/that1guycolin/emms-info-mediainfo][emms-info-mediainfo]]
+*** [[https://github.com/that1guycolin/dot-emacs/blob/main/init.el.d/13-media-player.el][13 media player]]
 
-*** [[file:init.el.d/14-misc-packages.el][14 misc packages]]
+- [[https://git.savannah.gnu.org/git/emms.git][emms]]
+- [[https://github.com/fgallina/emms-info-mediainfo][emms-info-mediainfo]]
+
+*** [[https://github.com/that1guycolin/dot-emacs/blob/main/init.el.d/14-misc-packages.el][14 misc packages]]
+
 - [[https://github.com/zevlg/telega.el][telega]]
 - [[https://github.com/Fuco1/free-keys][free-keys]]
+- [[https://github.com/karthink/popper][popper]]
 - [[https://github.com/tecosaur/emacs-everywhere][emacs-everywhere]]
+- [[https://github.com/kickingvegas/casual][casual]]
+- [[https://github.com/kickingvegas/casual-avy][casual-avy]]
 - [[https://github.com/emacs-dashboard/dashboard][dashboard]]
 
-*** [[file:init.el.d/15-user-functions.el][15 user functions]]
+*** [[https://github.com/that1guycolin/dot-emacs/blob/main/init.el.d/15-user-functions.el][15 user functions]]
+
+
 Custom functions to manipulate fonts, elpaca, and more.
 
 ** Todo
+
 - See [[file:TODO][TODO]].
- 
+
 ** License
+
 [[file:LICENSE][GPL-3.0]]

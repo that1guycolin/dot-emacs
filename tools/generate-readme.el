@@ -76,9 +76,13 @@ package links to its online repo."
   (let* ((filename-ext
 	  (string-replace "/home/colin-l/.emacs.d/init.el.d/"
 			  nil file))
+	 (file-url
+	  (concat
+	   "https://github.com/that1guycolin/dot-emacs/blob/main/init.el.d/"
+	   filename-ext))
 	 (filename (string-replace ".el" nil filename-ext))
 	 (pretty-name (string-replace "-" " " filename)))
-    (insert (format "*** [[file:init.el.d/%s][%s]]" filename-ext pretty-name))
+    (insert (format "*** [[%s][%s]]" file-url pretty-name))
     (insert "\n")
     (insert "\n"))
   
