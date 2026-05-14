@@ -10,7 +10,6 @@
 
 ;;; Code:
 ;; =======  HELPER FUNCTIONS  =======
-(require 'cl-lib)
 (declare-function user/function-after-emacsclient-frame "01-bootstrap-core.el")
 
 ;; Ensure theme message prints after startup

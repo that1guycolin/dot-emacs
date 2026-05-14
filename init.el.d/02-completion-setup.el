@@ -122,6 +122,8 @@
 (defvar elpaca-sources-directory)
 (use-package emacs
   :ensure nil
+  :functions
+  ibuffer-auto-mode
   :bind
   (("C-c x"   . toggle-frame-maximized)
    ("C-c ("   . user/check-parens-with-message)
@@ -139,10 +141,18 @@
   (auto-save-visited-interval 60)
 
   :config
+  (require 'cl-lib)
+  (require 'hl-line)
+  (require 'mouse)
+  
   (context-menu-mode 1)
   (global-visual-line-mode 1)
   (auto-save-visited-mode 1)
 
+  (add-hook 'ibuffer-mode-hook #'(lambda ()
+				   (hl-line-mode)
+				   (ibuffer-auto-mode)))
+  
   (with-eval-after-load 'info
     (add-to-list 'Info-directory-list
 		 (expand-file-name elpaca-builds-directory))
