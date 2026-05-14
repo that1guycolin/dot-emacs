@@ -10,6 +10,7 @@
 ;; =======  MISC  =======
 ;; `telega' - (chat in Emacs)
 ;; `free-keys' (buffer of available keybinds)
+;; `popper' (keep certain buffers hidden, but within arm's reach)
 ;; `emacs-everywhere'
 ;; ======================
 (declare-function user/function-after-emacsclient-frame "01-bootstrap-core.el")
@@ -48,6 +49,24 @@
 (use-package free-keys
   :defer t
   :bind ("C-c C-=" . free-keys))
+
+(keymap-global-unset "M-'")
+(use-package popper
+  :functions
+  popper-toggle popper-cycle popper-toggle-type
+  :custom
+  (popper-reference-buffers
+   '("\\*Messages\\*" "Output\\*$" "\\*Async Shell Command\\*" help-mode
+     helpful-mode compilation-mode "^\\*mistty.*\\*$" mistty-mode
+     "^\\*vterm.*\\*$" vterm-mode "^\\*ghostel.*\\*$" ghostel-mode
+     "^\\*eat.*\\*$" eat-mode free-keys-mode))
+  :config
+  (popper-mode +1)
+  (popper-echo-mode +1)
+  (bind-keys
+   ("C-'"   . popper-toggle)
+   ("M-'"   . popper-cycle)
+   ("C-M-'" . popper-toggle-type)))
 
 ;; Configuration is done primarly in DE.
 (use-package emacs-everywhere
