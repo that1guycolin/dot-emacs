@@ -16,6 +16,7 @@
 ;; `smartparens' (auto-close "", {}, [], ())
 ;; `adaptive-wrap' (smart text wrapping)
 ;; `docstr' (composing/formatting DocStrings)
+;; `comment-dwim-2' (easily switch between no-comment, comment, EOL comment)
 ;; ===================================
 (use-package visual-regexp
   :bind
@@ -48,6 +49,10 @@
   (dolist (mode (docstr-major-modes))
     (add-hook (intern (concat (symbol-name mode) "-hook"))
 	      #'docstr-mode)))
+
+(use-package comment-dwim-2
+  :bind
+  ([remap comment-dwim] . comment-dwim-2))
 
 
 ;; =======  FLYCHECK  =======
