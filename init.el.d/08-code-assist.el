@@ -1,9 +1,10 @@
 ;;; 08-code-assist.el --- Linting, formatting, & LSPs -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; adaptive-wrap, apheleia, dap-mode, docstr, flycheck, flycheck-color-mode-line,
-;; flycheck-eask, flycheck-inline, flycheck-package, lsp-mode, lsp-treemacs,
-;; mason, smartparens, yasnippet, yasnippet-capf, yasnippet-snippets
+;; adaptive-wrap, apheleia, comment-dwim-2, dap-mode, docstr, flycheck,
+;; flycheck-color-mode-line, flycheck-eask, flycheck-inline, flycheck-package,
+;; lsp-mode, lsp-treemacs, mason, smartparens, visual-regexp,
+;; visual-regexp-steroids, yasnippet, yasnippet-capf, yasnippet-snippets
 
 ;;; Commentary:
 ;; Call packages that support efficient & productive coding at a global scope.
@@ -24,6 +25,8 @@
    ("C-c q" . vr/query-replace)))
 
 (use-package visual-regexp-steroids
+  :functions
+  vr/isearch-forward vr/isearch-backward
   :after visual-regexp
   :config
   (bind-keys

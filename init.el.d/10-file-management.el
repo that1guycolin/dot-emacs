@@ -1,7 +1,7 @@
 ;;; 10-file-management.el --- File explorer functions -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; async, dired, diredfl, dired-preview, dwim-shell-command, ready-player-mode
+;; async, diredfl, dired-preview, dwim-shell-command, ready-player
 
 ;;; Commentary:
 ;; Leverage Dired built-in settings & extensions to provide a functional file
