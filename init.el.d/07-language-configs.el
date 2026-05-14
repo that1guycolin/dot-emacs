@@ -129,6 +129,7 @@
 ;; `auto-virtualenv' (virtual env support)
 ;; `dwim-coder-mode' (hacks to reduce effort)
 ;; `live-py-mode' (live coding)
+;; `python-pytest' (integrate testing)
 ;; `python-x' (enhance built-in python(-ts)-mode)
 ;; ========================
 (defvar python-ts-mode-map)
@@ -153,6 +154,10 @@
   :defer t
   :bind (:map python-ts-mode-map
               ("C-c L" . live-py-mode)))
+
+(use-package python-pytest
+  :config
+  (keymap-set python-ts-mode-map "C-c C-t" 'python-pytest-dispatch))
 
 (use-package python-x
   :defer t

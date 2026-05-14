@@ -119,13 +119,29 @@
   (("uv"      . python-ts-mode)
    ("python3" . python-ts-mode))
 
+  :functions
+  python-skeleton-class python-skeleton-def python-skeleton-for
+  python-skeleton-if python-skeleton-import python-skeleton-try
+  python-skeleton-while
   :defines
-  python-indent-offset python-indent-guess-indent-offset python-ts-mode-map
+  python-indent-offset python-indent-guess-indent-offset
+  python-ts-mode-map
 
   :custom
   (python-indent-offset 4)
   (python-indent-guess-indent-offset nil)
-  (python-shell-interpreter "python3"))
+  (python-shell-interpreter "python3")
+  :config
+  (bind-keys
+   :map python-ts-mode-map
+   ("C-c C-k c" . python-skeleton-class)
+   ("C-c C-k d" . python-skeleton-def)
+   ("C-c C-k f" . python-skeleton-for)
+   ("C-c C-k i" . python-skeleton-if)
+   ("C-c C-k m" . python-skeleton-import)
+   ("C-c C-k t" . python-skeleton-try)
+   ("C-c C-k w" . python-skeleton-while))
+  (keymap-unset python-ts-mode-map "C-c C-t"))
 
 (use-package sh-mode
   :defer t
