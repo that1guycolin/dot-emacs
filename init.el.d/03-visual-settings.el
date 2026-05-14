@@ -161,7 +161,10 @@ as well."
     (interactive)
     (setq-local visual-fill-column-width
 		(or (user/editorconfig-max-line-length)
-		    80))))
+		    80)))
+  (add-hook 'prog-mode-hook #'user/visual-fill-column-from-editorconfig)
+  (add-hook 'text-mode-hook #'user/visual-fill-column-from-editorconfig)
+  (add-hook 'conf-mode-hook #'user/visual-fill-column-from-editorconfig))
 
 
 ;; =======  WHICH-KEY  =======
