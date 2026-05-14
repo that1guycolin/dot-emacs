@@ -14,10 +14,9 @@
 ;; `popper' (keep certain buffers hidden, but within arm's reach)
 ;; `emacs-everywhere'
 ;; ======================
-(declare-function user/function-after-emacsclient-frame "01-bootstrap-core.el")
 (use-package telega
   :defer t
-  :bind ("C-c g" . telega)
+  :bind ("C-M-g" . telega)
   :functions
   telega-mode-line-mode user/telega-setup telega-appindicator-mode
   telega-auto-download-mode telega-autoplay-mode telega-chat-auto-fill-mode
@@ -80,6 +79,8 @@
 
 
 ;; =======  DASHBOARD  =======
+(declare-function user/function-after-emacsclient-frame "01-bootstrap-core.el")
+
 (use-package dashboard
   :demand t
   :functions
