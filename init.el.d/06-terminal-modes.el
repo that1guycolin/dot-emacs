@@ -38,16 +38,20 @@
   :ensure (ghostel
 	   :source nil :package "ghostel" :id ghostel :fetcher github
 	   :repo "dakra/ghostel"
-	   :files (:defaults "README.md" "etc" "src"
-			     "vendor" "build.zig" "build.zig.zon" "symbols.map"
-			     ("build" "Makefile"))
+	   :files (:defaults
+		   "README.md" "etc" "src" "vendor" "build.zig" "build.zig.zon"
+		   "symbols.map" ("build" "Makefile"))
 	   :type git :protocol https :inherit t :depth treeless)
   :defer t
-  :bind
-  (("C-c S g" . ghostel)
-   ("C-c S p" . ghostel-project))
+  :bind ("C-c S g" . ghostel)
   :custom
-  (ghostel-module-auto-install 'compile))
+  (ghostel-module-auto-install 'compile)
+  :config
+  (with-eval-after-load 'disproject
+    (transient-append-suffix 'disproject-dispatch
+      "s"
+      '("o" "Ghostel" ghostel-project))))
+
 (use-package eat
   :defer t
   :bind ("C-c S e"   . eat)
