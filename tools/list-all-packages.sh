@@ -59,9 +59,18 @@ while true; do
 done
 
 ESCRIPT="${HOME}/.emacs.d/tools/list-use-packages.el"
+if [[ "$XDG_SESSION_TYPE" == "x11" ]]; then
+    EMACS_BIN='/usr/local/emacs-gtk/bin/emacs'
+elif [[ "$XDG_SESSION_TYPE" == "wayland" ]]; then
+    EMACS_BIN='/usr/local/emacs-pgtk/bin/emacs'
+else
+    echo "ERROR: Invalid XDG_SESSION_TYPE: ${XDG_SESSION_TYPE}"
+    echo "Unable to determine Emacs binary."
+    exit 42
+fi
 
 for ELFILE in "${HOME}/.emacs.d/init.el.d/"*.el; do
-    emacs --script "$ESCRIPT" "$ELFILE" >>"$TEMP"
+    "$EMACS_BIN" --script "$ESCRIPT" "$ELFILE" >>"$TEMP"
 done
 
 mapfile -t PACKAGES < <(sort "$TEMP" | uniq)
