@@ -11,10 +11,24 @@
 
 ;;; Code:
 ;; =======  TEXT MANIPULATION  =======
+;; `visual-regexp' (hl regexp as you type)
+;; `visual-regexp-steroids' (use python-style regexp instead of Emacs)
 ;; `smartparens' (auto-close "", {}, [], ())
 ;; `adaptive-wrap' (smart text wrapping)
 ;; `docstr' (composing/formatting DocStrings)
 ;; ===================================
+(use-package visual-regexp
+  :bind
+  (("C-c r" . vr/replace)
+   ("C-c q" . vr/query-replace)))
+
+(use-package visual-regexp-steroids
+  :after visual-regexp
+  :config
+  (bind-keys
+   ([remap isearch-forward-regexp]  . vr/isearch-forward)
+   ([remap isearch-backward-regexp] . vr/isearch-backward)))
+
 (use-package smartparens
   :hook
   ((prog-mode . smartparens-mode)
