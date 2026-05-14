@@ -12,13 +12,6 @@
 ;; scripting, & coding languages.
 
 ;;; Code:
-(defun user/smart-set-fill-column (value)
-  "Set `fill-column' to VALUE only if it hasn't been changed by a local config."
-  (when (eq fill-column (default-value 'fill-column))
-    (setq fill-column value))
-  (turn-on-auto-fill))
-
-
 ;; =======  (E)LISP  =======
 ;; ALL:
 ;; `adjust-parens' (smart '()')
@@ -133,12 +126,6 @@
 ;; `python-x' (enhance built-in python(-ts)-mode)
 ;; ========================
 (defvar python-ts-mode-map)
-(add-hook 'python-ts-mode-hook
-          (lambda ()
-            (add-hook 'hack-local-variables-hook
-                      (lambda () (user/smart-set-fill-column 72)
-			nil t))))
-
 (use-package auto-virtualenv
   :hook (python-ts-mode . auto-virtualenv-setup)
   :custom
