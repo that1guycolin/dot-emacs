@@ -1,0 +1,215 @@
+#+TITLE: Generate Packages Included
+#+FILETAGS: :Emacs:emacsd:
+
+* Emacs Packages Included
+:PROPERTIES:
+:ID:       org:bkbdidh0exk0
+:header-args: :results output
+:END:
+** Init.el
+#+begin_src bash
+  list-all-packages
+#+end_src
+
+#+RESULTS:
+;;; Packages included:
+;; adaptive-wrap, adjust-parens, apheleia, async, auto-rename-tag,
+;; auto-virtualenv, bash-ts-mode, breadcrumb, cape, checkdoc, cmake-ts-mode,
+;; comment-dwim-2, corfu, dap-mode, dashboard, deadgrep, diff-hl, diredfl,
+;; dired-preview, disproject, djvu, docker, dockerfile-mode, docstr,
+;; dwim-coder-mode, dwim-shell-command, eask-mode, eat, editorconfig,
+;; ef-themes, el2org, eldoc-cmake, elisp-def, elisp-dev-mcp, ellama, emacs,
+;; emacs-everywhere, emacs-lisp-mode, emms, emms-info-mediainfo, envrc, eros,
+;; eros-inspector, esh-autosuggest, eshell-git-prompt,
+;; eshell-syntax-highlighting, esh-help, exec-path-from-shell, fish-mode,
+;; flycheck, flycheck-color-mode-line, flycheck-eask, flycheck-inline,
+;; flycheck-package, folding-mode, forge, free-keys, gcmh, ghostel,
+;; git-commit-ts-mode, git-modes, glsl-mode, gptel, gptel-commit,
+;; gptel-forge-prs, gptel-magit, grip-mode, helpful, ielm, ini-mode, inspector,
+;; json-ts-mode, kdl-mode, lisp-mode, lisp-semantic-hl, live-py-mode, lsp-mode,
+;; lsp-treemacs, lua-ts-mode, macrostep, magit, magit-git-toolbelt,
+;; magit-org-todos, marginalia, markdown-ts-mode, mason, minions, mistty,
+;; modus-themes, morlock, native-complete, nerd-icons, nerd-icons-corfu, nov,
+;; nxml-mode, orderless, org, org-caldav, org-edna, org-gtd, org-mcp, org-mem,
+;; org-modern, org-modern-indent, org-node, org-noter, org-noter-pdftools,
+;; org-pdftools, org-pomodoro, org-project-capture, pdf-tools, perspective,
+;; perspective-project-bridge, popper, project, project-treemacs,
+;; python-pytest, python-ts-mode, python-x, ready-player, rg, savehist,
+;; sh-mode, sly, smartparens, suggest, systemd, tab-line-nerd-icons, telega,
+;; toc-org, toml-ts-mode, transient, tree-inspector, treemacs, treemacs-magit,
+;; treemacs-nerd-icons, treemacs-perspective, treesit, treesit-auto, vertico,
+;; visual-fill-column, visual-regexp, visual-regexp-steroids, vterm, which-key,
+;; with-editor, yaml-pro, yaml-ts-mode, yasnippet, yasnippet-capf,
+;; yasnippet-snippets
+
+** Init.el.d
+*** 01-bootstrap-core.el
+#+begin_src bash
+ list-use-packages "${HOME}/.emacs.d/init.el.d/01-bootstrap-core.el"
+#+end_src
+
+#+RESULTS:
+;;; Packages included:
+;; envrc, exec-path-from-shell, gcmh, org, transient
+
+*** 02-completion-setup.el
+
+#+begin_src bash
+ list-use-packages "${HOME}/.emacs.d/init.el.d/02-completion-setup.el"
+#+end_src
+
+#+RESULTS:
+;;; Packages included:
+;; cape, corfu, emacs, helpful, marginalia, orderless, savehist, vertico
+
+*** 03-visual-settings.el
+
+#+begin_src bash
+ list-use-packages "${HOME}/.emacs.d/init.el.d/03-visual-settings.el"
+#+end_src
+
+#+RESULTS:
+;;; Packages included:
+;; breadcrumb, editorconfig, ef-themes, folding-mode, minions, modus-themes,
+;; nerd-icons, nerd-icons-corfu, tab-line-nerd-icons, visual-fill-column,
+;; which-key
+
+*** 04-tree-sitter-lang-config.el
+
+#+begin_src bash
+  list-use-packages \
+      "${HOME}/.emacs.d/init.el.d/04-tree-sitter-lang-config.el"
+#+end_src
+
+#+RESULTS:
+;;; Packages included:
+;; bash-ts-mode, cmake-ts-mode, emacs-lisp-mode, ielm, json-ts-mode, lisp-mode,
+;; lua-ts-mode, markdown-ts-mode, nxml-mode, python-ts-mode, sh-mode,
+;; toml-ts-mode, treesit, treesit-auto, yaml-ts-mode
+
+*** 05-project-management.el
+
+#+begin_src bash
+ list-use-packages "${HOME}/.emacs.d/init.el.d/05-project-management.el"
+#+end_src
+
+#+RESULTS:
+;;; Packages included:
+;; deadgrep, disproject, docker, perspective, perspective-project-bridge,
+;; project, project-treemacs, rg, treemacs, treemacs-nerd-icons,
+;; treemacs-perspective
+
+*** 06-terminal-modes.el
+
+#+begin_src bash
+ list-use-packages "${HOME}/.emacs.d/init.el.d/06-terminal-modes.el"
+#+end_src
+
+#+RESULTS:
+;;; Packages included:
+;; eat, esh-autosuggest, eshell-git-prompt, eshell-syntax-highlighting,
+;; esh-help, ghostel, mistty, native-complete, vterm, with-editor
+
+*** 07-language-configs.el
+
+#+begin_src bash
+ list-use-packages "${HOME}/.emacs.d/init.el.d/07-language-configs.el"
+#+end_src
+
+#+RESULTS:
+;;; Packages included:
+;; adjust-parens, auto-rename-tag, auto-virtualenv, checkdoc, dockerfile-mode,
+;; dwim-coder-mode, eask-mode, eldoc-cmake, elisp-def, eros, eros-inspector,
+;; fish-mode, glsl-mode, grip-mode, ini-mode, inspector, kdl-mode,
+;; lisp-semantic-hl, live-py-mode, macrostep, morlock, python-pytest, python-x,
+;; sly, suggest, systemd, tree-inspector, yaml-pro
+
+*** 08-code-assist.el
+
+#+begin_src bash
+ list-use-packages "${HOME}/.emacs.d/init.el.d/08-code-assist.el"
+#+end_src
+
+#+RESULTS:
+;;; Packages included:
+;; adaptive-wrap, apheleia, comment-dwim-2, dap-mode, docstr, flycheck,
+;; flycheck-color-mode-line, flycheck-eask, flycheck-inline, flycheck-package,
+;; lsp-mode, lsp-treemacs, mason, smartparens, visual-regexp,
+;; visual-regexp-steroids, yasnippet, yasnippet-capf, yasnippet-snippets
+
+*** 09-git-tools.el
+
+#+begin_src bash
+ list-use-packages "${HOME}/.emacs.d/init.el.d/09-git-tools.el"
+#+end_src
+
+#+RESULTS:
+;;; Packages included:
+;; diff-hl, forge, git-commit-ts-mode, git-modes, magit, magit-git-toolbelt,
+;; treemacs-magit
+
+*** 10-file-management.el
+
+#+begin_src bash
+ list-use-packages "${HOME}/.emacs.d/init.el.d/10-file-management.el"
+#+end_src
+
+#+RESULTS:
+;;; Packages included:
+;; async, diredfl, dired-preview, dwim-shell-command, ready-player
+
+*** 11-org-mode-extensions.el
+
+#+begin_src bash
+  list-use-packages \
+      "${HOME}/.emacs.d/init.el.d/11-org-mode-extensions.el"
+#+end_src
+
+#+RESULTS:
+;;; Packages included:
+;; djvu, el2org, magit-org-todos, nov, org-caldav, org-edna, org-gtd, org-mem,
+;; org-modern, org-modern-indent, org-node, org-noter, org-noter-pdftools,
+;; org-pdftools, org-pomodoro, org-project-capture, pdf-tools, toc-org
+
+*** 12-llm-integration.el
+
+#+begin_src bash
+ list-use-packages "${HOME}/.emacs.d/init.el.d/12-llm-integration.el"
+#+end_src
+
+#+RESULTS:
+;;; Packages included:
+;; elisp-dev-mcp, ellama, gptel, gptel-commit, gptel-forge-prs, gptel-magit,
+;; org-mcp
+
+*** 13-media-player.el
+
+#+begin_src bash
+ list-use-packages "${HOME}/.emacs.d/init.el.d/13-media-player.el"
+#+end_src
+
+#+RESULTS:
+;;; Packages included:
+;; emms, emms-info-mediainfo
+
+*** 14-misc-packages.el
+
+#+begin_src bash
+ list-use-packages "${HOME}/.emacs.d/init.el.d/14-misc-packages.el"
+#+end_src
+
+#+RESULTS:
+;;; Packages included:
+;; dashboard, emacs-everywhere, free-keys, popper, telega
+
+*** 15-user-functions.el
+
+#+begin_src bash
+ list-use-packages "${HOME}/.emacs.d/init.el.d/15-user-functions.el"
+#+end_src
+
+#+RESULTS:
+;;; Packages included:
+;; 
+
+
