@@ -144,9 +144,9 @@
   (require 'cl-lib)
   (require 'hl-line)
   (require 'mouse)
-  
+
+  (global-display-fill-column-indicator-mode 1)
   (context-menu-mode 1)
-  (global-visual-line-mode 1)
   (auto-save-visited-mode 1)
 
   (add-hook 'ibuffer-mode-hook #'(lambda ()
