@@ -5,6 +5,6 @@
 
 -${1:short-option} | --${2:long-option})
     ${3:variable}="\$2"
-    shift
+    shift 2
     ;;
 $0
