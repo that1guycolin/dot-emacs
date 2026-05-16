@@ -125,48 +125,17 @@ as well."
 ;; `visual-fill-column' (fill-column for visual-line-mode)
 ;; =============================
 (use-package editorconfig
-  :functions editorconfig-core-get-properties-hash
   :config
   (editorconfig-mode 1))
 
 (use-package visual-fill-column
   :defer t
   :hook
-  ((prog-mode . (lambda ()
-		  (visual-line-mode 1)
-		  (visual-fill-column-mode 1)))
-   (text-mode . (lambda ()
-		  (visual-line-mode 1)
-		  (visual-fill-column-mode 1)))
-   (conf-mode . (lambda ()
-		  (visual-line-mode 1)
-		  (visual-fill-column-mode 1))))
-  :functions
-  user/editorconfig-max-line-length user/visual-fill-column-from-editorconfig
-  :config
-  (defun user/editorconfig-max-line-length ()
-    "Return EditorConfig max_line_length for current buffer, or nil."
-    (when-let* ((file buffer-file-name)
-		(props (editorconfig-core-get-properties-hash file)))
-      (let ((value (gethash 'max_line_length props)))
-	(cond
-	 ((numberp value) value)
-	 ((and (stringp value)
-	       (string-match-p "\\'[0-9]+\\'" value))
-	  (string-to-number value))
-	 ((equal value "off") nil)
-	 (nil)))))
-
-  (defun user/visual-fill-column-from-editorconfig ()
-    "Set visual fill column width from EditorConfig, defaulting to 80."
-    (interactive)
-    (setq-local visual-fill-column-width
-		(or (user/editorconfig-max-line-length)
-		    80)))
-  (add-hook 'prog-mode-hook #'user/visual-fill-column-from-editorconfig)
-  (add-hook 'text-mode-hook #'user/visual-fill-column-from-editorconfig)
-  (add-hook 'conf-mode-hook #'user/visual-fill-column-from-editorconfig))
-
+  ((prog-mode . visual-line-mode)
+   (text-mode . visual-line-mode)
+   (conf-mode . visual-line-mode))
+  :init
+  (add-hook 'visual-line-mode-hook #'visual-fill-column-mode))
 
 ;; =======  WHICH-KEY  =======
 ;; `which-key' (needs to load before many other functions)
