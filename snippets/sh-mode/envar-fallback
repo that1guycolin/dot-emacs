@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: envar-fallback
+# key: envarfb
+# --
+[ -n \"\$\{${1:variable}:-\}\" ] || { $1=${2:value}; export $1; }
+$0
