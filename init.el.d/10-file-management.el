@@ -2,6 +2,7 @@
 
 ;;; Packages included:
 ;; async, dired, diredfl, dired-preview, dwim-shell-command, ready-player
+;; dwim-shell-command, nerd-icons-dired, ready-player
 
 ;;; Commentary:
 ;; Leverage Dired built-in settings & extensions to provide a functional file
@@ -45,6 +46,10 @@
    :map image-dired-thumbnail-mode-map
    ("n"             . image-dired-display-next)
    ("p"             . image-dired-display-previous)))
+
+(use-package nerd-icons-dired
+  :defer t
+  :hook (dired-mode . nerd-icons-dired-mode))
 
 (use-package dwim-shell-command
   :after dired
