@@ -148,11 +148,14 @@
 
 *** [[https://github.com/that1guycolin/dot-emacs/blob/main/init.el.d/10-file-management.el][10 file management]]
 
-- [[https://github.com/xenodium/dwim-shell-command][dwim-shell-command]]
+- [[https://github.com/rainstormstudio/nerd-icons-dired][nerd-icons-dired]]
+- [[https://gitlab.com/xuhdev/dired-quick-sort][dired-quick-sort]]
+- [[https://github.com/jwiegley/emacs-async][async]]
+- [[https://github.com/purcell/diredfl][diredfl]]
+- [[https://github.com/Fuco1/dired-hacks][dired-subtree]]
 - [[https://github.com/protesilaos/dired-preview][dired-preview]]
 - [[https://github.com/xenodium/ready-player][ready-player]]
-- [[https://github.com/purcell/diredfl][diredfl]]
-- [[https://github.com/jwiegley/emacs-async][async]]
+- [[https://github.com/xenodium/dwim-shell-command][dwim-shell-command]]
 
 *** [[https://github.com/that1guycolin/dot-emacs/blob/main/init.el.d/11-org-mode-extensions.el][11 org mode extensions]]
 
@@ -201,7 +204,6 @@
 - [[https://github.com/emacs-dashboard/dashboard][dashboard]]
 
 *** [[https://github.com/that1guycolin/dot-emacs/blob/main/init.el.d/15-user-functions.el][15 user functions]]
-
 
 Custom functions to manipulate fonts, elpaca, and more.
 

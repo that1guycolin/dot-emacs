@@ -1,7 +1,7 @@
 ;;; 10-file-management.el --- File explorer functions -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; async, dired, diredfl, dired-preview, dwim-shell-command, ready-player
+;; async, dired, diredfl, dired-preview, dired-quick-sort, dired-subtree,
 ;; dwim-shell-command, nerd-icons-dired, ready-player
 
 ;;; Commentary:
@@ -71,6 +71,38 @@
 (use-package diredfl
   :defer t
   :hook (dired-mode . diredfl-mode))
+
+(declare-function transient-define-prefix "transient")
+(use-package dired-subtree
+  :after dired
+  :functions user/dired-subtree-dispatch
+  :config
+  (defvar user/dired-subtree-dispatch)
+  (transient-define-prefix user/dired-subtree-dispatch ()
+    "Custom transient dispatch containing functions for dired-subtree."
+    ["Dired Subtree"
+     [("i" "Insert"              dired-subtree-insert)
+      ("r" "Remove"              dired-subtree-remove)
+      ("t" "Toggle"              dired-subtree-toggle)
+      ("c" "Cycle"               dired-subtree-cycle)
+      ("R" "Revert"              dired-subtree-revert)
+      ("n" "Narrow"              dired-subtree-narrow)
+      ("^" "Up"                  dired-subtree-up)
+      ("M-L" "Down"              dired-subtree-down)]
+     [("C-n" "Next Sibling"      dired-subtree-next-sibling)
+      ("C-p" "Prev. Sibling"     dired-subtree-previous-sibling)
+      ("<" "Beginning"           dired-subtree-beginning)
+      (">" "End"                 dired-subtree-end)
+      ("m" "Mark"                dired-subtree-mark-subtree)
+      ("u" "Unmark"              dired-subtree-unmark-subtree)
+      ("." "Only This File"      dired-subtree-only-this-file)
+      ("+" "Only This Directory" dired-subtree-only-this-directory)]])
+  (bind-keys
+   :map dired-mode-map
+   ("TAB" . user/dired-subtree-dispatch))
+  (with-eval-after-load 'casual-dired
+    (transient-append-suffix 'casual-dired-tmenu "M-n"
+      '("TAB" "Dired Subtree" user/dired-subtree-dispatch))))
 
 (use-package dired-preview
   :defer t
