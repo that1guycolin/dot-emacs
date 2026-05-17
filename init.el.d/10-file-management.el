@@ -51,6 +51,16 @@
   :defer t
   :hook (dired-mode . nerd-icons-dired-mode))
 
+(use-package dired-quick-sort
+  :after dired
+  :functions dired-quick-sort-setup
+  :init
+  (dired-quick-sort-setup)
+  :config
+  (with-eval-after-load 'casual-dired
+    (transient-append-suffix 'casual-dired-tmenu "s"
+      '("S" "Dired Quick-Sort" dired-quick-sort-transient))))
+
 (use-package async
   :defer t
   :commands async-start async-start-process
