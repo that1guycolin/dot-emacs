@@ -208,6 +208,12 @@ The returned list does not include packages with :ensure explicitly set to nil."
        (dolist (msg messages)
 	 (message "%s" msg))))))
 
+(defun user/load-generate-readme ()
+  "Load generate-readme.el and make its functions available for use."
+  (interactive)
+  (add-to-list 'load-path user/tools-directory)
+  (require 'generate-readme))
+
 
 ;; =======  TRANSIENT  =======
 (declare-function transient-define-prefix "transient")
