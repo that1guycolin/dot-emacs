@@ -51,6 +51,37 @@
   :defer t
   :hook (dired-mode . nerd-icons-dired-mode))
 
+(use-package async
+  :defer t
+  :commands async-start async-start-process
+  :hook (dired-mode . dired-async-mode)
+  :init
+  (require 'dired-async))
+
+(use-package diredfl
+  :defer t
+  :hook (dired-mode . diredfl-mode))
+
+(use-package dired-preview
+  :defer t
+  :hook (dired-mode . dired-preview-mode)
+  :functions
+  dired-preview-find-file dired-preview-open-dwim dired-preview-page-up
+  dired-preview-page-down
+  :config
+  (bind-keys
+   :map dired-mode-map
+   ("C-m"   . dired-preview-find-file)
+   ("C-M-o" . dired-preview-open-dwim)
+   ("C-M-p" . dired-preview-page-up)
+   ("C-M-n" . dired-preview-page-down)))
+
+(use-package ready-player
+  :defer t
+  :hook (dired-hook . ready-player-mode)
+  :config
+  (ready-player-mode +1))
+
 (use-package dwim-shell-command
   :after dired
   :functions
@@ -97,40 +128,6 @@
     "4" #'user/convert-ts-to-mp4
     "v" #'user/extract-video-only
     "a" #'user/extract-audio-only))
-
-(use-package dired-preview
-  :after dired
-  :functions
-  dired-preview-find-file dired-preview-open-dwim dired-preview-page-up
-  dired-preview-page-down
-  :config
-  (bind-keys
-   :map dired-mode-map
-   ("C-m" . dired-preview-find-file)
-   ("P"   . dired-preview-open-dwim)
-   ("C-M-p" . dired-preview-page-up)
-   ("C-M-n" . dired-preview-page-down)))
-
-(use-package ready-player
-  :after dired
-  :functions ready-player-mode
-  :config
-  (ready-player-mode +1))
-
-(use-package diredfl
-  :after dired
-  :functions diredfl-mode
-  :config
-  (diredfl-mode 1))
-
-(use-package async
-  :defer t
-  :commands async-start async-start-process
-  :hook (dired-mode . dired-async-mode)
-  :init
-  (require 'dired-async))
-
-
 
 
 (provide '10-file-management)
