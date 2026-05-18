@@ -100,12 +100,9 @@
 
 (use-package helpful
   :ensure (:wait t)
-  :functions
-  helpful-callable helpful-variable helpful-key helpful-command helpful-at-point
-  helpful-function helpful-kill-buffers
-  :config
-  (bind-keys
-   ("C-h f" . helpful-callable)
+  :demand t
+  :bind
+  (("C-h f" . helpful-callable)
    ("C-h v" . helpful-variable)
    ("C-h k" . helpful-key)
    ("C-h x" . helpful-command)
