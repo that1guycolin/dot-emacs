@@ -70,7 +70,7 @@
 ;; =======  OTHER BOOTSTRAPS  =======
 ;; `gcmh' (smart garbage collection)
 ;; `exec-path-from-shell' `envrc' (environment)
-;; `transient' `org' (load latest early, override built-in)
+;; `transient' `org' (load latest version early to override built-in pkg)
 ;; ==================================
 (use-package gcmh
   :demand t
