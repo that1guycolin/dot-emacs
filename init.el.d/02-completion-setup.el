@@ -95,7 +95,7 @@
   (add-hook 'completion-at-point-functions #'cape-elisp-block)
   (add-hook 'completion-at-point-functions #'cape-history))
 
-(dolist (bind '("C-h f" "C-h v" "C-h k" "C-h x" "C-h F"))
+(dolist (bind '("C-h f" "C-h v" "C-h k" "C-h x" "C-h F" "C-z"))
   (keymap-global-unset bind))
 
 (use-package helpful
@@ -113,13 +113,6 @@
    ("C-h F" . helpful-function)
    ("C-h z" . helpful-kill-buffers)))
 
-(defun user/check-parens-with-message ()
-  "Run `check-parens'.  Print a message when all parentheses match."
-  (interactive)
-  (when (not (check-parens))
-    (message "All parentheses match!")))
-
-(keymap-global-unset "C-z")
 (defvar Info-directory-list)
 (defvar elpaca-builds-directory)
 (defvar elpaca-sources-directory)
@@ -127,6 +120,12 @@
   :ensure nil
   :functions
   ibuffer-auto-mode
+  :preface
+  (defun user/check-parens-with-message ()
+    "Run `check-parens'.  Print a message when all parentheses match."
+    (interactive)
+    (when (not (check-parens))
+      (message "All parentheses match!")))
   :bind
   (("C-c x"   . toggle-frame-maximized)
    ("C-c ("   . user/check-parens-with-message)
