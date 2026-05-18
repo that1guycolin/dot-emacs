@@ -36,18 +36,39 @@
 
  ;; Disable package.el
  package-enable-at-startup nil
- package-quickstart nil)
+ package-quickstart nil
 
-;; Ignore `tramp' and `compressed'/`archive' files during start
-(defvar user/file-name-handler-alist-backup file-name-handler-alist)
-(setq file-name-handler-alist nil)
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (setq file-name-handler-alist
-                  user/file-name-handler-alist-backup)))
+ ;; auth/vc
+ auth-sources '("~/.authinfo.gpg")
+ version-control t
+ kept-new-versions 4
+ kept-old-versions 4
+ delete-old-versions t
+ 
+ ;; Reduce startup "noise"
+ inhibit-message t
+ inhibit-startup-message t
+ inhibit-startup-echo-area-message user-login-name
+ inhibit-startup-screen t
+ initial-scratch-message nil
+ auto-mode-case-fold nil
+ frame-inhibit-implied-resize t
+ inhibit-compacting-font-caches t
+ read-process-output-max (* 1024 1024)
+ redisplay-skip-fontification-on-input t
+ command-line-x-option-alist nil
+ select-active-regions 'only
+ create-lockfiles nil
+ vc-follow-symlinks t
+ use-short-answers t)
 
-;; Environment variables
-(setenv "LSP_USE_PLISTS" "true")
+;; Variables depending on package load
+(with-eval-after-load 'ffap
+  (setq ffap-machine-p-known 'reject))
+(with-eval-after-load 'which-function-mode
+  (setq which-func-update-delay 1.0))
+(with-eval-after-load 'dired
+  (setq-default dired-kill-when-opening-new-dired-buffer t))
 
 ;; Configure autosaves and backups.
 (let ((backup-dir (expand-file-name "~/backups/"))
@@ -56,17 +77,9 @@
     (make-directory backup-dir t))
   (unless (file-exists-p autosave-dir)
     (make-directory autosave-dir t))
-
-  (setq backup-directory-alist `(("." . ,backup-dir))
-        auto-save-file-name-transforms `((".*" ,autosave-dir t))))
-
-(setq
- auth-sources '("~/.authinfo.gpg")
-
- version-control t
- kept-new-versions 4
- kept-old-versions 4
- delete-old-versions t)
+  (setq
+   backup-directory-alist `(("." . ,backup-dir))
+   auto-save-file-name-transforms `((".*" ,autosave-dir t))))
 
 ;; Early UI optimizations
 (setq-default
@@ -74,6 +87,7 @@
  fill-column 80)
 (when (fboundp 'global-tab-line-mode)
   (global-tab-line-mode 1))
+
 (when (fboundp 'tool-bar-mode)
   (tool-bar-mode -1))
 (when (fboundp 'scroll-bar-mode)
@@ -81,30 +95,6 @@
 (when (fboundp 'tooltip-mode)
   (tooltip-mode -1))
 
-;; Other
-(setq
- ;; Reduce startup "noise"
- inhibit-message t
- inhibit-startup-message t
- inhibit-redisplay t
- inhibit-startup-echo-area-message user-login-name
- inhibit-startup-screen t
- initial-scratch-message nil
- native-comp-async-report-warnings-errors nil
- ;; Disable 2nd case-insensitive search for a major mode
- auto-mode-case-fold nil
- ffap-machine-p-known 'reject
- frame-inhibit-implied-resize t
- idle-update-delay 1.0
- inhibit-compacting-font-caches t
- read-process-output-max (* 1024 1024)
- redisplay-skip-fontification-on-input t
- command-line-x-option-alist nil
- select-active-regions 'only
- create-lockfiles nil
- vc-follow-symlinks t
- use-short-answers t
- dired-kill-when-opening-new-dired-buffer t)
 
 (provide 'early-init)
 
