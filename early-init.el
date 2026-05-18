@@ -1,4 +1,4 @@
-;;; early-init.el --- Emacs early init  -*- lexical-binding: t; no-byte-compile: t; -*-
+;;; early-init.el --- Load first  -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 ;; Set initial values for variables that affect startup performance and UI.
@@ -6,10 +6,26 @@
 ;; and applies early UI optimizations before the main config loads.
 
 ;;; Code:
-;; (profiler-start 'cpu)
-(defvar user/profile-startup t
+;; Set the environment variable "EMACS_PROFILE_STARTUP" to yes (or to any
+;; string) to create a cpu profile report on your startup.
+(defvar user/profile-startup nil
   "When non-nil, enable CPU profiling during startup.")
-;; (setq debug-on-error t)
+(when user/profile-startup
+  (setq debug-on-error t)
+  (profiler-start 'cpu)
+  (add-hook 'emacs-startup-hook
+	    #'(lambda ()
+		(profiler-cpu-stop)
+		(require 'profiler)
+		(profiler-report))))
+
+;; Ignore `tramp' and `compressed'/`archive' files during start
+(defvar user/file-name-handler-alist-backup file-name-handler-alist)
+(setq file-name-handler-alist nil)
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (setq
+	     file-name-handler-alist user/file-name-handler-alist-backup)))
 
 (setq
  ;; No garbage collection during startup
