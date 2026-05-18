@@ -68,15 +68,15 @@
 
 (defvar user/tools-directory
   (expand-file-name "tools" user-emacs-directory)
-  "Directory in which the user stores helpful tools for working in Emacs.")
+  "Directory containing scripts, etc for editing this configuration.")
 
 (defvar user/projects-directory
   (expand-file-name "~/projects")
-  "Directory in which the user stores custom projects.")
+  "Directory containing active projects.")
 
 (defvar user/scripts-directory
   (expand-file-name "~/scripts")
-  "Directory in which the user stores custom scripts by shell-type.")
+  "Directory containing custom \='one off' scripts.")
 
 (add-to-list 'load-path user/init-directory)
 
