@@ -55,10 +55,19 @@
   (marginalia-mode 1))
 
 (use-package corfu
+  :demand t
   :functions
-  global-corfu-mode corfu-history-mode corfu-popupinfo-mode corfu-next
-  corfu-previous corfu-complete corfu-quit corfu-reset corfu-popupinfo-toggle
-  corfu-popupinfo-scroll-down corfu-popupinfo-scroll-up
+  global-corfu-mode corfu-history-mode corfu-popupinfo-mode
+  :bind
+  (:map corfu-mode-map
+	("C-n"   . corfu-next)
+	("C-p"   . corfu-previous)
+	("TAB"   . corfu-complete)
+	("RET"   . corfu-complete)
+	("C-RET" . corfu-reset)
+	("M-d"   . corfu-popupinfo-toggle)
+	("M-n"   . corfu-popupinfo-scroll-down)
+	("M-p"   . corfu-popupinfo-scroll-up))
   
   :custom
   (corfu-auto t)
@@ -73,20 +82,10 @@
   :config
   (global-corfu-mode 1)
   (corfu-history-mode 1)
-  (corfu-popupinfo-mode 1)
-
-  (bind-keys
-   :map corfu-map
-   ("C-n"   . corfu-next)
-   ("C-p"   . corfu-previous)
-   ("TAB"   . corfu-complete)
-   ("RET"   . corfu-complete)
-   ("C-RET" . corfu-reset)
-   ("M-d"   . corfu-popupinfo-toggle)
-   ("M-n"   . corfu-popupinfo-scroll-down)
-   ("M-p"   . corfu-popupinfo-scroll-up)))
+  (corfu-popupinfo-mode 1))
 
 (use-package cape
+  :demand t
   :bind ("C-c TAB" . cape-prefix-map)
   :functions
   cape-dabbrev cape-file cape-elisp-block cape-history
