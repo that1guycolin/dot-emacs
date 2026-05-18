@@ -74,23 +74,15 @@
 ;; ==================================
 (use-package gcmh
   :demand t
-  :functions
-  gcmh-mode user/restore-sane-gcmh-values
-  :config
-  (gcmh-mode 1)
-  (setopt gcmh-high-cons-threshold most-positive-fixnum
-          gcmh-low-cons-threshold (* 8 1024 1024)
-          gcmh-idle-delay 'auto
-          gc-cons-percentage 0.8)
-
+  :functions gcmh-mode
+  :preface
   (defun user/restore-sane-gcmh-values ()
     "Set gcmh values back to something reasonable.  Useful after startup."
-    (interactive)
     (setopt
      gcmh-high-cons-threshold (* 100 1024 1024)
      gc-cons-percentage 0.1))
-  
-  (add-hook 'emacs-startup-hook #'user/restore-sane-gcmh-values))
+  :hook (emacs-startup . user/restore-sane-gcmh-values)
+  :init (gcmh-mode 1))
 
 (use-package exec-path-from-shell
   :demand t
