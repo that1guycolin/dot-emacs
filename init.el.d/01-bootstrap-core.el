@@ -96,10 +96,9 @@
   (exec-path-from-shell-initialize))
 
 (use-package envrc
-  :demand t
+  :defer t
   :functions envrc-global-mode
-  :config
-  (envrc-global-mode 1))
+  :hook (emacs-startup . envrc-global-mode))
 
 (use-package transient
   :demand t)
