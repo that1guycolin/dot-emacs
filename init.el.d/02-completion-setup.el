@@ -25,6 +25,7 @@
   (add-to-list 'savehist-additional-variables 'corfu-history))
 
 (use-package orderless
+  :demand t
   :init
   (setq
    completion-styles '(orderless basic)
