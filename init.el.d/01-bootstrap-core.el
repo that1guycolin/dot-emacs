@@ -105,46 +105,22 @@
 
 (use-package org
   :ensure (:wait t)
-  :demand t
+  :defer t
+  :bind
+  (("C-c o o" . org-mode)
+   ("C-c o l" . org-store-link)
+   ("C-c o a" . org-agenda)
+   ("C-c c"   . org-capture)
+   :map org-mode-map
+   ("C-c l"   . org-toggle-link-display)
+   ("C-c C-q" . org-set-tags-command))
   :mode
   (("\\.org\\'"   . org-mode)
    ("TODO\\'"     . org-mode)
    ("\\.notes\\'" . org-mode))
   :defines org-mode-map
-  
-  :init
-  (setq org-directory (expand-file-name "~/org"))
 
-  :custom
-  (org-babel-lisp-eval-fn #'sly-eval)
-  (org-confirm-babel-evaluate nil)
-  (org-default-notes-file (expand-file-name ".notes" org-directory))
-  (org-id-extra-files (directory-files-recursively org-directory "\\.org$"))
-  (org-id-locations-file (expand-file-name ".id-locations" org-directory))
-  (org-id-method 'org)
-  (org-id-prefix "unk")
-  (org-insert-mode-line-in-empty-file t)
-  (org-startup-folded 'content)
-  (org-use-sub-superscripts '{})
-  
-  :config
-  (setq org-src-lang-modes (assoc-delete-all "bash" org-src-lang-modes))
-  (dolist (lang-mode-cons '(("bash" . bash-ts) ("cmake" . cmake-ts)
-  			    ("json" . json-ts) ("lua" . lua-ts)
-  			    ("python" . python-ts) ("sh" . sh)
-			    ("toml" . toml-ts) ("yaml" . yaml-ts) ("zsh" . sh)))
-    (add-to-list 'org-src-lang-modes lang-mode-cons))
-
-  (setq org-babel-default-header-args
-	(cons '(:results . "value verbatim replace")
-	      (assq-delete-all :results org-babel-default-header-args)))
-
-  (with-eval-after-load 'ob
-    (org-babel-do-load-languages
-     'org-babel-load-languages '((emacs-lisp . t) (lisp . t) (lua . t)
-				 (makefile . t) (org . t) (python . t)
-				 (shell . t))))
-
+  :preface
   (defun user/get-parent-directory ()
     "Return parent directory name for current buffer."
     (when buffer-file-name
@@ -159,15 +135,36 @@ creating org nodes."
     (let ((org-id-prefix (or (user/get-parent-directory) org-id-prefix)))
       (apply orig-fn args)))
   (advice-add 'org-id-new :around #'user/org-id-dynamic-prefix)
+  
+  :init
+  (setq org-directory (expand-file-name "~/org"))
 
-  (bind-keys
-   ("C-c o o" . org-mode)
-   ("C-c o l" . org-store-link)
-   ("C-c o a" . org-agenda)
-   ("C-c c"   . org-capture)
-   :map org-mode-map
-   ("C-c l"   . org-toggle-link-display)
-   ("C-c C-q" . org-set-tags-command)))
+  :custom
+  (org-babel-default-header-args
+   (cons '(:results . "value verbatim replace")
+	 (assq-delete-all :results org-babel-default-header-args)))
+  (org-babel-lisp-eval-fn #'sly-eval)
+  (org-confirm-babel-evaluate nil)
+  (org-default-notes-file (expand-file-name ".notes" org-directory))
+  (org-id-extra-files (directory-files-recursively org-directory "\\.org$"))
+  (org-id-locations-file (expand-file-name ".id-locations" org-directory))
+  (org-id-method 'org)
+  (org-id-prefix "unk")
+  (org-insert-mode-line-in-empty-file t)
+  (org-startup-folded 'content)
+  (org-use-sub-superscripts '{})
+  
+  :config
+  (org-babel-do-load-languages
+   'org-babel-load-languages '((emacs-lisp . t) (lisp . t) (lua . t)
+			       (makefile . t) (org . t) (python . t)
+			       (shell . t)))
+  (setq org-src-lang-modes (assoc-delete-all "bash" org-src-lang-modes))
+  (dolist (lang-mode-cons '(("bash" . bash-ts) ("cmake" . cmake-ts)
+  			    ("json" . json-ts) ("lua" . lua-ts)
+  			    ("python" . python-ts) ("sh" . sh)
+			    ("toml" . toml-ts) ("yaml" . yaml-ts) ("zsh" . sh)))
+    (add-to-list 'org-src-lang-modes lang-mode-cons)))
 
 
 ;; =======  EMACSCLIENT FRAME FUNCTION  =======
