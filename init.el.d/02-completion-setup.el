@@ -33,6 +33,7 @@
    completion-category-defaults nil))
 
 (use-package vertico
+  :demand t
   :functions vertico-mode
   :custom
   (vertico-resize t)
