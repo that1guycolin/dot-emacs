@@ -127,8 +127,6 @@
 ;; Custom variables & functions
 (require '15-user-functions)
 
-(add-hook 'emacs-startup-hook #'(lambda () (setq inhibit-message nil)))
-
 
 (provide 'init)
 ;;; init.el ends here.

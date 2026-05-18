@@ -19,13 +19,17 @@
 		(require 'profiler)
 		(profiler-report))))
 
-;; Ignore `tramp' and `compressed'/`archive' files during start
+;; Variables modified for startup then reset once started.
+;; Ignore `tramp' and `compressed'/`archive' files during start.  Do not
+;; display messages during startup.
 (defvar user/file-name-handler-alist-backup file-name-handler-alist)
-(setq file-name-handler-alist nil)
+(setq file-name-handler-alist nil
+      inhibit-message t)
 (add-hook 'emacs-startup-hook
           (lambda ()
             (setq
-	     file-name-handler-alist user/file-name-handler-alist-backup)))
+	     file-name-handler-alist user/file-name-handler-alist-backup
+	     inhibit-message nil)))
 
 (setq
  ;; No garbage collection during startup
@@ -46,7 +50,6 @@
  delete-old-versions t
  
  ;; Reduce startup "noise"
- inhibit-message t
  inhibit-startup-message t
  inhibit-startup-echo-area-message user-login-name
  inhibit-startup-screen t
