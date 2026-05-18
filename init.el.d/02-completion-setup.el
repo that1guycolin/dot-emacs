@@ -19,6 +19,7 @@
 ;; =============================
 (use-package savehist
   :ensure nil
+  :demand t
   :config
   (savehist-mode 1)
   (add-to-list 'savehist-additional-variables 'corfu-history))
