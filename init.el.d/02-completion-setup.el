@@ -42,16 +42,17 @@
   (vertico-mode 1))
 
 (use-package marginalia
+  :demand t
+  :bind
+  (
+   :map minibuffer-local-map
+   ("M-A" . marginalia-cycle)
+   :map completion-list-mode-map
+   ("M-A" . marginalia-cycle))
   :functions
   marginalia-mode marginalia-cycle
   :config
-  (marginalia-mode 1)
-  (bind-keys
-   :map minibuffer-local-map
-   ("M-A" . marginalia-cycle))
-  (bind-keys
-   :map completion-list-mode-map
-   ("M-A" . marginalia-cycle)))
+  (marginalia-mode 1))
 
 (use-package corfu
   :functions
