@@ -146,6 +146,7 @@ as well."
 ;; ===========================
 (use-package which-key
   :ensure (:wait t)
+  :demand t
   :config
   (which-key-mode 1))
 
