@@ -108,12 +108,15 @@ as well."
 ;; `breadcrumb' (navigate directory maze)
 ;; ==========================
 (use-package minions
-  :functions minions-mode
+  :defer t
+  :hook (emacs-startup . minions-mode)
   :config
-  (minions-mode 1)
-  (add-to-list 'minions-prominent-modes 'flycheck-mode)
-  (add-to-list 'minions-prominent-modes 'lsp-mode)
-  (add-to-list 'minions-prominent-modes 'persp-mode))
+  (with-eval-after-load 'flycheck
+    (add-to-list 'minions-prominent-modes 'flycheck-mode))
+  (with-eval-after-load 'lsp-mode
+    (add-to-list 'minions-prominent-modes 'lsp-mode))
+  (with-eval-after-load 'perspective
+    (add-to-list 'minions-prominent-modes 'persp-mode)))
 
 (use-package breadcrumb
   :functions breadcrumb-opinionated-mode
