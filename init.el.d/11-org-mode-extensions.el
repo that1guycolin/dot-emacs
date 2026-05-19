@@ -274,12 +274,20 @@ With a prefix ARG, remove start location."
 
 
 ;; =======  MISC  =======
+;; `org-tidy' (make drawers invisible)
 ;; `org-pomodoro' (manage time)
 ;; `org-modern' `org-modern-indent' (improve org l&f)
 ;; `org-caldev' (nextcloud cal sync)
 ;; `toc-org' (table-of-contents)
 ;; `el2org' (make .org from .el)
 ;; ======================
+(use-package org-tidy
+  :defer t
+  :hook (org-mode . org-tidy-mode)
+  :custom
+  (org-tidy-top-property-style 'invisible)
+  (org-tidy-properties-style 'invisible))
+
 (use-package org-pomodoro
   :functions org-pomodoro
   :custom
