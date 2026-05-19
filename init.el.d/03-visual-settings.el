@@ -105,7 +105,6 @@ as well."
 
 ;; =======  MODELINE  =======
 ;; `minons' (declutter modeline w/ menu for minor-modes)
-;; `breadcrumb' (navigate directory maze)
 ;; ==========================
 (use-package minions
   :defer t
@@ -118,10 +117,6 @@ as well."
   (with-eval-after-load 'perspective
     (add-to-list 'minions-prominent-modes 'persp-mode)))
 
-(use-package breadcrumb
-  :functions breadcrumb-opinionated-mode
-  :config
-  (breadcrumb-opinionated-mode 1))
 
 ;; =======  VISUAL LINE  =======
 ;; `editorconfig' (support .editorconfig)
