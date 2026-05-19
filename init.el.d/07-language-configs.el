@@ -119,18 +119,40 @@
 
 
 ;; =======  PYTHON  =======
-;; `auto-virtualenv' (virtual env support)
 ;; `dwim-coder-mode' (hacks to reduce effort)
 ;; `live-py-mode' (live coding)
 ;; `python-pytest' (integrate testing)
 ;; `python-x' (enhance built-in python(-ts)-mode)
 ;; ========================
-(defvar python-ts-mode-map)
-(use-package auto-virtualenv
-  :hook (python-ts-mode . auto-virtualenv-setup)
-  :custom
-  (auto-virtualenv-verbose t))
+(defvar python-mode-map)
+;; FUNCTIONS
+(defun user/python-uv-script-p ()
+  "Return non-nil if current buffer is a uv script."
+  (and buffer-file-name
+       (save-excursion
+         (goto-char (point-min))
+         (looking-at-p
+          (rx "#!/usr/bin/env -S uv tool run --script")))))
 
+(defun user/python-run-smart ()
+  "Run current Python file appropriately."
+  (interactive)
+  (cond
+   ((user/python-uv-script-p)
+    (compile
+     (format "uv run %s"
+             (shell-quote-argument buffer-file-name))))
+   ((locate-dominating-file default-directory "pyproject.toml")
+    (compile "uv run python -m pytest"))
+   (t
+    (compile
+     (format "python %s"
+             (shell-quote-argument buffer-file-name))))))
+
+(with-eval-after-load 'python
+  (define-key python-mode-map (kbd "C-c C-r") #'user/python-run-smart))
+
+;; PACKAGES
 (use-package dwim-coder-mode
   :hook
   ((c-ts-mode      . dwim-coder-mode)
@@ -139,16 +161,18 @@
 
 (use-package live-py-mode
   :defer t
-  :bind (:map python-ts-mode-map
+  :bind (:map python-mode-map
               ("C-c L" . live-py-mode)))
 
 (use-package python-pytest
   :config
-  (keymap-set python-ts-mode-map "C-c C-t" 'python-pytest-dispatch))
+  (keymap-set python-mode-map "C-c C-t" 'python-pytest-dispatch))
 
 (use-package python-x
   :defer t
-  :hook (python-ts-mode . python-x-setup))
+  :hook
+  ((python-mode    . python-x-setup)
+   (python-ts-mode . python-x-setup)))
 
 
 ;; =======  SHELL SCRIPTS  =======
