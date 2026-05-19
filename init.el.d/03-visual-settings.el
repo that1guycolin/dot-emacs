@@ -92,6 +92,7 @@ as well."
       (nerd-icons-install-fonts t))))
 
 (use-package tab-line-nerd-icons
+  :after nerd-icons
   :functions tab-line-nerd-icons-global-mode
   :config
   (tab-line-nerd-icons-global-mode 1))
