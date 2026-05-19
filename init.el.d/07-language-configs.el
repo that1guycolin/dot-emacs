@@ -28,7 +28,7 @@
 ;; `suggest' (find function to accomplish X)
 ;; `tree-inspector' (tree-style view for inspector)
 ;; -------------------------
-;; SBCL
+;; COMMON
 ;; `sly' (modern slime)
 ;; =========================
 (use-package adjust-parens
@@ -45,6 +45,7 @@
 
 (use-package checkdoc
   :ensure nil
+  :defer t
   :commands checkdoc-defun checkdoc-current-buffer)
 
 (use-package elisp-def
@@ -63,12 +64,9 @@
 
 (use-package eros-inspector
   :after eros inspector
-  :functions
-  eros-inspector-eval-last-sexp eros-inspector-eval-defun
-  :config
-  (keymap-global-set "<remap> <eros-eval-last-sexp>"
-		     #'eros-inspector-eval-last-sexp)
-  (keymap-global-set "<remap> <eros-eval-defun>" #'eros-inspector-eval-defun))
+  :bind
+  (([remap eros-eval-last-sexp] . eros-inspector-eval-last-sexp)
+   ([remap eros-eval-defun]     . eros-inspector-eval-defun)))
 
 (use-package macrostep
   :defer t
@@ -127,6 +125,7 @@
 (defvar python-ts-mode-map)
 
 (use-package dwim-coder-mode
+  :defer t
   :hook
   ((c-ts-mode      . dwim-coder-mode)
    (python-ts-mode . dwim-coder-mode)
@@ -138,8 +137,9 @@
               ("C-c L" . live-py-mode)))
 
 (use-package python-pytest
-  :config
-  (keymap-set python-ts-mode-map "C-c C-t" 'python-pytest-dispatch))
+  :defer t
+  :bind (:map python-ts-mode-map
+	      ("C-c C-t" . python-pytest-dispatch)))
 
 (use-package python-x
   :defer t
@@ -164,6 +164,7 @@
 ;; `glsl-mode' (support OpenGL Shading Language)
 ;; `ini-mode' (config file support)
 ;; `kdl-mode' (support .kdl)
+;; `systemd' (support services & sockets)
 ;; ===================================
 (use-package csv-mode
   :defer t
@@ -222,13 +223,10 @@
 (defvar markdown-ts-mode-map)
 (use-package grip-mode
   :defer t
-  :commands grip-mode
-  :defines grip-command
-  :config
-  (bind-keys
-   :map markdown-ts-mode-map
-   ("C-c j" . grip-mode))
-  (setq grip-command 'auto))
+  :bind (:map markdown-ts-mode-map
+	      ("C-c j" . grip-mode))
+  :custom
+  (grip-command 'auto))
 
 (use-package yaml-pro
   :ensure (:wait t)
