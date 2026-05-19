@@ -1,11 +1,11 @@
 ;;; 07-language-configs.el --- Packages & settings for select languages -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; adjust-parens, auto-rename-tag, auto-virtualenv, checkdoc, csv-mode,
-;; dockerfile-mode, dwim-coder-mode, eask-mode, eldoc-cmake, elisp-def, eros,
-;; eros-inspector, fish-mode, glsl-mode, grip-mode, ini-mode, inspector,
-;; kdl-mode, lisp-semantic-hl, live-py-mode, macrostep, morlock, python-pytest,
-;; python-x, sly, suggest, systemd, tree-inspector, yaml-pro
+;; adjust-parens, auto-rename-tag, checkdoc, csv-mode, dockerfile-mode,
+;; dwim-coder-mode, eask-mode, eldoc-cmake, elisp-def, eros, eros-inspector,
+;; fish-mode, glsl-mode, grip-mode, ini-mode, inspector, kdl-mode,
+;; lisp-semantic-hl, live-py-mode, macrostep, morlock, python-pytest, python-x,
+;; sly, suggest, systemd, tree-inspector, yaml-pro
 
 ;;; Commentary:
 ;; Provide packages and settings that enhance Emacs support for specific markup,

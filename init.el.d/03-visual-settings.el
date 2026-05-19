@@ -1,9 +1,7 @@
 ;;; 03-visual-settings.el --- Core UI configuration -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; editorconfig, ef-themes, folding-mode, minions, modus-themes,
-;; nerd-icons, nerd-icons-corfu, tab-line-nerd-icons, visual-fill-column,
-;; which-key
+;; editorconfig, ef-themes, folding-mode, minions, modus-themes, nerd-icons, nerd-icons-corfu, tab-line-nerd-icons, visual-fill-column, which-key
 
 ;;; Commentary:
 ;; Core UI elements that provide visual feedback and interaction.
