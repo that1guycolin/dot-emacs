@@ -1,7 +1,7 @@
 ;;; 03-visual-settings.el --- Core UI configuration -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; breadcrumb, editorconfig, ef-themes, folding-mode, minions, modus-themes,
+;; editorconfig, ef-themes, folding-mode, minions, modus-themes,
 ;; nerd-icons, nerd-icons-corfu, tab-line-nerd-icons, visual-fill-column,
 ;; which-key
 
@@ -105,7 +105,6 @@ as well."
 
 ;; =======  MODELINE  =======
 ;; `minons' (declutter modeline w/ menu for minor-modes)
-;; `breadcrumb' (navigate directory maze)
 ;; ==========================
 (use-package minions
   :functions minions-mode
@@ -114,11 +113,6 @@ as well."
   (add-to-list 'minions-prominent-modes 'flycheck-mode)
   (add-to-list 'minions-prominent-modes 'lsp-mode)
   (add-to-list 'minions-prominent-modes 'persp-mode))
-
-(use-package breadcrumb
-  :functions breadcrumb-opinionated-mode
-  :config
-  (breadcrumb-opinionated-mode 1))
 
 ;; =======  VISUAL LINE  =======
 ;; `editorconfig' (support .editorconfig)
