@@ -132,11 +132,11 @@ as well."
 (use-package visual-fill-column
   :defer t
   :hook
-  ((prog-mode . visual-line-mode)
-   (text-mode . visual-line-mode)
-   (conf-mode . visual-line-mode))
-  :init
-  (add-hook 'visual-line-mode-hook #'visual-fill-column-mode))
+  ((visual-line-mode . visual-fill-column-mode)
+   (prog-mode        . visual-line-mode)
+   (text-mode        . visual-line-mode)
+   (conf-mode        . visual-line-mode)))
+
 
 ;; =======  WHICH-KEY  =======
 ;; `which-key' (needs to load before many other functions)
