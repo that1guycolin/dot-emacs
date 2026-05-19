@@ -84,6 +84,7 @@ as well."
 ;; `nerd-icons-corfu' (nerd-icons in corfu)
 ;; =======================
 (use-package nerd-icons
+  :demand t
   :functions nerd-icons-install-fonts
   :config
   (unless (member "Symbols Nerd Font Mono" (font-family-list))
