@@ -18,10 +18,10 @@
 ;; `ef-themes' (Additional & enhanced Emacs' themes)
 ;; ========================
 (use-package modus-themes
+  :demand t
   :functions
   modus-themes-include-derivatives-mode modus-themes-load-random-dark
-  modus-themes-select-dark modus-themes-load-random modus-themes-rotate
-  :demand t)
+  modus-themes-select-dark modus-themes-load-random modus-themes-rotate)
 
 (declare-function user/function-after-emacsclient-frame "01-bootstrap-core.el")
 (use-package ef-themes
