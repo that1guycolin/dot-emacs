@@ -1,9 +1,8 @@
 ;;; 03-visual-settings.el --- Core UI configuration -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; breadcrumb, editorconfig, ef-themes, folding-mode, minions, modus-themes,
-;; nerd-icons, nerd-icons-corfu, tab-line-nerd-icons, visual-fill-column,
-;; which-key
+;; editorconfig, ef-themes, folding-mode, minions, modus-themes, nerd-icons,
+;; nerd-icons-corfu, tab-line-nerd-icons, visual-fill-column, which-key
 
 ;;; Commentary:
 ;; Core UI elements that provide visual feedback and interaction.
@@ -137,6 +136,10 @@ as well."
    (text-mode        . visual-line-mode)
    (conf-mode        . visual-line-mode)))
 
+(use-package folding-mode
+  :ensure nil
+  :defer t
+  :bind ("C-|" . folding-mode))
 
 ;; =======  WHICH-KEY  =======
 ;; `which-key' (needs to load before many other functions)
@@ -145,10 +148,6 @@ as well."
   :ensure (:wait t)
   :config
   (which-key-mode 1))
-
-(use-package folding-mode
-  :ensure nil
-  :bind ("C-|" . folding-mode))
 
 
 (provide '03-visual-settings)
