@@ -99,6 +99,7 @@ as well."
 
 (defvar corfu-margin-formatters)
 (use-package nerd-icons-corfu
+  :after nerd-icons
   :config
   (add-to-list 'corfu-margin-formatters 'nerd-icons-corfu-formatter))
 
