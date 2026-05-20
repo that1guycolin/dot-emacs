@@ -141,18 +141,32 @@
   (dolist (lang-mode-cons '(("bash" . bash-ts) ("cmake" . cmake-ts)
   			    ("json" . json-ts) ("lua" . lua-ts)
   			    ("python" . python-ts) ("sh" . sh)
-			    ("toml" . toml-ts) ("yaml" . yaml-ts) ("zsh" . sh)))
+			    ("toml" . toml-ts) ("yaml" . yaml-ts)
+			    ("zsh" . shell)))
     (add-to-list 'org-src-lang-modes lang-mode-cons))
 
   (setq org-babel-default-header-args
 	(cons '(:results . "value verbatim replace")
 	      (assq-delete-all :results org-babel-default-header-args)))
 
-  (with-eval-after-load 'ob
-    (org-babel-do-load-languages
-     'org-babel-load-languages '((emacs-lisp . t) (lisp . t) (lua . t)
-				 (makefile . t) (org . t) (python . t)
-				 (shell . t))))
+  (defun org-babel-execute:zsh (body params)
+    (org-babel-execute:shell body params))
+  (setq org-babel-default-header-args:zsh
+	'((:results . "output")))
+
+  (org-babel-do-load-languages
+   'org-babel-load-languages '((emacs-lisp . t) (lisp . t) (lua . t)
+			       (makefile . t) (org . t) (python . t)
+			       (shell . t)))
+
+  (defun user/org-id-prefix-slug (s)
+    "Turn S into a safe(-ish) `org-id-prefix'."
+    (when s
+      (replace-regexp-in-string
+       "-+" "-"
+       (replace-regexp-in-string
+	"[^[:alnum:]_]+" "-"
+	(downcase s)))))
 
   (defun user/get-parent-directory ()
     "Return parent directory name for current buffer."
@@ -161,11 +175,29 @@
        (directory-file-name
 	(file-name-directory buffer-file-name)))))
 
+  (defun user/org-id-context-prefix ()
+    "Return `org-id-prefix' based on the node's level."
+    (cond
+     ((org-before-first-heading-p)
+      (user/get-parent-directory))
+     ((save-excursion
+	(org-back-to-heading t)
+	(= (org-outline-level) 1))
+      (when buffer-file-name
+	(file-name-base buffer-file-name)))
+     (t
+      (save-excursion
+	(org-back-to-heading t)
+	(when (org-up-heading-safe)
+	  (org-get-heading t t t t))))))
+
   (defun user/org-id-dynamic-prefix (orig-fn &rest args)
     "Dynamically compute org-id-prefix' each time an ID is created.
 Designed to wrap around ORIG-FN `org-id-new' (accepting the same ARGS) when
 creating org nodes."
-    (let ((org-id-prefix (or (user/get-parent-directory) org-id-prefix)))
+    (let ((org-id-prefix
+	   (or (user/org-id-prefix-slub (use/org-id-context-prefix))
+	       org-id-prefix)))
       (apply orig-fn args)))
   (advice-add 'org-id-new :around #'user/org-id-dynamic-prefix)
 
