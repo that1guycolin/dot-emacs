@@ -3,7 +3,7 @@
 ;;; Packages included:
 ;; bash-ts-mode, cmake-ts-mode, emacs-lisp-mode, ielm, json-ts-mode, lisp-mode,
 ;; lua-ts-mode, markdown-ts-mode, nxml-mode, python-ts-mode, sh-mode,
-;; toml-ts-mode, treesit, treesit-auto, yaml-ts-mode
+;; toml-ts-mode, treesit, yaml-ts-mode
 
 ;;; Commentary:
 ;; Activates and configures Emacs' built-in tree-sitter supported languages.
@@ -47,15 +47,6 @@
 		      "master" "typescript/src")
 	  (yaml "https://github.com/ikatyang/tree-sitter-yaml")
 	  (zsh "https://github.com/georgeharker/tree-sitter-zsh"))))
-
-(use-package treesit-auto
-  :functions
-  global-treesit-auto-mode treesit-auto-add-to-auto-mode-alist
-  :custom
-  (treesit-auto-install 'prompt)
-  :config
-  ;;  (treesit-auto-add-to-auto-mode-alist 'all)
-  (global-treesit-auto-mode 1))
 
 
 ;; =======  MODE CONFIGURATIONS  =======
