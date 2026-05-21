@@ -15,10 +15,10 @@
 ;; `disproject' (transient dispatch for project.el)
 ;; `deadgrep' (global ripgrep search)
 ;; `rg' (project ripgrep search & more)
-;; `perspective' (separate workspaces for separate projects)
+;; `perspective' (separate project workspaces)
 ;; `perspective-project-bridge' (integrate project.el & perspective)
-;; `docker' (Docker support for Emacs)
-;; =================================
+;; `docker' (Docker support)
+;; ==========================
 (defvar user/projects-directory)
 (defvar user/scripts-directory)
 (defvar org-directory)
@@ -26,16 +26,8 @@
 
 (use-package project
   :ensure nil
-  :functions
-  project-remember-projects-under project-prompt-project-dir
-
-  :custom
-  (project-list-exclude
-   (list (concat "^" (regexp-quote (expand-file-name elpaca-directory)))))
-  :config
-  (dolist (dir '("^node_modules$" "^\\.venv$" "^\\.uv$"))
-    (add-to-list 'project-vc-ignores dir))
-  
+  :demand t
+  :preface
   (defun user/project-reset-projects ()
     "Clear the project list and repopulate it."
     (interactive)
@@ -48,7 +40,15 @@
 		   ,org-directory
 		   ,(expand-file-name user-emacs-directory)))
       (project-remember-projects-under dir t))
-    (message "Successfully repopulated projects list")))
+    (message "Successfully repopulated projects list"))
+
+  :functions project-remember-projects-under
+  :custom
+  (project-list-exclude
+   (list (concat "^" (regexp-quote (expand-file-name elpaca-directory)))))
+  :config
+  (dolist (dir '("^node_modules$" "^\\.venv$" "^\\.uv$"))
+    (add-to-list 'project-vc-ignores dir)))
 
 (dolist (keybind '("C-x b" "C-x k" "C-x C-b" "C-x p"))
   (keymap-global-unset keybind))
