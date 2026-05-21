@@ -197,26 +197,9 @@ into the message."
 ;; ==========================
 (defvar treemacs-mode-map)
 (use-package treemacs
-  :commands treemacs treemacs-refresh
   :defer t
-  :functions
-  treemacs-filewatch-mode treemacs-git-mode treemacs-git-commit-diff-mode
-  treemacs-select-window treemacs-project-follow-mode treemacs-root-up
-  treemacs-get-local-window treemacs-hide-gitignored-files-mode
-  treemacs--select-workspace-by-name treemacs-switch-workspace
-  user/treemacs-switch-workspace-and-focus user/toggle-gitignored-wait-2
-  user/close-treemacs
-
-  :custom
-  (treemacs-width 35)
-  (treemacs-is-never-other-window t)
-
-  :config
-  (treemacs-filewatch-mode 1)
-  (treemacs-git-mode 'deferred)
-  (treemacs-git-commit-diff-mode 1)
-
-  (defun user/treemacs-switch-workspace-and-focus ()
+  :preface
+  (defun user/treemacs-switch-workspace-focus ()
     "Run `treemacs-switch-workspace' and ensure the Treemacs window is focused."
     (interactive)
     (call-interactively #'treemacs-switch-workspace)
@@ -243,19 +226,80 @@ Wait three seconds before activating the mode."
     "If a treemacs window exists, close it."
     (when (eq 'visible (treemacs-current-visibility))
       (treemacs)))
-  (advice-add 'disproject-dispatch :before #'user/close-treemacs)
-  
-  (bind-keys
-   :map treemacs-mode-map
-   ("C-x p f"     . treemacs-project-follow-mode)
-   ("<backspace>" . treemacs-root-up)))
 
-(use-package project-treemacs
-  :after treemacs
-  :functions project-treemacs-mode
+  (defvar user/project-treemacs-anywhere-dispatch)
+  (transient-define-prefix
+    user/project-treemacs-anywhere-dispatch ()
+    "Globally available commands for Treemacs & Project.el."
+    ["Treemacs" :pad-keys t
+     ["Project"
+      ("t" "Toggle"                      treemacs)
+      ("T" "Refresh"                     treemacs-refresh)
+      ("d" "Disproject"                  disproject-dispatch)
+      ("r" "Rename Project"              treemacs-rename-project)
+      ("c" "Dirvish"                     (lambda () (interactive)
+					   (call-interactively #'dirvish)))]
+
+     ["View"
+      ("v f" "Focus to active file"      treemacs-find-file)
+      ("v p" "Add Project"               treemacs-add-project-to-workspace)
+      ("v c" "Collapse Other Projects"   treemacs-collapse-other-projects)
+      ("v C" "Collapse"                  treemacs-collapse-all-projects)
+      ("v r" "Current Project Only"      treemacs-create-workspace-from-project)
+      ]
+     
+     ["Workspace" :pad-keys t
+      ("w e" "Edit"                      treemacs-edit-workspaces)
+      ("w s" "Switch"                    user/treemacs-switch-workspace-focus)
+      ("w n" "New"                       treemacs-create-workspace)
+      ("w r" "Rename"                    treemacs-rename-workspace)
+      ("w d" "Delete"                    treemacs-remove-workspace)]]
+
+    ["Project.el" :pad-keys t
+     ["Search"
+      ("x" "Project Find Regexp"         project-find-regexp)
+      ("q" "Project Replace Regexp"      project-query-replace-regexp)
+      ("f" "Project Find File"           project-find-file)
+      ("s" "Project Search"              project-search)
+      ("a" "Add Project"                 (lambda () (interactive)
+					   (call-interactively
+					    #'project-remember-project)))]
+     
+     ["Shell"
+      ("S" "Project Shell"               project-shell)
+      ("E" "Project EShell"              project-shell)
+      ("A" "Project Async Shell Command" project-async-shell-command)
+      ("C" "Project Shell Command"       project-shell-command)]
+     
+     ["Other"
+      ("D" "Set Project Dir-Locals"      project-customize-dirlocals)
+      ("R" "Ripgrep Project"             rg-project)
+      ("G" "DWIM Ripgrep Project"        rg-dwim-project-dir)
+      ("Z" "Forget Zombie Projects"      project-forget-zombie-projects)
+      ("p r" "Reset Known Projects"      user/project-reset-projects)]])
+
+  :bind
+  (("C-c t"       . user/project-treemacs-anywhere-dispatch)
+   :map treemacs-mode-map
+   ("C-x j"       . treemacs-project-follow-mode)
+   ("<backspace>" . treemacs-root-up))
+  :commands treemacs treemacs-refresh
+  :functions
+  treemacs-filewatch-mode treemacs-git-mode treemacs-git-commit-diff-mode
+  treemacs-select-window treemacs-project-follow-mode treemacs-root-up
+  treemacs-get-local-window treemacs-hide-gitignored-files-mode
+  treemacs--select-workspace-by-name treemacs-switch-workspace
+
+  :custom
+  (treemacs-width 35)
+  (treemacs-is-never-other-window t)
+
   :config
-  (project-treemacs-mode 1)
-  (treemacs-project-follow-mode 1))
+  (treemacs-filewatch-mode 1)
+  (treemacs-git-mode 'deferred)
+  (treemacs-git-commit-diff-mode 1)
+  (treemacs-project-follow-mode 1)
+  (advice-add 'disproject-dispatch :before #'user/close-treemacs))
 
 (use-package treemacs-perspective
   :after treemacs)
@@ -266,60 +310,6 @@ Wait three seconds before activating the mode."
   :functions treemacs-nerd-icons-config
   :config
   (treemacs-nerd-icons-config))
-
-(declare-function dirvish "10-file-management.el")
-(defvar user/project-treemacs-anywhere-dispatch nil)
-(transient-define-prefix
-  user/project-treemacs-anywhere-dispatch ()
-  "Globally available commands for Treemacs & Project.el."
-  ["Treemacs" :pad-keys t
-   ["Project"
-    ("t" "Toggle"                      treemacs)
-    ("T" "Refresh"                     treemacs-refresh)
-    ("d" "Disproject"                  disproject-dispatch)
-    ("r" "Rename Project"              treemacs-rename-project)
-    ("c" "Dirvish"                     (lambda () (interactive)
-					 (call-interactively #'dirvish)))]
-
-   ["View"
-    ("v f" "Focus to active file"      treemacs-find-file)
-    ("v p" "Add Project"               treemacs-add-project-to-workspace)
-    ("v c" "Collapse Other Projects"   treemacs-collapse-other-projects)
-    ("v C" "Collapse"                  treemacs-collapse-all-projects)
-    ("v r" "Current Project Only"      treemacs-create-workspace-from-project)]
-   
-   ["Workspace"
-    ("w e" "Edit"                      treemacs-edit-workspaces)
-    ("w s" "Switch"                    user/treemacs-switch-workspace-and-focus)
-    ("w n" "New"                       treemacs-create-workspace)
-    ("w r" "Rename"                    treemacs-rename-workspace)
-    ("w d" "Delete"                    treemacs-remove-workspace)]]
-
-  ["Project.el" :pad-keys t
-   ["Search"
-    ("x" "Project Find Regexp"         project-find-regexp)
-    ("q" "Project Replace Regexp"      project-query-replace-regexp)
-    ("f" "Project Find File"           project-find-file)
-    ("s" "Project Search"              project-search)
-    ("a" "Add Project"                 (lambda () (interactive)
-					 (call-interactively
-					  #'project-remember-project)))]
-   
-   ["Shell"
-    ("S" "Project Shell"               project-shell)
-    ("E" "Project EShell"              project-shell)
-    ("A" "Project Async Shell Command" project-async-shell-command)
-    ("C" "Project Shell Command"       project-shell-command)
-    ("M" "MisTTY @ Project root"       mistty-in-project)]
-   
-   ["Other"
-    ("D" "Set Project Dir-Locals"      project-customize-dirlocals)
-    ("R" "Ripgrep Project"             rg-project)
-    ("G" "DWIM Ripgrep Project"        rg-dwim-project-dir)
-    ("Z" "Forget Zombie Projects"      project-forget-zombie-projects)
-    ("p r" "Reset Known Projects"      user/project-reset-projects)]])
-
-(keymap-global-set "C-c t" #'user/project-treemacs-anywhere-dispatch)
 
 
 (provide '05-project-management)
