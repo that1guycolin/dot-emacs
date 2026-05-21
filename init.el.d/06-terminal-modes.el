@@ -17,16 +17,18 @@
 ;; =================================
 (use-package mistty
   :defer t
-  :bind ("C-c S m" . mistty)
-  :functions mistty-send-key
-  :defines mistty-prompt-map
-  :config
-  (bind-keys
+  :bind
+  (("C-c S m" . mistty)
    :map mistty-prompt-map
    ("M-<up>"    . mistty-send-key)
    ("M-<down>"  . mistty-send-key)
    ("M-<left>"  . mistty-send-key)
-   ("M-<right>" . mistty-send-key)))
+   ("M-<right>" . mistty-send-key))
+  :config
+  (with-eval-after-load 'treemacs
+    (transient-append-suffix 'user/project-treemacs-anywhere-dispatch
+      "C"
+      '("M" "MisTTY @ Project root" mistty-in-project))))
 
 (use-package vterm
   :defer t
