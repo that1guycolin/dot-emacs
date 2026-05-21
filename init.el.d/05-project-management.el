@@ -66,13 +66,12 @@
 
 (use-package rg
   :defer t
-  :bind ("C-c s" . rg-menu)
+  :bind ("C-c C-g" . rg-menu)
   :config
-  (require 'rg-isearch)
-  (declare-function rg-isearch-menu "rg-isearch")
-  (bind-keys
-   :map isearch-mode-map
-   ("M-s r" . rg-isearch-menu)))
+  (use-package rg-isearch
+    :defer t
+    :bind (:map isearch-mode-map
+		("M-s r" . rg-isearch-menu))))
 
 (defvar ibuffer-sorting-mode)
 (declare-function ibuffer-do-sort-by-alphabetic "ibuffer")
