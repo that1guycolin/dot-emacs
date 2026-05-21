@@ -82,13 +82,18 @@
   "An alist mapping human-readable font names to their filename.
 In this iteration, all the fonts on the list are monospaced nerd fonts.")
 
+(defvar user/keep-frame-size-on-font-switch-p t
+  "If non-nil, attempt to keep frame size fixed when changing font.
+If nil, the number of frame lines and columns remains fixed.")
+
 (defun user/switch-font (font)
   "Switch to a FONT contained in `user/font-alist'."
   (interactive
    (list (completing-read
 	  "Font: " (mapcar #'car user/font-alist)
 	  nil t)))
-  (set-frame-font (cdr (assoc font user/font-alist)) nil t t)
+  (set-frame-font (cdr (assoc font user/font-alist))
+		  user/keep-frame-size-on-font-switch-p t t)
   (message "Font set to %s" font))
 
 (defun user/random-font ()
@@ -96,8 +101,26 @@ In this iteration, all the fonts on the list are monospaced nerd fonts.")
   (interactive)
   (let* ((font-cons (nth (random (length user/font-alist)) user/font-alist))
 	 (font (cdr font-cons)))
-    (set-frame-font font nil t t)
+    (set-frame-font font user/keep-frame-size-on-font-switch-p t t)
     (message "Font set to %s" (car font-cons))))
+
+(defun user/set-font-size-behaviour (input)
+  "Prompt the user for INPUT on handling frame resizing when switching font."
+  (declare (interactive-only t))
+  (interactive
+   (let ((frame-resizing-cons
+	  (if user/keep-frame-size-on-font-switch-p
+	      '(("Attempt to keep frame size fixed (current)" . t)
+		("Keep # of frame lines and columns fixed"    . nil))
+	    '(("Attempt to keep frame size fixed"                  . t)
+	      ("Keep # of frame lines and columns fixed (current)" . nil )))))
+     (list
+      (cdr
+       (assoc
+	(completing-read "How to handle frame-size when switching fonts: "
+			 frame-resizing-cons nil t)
+	frame-resizing-cons)))))
+  (setq user/keep-frame-size-on-font-switch-p input))
 
 
 ;; =======  SIDE-WINDOW  =======
@@ -215,12 +238,13 @@ The returned list does not include packages with :ensure explicitly set to nil."
   "Display functions that change how the user-interface looks."
   ["Modify UI"
    ["Fonts"
-    ("f s" "Switch font" user/switch-font)
-    ("f r" "Random font" user/random-font)]
+    ("f s" "Switch font"         user/switch-font)
+    ("f r" "Random font"         user/random-font)
+    ("f b" "Font size behaviour" user/set-font-size-behaviour :transient t)]
    ["Theme"
-    ("t s" "Switch theme" modus-themes-select-dark)
-    ("t r" "Random theme" modus-themes-load-random-dark)
-    ("t n" "Rotate theme" modus-themes-rotate)]])
+    ("t s" "Switch theme"        modus-themes-select-dark)
+    ("t r" "Random theme"        modus-themes-load-random-dark)
+    ("t n" "Rotate theme"        modus-themes-rotate)]])
 (keymap-global-set "C-c u" 'user/visual-settings-dispatch)
 
 (defvar-keymap user/update-elpaca-map
