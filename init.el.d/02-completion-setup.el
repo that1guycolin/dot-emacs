@@ -140,9 +140,8 @@
   (auto-save-visited-interval 60)
 
   :config
-  (require 'cl-lib)
-  (require 'hl-line)
-  (require 'mouse)
+  (dolist (xtra-lib '(bs cl-lib hl-line mouse seq subr-x))
+    (require xtra-lib))
 
   (global-display-fill-column-indicator-mode 1)
   (context-menu-mode 1)
