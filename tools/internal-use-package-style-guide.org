@@ -1,6 +1,12 @@
+:PROPERTIES:
+:ID:       tools:zcqfy3a16yk0
+:END:
+:PROPERTY:
+
+:END:
 #+TITLE: Internal Use-Package Style Guide
 #+AUTHOR: Colin Loeffler (that1guycolin)
-#+ID: 
+#+ID: tools:zcqfy3a16yk0
 #+DATE: <2026-05-20 Wed>
 #+FILETAGS: :emacs:emacsd:usepackage:
 
@@ -80,7 +86,9 @@ Let's define the key order in a variable:
     "Style guide key order for use-package blocks.")
 #+end_src
 
-Assume we a function that iterates over a file (or set of files) and turns each use-package object into a list (using =read=). We can then extract the keys from that list (or form).
+Assume we a function that iterates over a file (or set of files) and turns each
+use-package object into a list (using =read=). We can then extract the keys from
+that list (or form).
 #+begin_src emacs-lisp
   (defun user/use-package-keys (form)
     "Extract the keyword keys from a use-package FORM (a list)."
