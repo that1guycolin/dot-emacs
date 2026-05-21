@@ -106,22 +106,6 @@ See URL `https://github.com/rvben/rumdl'."
     :modes (markdown-ts-mode markdown-mode gfm-mode))
   (add-to-list 'flycheck-checkers 'markdown-rumdl)
 
-  (flycheck-define-checker tombi-lint
-    "A powerful toolkit to help you maintain clean and consistent TOML files.
-See URL `https://tombi-toml.github.io/tombi'."
-    :command ("tombi" "lint" "--quiet" "-" source)
-    :error-patterns
-    ((error line-start
-	    "Error: " (message)
-	    "\n"
-	    (+ blank) "at " (file-name) ":" line ":" column line-end)
-     (warning line-start
-	      "Warning: " (message)
-	      "\n"
-	      (+ blank) "at " (file-name) ":" line ":" column line-end))
-    :modes (toml-mode toml-ts-mode))
-  (add-to-list 'flycheck-checkers 'tombi-lint)
-
   (let* ((vale-config (expand-file-name ".vale.ini" user-emacs-directory))
 	 (vale-install (expand-file-name ".vale-styles" user-emacs-directory))
 	 (command (format "vale --config %s sync >/dev/null" vale-config)))
@@ -132,7 +116,8 @@ See URL `https://tombi-toml.github.io/tombi'."
     "Tool to bring code-like linting to prose.
 See URL `https://vale.sh'."
     :command
-    ("vale" "--config" (eval (expand-file-name ".vale.ini" user-emacs-directory))
+    ("vale" "--config" (eval
+			(expand-file-name ".vale.ini" user-emacs-directory))
      "--no-global" "--output" "line" source)
     :error-patterns
     ((warning line-start (file-name) ":" line ":" column ":"
@@ -144,11 +129,11 @@ See URL `https://vale.sh'."
   (flycheck-add-mode 'org-lint 'org-gtd-clarify-mode)
 
   (let ((flycheck-modes-alist
-	 '((fish-mode     . fish-self)
-	   (markdown-mode . markdown-rumdl)
-	   (gfm-mode      . markdown-rumdl)
-	   (toml-ts-mode  . tombi-lint)
-	   (org-mode      . org-lint))))
+	 '((fish-mode        . fish-self)
+	   (markdown-mode    . markdown-rumdl)
+	   (gfm-mode         . markdown-rumdl)
+	   (markdown-ts-mode . markdown-rumdl)
+	   (org-mode         . org-lint))))
     (dolist (mode (mapcar #'car flycheck-modes-alist))
       (let ((hook (intern (concat (symbol-name mode) "-hook")))
 	    (checker (cdr (assoc mode flycheck-modes-alist))))
