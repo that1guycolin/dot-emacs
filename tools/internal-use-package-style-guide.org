@@ -1,0 +1,97 @@
+#+TITLE: Internal Use-Package Style Guide
+#+AUTHOR: Colin Loeffler (that1guycolin)
+#+ID: 
+#+DATE: <2026-05-20 Wed>
+#+FILETAGS: :emacs:emacsd:usepackage:
+
+* The Guide
+** Required keys
+
+When writing a use-package object, all keys are available but optional.
+
+#+begin_src emacs-lisp
+  (use-package example-package)
+#+end_src
+
+The above is a perfeclty valid use-package object.
+
+As Emacs' seemingly infinte ability for customization is one of its greatest
+attractions for new users, we only make one small change: requiring one (and
+only one) of three-keys that indicate the method by which the package should be
+loaded.
+
+The keys are '~:demand t~ ', '~:defer t~', & '~:after ${package or list of
+packages}~'. '~:demand~' loads a pacakge as soon as the parser evaluates the
+use-package object; '~:defer~' readies a pacakge but holds off loading it until
+some condition (typically user-specified) becomes true. '~:after~' is useful for
+loading packages sequentially; for example, I might not want to load the package
+=python= until I open a file with ext '.py', but once python loads, I might want
+to immediatley load =elpy=.
+
+While ~:defer t~ is technically redundant when using certain keys (e.g., ~:bind~,
+~:hook~, or ~:mode~), it is this user's belief that explicitly declaring the
+load-type for each package ultimately creates a more carefully constructed init.
+
+For additonal information on available keys, see the [[https://www.gnu.org/software/emacs/manual/html_node/use-package/][use-package user manual]]
+(also available [[info:use-package][as an info file]].)
+
+** Key order
+
+When writing use-package objects, keys shall appear in the following order. This
+order is designed so that a symbol's definition is most likely to appear before
+its use.[fn:1] Of course, it is impossible to account for every situation, and
+there are times when following this order that use might appear before
+definition. While tempting to allow exceptions in these circumstances, in
+virtually every formatting spec, the exceptions allowed in its infancy have led
+to enormous complications down the line. For this reason, even if it seems
+absurd, please follow this order in every use-package object.
+
+A reminder that not every key needs to appear in every object; in fact, most
+won't.
+
+- ~:ensure~
+- =ONE OF=
+  - ~:defer~
+  - ~:demand~
+  - ~:after~
+- ~:preface~
+- ~:bind~
+- ~:hook~
+- ~:interpreter~  
+- ~:mode~
+- ~:commands~
+- ~:functions~
+- ~:defines~
+- ~:init~
+- ~:custom~
+- ~:config~
+ 
+* Helpful Functions
+
+These functions aid in `linting` an init file or directory for this guide
+(mainly for maintaining consistent key order for all use-package objects). 
+
+Let's define the key order in a variable:
+#+begin_src emacs-lisp
+  (defvar user/use-package-key-order
+    '(:ensure :defer :demand :after :preface :bind :hook :interpreter
+  	    :mode :commands :functions :defines :init :custom
+  	    :config)
+    "Style guide key order for use-package blocks.")
+#+end_src
+
+Assume we a function that iterates over a file (or set of files) and turns each use-package object into a list (using =read=). We can then extract the keys from that list (or form).
+#+begin_src emacs-lisp
+  (defun user/use-package-keys (form)
+    "Extract the keyword keys from a use-package FORM (a list)."
+    (cl-loop for elt in (cddr form)
+  	   when (keywordp elt)
+  	   collect elt))
+#+end_src
+
+* Footnotes
+
+[fn:1]  This is why, for example, the ~:preface~ key is called before the ~:hook~
+key; it reasonable to expect the user might want to use a self-definied
+function as a hook.
+
