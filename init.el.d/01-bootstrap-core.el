@@ -196,7 +196,7 @@
 Designed to wrap around ORIG-FN `org-id-new' (accepting the same ARGS) when
 creating org nodes."
     (let ((org-id-prefix
-	   (or (user/org-id-prefix-slub (use/org-id-context-prefix))
+	   (or (user/org-id-prefix-slug (user/org-id-context-prefix))
 	       org-id-prefix)))
       (apply orig-fn args)))
   (advice-add 'org-id-new :around #'user/org-id-dynamic-prefix)
