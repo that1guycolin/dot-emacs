@@ -59,14 +59,14 @@
 
 
 ;; =======  FLYCHECK  =======
-;; bash: 'shellcheck' (pacman -S shellcheck)*
+;; bash: 'shellcheck' (pacman -S shellcheck)
 ;; emacs-lisp: 'emacs-lisp' (built-in)
-;; json: 'jsonlint' (npm install -g jsonlint)*
-;; lua: 'luacheck' (pacman -S luacheck)*
-;; markdown: 'rumdl' (pacman -S rumdl)*
-;; toml: 'tombi' (uv tool install tombi)*
+;; json: 'jsonlint' (npm install -g jsonlint)
+;; lua: 'luacheck' (pacman -S luacheck)
+;; markdown: 'rumdl' (pacman -S rumdl)
+;; toml: 'tombi' (uv tool install tombi)
 ;; xml: 'xmllint' (pacman -S libxml2)
-;; yaml: 'yamllint' (pacman -S yamllint)*
+;; yaml: 'yamllint' (pacman -S yamllint)
 ;; --------------------------
 ;; Extensions:
 ;; `flycheck-inline' (display errors in buffer)
@@ -158,18 +158,18 @@ See URL `https://vale.sh'."
 
 
 ;; =======  LSP-MODE  =======
-;; cmake: 'neocmakelsp' (cargo install neocmakelsp)*
-;; fish: 'fish-lsp' (npm install -g fish-lsp)*
-;; lua: 'lua-language-server' (pacman -S lua-language-server)*
-;; markdown: 'rumdl' (pacman -S rumdl)*
-;; python: 'ty' (uv tool install ty)*
-;; python: 'ruff' (uv tool install ruff)*
+;; cmake: 'neocmakelsp' (cargo install neocmakelsp)
+;; fish: 'fish-lsp' (npm install -g fish-lsp)
+;; lua: 'lua-language-server' (pacman -S lua-language-server)
+;; markdown: 'rumdl' (pacman -S rumdl)
+;; python: 'ty' (uv tool install ty)
+;; python: 'ruff' (uv tool install ruff)
 ;; -------  OPTIONAL  -------
-;; [OPTIONAL] bash: 'bash-language-server' (pacman -S bash-language-server)*
-;; [OPTIONAL] json: 'json-language-server' (pacman -S json-language-server)*
-;; [OPTIONAL] toml: 'tombi' (uv tool install tombi)*
-;; [OPTIONAL] xml: 'lemminx'*
-;; [OPTIONAL] yaml: 'yaml-language-server' (pacman -S yaml-language-server)*
+;; [OPTIONAL] bash: 'bash-language-server' (pacman -S bash-language-server)
+;; [OPTIONAL] json: 'json-language-server' (pacman -S json-language-server)
+;; [OPTIONAL] toml: 'tombi' (uv tool install tombi)
+;; [OPTIONAL] xml: 'lemminx'
+;; [OPTIONAL] yaml: 'yaml-language-server' (pacman -S yaml-language-server)
 ;; ------  EXTENSIONS  ------
 ;; `lsp-treemacs' (treemacs integration)
 ;; `dap-mode' (debug protocol)
@@ -255,15 +255,15 @@ See URL `https://vale.sh'."
 
 
 ;; =======  FORMATTING  =======
-;; bash: 'shfmt' (pacman -S shfmt)*
-;; cmake: 'neocmakelsp' (cargo install neocmakelsp)*
+;; bash: 'shfmt' (pacman -S shfmt)
+;; cmake: 'neocmakelsp' (cargo install neocmakelsp)
 ;; fish: 'fish_indent' (bundled with fish shell)
 ;; emacs-lisp: 'lisp-indent' (built-in)
 ;; json: 'jq' (pacman -S jq)
-;; lua: `stylua'*
-;; markdown: 'rumdl'* (pacman -S rumdl)*
-;; python: 'ruff' (uv tool install ruff)*
-;; toml: 'tombi' (pacman -S tombi)*
+;; lua: `stylua'
+;; markdown: 'rumdl' (pacman -S rumdl)
+;; python: 'ruff' (uv tool install ruff)
+;; toml: 'tombi' (pacman -S tombi)
 ;; xml: 'xmlstarlet' (pacman -S xmlstarlet)
 ;; yaml: 'yq-yqml' (pacman -S yq-yaml)
 ;; ============================
@@ -293,7 +293,6 @@ See URL `https://vale.sh'."
   (setf (alist-get 'cmake-ts-mode apheleia-mode-alist) 'neocmakelsp)
   (setf (alist-get 'eask-mode apheleia-mode-alist) 'lisp-indent)
   (setf (alist-get 'fish-mode apheleia-mode-alist) 'fish-indent)
-  (setf (alist-get 'json-mode apheleia-mode-alist) 'jq)
   (setf (alist-get 'json-ts-mode apheleia-mode-alist) 'jq)
   (setf (alist-get 'markdown-mode apheleia-mode-alist) 'rumdl)
   (setf (alist-get 'gfm-mode apheleia-mode-alist) 'rumdl)
@@ -301,7 +300,6 @@ See URL `https://vale.sh'."
   (setf (alist-get 'toml-ts-mode apheleia-mode-alist) 'tombi)
   (setf (alist-get 'conf-toml-mode apheleia-mode-alist) 'tombi)
   (setf (alist-get 'nxml-mode apheleia-mode-alist) 'xmlstarlet)
-  (setf (alist-get 'yaml-mode apheleia-mode-alist) 'yq-yaml)
   (setf (alist-get 'yaml-ts-mode apheleia-mode-alist) 'yq-yaml)
   (setf (alist-get 'sh-mode apheleia-mode-alist) nil))
 
@@ -332,27 +330,6 @@ See URL `https://vale.sh'."
   :functions yasnippet-capf
   :config
   (add-to-list 'completion-at-point-functions #'yasnippet-capf))
-
-
-;; =======  MASON  =======
-;; `mason' (install external deps)
-;; =======================
-(declare-function transient-define-prefix "transient")
-(use-package mason
-  :ensure (:wait t)
-  :defer t
-  :commands
-  mason-install mason-manager
-  :custom
-  (mason-dir (expand-file-name "~/.local"))
-  :config
-  (mason-setup)
-  (defvar-keymap user/mason-commands
-    :prefix t
-    :doc "Frequently-used commands for the mason package manager."
-    "i" #'mason-install
-    "m" #'mason-manager)
-  (keymap-global-set "C-c M" 'user/mason-commands))
 
 
 (provide '08-code-assist)
