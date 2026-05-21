@@ -14,40 +14,41 @@
 (use-package treesit
   :ensure nil
   :demand t
-  :config
-  (setq treesit-language-source-alist
-	'((bash "https://github.com/tree-sitter/tree-sitter-bash")
-	  (common-lisp
-	   "https://github.com/tree-sitter-grammars/tree-sitter-commonlisp")
-	  (cmake "https://github.com/uyha/tree-sitter-cmake")
-	  (css "https://github.com/tree-sitter/tree-sitter-css")
-	  (cpp "https://github.com/tree-sitter/tree-sitter-cpp")
-	  (fish "https://github.com/ram02z/tree-sitter-fish")
-	  (emacs-lisp "https://github.com/Wilfred/tree-sitter-elisp")
-	  (gitcommit "https://github.com/gbprod/tree-sitter-gitcommit")
-	  (go "https://github.com/tree-sitter/tree-sitter-go")
-	  (html "https://github.com/tree-sitter/tree-sitter-html")
-	  (javascript "https://github.com/tree-sitter/tree-sitter-javascript"
-		      "master" "src")
-	  (json "https://github.com/tree-sitter/tree-sitter-json")
-          (kdl "https://github.com/tree-sitter-grammars/tree-sitter-kdl")
-	  (lua "https://github.com/MunifTanjim/tree-sitter-lua")
-	  (make "https://github.com/alemuller/tree-sitter-make")
-	  (markdown "https://github.com/tree-sitter-grammars/tree-sitter-markdown"
-		    "split_parser" "tree-sitter-markdown/src")
-	  (markdown-inline
-	   "https://github.com/tree-sitter-grammars/tree-sitter-markdown"
-	   "split_parser" "tree-sitter-markdown-inline/src")
-	  (powershell "https://github.com/airbus-cert/tree-sitter-powershell")
-	  (python "https://github.com/tree-sitter/tree-sitter-python")
-	  (rust "https://github.com/tree-sitter/tree-sitter-rust")
-	  (toml "https://github.com/ikatyang/tree-sitter-toml")
-	  (tsx "https://github.com/tree-sitter/tree-sitter-typescript"
-	       "master" "tsx/src")
-	  (typescript "https://github.com/tree-sitter/tree-sitter-typescript"
-		      "master" "typescript/src")
-	  (yaml "https://github.com/ikatyang/tree-sitter-yaml")
-	  (zsh "https://github.com/georgeharker/tree-sitter-zsh"))))
+  :custom
+  (treesit-font-lock-level 4)
+  (treesit-language-source-alist
+   '((bash "https://github.com/tree-sitter/tree-sitter-bash")
+     (common-lisp
+      "https://github.com/tree-sitter-grammars/tree-sitter-commonlisp")
+     (cmake "https://github.com/uyha/tree-sitter-cmake")
+     (css "https://github.com/tree-sitter/tree-sitter-css")
+     (cpp "https://github.com/tree-sitter/tree-sitter-cpp")
+     (fish "https://github.com/ram02z/tree-sitter-fish")
+     (emacs-lisp "https://github.com/Wilfred/tree-sitter-elisp")
+     (gitcommit "https://github.com/gbprod/tree-sitter-gitcommit")
+     (go "https://github.com/tree-sitter/tree-sitter-go")
+     (html "https://github.com/tree-sitter/tree-sitter-html")
+     (javascript "https://github.com/tree-sitter/tree-sitter-javascript"
+		 "master" "src")
+     (json "https://github.com/tree-sitter/tree-sitter-json")
+     (kdl "https://github.com/tree-sitter-grammars/tree-sitter-kdl")
+     (lua "https://github.com/MunifTanjim/tree-sitter-lua")
+     (make "https://github.com/alemuller/tree-sitter-make")
+     (markdown "https://github.com/tree-sitter-grammars/tree-sitter-markdown"
+	       "split_parser" "tree-sitter-markdown/src")
+     (markdown-inline
+      "https://github.com/tree-sitter-grammars/tree-sitter-markdown"
+      "split_parser" "tree-sitter-markdown-inline/src")
+     (powershell "https://github.com/airbus-cert/tree-sitter-powershell")
+     (python "https://github.com/tree-sitter/tree-sitter-python")
+     (rust "https://github.com/tree-sitter/tree-sitter-rust")
+     (toml "https://github.com/ikatyang/tree-sitter-toml")
+     (tsx "https://github.com/tree-sitter/tree-sitter-typescript"
+	  "master" "tsx/src")
+     (typescript "https://github.com/tree-sitter/tree-sitter-typescript"
+		 "master" "typescript/src")
+     (yaml "https://github.com/ikatyang/tree-sitter-yaml")
+     (zsh "https://github.com/georgeharker/tree-sitter-zsh"))))
 
 
 ;; =======  MODE CONFIGURATIONS  =======
