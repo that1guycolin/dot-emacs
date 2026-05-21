@@ -2,16 +2,8 @@
 
 ;;; Commentary:
 ;; Variables, functions, and transient dispatches defined by the user.
-;; Items in this file either have no natural home elsewhere in the configuration,
-;; or, more likely, need to be loaded last.
 
 ;;; Code:
-;; =======  HELPER FUNCTIONS  =======
-(defun user/pick-random (list)
-  "Return a random element from LIST."
-  (nth (random (length list)) list))
-
-
 ;; =======  FONTS  =======
 (defvar user/font-alist
   '(("0xProto"                   . "0xProtoNerdFontMono")
