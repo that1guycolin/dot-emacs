@@ -76,41 +76,20 @@
 (defvar ibuffer-sorting-mode)
 (declare-function ibuffer-do-sort-by-alphabetic "ibuffer")
 (use-package perspective
-  :functions
-  persp-mode persp-is-current-buffer persp-ibuffer-set-filter-groups
-  persp-switch-to-buffer* persp-ibuffer persp-kill-buffer* persp-buffer-menu
-  user/buffer-by-filename persp-add-buffer persp-curr persp-switch
+  :demand t
+  :preface
+  (defun user/persp-for-ibuffer ()
+    "Correctly display persps in ibuffer-mode."
+    (persp-ibuffer-set-filter-groups)
+    (unless (eq ibuffer-sorting-mode 'alphabetic)
+      (ibuffer-do-sort-by-alphabetic)))
+
+  (defun user/safe-persp-bs-show (arg)
+    (interactive "P")
+    (if (fboundp 'persp-bs-show)
+        (persp-bs-show arg)
+      (bs-show "all")))
   
-  :init
-  (persp-mode 1)
-
-  :custom
-  (persp-mode-prefix-key (kbd "M-p"))
-  (persp-switch-to-buffer-behavior 'switch)
-
-  :config
-  (setq switch-to-prev-buffer-skip
-	(lambda (_win buff _bury-or-kill)
-          (not (persp-is-current-buffer buff))))
-  (add-hook 'ibuffer-hook
-            (lambda ()
-	      (persp-ibuffer-set-filter-groups)
-	      (unless (eq ibuffer-sorting-mode 'alphabetic)
-		(ibuffer-do-sort-by-alphabetic))))
-  (require 'bs)
-  (keymap-global-set "C-x B" #'(lambda (arg)
-                                 (interactive "P")
-                                 (if (fboundp 'persp-bs-show)
-                                     (persp-bs-show arg)
-                                   (bs-show "all"))))
-
-  (bind-keys
-   ("C-x b"   . persp-switch-to-buffer*)
-   ("C-x C-b" . persp-ibuffer)
-   ("C-x k"   . persp-kill-buffer*)
-   ("C-x C-B" . persp-buffer-menu))
-
-  (require 'seq)
   (defun user/buffer-by-filename (loc expr)
     "Filter all buffers whose filename contains EXPR.
 
@@ -138,7 +117,7 @@ LOC can be one of:
 						(file-name-nondirectory fname)))
 		     (_ (error "%s is not a valid value for loc" loc))))))
 	     (buffer-list))))
-
+  
   (defun user/add-list-to-persp (loc expr &optional msg)
     "Add list of buffers returned by `user/buffer-by-filename' to active persp.
 Takes arguments EXPR and LOC to pass to `user/buffer-by-filename'.
@@ -167,22 +146,43 @@ into the message."
        (msg
 	(message msg))
        (t
-	(message "Added %s" buf))))))
+	(message "Added %s" buf)))))
+  
+  :bind
+  (("C-x b"      . persp-switch-to-buffer*)
+   ("C-x C-b"    . persp-ibuffer)
+   ("C-x k"      . persp-kill-buffer*)
+   ("C-x B"      . user/safe-persp-bs-show)
+   ("C-x C-B"    . persp-buffer-menu))
+  :hook (ibuffer . user/persp-for-ibuffer)
+
+  :functions
+  persp-add-buffer persp-mode persp-is-current-buffer
+  persp-ibuffer-set-filter-groups persp-switch
+  
+  :init
+  (persp-mode 1)
+  :custom
+  (persp-mode-prefix-key (kbd "M-p"))
+  (persp-switch-to-buffer-behavior 'switch)
+  :config
+  (setq switch-to-prev-buffer-skip
+	(lambda (_win buff _bury-or-kill)
+          (not (persp-is-current-buffer buff)))))
 
 (use-package perspective-project-bridge
-  :functions
-  perspective-project-bridge-mode
-  perspective-project-bridge-find-perspectives-for-all-buffers
-  perspective-project-bridge-kill-perspectives user/project-switch-perspective
-  :config
-  (perspective-project-bridge-mode 1)
-
+  :defer t
+  :preface
   (defun user/project-switch-perspective (&rest _args)
     "Switch to a perspective for the current project."
     (interactive)
     (persp-switch (project-name))
     (perspective-project-bridge-find-perspectives-for-all-buffers))
-  (advice-add 'project-switch-project :after #'user/project-switch-perspective))
+  :hook (persp-mode . perspective-project-bridge-mode)
+  :functions perspective-project-bridge-find-perspectives-for-all-buffers
+  :config
+  (advice-add 'project-switch-project
+	      :after #'user/project-switch-perspective))
 
 (use-package docker
   :defer t
