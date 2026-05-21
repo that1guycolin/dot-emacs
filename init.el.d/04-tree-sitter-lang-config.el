@@ -110,25 +110,28 @@
 (use-package python-ts-mode
   :ensure nil
   :defer t
-  :mode ("\\.py\\'" . python-ts-mode)
   :interpreter
   (("uv"      . python-ts-mode)
    ("python3" . python-ts-mode))
-  :bind
-  (:map python-mode-map
-	("C-c C-k c" . python-skeleton-class)
-	("C-c C-k d" . python-skeleton-def)
-	("C-c C-k f" . python-skeleton-for)
-	("C-c C-k i" . python-skeleton-if)
-	("C-c C-k m" . python-skeleton-import)
-	("C-c C-k t" . python-skeleton-try)
-	("C-c C-k w" . python-skeleton-while))
-
+  :mode ("\\.py\\'" . python-ts-mode)
+  :functions
+  python-skeleton-class python-skeleton-def python-skeleton-for
+  python-skeleton-if python-skeleton-import python-skeleton-try
+  python-skeleton-while
   :custom
   (python-indent-offset 4)
   (python-shell-interpreter "python3")
   :config
-  (keymap-unset python-mode-map "C-c C-t"))
+  (keymap-unset python-mode-map "C-c C-t")
+  (bind-keys
+   :map python-mode-map
+   ("C-c C-k c" . python-skeleton-class)
+   ("C-c C-k d" . python-skeleton-def)
+   ("C-c C-k f" . python-skeleton-for)
+   ("C-c C-k i" . python-skeleton-if)
+   ("C-c C-k m" . python-skeleton-import)
+   ("C-c C-k t" . python-skeleton-try)
+   ("C-c C-k w" . python-skeleton-while)))
 
 (use-package sh-mode
   :ensure nil
