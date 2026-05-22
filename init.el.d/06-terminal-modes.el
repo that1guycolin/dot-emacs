@@ -9,6 +9,25 @@
 ;; support either linux native terminal shells or the Emacs native eshell.
 
 ;;; Code:
+;; =======  HELPFUL FUNCTIONS  =======
+(defun user/only-one-non-side-window-p ()
+  "Return non-nil if there is only one non-side, non-minibuffer window."
+  (= 1 (length (seq-remove
+		(lambda (win)
+		  (or (window-minibuffer-p win)
+		      (window-parameter win 'window-side)))
+		(window-list nil 'no-minibuf)))))
+
+(defun user/call-in-other-window-advice (orig-fn &rest args)
+  "Call ORIG-FN (with ARGS) in another normal window, splitting if needed."
+  (if (user/only-one-non-side-window-p)
+      (progn
+	(split-window-right)
+	(other-window 1))
+    (other-window 1))
+  (apply orig-fn args))
+
+
 ;; =======  TERMINAL SHELLS  =======
 ;; `mistty' (commit shell layer)
 ;; `vterm' (fully functional terminal shell)
@@ -17,6 +36,7 @@
 ;; =================================
 (use-package mistty
   :defer t
+  :preface (advice-add 'mistty :around #'user/call-in-other-window-advice)
   :bind
   (("C-c S m" . mistty)
    :map mistty-prompt-map
@@ -45,6 +65,7 @@
 		   "symbols.map" ("build" "Makefile"))
 	   :type git :protocol https :inherit t :depth treeless)
   :defer t
+  :preface (advice-add 'ghostty :around #'user/call-in-other-window-advice)
   :bind ("C-c S g" . ghostel)
   :custom
   (ghostel-module-auto-install 'compile)
@@ -77,30 +98,26 @@
   :hook (eshell-mode . esh-autosuggest-mode))
 
 (use-package eshell-git-prompt
-  :after esh-opt
+  :after eshell
   :functions eshell-git-prompt-use-theme
   :config
   (eshell-git-prompt-use-theme 'multiline2))
 
-(declare-function helpful-callable "helpful")
 (use-package esh-help
-  :after esh-opt
-  :functions
-  setup-esh-help-eldoc esh-help-run-help user/esh-help-run-help-advice
-
-  :init
-  (setup-esh-help-eldoc)
-  :config
-  (require 'cl-lib)
+  :after eshell
+  :preface
+  (declare-function helpful-callable "helpful")
   (defun user/esh-help-run-help-advice (orig-fn cmd)
     "Use `helpful-callable' instead of `describe-function' in ORIG-FN."
     (cl-letf (((symbol-function #'describe-function) #'helpful-callable))
       (funcall orig-fn cmd)))
   (advice-add #'esh-help-run-help :around #'user/esh-help-run-help-advice)
-
-  (bind-keys
-   :map eshell-mode-map
-   ("C-c C-h" . esh-help-run-help)))
+  :bind
+  (:map eshell-mode-map
+	("C-c C-h" . esh-help-run-help))
+  :functions setup-esh-help-eldoc
+  :init
+  (setup-esh-help-eldoc))
 
 
 ;; =======  HELPER  =======
@@ -115,12 +132,13 @@
 (use-package native-complete
   :ensure (:wait t)
   :defer t
-  :commands native-complete-at-point
-  :config
-  (add-hook 'shell-mode-hook
-	    (lambda ()
-	      (add-to-list 'completion-at-point-functions
-			   #'native-complete-at-point))))
+  :preface
+  (defun user/setup-native-complete ()
+    "Add `native-complete-at-point' to `completion-at-point-functions'."
+    (add-to-list 'completion-at-point-functions #'native-complete-at-point))
+  :hook (shell-mode . user/setup-native-complete)
+  :commands native-complete-at-point)
+
 
 (provide '06-terminal-modes)
 ;;; 06-terminal-modes.el ends here
