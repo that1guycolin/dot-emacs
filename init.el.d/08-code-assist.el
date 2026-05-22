@@ -216,13 +216,43 @@ See URL `https://vale.sh'."
 (use-package lsp-mode
   :defer t
   :preface
+  :hook
+  ((cmake-ts-mode    . lsp-deferred)
+   (fish-mode        . lsp-deferred)
+   (lua-ts-mode      . lsp-deferred)
+   (markdown-mode    . lsp-deferred)
+   (markdown-ts-mode . lsp-deferred)
+   (python-ts-mode   . lsp-deferred)
+   (toml-ts-mode     . lsp-deferred))
+  :bind
+  (("C-c C-l" . lsp)
+   :map lsp-mode-map
+   ("C-c F" . lsp-format-buffer))
+  :functions
+  lsp-mode lsp-register-client make-lsp--client lsp-stdio-connection
+  :defines lsp-language-id-configuration
+
+  :init
+  (add-to-list 'lsp-language-id-configuration '(fish-mode . "fish"))
+  :custom
+  (lsp-auto-guess-root t)
+  (lsp-disabled-clients
+   '(cmake-language-server marksman pylsp pyright semgrep-ls taplo))
+  (lsp-enable-file-watchers nil)
+  (lsp-enable-on-type-formatting nil)
+  (lsp-headerline-breadcrumb-enable t)
+  (lsp-idle-delay 0.8)
+  (lsp-log-io nil)
+  (lsp-lua-runtime-version "LuaJIT")
+  (lsp-lua-diagnostics-globals ["mp"])
+  (lsp-use-plists t)
+  :config
   (lsp-register-client
    (make-lsp--client
     :new-connection (lsp-stdio-connection '("neocmakelsp" "stdio"))
     :major-modes '(cmake-ts-mode)
     :server-id 'neocmakelsp))
 
-  (add-to-list 'lsp-language-id-configuration '(fish-mode . "fish"))
   (lsp-register-client
    (make-lsp--client
     :new-connection (lsp-stdio-connection '("fish-lsp" "start"))
@@ -240,35 +270,7 @@ See URL `https://vale.sh'."
     :new-connection (lsp-stdio-connection '("tombi" "lsp"))
     :major-modes '(toml-mode toml-ts-mode)
     :server-id 'tombi-ls))
-  :hook
-  ((cmake-ts-mode    . lsp-deferred)
-   (fish-mode        . lsp-deferred)
-   (lua-ts-mode      . lsp-deferred)
-   (markdown-mode    . lsp-deferred)
-   (markdown-ts-mode . lsp-deferred)
-   (python-ts-mode   . lsp-deferred)
-   (toml-ts-mode     . lsp-deferred))
-  :bind
-  (("C-c C-l" . lsp)
-   :map lsp-mode-map
-   ("C-c F" . lsp-format-buffer))
-  :functions
-  lsp-mode lsp-register-client make-lsp--client lsp-stdio-connection
-  :defines lsp-language-id-configuration
-
-  :custom
-  (lsp-auto-guess-root t)
-  (lsp-disabled-clients
-   '(cmake-language-server marksman pylsp pyright semgrep-ls taplo))
-  (lsp-enable-file-watchers nil)
-  (lsp-enable-on-type-formatting nil)
-  (lsp-headerline-breadcrumb-enable t)
-  (lsp-idle-delay 0.8)
-  (lsp-log-io nil)
-  (lsp-lua-runtime-version "LuaJIT")
-  (lsp-lua-diagnostics-globals ["mp"])
-  (lsp-use-plists t)
-  :config
+  
   (dolist (dir '("[/\\\\]node_modules\\'" "[/\\\\]\\.git\\'" "[/\\\\]dist\\'"
                  "[/\\\\]build\\'" "[/\\\\]target\\'" "[/\\\\]\\.direnv\\'"
                  "[/\\\\]\\.cache\\'" "[/\\\\]vendor\\'"))
