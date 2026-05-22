@@ -87,7 +87,11 @@
 ;; `eshell-git-prompt' (themed prompt)
 ;; `esh-help' (display help like in .el buffer)
 ;; ========================
-(keymap-global-set "C-c S E" #'eshell)
+(use-package eshell
+  :ensure nil
+  :defer t
+  :preface (advice-add 'eshell :around #'user/call-in-other-window-advice)
+  :bind ("C-c S E" . eshell))
 
 (use-package eshell-syntax-highlighting
   :defer t
