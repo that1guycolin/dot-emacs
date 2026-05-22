@@ -6,9 +6,8 @@
 
 ;;; Commentary:
 ;; Packages that simplify working with gits.  At present, this configuration is
-;; setup to mainly work with Github.  Github auth token needed for forge stored
-;; in "~/.authinfo.gpg"
-;; see "https://docs.magit.vc/forge/Setup-for-Githubcom.html" for instructions.
+;; setup to mainly work with Github.  For setup, see
+;; "https://docs.magit.vc/forge/Setup-for-Githubcom.html".
 
 ;;; Code:
 (use-package magit
@@ -24,10 +23,14 @@
   (magit-save-repository-buffers t))
 
 (use-package forge
-  :after magit
-  :hook (magit-status-mode . (lambda ()
-			       (when (fboundp 'forge-pull)
-				 (call-interactively #'forge-pull))))
+  :defer t
+  :preface
+  (defun user/interactive-forge-pull ()
+    "Call forge-pull interactively."
+    (interactive)
+    (call-interactively #'forge-pull))
+  :hook (magit-status-mode . user/interactive-forge-pull)
+  :functions forge-pull
   :custom
   (forge-pull-notifications t))
 
@@ -37,22 +40,35 @@
 
 (use-package diff-hl
   :defer t
-  :bind ("C-c h" . diff-hl-mode)
+  :bind ("C-x v o" . diff-hl-mode)
+  :hook
+  ((prog-mode          . diff-hl-mode)
+   (text-mode          . diff-hl-mode)
+   (magit-post-refresh . diff-hl-magit-post-refresh))
+  :custom
+  (diff-hl-show-staged-changes nil)
   :config
-  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
+  (defvar user/diff-hl-dispatch)
+  (transient-define-prefix user/diff-hl-dispatch ()
+    "Custom transient for diff highlight commands."
+    ["Diff Highlight Mode"
+     [("*" "Show Hunk"       diff-hl-show-hunk)
+      ("=" "Goto Hunk"       diff-hl-diff-goto-hunk)
+      ("S" "Stage"           diff-hl-stage-dwim)
+      ("n" "Revert"          diff-hl-revert-hunk)]
+
+     [("[" "Previous Hunk"   diff-hl-previous-hunk)
+      ("]" "Next Hunk"       diff-hl-next-hunk)
+      ("{" "Show Prev. Hunk" diff-hl-show-hunk-previous)
+      ("}" "Show Next Hunk"  diff-hl-show-hunk-next)]]))
 
 (use-package git-modes
   :defer t
   :mode ("\\.dockerignore\\'" . gitignore-mode))
 
-(use-package magit-git-toolbelt
-  :after magit
-  :bind (:map magit-mode-map
-	      ("/" . magit-git-toolbelt)))
-
 (use-package treemacs-magit
   :ensure (:wait t)
-  :after treemacs magit)
+  :after (treemacs magit))
 
 
 (provide '09-git-tools)
