@@ -1,142 +1,263 @@
 ;;; 10-file-management.el --- File explorer functions -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; async, dired, diredfl, dired-preview, dired-quick-sort, dired-subtree,
-;; dwim-shell-command, nerd-icons-dired, ready-player
+;; dirvish, dwim-shell-command, ready-player
 
 ;;; Commentary:
-;; Leverage Dired built-in settings & extensions to provide a functional file
-;; explorer inside Emacs.
+;; Leverage dirvish (layer on top of Dired) settings & extensions to provide a
+;; functional file explorer inside Emacs.
 
 ;;; Code:
-(use-package dired
-  :ensure nil
-  :bind ("C-x d" . dired)
+;; =======  FILE EXPLORER  =======
+;; `dirvish' (Dired w `batteries included')
+;; `dwim-shell-command' (execute shell commands on marked files)
+;; `ready-player' (launch media directly from dirvish)
+;; ===============================
+(use-package dirvish
+  :defer t
+  :preface
+  (defvar user/dirvish-clipboard-files nil
+    "Files currently staged by `user/dirvish-copy' or `user/dirvish-cut'.")
+
+  (defvar user/dirvish-clipboard-action nil
+    "Current Dirvish clipboard action.
+Expected values are `copy' or `cut'.")
+
+  (defvar-local user/dirvish-preview-buffer nil
+    "Non-nil when this buffer was made read-only as a Dirvish preview.")
+
+  (defun user/dirvish--file-at-point ()
+    "Return the file at point, or signal a user error."
+    (or (dired-get-filename nil t)
+        (user-error "No file at point")))
+
+  (defun user/dirvish--marked-files-or-current ()
+    "Return marked files, or the file at point if nothing is marked."
+    (let ((files (dired-get-marked-files nil nil)))
+      (unless files
+        (user-error "No files selected"))
+      files))
+
+  (defun user/dirvish-rename-file ()
+    "Rename the file at point by editing only its basename."
+    (interactive)
+    (let* ((old-file (directory-file-name (user/dirvish--file-at-point)))
+           (old-dir  (file-name-directory old-file))
+           (old-name (file-name-nondirectory old-file))
+           (new-name (read-string "Rename to: " old-name)))
+      (when (string-empty-p (string-trim new-name))
+        (user-error "Filename cannot be empty"))
+      (when (file-name-directory new-name)
+        (user-error "Rename only changes the filename, not the directory"))
+      (when (member new-name '("." ".."))
+        (user-error "Invalid filename: %s" new-name))
+      (let ((new-file (expand-file-name new-name old-dir)))
+        (if (string= old-file (directory-file-name new-file))
+            (message "Rename canceled")
+          (rename-file old-file new-file nil)
+          (revert-buffer)
+          (dired-goto-file new-file)
+          (message "Renamed %s -> %s" old-name new-name)))))
+
+  (defun user/dirvish-copy ()
+    "Stage marked files, or current file, for copying."
+    (interactive)
+    (setq user/dirvish-clipboard-files (user/dirvish--marked-files-or-current)
+          user/dirvish-clipboard-action 'copy)
+    (message "Copied %d item(s)" (length user/dirvish-clipboard-files)))
+
+  (defun user/dirvish-cut ()
+    "Stage marked files, or current file, for moving."
+    (interactive)
+    (setq user/dirvish-clipboard-files (user/dirvish--marked-files-or-current)
+          user/dirvish-clipboard-action 'cut)
+    (message "Cut %d item(s)" (length user/dirvish-clipboard-files)))
+
+  (defun user/dirvish--paste-target-directory ()
+    "Return the directory where staged files should be pasted.
+
+If point is on a directory, paste into that directory.
+Otherwise paste into the current Dired/Dirvish directory."
+    (let ((file (dired-get-filename nil t)))
+      (file-name-as-directory
+       (if (and file (file-directory-p file))
+           file
+         (dired-current-directory)))))
+
+  (defun user/dirvish--copy-one-file (src dest)
+    "Copy SRC to DEST without overwriting."
+    (if (file-directory-p src)
+        (copy-directory src dest t nil nil)
+      (copy-file src dest nil t)))
+
+  (defun user/dirvish-paste ()
+    "Paste staged files into the directory at point or current directory."
+    (interactive)
+    (unless user/dirvish-clipboard-files
+      (user-error "Nothing has been copied or cut"))
+    (unless (memq user/dirvish-clipboard-action '(copy cut))
+      (user-error "Unknown clipboard action: %s" user/dirvish-clipboard-action))
+    (let* ((dest-dir (user/dirvish--paste-target-directory))
+           (files user/dirvish-clipboard-files)
+           (action user/dirvish-clipboard-action)
+           first-dest)
+      (dolist (src files)
+        (let* ((base (file-name-nondirectory (directory-file-name src)))
+               (dest (expand-file-name base dest-dir)))
+          (when (file-exists-p dest)
+            (user-error "Target already exists: %s" dest))
+          (unless first-dest
+            (setq first-dest dest))
+          (pcase action
+            ('copy (user/dirvish--copy-one-file src dest))
+            ('cut  (rename-file src dest nil)))))
+      (when (eq action 'cut)
+        (setq user/dirvish-clipboard-files nil
+              user/dirvish-clipboard-action nil))
+      (revert-buffer)
+      (when (and first-dest (file-exists-p first-dest))
+        (ignore-errors (dired-goto-file first-dest)))
+      (message "%s %d item(s) to %s"
+               (pcase action
+                 ('copy "Copied")
+                 ('cut  "Moved"))
+               (length files)
+               dest-dir)))
+
+  (defun user/dirvish-down-directory ()
+    "Open the directory at point in the current Dirvish window."
+    (interactive)
+    (let ((file (user/dirvish--file-at-point)))
+      (unless (file-directory-p file)
+        (user-error "Not a directory: %s" file))
+      (dired-find-file)))
+
+  (defun user/dirvish-make-opened-file-editable ()
+    "Undo preview read-only state after opening a file normally."
+    (when (and buffer-file-name
+               (bound-and-true-p user/dirvish-preview-buffer))
+      (setq-local user/dirvish-preview-buffer nil)
+      (when (bound-and-true-p view-mode)
+        (view-mode -1))
+      (when (file-writable-p buffer-file-name)
+        (read-only-mode -1))))
+
+  (defun user/dirvish-return-dwim ()
+    "On directories, descend.  On files, open the file normally."
+    (interactive)
+    (let ((file (user/dirvish--file-at-point)))
+      (if (file-directory-p file)
+          (user/dirvish-down-directory)
+        (dired-find-file)
+        (user/dirvish-make-opened-file-editable))))
+
+  (defun user/dirvish-tab-dwim ()
+    "Change behaviour based on current marker positions.
+On directories, toggle subtree.  On files, use Dirvish file outline viewer."
+    (interactive)
+    (unless (fboundp 'dirvish-subtree-toggle)
+      (user-error "`dirvish-subtree-toggle' is not available"))
+    (dirvish-subtree-toggle))
+
+  (defun user/dirvish-preview-read-only ()
+    "Make Dirvish preview buffers read-only."
+    (setq-local user/dirvish-preview-buffer t)
+    (read-only-mode 1))
+
+  (declare-function transient-define-prefix "transient")
+
+  :bind ("C-x d" . dirvish)
+  :commands dirvish dirvish-dwim
+
   :functions
-  dired-omit-mode dired-next-dirline dired-prev-dirline dired-next-subdir
-  dired-prev-subdir dired-next-marked-file dired-prev-marked-file
-  dired-goto-subdir image-dired-display-next image-dired-display-previous
-  :defines image-dired-thumbnail-mode-map
-  :config
-  (require 'dired-x)
-  (require 'wdired)
-  (require 'image-dired)
-  (require 'image-dired-dired)
+  dired-create-directory dired-create-empty-file dired-current-directory
+  dired-do-rename dired-find-file dired-get-filename dired-get-marked-files
+  dired-goto-file dired-next-line dired-previous-line dired-up-directory
+  dirvish-override-dired-mode dirvish-subtree-toggle user/dirvish-dispatch
+  :defines dirvish-mode-map
 
-  (add-hook 'dired-mode-hook
-	    #'(lambda ()
-		(hl-line-mode)
-		(context-menu-mode)
-		(setq-local mouse-1-click-follows-link 'double)))
-  (bind-keys
-   :map dired-mode-map
-   ("M-o"           . dired-omit-mode)
-   ("E"             . wdired-change-to-wdired-mode)
-   ("M-n"           . dired-next-dirline)
-   ("M-p"           . dired-prev-dirline)
-   ("]"             . dired-next-subdir)
-   ("["             . dired-prev-subdir)
-   ("M-]"           . dired-next-marked-file)
-   ("M-["           . dired-prev-marked-file)
-   ("A-M-<mouse-1>" . browse-url-of-dired-file)
-   ("<backtab>"     . dired-prev-subdir)
-   ("TAB"           . dired-next-subdir)
-   ("M-j"           . dired-goto-subdir)
-   (";"             . image-dired-dired-toggle-marked-thumbs)
-   :map image-dired-thumbnail-mode-map
-   ("n"             . image-dired-display-next)
-   ("p"             . image-dired-display-previous)))
-
-(use-package nerd-icons-dired
-  :defer t
-  :hook (dired-mode . nerd-icons-dired-mode))
-
-(use-package dired-quick-sort
-  :after dired
-  :functions dired-quick-sort-setup
   :init
-  (dired-quick-sort-setup)
+  (dirvish-override-dired-mode 1)
+
+  :custom
+  (dirvish-hide-cursor nil)
+  (dirvish-attributes '(subtree-state file-size file-time nerd-icons))
+  (dirvish-hide-details t)
+  (dirvish-reuse-session nil)
+
   :config
-  (with-eval-after-load 'casual-dired
-    (transient-append-suffix 'casual-dired-tmenu "s"
-      '("S" "Dired Quick-Sort" dired-quick-sort-transient))))
+  (dolist (plugin '(dirvish-extras dirvish-subtree dirvish-yank))
+    (require plugin))
 
-(use-package async
-  :defer t
-  :commands async-start async-start-process
-  :hook (dired-mode . dired-async-mode)
-  :init
-  (require 'dired-async))
+  (dolist (optional-plugin '(dirvish-vc dirvish-emerge))
+    (require optional-plugin nil t))
 
-(use-package diredfl
-  :defer t
-  :hook (dired-mode . diredfl-mode))
+  (add-hook 'dirvish-preview-setup-hook #'user/dirvish-preview-read-only)
 
-(declare-function transient-define-prefix "transient")
-(use-package dired-subtree
-  :after dired
-  :functions user/dired-subtree-dispatch
-  :config
-  (defvar user/dired-subtree-dispatch)
-  (transient-define-prefix user/dired-subtree-dispatch ()
-    "Custom transient dispatch containing functions for dired-subtree."
-    ["Dired Subtree"
-     [("i" "Insert"              dired-subtree-insert)
-      ("r" "Remove"              dired-subtree-remove)
-      ("t" "Toggle"              dired-subtree-toggle)
-      ("c" "Cycle"               dired-subtree-cycle)
-      ("R" "Revert"              dired-subtree-revert)
-      ("n" "Narrow"              dired-subtree-narrow)
-      ("^" "Up"                  dired-subtree-up)
-      ("M-L" "Down"              dired-subtree-down)]
-     [("C-n" "Next Sibling"      dired-subtree-next-sibling)
-      ("C-p" "Prev. Sibling"     dired-subtree-previous-sibling)
-      ("<" "Beginning"           dired-subtree-beginning)
-      (">" "End"                 dired-subtree-end)
-      ("m" "Mark"                dired-subtree-mark-subtree)
-      ("u" "Unmark"              dired-subtree-unmark-subtree)
-      ("." "Only This File"      dired-subtree-only-this-file)
-      ("+" "Only This Directory" dired-subtree-only-this-directory)]])
-  (bind-keys
-   :map dired-mode-map
-   ("TAB" . user/dired-subtree-dispatch))
-  (with-eval-after-load 'casual-dired
-    (transient-append-suffix 'casual-dired-tmenu "M-n"
-      '("TAB" "Dired Subtree" user/dired-subtree-dispatch))))
+  (defvar user/dirvish-dispatch)
+  (transient-define-prefix user/dirvish-dispatch ()
+    "Custom Dirvish command menu."
+    [
+     ["Navigation"
+      ("C-p"   "Previous line"       dired-previous-line :transient t)
+      ("C-n"   "Next line"           dired-next-line :transient t)
+      ("^"     "Up directory"        dired-up-directory :transient t)
+      ("C-M-p" "Up directory"        dired-up-directory :transient t)
+      ("C-M-n" "Down directory"      user/dirvish-down-directory :transient t)
+      ("TAB"   "Subtree / outline"   user/dirvish-tab-dwim :transient t)
+      ("RET"   "Open / down"         user/dirvish-return-dwim)]
 
-(use-package dired-preview
-  :defer t
-  :hook (dired-mode . dired-preview-mode)
-  :functions
-  dired-preview-find-file dired-preview-open-dwim dired-preview-page-up
-  dired-preview-page-down
-  :config
-  (bind-keys
-   :map dired-mode-map
-   ("C-m"   . dired-preview-find-file)
-   ("C-M-o" . dired-preview-open-dwim)
-   ("C-M-p" . dired-preview-page-up)
-   ("C-M-n" . dired-preview-page-down)))
+     ["File operations"
+      ("R"   "Rename filename only" user/dirvish-rename-file)
+      ("m"   "Move..."              dired-do-rename)
+      ("C-w" "Cut"                  user/dirvish-cut)
+      ("M-w" "Copy"                 user/dirvish-copy)
+      ("C-y" "Paste here"           user/dirvish-paste)
+      ("c f" "Create file"          dired-create-empty-file)
+      ("c d" "Create directory"     dired-create-directory)
+      ("F"   "FFmpeg Actions"       user/ffmpeg-actions-map)]
 
-(use-package ready-player
-  :defer t
-  :hook (dired-hook . ready-player-mode)
-  :config
-  (ready-player-mode +1))
+     ["Dirvish native menus"
+      ("a"   "Setup UI"             dirvish-setup-menu)
+      ("f"   "File info"            dirvish-file-info-menu)
+      ("o"   "Quick access"         dirvish-quick-access)
+      ("s"   "Sort"                 dirvish-quicksort)
+      ("l"   "ls switches"          dirvish-ls-switches-menu)
+      ("*"   "Mark menu"            dirvish-mark-menu)
+      ("y"   "Yank menu"            dirvish-yank-menu)]
+     [""
+      ("v"   "VC menu"              dirvish-vc-menu)
+      ("N"   "Narrow"               dirvish-narrow)
+      ("M-b" "History back"         dirvish-history-go-backward :transient t)
+      ("M-f" "History forward"      dirvish-history-go-forward :transient t)
+      ("M-e" "Emerge menu"          dirvish-emerge-menu)
+      ("g"   "Revert"               revert-buffer :transient t)
+      ("q"   "Quit Dirvish"         dirvish-quit)]])
+  
+  (let ((map dirvish-mode-map)
+        (create-map (make-sparse-keymap)))
+    (define-key map (kbd "C-p")   #'dired-previous-line)
+    (define-key map (kbd "C-n")   #'dired-next-line)
+    (define-key map (kbd "R")     #'user/dirvish-rename-file)
+    (define-key map (kbd "m")     #'dired-do-rename)
+    (define-key map (kbd "c")       create-map)
+    (define-key map (kbd "C-w")   #'user/dirvish-cut)
+    (define-key map (kbd "M-w")   #'user/dirvish-copy)
+    (define-key map (kbd "C-y")   #'user/dirvish-paste)
+    (define-key map (kbd "^")     #'dired-up-directory)
+    (define-key map (kbd "C-M-p") #'dired-up-directory)
+    (define-key map (kbd "C-M-n") #'user/dirvish-down-directory)
+    (define-key map (kbd "TAB")   #'user/dirvish-tab-dwim)
+    (define-key map (kbd "RET")   #'user/dirvish-return-dwim)
+    (define-key map (kbd "?")     #'user/dirvish-dispatch)
+    (define-key create-map (kbd "f") #'dired-create-empty-file)
+    (define-key create-map (kbd "d") #'dired-create-directory))
 
 (use-package dwim-shell-command
-  :after dired
-  :functions
-  dwim-shell-command dwim-shell-command-on-marked-files user/convert-ts-to-mp4
-  user/extract-video-only user/extract-audio-only
-  
-  :config
-  (bind-keys
-   ([remap shell-command] . dwim-shell-command)
-   :map dired-mode-map
-   ([remap dired-do-async-shell-command] . dwim-shell-command)
-   ([remap dired-do-shell-command]       . dwim-shell-command)
-   ([remap dired-smart-shell-command]    . dwim-shell-command))
+  :defer t
+  :preface
+  (keymap-global-unset "M-!")
+
   (defun user/convert-ts-to-mp4 ()
     "Convert .ts files to .mp4 using FFmpeg."
     (interactive)
@@ -164,12 +285,23 @@
 -movflags +faststart '<<fne>>-audio.m4a'"
      :utils "ffmpeg"))
 
-  (defvar-keymap user/dired-ffmpeg-actions-map
+  (defvar-keymap user/ffmpeg-actions-map
     :prefix t
     :doc "Keymap with FFmpeg actions to run on marked files in dired/dirvish."
     "4" #'user/convert-ts-to-mp4
     "v" #'user/extract-video-only
-    "a" #'user/extract-audio-only))
+    "a" #'user/extract-audio-only)
+  
+  :bind
+  (("M-!" . dwim-shell-command)
+   :map dirvish-mode-map
+   ("F" . user/ffmpeg-actions-map))
+  :commands dwim-shell-command-on-marked-files
+  :config)
+
+(use-package ready-player
+  :defer t
+  :hook (dired-mode . ready-player-mode))
 
 
 (provide '10-file-management)
