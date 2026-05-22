@@ -9,27 +9,59 @@
 
 ;;; Code:
 ;; =======  MISC  =======
-;; `telega' - (chat in Emacs)
-;; `free-keys' (buffer of available keybinds)
-;; `popper' (keep certain buffers hidden, but within arm's reach)
 ;; `emacs-everywhere'
+;; `free-keys' (buffer of available keybinds)
+;; `popper' (keep select buffers hidden yet easily unhidden)
+;; `telega' (chat in Emacs)
 ;; ======================
+;; Configuration is done primarly in DE.
+(use-package emacs-everywhere
+  :config
+  ;; Customizing the frame appearance for a "popup" feel
+  (setq emacs-everywhere-frame-parameters
+        '((name . "emacs-everywhere") (width . 80) (height . 20)
+	  (menu-bar-lines . 0) (tool-bar-lines . 0)
+	  (vertical-scroll-bars . nil))))
+
+(use-package free-keys
+  :defer t
+  :bind ("C-c C-=" . free-keys))
+
+(use-package popper
+  :demand t
+  :preface (keymap-global-unset "M-'")
+  :bind
+  (("C-'"   . popper-toggle)
+   ("M-'"   . popper-cycle)
+   ("C-M-'" . popper-toggle-type))
+  :functions
+  popper-mode popper-echo-mode
+  :custom
+  (popper-reference-buffers
+   '("\\*Messages\\*" "Output\\*$" "\\*Async Shell Command\\*" help-mode
+     helpful-mode compilation-mode "^\\*vterm.*\\*$" vterm-mode
+     "^\\*eat.*\\*$" eat-mode free-keys-mode))
+  :config
+  (popper-mode +1)
+  (popper-echo-mode +1))
+
 (use-package telega
   :defer t
-  :bind ("C-M-g" . telega)
-  :functions
-  telega-mode-line-mode user/telega-setup telega-appindicator-mode
-  telega-auto-download-mode telega-autoplay-mode telega-chat-auto-fill-mode
-  telega-highlight-text-mode telega-notifications-mode telega-root-auto-fill-mode
-  telega-transient-keymaps-mode
-  
-  :init
-  (setq telega-use-images t)
+  :preface
   (defun user/telega-setup (&optional frame)
     "Define settings for telega."
     (with-selected-frame (or frame (selected-frame))
       (when (display-graphic-p)
         (telega-mode-line-mode 1))))
+  :bind ("C-M-g" . telega)
+  :functions
+  telega-mode-line-mode telega-appindicator-mode
+  telega-auto-download-mode telega-autoplay-mode telega-chat-auto-fill-mode
+  telega-highlight-text-mode telega-notifications-mode
+  telega-root-auto-fill-mode telega-transient-keymaps-mode
+  
+  :init
+  (setq telega-use-images t)
   (if (daemonp)
       (add-hook 'after-make-frame-functions #'user/telega-setup)
     (add-hook 'telega-load-hook #'user/telega-setup))
@@ -45,37 +77,6 @@
   (telega-transient-keymaps-mode 1)
   
   (message "Telega loaded successfully."))
-
-(use-package free-keys
-  :defer t
-  :bind ("C-c C-=" . free-keys))
-
-(keymap-global-unset "M-'")
-(use-package popper
-  :functions
-  popper-toggle popper-cycle popper-toggle-type
-  :custom
-  (popper-reference-buffers
-   '("\\*Messages\\*" "Output\\*$" "\\*Async Shell Command\\*" help-mode
-     helpful-mode compilation-mode "^\\*mistty.*\\*$" mistty-mode
-     "^\\*vterm.*\\*$" vterm-mode "^\\*ghostel.*\\*$" ghostel-mode
-     "^\\*eat.*\\*$" eat-mode free-keys-mode))
-  :config
-  (popper-mode +1)
-  (popper-echo-mode +1)
-  (bind-keys
-   ("C-'"   . popper-toggle)
-   ("M-'"   . popper-cycle)
-   ("C-M-'" . popper-toggle-type)))
-
-;; Configuration is done primarly in DE.
-(use-package emacs-everywhere
-  :config
-  ;; Customizing the frame appearance for a "popup" feel
-  (setq emacs-everywhere-frame-parameters
-        '((name . "emacs-everywhere") (width . 80) (height . 20)
-	  (menu-bar-lines . 0) (tool-bar-lines . 0)
-	  (vertical-scroll-bars . nil))))
 
 
 ;; =======  CASUAL  =======
