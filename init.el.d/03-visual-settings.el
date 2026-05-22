@@ -41,7 +41,6 @@ as well."
 
 ;; =======  INIT  =======
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
-(set-face-attribute 'default nil :height 121)
 
 ;; =======  THEMES  =======
 ;; `modus-themes' (Collection of readable Emacs' themes)
