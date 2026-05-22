@@ -10,8 +10,8 @@
 ;; occurs in "09-git-tools.el".
 
 ;;; Code:
-;; =======  PROJECT SUPPORT  =======
-;; `project.el' (project manager)
+;; =======  PROJECTS  =======
+;; `project.el' (management)
 ;; `disproject' (transient dispatch for project.el)
 ;; `deadgrep' (global ripgrep search)
 ;; `rg' (project ripgrep search & more)
@@ -19,42 +19,39 @@
 ;; `perspective-project-bridge' (integrate project.el & perspective)
 ;; `docker' (Docker support)
 ;; ==========================
-(defvar user/projects-directory)
-(defvar user/scripts-directory)
-(defvar org-directory)
-(defvar user-emacs-directory)
-
 (use-package project
   :ensure nil
   :demand t
   :preface
+  (defvar user/projects-directory)
+  (defvar user/scripts-directory)
+  (defvar org-directory)
+  (defvar user-emacs-directory)
   (defun user/project-reset-projects ()
     "Clear the project list and repopulate it."
     (interactive)
     (dolist (project (project-known-project-roots))
       (project-forget-project project))
     (message "Cleared all projects")
-    (dolist (dir `(,user/projects-directory
-		   ,user/scripts-directory
-		   "~/dotfiles"
-		   ,org-directory
-		   ,(expand-file-name user-emacs-directory)))
+    ;; Scan these directories recursively
+    (dolist (dir (list user/projects-directory user/scripts-directory))
       (project-remember-projects-under dir t))
+    ;; Scan these directories (but not their subdirectories)
+    (dolist (dir (list user-emacs-directory org-directory "~/dotfiles"))
+      (project-remember-projects-under (expand-file-name dir)))
     (message "Successfully repopulated projects list"))
 
   :functions project-remember-projects-under
   :custom
   (project-list-exclude
-   (list (concat "^" (regexp-quote (expand-file-name elpaca-directory)))))
-  :config
-  (dolist (dir '("^node_modules$" "^\\.venv$" "^\\.uv$"))
-    (add-to-list 'project-vc-ignores dir)))
-
-(dolist (keybind '("C-x b" "C-x k" "C-x C-b" "C-x p"))
-  (keymap-global-unset keybind))
+   (list (regexp-quote (expand-file-name elpaca-sources-directory))
+	 (regexp-quote (expand-file-name "~/dotfiles/terminals/alacritty"))))
+  (project-vc-ignores '("^node_modules$" "^\\.venv$" "^\\.uv$")))
 
 (use-package disproject
   :defer t
+  :preface
+  (keymap-global-unset "C-x p")
   :bind (:map ctl-x-map
 	      ("p" . disproject-dispatch)))
 
@@ -73,11 +70,14 @@
     :bind (:map isearch-mode-map
 		("M-s r" . rg-isearch-menu))))
 
-(defvar ibuffer-sorting-mode)
-(declare-function ibuffer-do-sort-by-alphabetic "ibuffer")
 (use-package perspective
   :demand t
   :preface
+  (dolist (keybind '("C-x b" "C-x k" "C-x C-b"))
+    (keymap-global-unset keybind))
+  (defvar ibuffer-sorting-mode)
+  (declare-function ibuffer-do-sort-by-alphabetic "ibuffer")
+  
   (defun user/persp-for-ibuffer ()
     "Correctly display persps in ibuffer-mode."
     (persp-ibuffer-set-filter-groups)
@@ -233,50 +233,47 @@ Wait three seconds before activating the mode."
     "Globally available commands for Treemacs & Project.el."
     ["Treemacs" :pad-keys t
      ["Project"
-      ("t" "Toggle"                      treemacs)
-      ("T" "Refresh"                     treemacs-refresh)
-      ("d" "Disproject"                  disproject-dispatch)
-      ("r" "Rename Project"              treemacs-rename-project)
-      ("c" "Dirvish"                     (lambda () (interactive)
-					   (call-interactively #'dirvish)))]
+      ("t" "Toggle"                    treemacs)
+      ("T" "Refresh"                   treemacs-refresh)
+      ("d" "Disproject"                disproject-dispatch)
+      ("r" "Rename Project"            treemacs-rename-project)]
 
      ["View"
-      ("v f" "Focus to active file"      treemacs-find-file)
-      ("v p" "Add Project"               treemacs-add-project-to-workspace)
-      ("v c" "Collapse Other Projects"   treemacs-collapse-other-projects)
-      ("v C" "Collapse"                  treemacs-collapse-all-projects)
-      ("v r" "Current Project Only"      treemacs-create-workspace-from-project)
-      ]
+      ("v f" "Focus to active file"    treemacs-find-file)
+      ("v p" "Add Project"             treemacs-add-project-to-workspace)
+      ("v c" "Collapse Other Projects" treemacs-collapse-other-projects)
+      ("v C" "Collapse"                treemacs-collapse-all-projects)
+      ("v r" "Current Project Only"    treemacs-create-workspace-from-project)]
      
      ["Workspace" :pad-keys t
-      ("w e" "Edit"                      treemacs-edit-workspaces)
-      ("w s" "Switch"                    user/treemacs-switch-workspace-focus)
-      ("w n" "New"                       treemacs-create-workspace)
-      ("w r" "Rename"                    treemacs-rename-workspace)
-      ("w d" "Delete"                    treemacs-remove-workspace)]]
+      ("w e" "Edit"                    treemacs-edit-workspaces)
+      ("w s" "Switch"                  user/treemacs-switch-workspace-focus)
+      ("w n" "New"                     treemacs-create-workspace)
+      ("w r" "Rename"                  treemacs-rename-workspace)
+      ("w d" "Delete"                  treemacs-remove-workspace)]]
 
     ["Project.el" :pad-keys t
      ["Search"
-      ("x" "Project Find Regexp"         project-find-regexp)
-      ("q" "Project Replace Regexp"      project-query-replace-regexp)
-      ("f" "Project Find File"           project-find-file)
-      ("s" "Project Search"              project-search)
-      ("a" "Add Project"                 (lambda () (interactive)
-					   (call-interactively
-					    #'project-remember-project)))]
+      ("x" "Project Find Regexp"       project-find-regexp)
+      ("q" "Project Replace Regexp"    project-query-replace-regexp)
+      ("f" "Project Find File"         project-find-file)
+      ("s" "Project Search"            project-search)
+      ("a" "Add Project"               (lambda () (interactive)
+				         (call-interactively
+				          #'project-remember-project)))]
      
      ["Shell"
-      ("S" "Project Shell"               project-shell)
-      ("E" "Project EShell"              project-shell)
-      ("A" "Project Async Shell Command" project-async-shell-command)
-      ("C" "Project Shell Command"       project-shell-command)]
+      ("S" "Project Shell"             project-shell)
+      ("E" "Project EShell"            project-shell)
+      ("A" "Project Async Shell Cmd"   project-async-shell-command)
+      ("C" "Project Shell Cmd"         project-shell-command)]
      
      ["Other"
-      ("D" "Set Project Dir-Locals"      project-customize-dirlocals)
-      ("R" "Ripgrep Project"             rg-project)
-      ("G" "DWIM Ripgrep Project"        rg-dwim-project-dir)
-      ("Z" "Forget Zombie Projects"      project-forget-zombie-projects)
-      ("p r" "Reset Known Projects"      user/project-reset-projects)]])
+      ("D" "Set Project Dir-Locals"    project-customize-dirlocals)
+      ("R" "Ripgrep Project"           rg-project)
+      ("G" "DWIM Ripgrep Project"      rg-dwim-project-dir)
+      ("Z" "Forget Zombie Projects"    project-forget-zombie-projects)
+      ("p r" "Reset Known Projects"    user/project-reset-projects)]])
 
   :bind
   (("C-c t"       . user/project-treemacs-anywhere-dispatch)

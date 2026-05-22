@@ -253,6 +253,10 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
     (define-key create-map (kbd "f") #'dired-create-empty-file)
     (define-key create-map (kbd "d") #'dired-create-directory))
 
+  (transient-append-suffix 'user/project-treemacs-anywhere-dispatch "r"
+    '("c" "Dirvish" (lambda () (interactive)
+		      (call-interactively #'dirvish)))))
+
 (use-package dwim-shell-command
   :defer t
   :preface
