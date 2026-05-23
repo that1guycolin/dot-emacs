@@ -21,6 +21,7 @@
 ;; `checkdoc' (style checker)
 ;; `elisp-def' (go directly to symbol def)
 ;; `eros' (see function results in buffer)
+;; `ielm' (interactive elisp shell)
 ;; `inspector' (inspection tool for emacs-lisp objects)
 ;; `eros-inspector' (combine functionality of eros & inspector)
 ;; `macrostep' (interactive macro stepper)
@@ -55,6 +56,11 @@
 (use-package eros
   :defer t
   :hook (emacs-lisp-mode . eros-mode))
+
+(use-package ielm
+  :ensure nil
+  :defer t
+  :bind ("C-c I" . ielm))
 
 (use-package inspector
   :defer t
