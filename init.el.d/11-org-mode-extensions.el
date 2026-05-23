@@ -9,59 +9,16 @@
 ;; Provide extensions for Emacs' Org-mode.
 
 ;;; Code:
-(defvar org-directory)
 (defvar org-refile-targets)
 
 ;; =======  TASKS  =======
 ;; `org-edna' (cond. task completion)
-;; `org-gtd' (get-things-done)
 ;; `org-project-capture' (integrate org-mode & projectile)
 ;; `magit-org-todos' (display TODO items in magit buffer)
 ;; =======================
 (use-package org-edna
-  :after org
-  :functions org-edna-mode
-  :config
-  (org-edna-mode 1))
-
-(declare-function flycheck-add-mode "flycheck")
-(use-package org-gtd
-  :functions
-  org-gtd-mode org-gtd-capture org-gtd-engage org-gtd-process-inbox
-  org-gtd-show-all-next org-gtd-reflect-stuck-projects org-gtd-organize
-  org-gtd-agenda-transient
-  :defines org-gtd-update-ack
-  
-  :init
-  (setq
-   org-gtd-update-ack "4.0.0"
-   org-gtd-directory (expand-file-name "tasks" org-directory))
-
-  :custom
-  (org-todo-keywords
-   '((sequence "TODO(t)" "NEXT(n)" "WAIT(w@/!)" "|" "DONE(d!)" "CNCL(c)")))
-  (org-gtd-keyword-mapping '((todo . "TODO") (next . "NEXT")
-			     (wait . "WAIT") (done . "DONE")
-			     (canceled . "CNCL")))
-  (org-gtd-refile-to-any-target nil)
-  (org-gtd-refile-prompt-for-types '(single-action project-heading project-task))
-  
-  :config
-  (org-gtd-mode 1)
-  (with-eval-after-load 'flycheck
-    (flycheck-add-mode 'org-lint 'org-gtd-clarify-mode))
-  (add-to-list 'org-agenda-files org-gtd-directory)
-  
-  (bind-keys
-   ("C-c d c" . org-gtd-capture)
-   ("C-c d e" . org-gtd-engage)
-   ("C-c d p" . org-gtd-process-inbox)
-   ("C-c d n" . org-gtd-show-all-next)
-   ("C-c d s" . org-gtd-reflect-stuck-projects)
-   :map org-gtd-clarify-mode-map
-   ("C-c c" . org-gtd-organize)
-   :map org-agenda-mode-map
-   ("C-c ." . org-gtd-agenda-transient)))
+  :defer t
+  :hook (org-mode . org-edna-mode))
 
 (use-package org-project-capture
   :ensure (org-project-capture
