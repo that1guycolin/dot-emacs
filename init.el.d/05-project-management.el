@@ -117,7 +117,7 @@ LOC can be one of:
 						(file-name-nondirectory fname)))
 		     (_ (error "%s is not a valid value for loc" loc))))))
 	     (buffer-list))))
-  
+
   (defun user/add-list-to-persp (loc expr &optional msg)
     "Add list of buffers returned by `user/buffer-by-filename' to active persp.
 Takes arguments EXPR and LOC to pass to `user/buffer-by-filename'.
@@ -148,6 +148,7 @@ into the message."
        (t
 	(message "Added %s" buf)))))
   
+  :bind-keymap ("M-p" . persp-mode-prefix-key)
   :bind
   (("C-x b"      . persp-switch-to-buffer*)
    ("C-x C-b"    . persp-ibuffer)
@@ -157,13 +158,12 @@ into the message."
   :hook (ibuffer . user/persp-for-ibuffer)
 
   :functions
-  persp-add-buffer persp-mode persp-is-current-buffer
-  persp-ibuffer-set-filter-groups persp-switch
+  persp-ibuffer-set-filter-groups persp-add-buffer persp-mode
+  persp-is-current-buffer persp-switchx1
   
   :init
   (persp-mode 1)
   :custom
-  (persp-mode-prefix-key (kbd "M-p"))
   (persp-switch-to-buffer-behavior 'switch)
   :config
   (setq switch-to-prev-buffer-skip
@@ -200,16 +200,20 @@ into the message."
   :defer t
   :preface
   (defun user/treemacs-switch-workspace-focus ()
-    "Run `treemacs-switch-workspace' and ensure the Treemacs window is focused."
+    "Run `treemacs-switch-workspace' and ensure the Treemacs window is focused.
+The ending behaviour, where treemacs is selected, then unselected, then selected again, "
     (interactive)
     (call-interactively #'treemacs-switch-workspace)
     (let ((treemacs-win (treemacs-get-local-window)))
       (when (and treemacs-win (not (eq treemacs-win (selected-window))))
+	(select-window treemacs-win)
+	(when (fboundp 'treemacs-project-follow-mode))
+	(other-window 1)
 	(select-window treemacs-win))))
 
   (defun user/toggle-gitignored-wait-2 (&rest _args)
     "Toggle `treemacs-hide-gitignored-files-mode' if treemacs window.
-Wait three seconds before activating the mode."
+Wait two seconds before activating the mode."
     (pcase (treemacs-current-visibility)
       ('visible
        (run-at-time 2 nil
