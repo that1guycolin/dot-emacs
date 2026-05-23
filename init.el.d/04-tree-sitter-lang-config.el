@@ -55,65 +55,60 @@
 (use-package bash-ts-mode
   :ensure nil
   :defer t
-  :mode ("\\.bash\\'"  . bash-ts-mode)
-  :interpreter ("bash" . bash-ts-mode))
+  :interpreter "bash"
+  :mode ("\\.bash\\'"))
 
 (use-package cmake-ts-mode
   :ensure nil
   :defer t
-  :mode
-  (("\\.cmake\\'"          . cmake-ts-mode)
-   ("^CMakeLists\\.txt\\'" . cmake-ts-mode)))
+  :mode ("\\.cmake\\'" "^CMakeLists\\.txt\\'"))
 
 (use-package emacs-lisp-mode
   :ensure nil
   :defer t
-  :mode ("\\.el\\'" . emacs-lisp-mode))
-
-(use-package ielm
-  :ensure nil
-  :defer t
-  :bind ("C-c I" . ielm))
+  :mode "\\.el\\'")
 
 (use-package json-ts-mode
   :ensure nil
   :defer t
-  :mode
-  (("\\.json\\'" . json-ts-mode)
-   ("\\.jsonc\\'". json-ts-mode)))
+  :mode ("\\.json\\'" "\\.jsonc\\'"))
 
 (use-package lisp-mode
   :ensure nil
   :defer t
-  :mode
-  (("\\.lisp\\'" . lisp-mode)
-   ("\\.cl\\'"   . lisp-mode)
-   ("\\.asd\\'"  . lisp-mode))
-  :interpreter ("sbcl" . lisp-mode))
+  :interpreter "sbcl"
+  :mode ("\\.lisp\\'" "\\.cl\\'" "\\.asd\\'"))
 
 (use-package lua-ts-mode
   :ensure nil
   :defer t
-  :mode ("\\.lua\\'" . lua-ts-mode)
+  :mode "\\.lua\\'"
   :custom
   (lua-ts-inferior-lua "luajit"))
 
 (use-package markdown-ts-mode
   :ensure nil
   :defer t
-  :mode
-  (("\\.md\\'"    . markdown-ts-mode)
-   ("^README\\'"  . markdown-ts-mode)
-   ("^INSTALL\\'" . markdown-ts-mode)))
+  :mode ("\\.md\\'" "^README\\'" "^INSTALL\\'"))
 
-(defvar python-mode-map)
 (use-package python-ts-mode
   :ensure nil
   :defer t
-  :interpreter
-  (("uv"      . python-ts-mode)
-   ("python3" . python-ts-mode))
-  :mode ("\\.py\\'" . python-ts-mode)
+  :preface
+  (defvar python-mode-map)
+  
+  :bind
+  (:map python-mode-map
+	("C-c C-k c" . python-skeleton-class)
+	("C-c C-k d" . python-skeleton-def)
+	("C-c C-k f" . python-skeleton-for)
+	("C-c C-k i" . python-skeleton-if)
+	("C-c C-k m" . python-skeleton-import)
+	("C-c C-k t" . python-skeleton-try)
+	("C-c C-k w" . python-skeleton-while))
+  :mode "\\.py\\'"
+  :interpreter ("python3" "uv")
+
   :functions
   python-skeleton-class python-skeleton-def python-skeleton-for
   python-skeleton-if python-skeleton-import python-skeleton-try
@@ -122,39 +117,24 @@
   (python-indent-offset 4)
   (python-shell-interpreter "python3")
   :config
-  (keymap-unset python-mode-map "C-c C-t")
-  (bind-keys
-   :map python-mode-map
-   ("C-c C-k c" . python-skeleton-class)
-   ("C-c C-k d" . python-skeleton-def)
-   ("C-c C-k f" . python-skeleton-for)
-   ("C-c C-k i" . python-skeleton-if)
-   ("C-c C-k m" . python-skeleton-import)
-   ("C-c C-k t" . python-skeleton-try)
-   ("C-c C-k w" . python-skeleton-while)))
+  (keymap-unset python-mode-map "C-c C-t"))
 
 (use-package sh-mode
   :ensure nil
   :defer t
-  :interpreter
-  (("sh"  . sh-mode)
-   ("zsh" . sh-mode)))
+  :interpreter ("sh" "zsh")
+  :mode "\\.zsh\\'")
 
 (use-package toml-ts-mode
   :ensure nil
   :defer t
-  :mode ("\\.toml\\'" . toml-ts-mode))
+  :mode "\\.toml\\'")
 
 (use-package nxml-mode
   :ensure nil
   :defer t
-  :mode
-  (("\\.xml\\'"  . nxml-mode)
-   ("\\.xsd\\'"  . nxml-mode)
-   ("\\.xslt\\'" . nxml-mode)
-   ("\\.svg\\'"  . nxml-mode)
-   ("\\.rss\\'"  . nxml-mode)
-   ("\\.pom\\'"  . nxml-mode))
+  :mode ("\\.xml\\'"
+	 "\\.xsd\\'" "\\.xslt\\'" "\\.svg\\'" "\\.rss\\'" "\\.pom\\'")
   :custom
   (nxml-child-indent 2)
   (nxml-attribute-indent 2)
@@ -163,9 +143,7 @@
 (use-package yaml-ts-mode
   :ensure nil
   :defer t
-  :mode
-  (("\\.yml\\'"  . yaml-ts-mode)
-   ("\\.yaml\\'" . yaml-ts-mode)))
+  :mode ("\\.yml\\'" "\\.yaml\\'"))
 
 
 (provide '04-tree-sitter-lang-config)
