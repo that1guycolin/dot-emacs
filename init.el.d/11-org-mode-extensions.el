@@ -22,40 +22,38 @@
 
 (use-package org-project-capture
   :ensure (org-project-capture
-	   :source "MELPA" :package "org-project-capture" :id org-project-capture
-	   :repo "colonelpanic8/org-project-capture" :fetcher github
-	   :files ("org-project-capture.el" "org-project-capture-backend.el"
-		   "org-category-capture.el" "README.org"))
-  :functions
-  org-project-capture-capture-for-current-project
-  org-project-capture-project-todo-completing-read
-  org-project-capture-agenda-for-current-project
-
+	   :source "MELPA" :package "org-project-capture"
+	   :id org-project-capture :repo "colonelpanic8/org-project-capture"
+	   :fetcher github :files ("org-project-capture.el"
+				   "org-project-capture-backend.el"
+				   "org-category-capture.el" "README.org"))
+  :demand t
+  :preface
+  (defvar org-refile-targets)
+  
+  :bind
+  (("C-c C-p c" . org-project-capture-capture-for-current-project)
+   ("C-c C-p p" . org-project-capture-project-todo-completing-read)
+   ("C-c C-p a" . org-project-capture-agenda-for-current-project))
+  
   :custom
   (org-project-capture-per-project-filepath "TODO")
-
   :config
   (require 'org-category-capture)
   (dolist (project (project-known-project-roots))
-    (let ((ptodo (expand-file-name "TODO" project)))
-      (when (file-exists-p ptodo)
-	(add-to-list 'org-agenda-files ptodo))))
-  (bind-keys
-   ("C-c C-p c" . org-project-capture-capture-for-current-project)
-   ("C-c C-p p" . org-project-capture-project-todo-completing-read)
-   ("C-c C-p a" . org-project-capture-agenda-for-current-project)))
+    (let ((project-todo (expand-file-name "TODO" project)))
+      (when (file-exists-p project-todo)
+	(add-to-list 'org-agenda-files project-todo))))
+  
+  (unless (boundp 'org-refile-targets)
+    (setq org-refile-targets '((nil :maxlevel . 9)
+                               (org-agenda-files :maxlevel . 9)))))
 
 (use-package magit-org-todos
-  :after magit
-  :functions magit-org-todos-autoinsert
+  :defer t
+  :hook (magit-mode . magit-org-todos-autoinsert)
   :custom
-  (magit-org-todos-filename "TODO")
-  :config
-  (magit-org-todos-autoinsert))
-
-(unless (boundp 'org-refile-targets)
-  (setq org-refile-targets '((nil :maxlevel . 9)
-                             (org-agenda-files :maxlevel . 9))))
+  (magit-org-todos-filename "TODO"))
 
 
 ;; =======  KNOWLEDGE  =======
@@ -66,26 +64,71 @@
 ;; `org-pdftools' (integrate org & `pdf-tools')
 ;; `org-noter-pdftools' (annotate pdf files)
 ;; ===========================
-(declare-function org-id-update-id-locations "org")
-(declare-function org-id-get-create "org-id")
-
 (use-package org-mem
   :after org
+  :preface
+  (declare-function org-id-update-id-locations "org")
+  (defvar org-directory)
+  (declare-function org-id-get-create "org-id")
+  (defun user/setup-org-mem ()
+    "Initialize the org-mem id database."
+    (org-id-update-id-locations)
+    (org-mem-roamy-db-mode 1)
+    (org-mem-updater-mode 1))
+  :hook (emacs-startup . (lambda ()
+			   (run-at-time 15 nil #'user/setup-org-mem)))
   :functions
   org-mem-roamy-db-mode org-mem-updater-mode org-mem-reset org-mem-await
   org-mem-tip-if-empty
   :custom
-  (org-mem-watch-dirs '("~/org/knowledge-base/"))
-  (org-mem-roamy-do-overwrite-real-db nil)
-  :config
-  (add-hook 'emacs-startup-hook (lambda ()
-				  (org-id-update-id-locations)
-				  (org-mem-roamy-db-mode 1)
-				  (org-mem-updater-mode 1))))
+  (org-mem-watch-dirs
+   (list (expand-file-name org-directory)))
+  (org-mem-roamy-do-overwrite-real-db nil))
 
 (use-package org-node
+  :defer t
+  :preface
+  (defun user/org-node-new-file (&optional title id)
+    "Create a new file containing a new node.  Set as `org-node-creation-fn'.
+This user-defined function customizes the \=':PROPERTIES:' block from
+`org-node-new-file' in \"org-node.el\"."
+    (unless title (or (setq title org-node-proposed-title)
+  		      (error "Proposed title was nil")))
+    (org-node-pop-to-fresh-file-buffer title)
+    (goto-char (point-max))
+    (if id
+	(insert ":PROPERTIES:"
+		"\nID": id
+		"\n:END:"
+		"\n#+TITLE: " title
+		"\n#+AUTHOR:"
+		"\n#+ID:" id
+  		"\n#+FILETAGS:"
+		"\n")
+      (let ((id (org-id-new)))
+	(insert ":PROPERTIES:"
+		"\nID": id
+		"\n:END:"
+		"\n#+TITLE: " title
+		"\n#+AUTHOR:"
+		"\n#+ID:" id
+  		"\n#+FILETAGS:"
+		"\n"))
+      (push (current-buffer) org-node--new-unsaved-buffers)
+      (run-hooks 'org-node-creation-hook)))
+
+  (defun user/org-node-create-properties-block ()
+    "Create an org-node properties block at an interactively-selected heading."
+    (interactive)
+    (unless (derived-mode-p 'org-mode)
+      (user-error "This buffer is not in org-mode"))
+    (goto-char (user/org-get-heading-location))
+    (org-id-get-create)
+    (org-node-ensure-crtime-property))
+  
   :bind-keymap ("M-o" . org-node-global-prefix-map)
-  :commands org-node-org-prefix-map
+  :bind-keymap (:map org-mode-map
+		     ("M-o" . org-node-org-prefix-map))
 
   :functions
   org-node-cache-mode org-node-backlink-mode org-node-complete-at-point-mode
@@ -95,16 +138,13 @@
   org-node-proposed-title org-node-proposed-id org-node--new-unsaved-buffers
   org-node-creation-fn org-node-backlink-do-drawers
   
-  :init
-  (with-eval-after-load 'org
-    (keymap-set org-mode-map "M-o" org-node-org-prefix-map))
-  
   :custom
+  (org-node-creation-fn #'user/org-node-new-file)
   (org-node-file-directory-ask t)
   (org-node-prefer-with-heading nil)
+  (org-node--first-init nil)
   
   :config
-  (setq org-node--first-init nil)
   (org-node-cache-mode 1)
   (unless org-mem-updater-mode
     (org-mem-updater-mode 1))
@@ -112,36 +152,11 @@
   (org-mem-await "Org-node waiting for org-mem..." 60)
   (org-mem-tip-if-empty)
   (org-node-complete-at-point-mode 1)
-  
-  (defun user/org-node-new-file (&optional title id)
-    "Create a new file containing a new node.  Set as `org-node-creation-fn'.
-This user-defined function customizes the \=':PROPERTIES:' block from
-`org-node-new-file' in \"org-node.el\"."
-    (unless title (or (setq title org-node-proposed-title)
-  		      (error "Proposed title was nil")))
-    (org-node-pop-to-fresh-file-buffer title)
-    (if id
-	(insert "#+TITLE: " title
-  		"\n#+FILETAGS:"
-  		"\n"
-		"\n* " title
-		"\n:PROPERTIES:"
-		"\n:ID:       " id
-  		"\n:END:")
-      
-      (insert "#+TITLE: " title
-  	      "\n#+FILETAGS:"
-  	      "\n"
-	      "\n* " title
-	      "\n:PROPERTIES:"
-  	      "\n:END:"))
-    (goto-char (point-max))
-    (org-id-get-create)
-    (push (current-buffer) org-node--new-unsaved-buffers)
-    (run-hooks 'org-node-creation-hook))
-  
-  (setq org-node-creation-fn #'user/org-node-new-file)
-  
+
+  (use-package org-node-backlink
+    :after org-node
+    :custom (org-node-backlink-do-drawers nil)
+    :config (org-node-backlink-mode 1))
   (require 'org-node-backlink)
   (with-eval-after-load 'org-node-backlink
     (setq org-node-backlink-do-drawers nil)
@@ -161,27 +176,32 @@ This user-defined function customizes the \=':PROPERTIES:' block from
   (pdf-tools-install))
 
 (use-package nov
-  :defer t)
+  :after org-noter)
 
 (use-package djvu
-  :defer t)
+  :after org-noter)
 
 (use-package org-noter
-  :functions org-noter-start-from-dired
-  :custom
-  (org-noter-set-auto-save-last-location t)
-  :config
-  (require 'org-noter-pdftools)
-  (bind-keys
+  :defer t
+  :bind
+  (("C-c n n". org-noter)
    :map dired-mode-map
-   ("C-c C-n" . org-noter-start-from-dired)))
+   ("N"      . org-noter-start-from-dired))
+  :custom
+  (org-noter-auto-save-last-location t)
+  (org-noter-notes-search-path (expand-file-name "notes" org-directory))
+  (org-noter-default-notes-file-names '("notes.org"))
+  :config
+  (use-package org-noter-pdftools
+    :after org-noter))
 
 (use-package org-pdftools
   :ensure (org-pdftools
-	   :source nil :package "org-pdftools" :id org-pdftools :fetcher github
-	   :repo "that1guycolin/org-pdftools" :files ("org-pdftools.el")
-	   :old-names (org-pdfview) :type git :protocol https :inherit t
-	   :depth treeless)
+	   :source nil :package "org-pdftools" :id org-pdftools
+	   :fetcher github :repo "that1guycolin/org-pdftools"
+	   :files ("org-pdftools.el") :old-names (org-pdfview)
+	   :type git :protocol https :inherit :depth treeless)
+  :defer t
   :hook (org-mode . org-pdftools-setup-link))
 
 (use-package org-noter-pdftools
@@ -190,20 +210,15 @@ This user-defined function customizes the \=':PROPERTIES:' block from
 	   :repo "that1guycolin/org-pdftools" :fetcher github
 	   :files ("org-noter-pdftools.el")
 	   :type git :protocol https :inherit t :depth treeless)
-
-  :functions
-  org-noter-insert-note org-noter--get-precise-info org-noter--parse-root
-  org-noter--doc-approx-location org-entry-delete org-entry-put
-  org-noter--pretty-print-location org-noter-pdftools-jump-to-note
-  
-  :config
+  :after org-pdftools
+  :preface
   (defun org-noter-pdftools-insert-precise-note (&optional toggle-no-questions)
     (interactive "P")
     (org-noter--with-valid-session
      (let ((org-noter-insert-note-no-questions
 	    (if toggle-no-questions
                 (not org-noter-insert-note-no-questions)
-              org-noter-insert-note-no-questions))
+	      org-noter-insert-note-no-questions))
            (org-pdftools-use-isearch-link t)
            (org-pdftools-use-freepointer-annot t))
        (org-noter-insert-note (org-noter--get-precise-info)))))
@@ -221,10 +236,16 @@ With a prefix ARG, remove start location."
          (org-with-wide-buffer
           (goto-char (org-element-property :begin ast))
           (if arg
-              (org-entry-delete nil org-noter-property-note-location)
+	      (org-entry-delete nil org-noter-property-note-location)
             (org-entry-put nil org-noter-property-note-location
                            (org-noter--pretty-print-location location))))))))
-
+  
+  :functions
+  org-noter-insert-note org-noter--get-precise-info org-noter--parse-root
+  org-noter--doc-approx-location org-entry-delete org-entry-put
+  org-noter--pretty-print-location org-noter-pdftools-jump-to-note
+  
+  :config
   (with-eval-after-load 'pdf-annot
     (add-hook 'pdf-annot-activate-handler-functions
 	      #'org-noter-pdftools-jump-to-note)))
@@ -365,16 +386,6 @@ the current document."
 		   nil 'file))
 	 (choice (completing-read "Heading: " options nil t)))
     (cdr (assoc choice options))))
-
-(defun user/org-node-create-properties-block ()
-  "Create an org-node properties block at an interactively-selected heading."
-  (interactive)
-  (unless (derived-mode-p 'org-mode)
-    (user-error "This buffer is not in org-mode"))
-  (goto-char (user/org-get-heading-location))
-  (org-id-get-create)
-  (org-node-ensure-crtime-property))
-
 
 (provide '11-org-mode-extensions)
 ;;; 11-org-mode-extensions.el ends here
