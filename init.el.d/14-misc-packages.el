@@ -16,24 +16,29 @@
 ;; ======================
 (use-package telega
   :defer t
+  :preface
+  (defun user/telega-setup (&optional frame)
+    "Define settings for telega."
+    (if (daemonp)
+	)
+    (with-selected-frame (or frame (selected-frame))
+      (when (display-graphic-p)
+        (telega-mode-line-mode 1))))
+  
   :bind ("C-M-g" . telega)
   :functions
-  telega-mode-line-mode user/telega-setup telega-appindicator-mode
-  telega-auto-download-mode telega-autoplay-mode telega-chat-auto-fill-mode
-  telega-highlight-text-mode telega-notifications-mode telega-root-auto-fill-mode
+  telega-mode-line-mode telega-appindicator-mode telega-auto-download-mode
+  telega-autoplay-mode telega-chat-auto-fill-mode telega-highlight-text-mode
+  telega-notifications-mode telega-root-auto-fill-mode
   telega-transient-keymaps-mode
   
   :init
   (setq telega-use-images t)
-  (defun user/telega-setup (&optional frame)
-    "Define settings for telega."
-    (with-selected-frame (or frame (selected-frame))
-      (when (display-graphic-p)
-        (telega-mode-line-mode 1))))
   (if (daemonp)
-      (add-hook 'after-make-frame-functions #'user/telega-setup)
+      (with-eval-after-load 'telega
+	(add-hook 'after-make-frame-functions #'user/telega-setup))
     (add-hook 'telega-load-hook #'user/telega-setup))
-
+  :custom (telega-use-docker "podman")
   :config
   (telega-appindicator-mode 1)
   (telega-auto-download-mode 1)
