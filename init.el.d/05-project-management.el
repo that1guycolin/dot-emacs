@@ -248,7 +248,7 @@ Wait three seconds before activating the mode."
   
   (bind-keys
    :map treemacs-mode-map
-   ("C-x p f"     . treemacs-project-follow-mode)
+   ("F"           . treemacs-project-follow-mode)
    ("<backspace>" . treemacs-root-up)))
 
 (use-package project-treemacs
