@@ -163,7 +163,7 @@ If not in a side window, jump to the first found side window."
      `(lambda ()
 	(defvar elpaca-installer-version ,elpaca-installer-version)
 	(add-to-list 'load-path ,elpaca-path)
-        (require 'elpaca-autoloads nil t)
+        (require 'elpaca)
         (dolist (menu ',menus)
           (elpaca-update-menus menu)
 	  (elpaca-wait))
@@ -199,13 +199,13 @@ The returned list does not include packages with :ensure explicitly set to nil."
 (defun user/elpaca-update-packages ()
   "Asynchronously update all Elpaca packages."
   (interactive)
-  (let ((packages (user/get-package-list))
-	(init-file (expand-file-name "init.el" user-emacs-directory)))
+  (let ((packages (user/get-package-list)))
     (message "Updating Elpaca packages in the background...")
     (async-start
      `(lambda ()
 	(require 'cl-lib)
-	(load ,init-file)
+	(add-to-list 'load-path ,user-emacs-directory)
+	(require 'init)
 	(let ((log '()))
 	  (cl-labels ((log-message
 			(fmt &rest args)
