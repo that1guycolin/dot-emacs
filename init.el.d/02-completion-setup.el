@@ -59,7 +59,7 @@
   :functions
   global-corfu-mode corfu-history-mode corfu-popupinfo-mode
   :bind
-  (:map corfu-mode-map
+  (:map corfu-map
 	("C-n"   . corfu-next)
 	("C-p"   . corfu-previous)
 	("TAB"   . corfu-complete)

@@ -174,88 +174,90 @@ doubles as a model-switcher."
 (use-package ellama
   :ensure (:wait t)
   :defer t
-  :preface
-  ;; ----------- MODEL TYPES -----------
-  ;; Fast:
-  (defvar user/ellama-model-fast-chat
-    (make-llm-ollama
-     :chat-model "llama3.2:3b"
-     :embedding-model "nomic-embed-text"
-     :default-chat-non-standard-params '(("num_ctx" . 4096))))
-
-  (defvar user/ellama-model-fast-code
-    (make-llm-ollama
-     :chat-model "codegemma:2b"
-     :embedding-model "nomic-embed-text"
-     :default-chat-non-standard-params '(("num_ctx" . 4096))))
-
-  ;; Balanced:
-  (defvar user/ellama-model-balanced-chat
-    (make-llm-ollama
-     :chat-model "phi4-mini:3.8b"
-     :embedding-model "nomic-embed-text"
-     :default-chat-non-standard-params '(("num_ctx" . 8192))))
-
-  (defvar user/ellama-model-balanced-summary
-    (make-llm-ollama
-     :chat-model "qwen3:4b"
-     :embedding-model "nomic-embed-text"
-     :default-chat-non-standard-params '(("num_ctx" . 8192))))
-
-  (defvar user/ellama-model-balanced-code
-    (make-llm-ollama
-     :chat-model "codellama:7b-instruct"
-     :embedding-model "nomic-embed-text"
-     :default-chat-non-standard-params '(("num_ctx" . 4096))))
-
-  ;; Heavy
-  (defvar user/ellama-model-heavy-chat
-    (make-llm-ollama
-     :chat-model "llama3.1:8b"
-     :embedding-model "nomic-embed-text"
-     :default-chat-non-standard-params '(("num_ctx" . 4096))))
-
-  (defvar user/ellama-model-heavy-code
-    (make-llm-ollama
-     :chat-model "qwen2.5-coder:7b"
-     :embedding-model "nomic-embed-text"
-     :default-chat-non-standard-params '(("num_ctx" . 4096))))
-
-  ;; Defaults:
-  (setopt ellama-provider user/ellama-model-fast-chat)
-  (setopt ellama-coding-provider user/ellama-model-fast-code)
-  (setopt ellama-summarization-provider user/ellama-model-balanced-summary)
-
-  ;; ----------- FUNCTIONS -----------
-  (defun user/ellama-set-tier (tier)
-    "Activate default models for TIER."
-    (pcase tier
-      ('fast
-       (setopt ellama-provider user/ellama-model-fast-chat)
-       (setopt ellama-coding-provider user/ellama-model-fast-code)
-       (setopt ellama-summarization-provider user/ellama-model-fast-chat)
-       (message "Ellama tier → FAST"))
-
-      ('balanced
-       (setopt ellama-provider user/ellama-model-balanced-chat)
-       (setopt ellama-coding-provider user/ellama-model-balanced-code)
-       (setopt ellama-summarization-provider user/ellama-model-balanced-summary)
-       (message "Ellama tier → BALANCED"))
-
-      ('heavy
-       (setopt ellama-provider user/ellama-model-heavy-chat)
-       (setopt ellama-coding-provider user/ellama-model-heavy-code)
-       (setopt ellama-summarization-provider user/ellama-model-balanced-summary)
-       (message "Ellama tier → HEAVY"))))
 
   :commands ellama-transient-main-menu
   :functions
-  make-llm-ollama ellama-disable-scroll ellama-enable-scroll
+  ellama-disable-scroll ellama-enable-scroll
   :init
   (setopt ellama-language "English")
   :config
-  (require 'llm-ollama)
+  (use-package llm-ollama
+    :after ellama
+    :preface
+    ;; ----------- MODEL TYPES -----------
+    ;; Fast:
+    (defvar user/ellama-model-fast-chat
+      (make-llm-ollama
+       :chat-model "llama3.2:3b"
+       :embedding-model "nomic-embed-text"
+       :default-chat-non-standard-params '(("num_ctx" . 4096))))
 
+    (defvar user/ellama-model-fast-code
+      (make-llm-ollama
+       :chat-model "codegemma:2b"
+       :embedding-model "nomic-embed-text"
+       :default-chat-non-standard-params '(("num_ctx" . 4096))))
+
+    ;; Balanced:
+    (defvar user/ellama-model-balanced-chat
+      (make-llm-ollama
+       :chat-model "phi4-mini:3.8b"
+       :embedding-model "nomic-embed-text"
+       :default-chat-non-standard-params '(("num_ctx" . 8192))))
+
+    (defvar user/ellama-model-balanced-summary
+      (make-llm-ollama
+       :chat-model "qwen3:4b"
+       :embedding-model "nomic-embed-text"
+       :default-chat-non-standard-params '(("num_ctx" . 8192))))
+
+    (defvar user/ellama-model-balanced-code
+      (make-llm-ollama
+       :chat-model "codellama:7b-instruct"
+       :embedding-model "nomic-embed-text"
+       :default-chat-non-standard-params '(("num_ctx" . 4096))))
+
+    ;; Heavy
+    (defvar user/ellama-model-heavy-chat
+      (make-llm-ollama
+       :chat-model "llama3.1:8b"
+       :embedding-model "nomic-embed-text"
+       :default-chat-non-standard-params '(("num_ctx" . 4096))))
+
+    (defvar user/ellama-model-heavy-code
+      (make-llm-ollama
+       :chat-model "qwen2.5-coder:7b"
+       :embedding-model "nomic-embed-text"
+       :default-chat-non-standard-params '(("num_ctx" . 4096))))
+
+    ;; Defaults:
+    (setopt ellama-provider user/ellama-model-fast-chat)
+    (setopt ellama-coding-provider user/ellama-model-fast-code)
+    (setopt ellama-summarization-provider user/ellama-model-balanced-summary)
+
+    ;; ----------- FUNCTIONS -----------
+    (defun user/ellama-set-tier (tier)
+      "Activate default models for TIER."
+      (pcase tier
+	('fast
+	 (setopt ellama-provider user/ellama-model-fast-chat)
+	 (setopt ellama-coding-provider user/ellama-model-fast-code)
+	 (setopt ellama-summarization-provider user/ellama-model-fast-chat)
+	 (message "Ellama tier → FAST"))
+
+	('balanced
+	 (setopt ellama-provider user/ellama-model-balanced-chat)
+	 (setopt ellama-coding-provider user/ellama-model-balanced-code)
+	 (setopt ellama-summarization-provider
+		 user/ellama-model-balanced-summary)
+	 (message "Ellama tier → BALANCED"))
+
+	('heavy
+	 (setopt ellama-provider user/ellama-model-heavy-chat)
+	 (setopt ellama-coding-provider user/ellama-model-heavy-code)
+	 (setopt ellama-summarization-provider
+		 user/ellama-model-balanced-summary)
+	 (message "Ellama tier → HEAVY")))))
   ;; ----------- DISPLAY -----------
   (setopt ellama-chat-display-action-function #'display-buffer-full-frame)
   (setopt ellama-instant-display-action-function #'display-buffer-at-bottom)

@@ -148,7 +148,6 @@ into the message."
        (t
 	(message "Added %s" buf)))))
   
-  :bind-keymap ("M-p" . persp-mode-prefix-key)
   :bind
   (("C-x b"      . persp-switch-to-buffer*)
    ("C-x C-b"    . persp-ibuffer)
@@ -159,11 +158,12 @@ into the message."
 
   :functions
   persp-ibuffer-set-filter-groups persp-add-buffer persp-mode
-  persp-is-current-buffer persp-switchx1
+  persp-is-current-buffer persp-switch
   
   :init
   (persp-mode 1)
   :custom
+  (persp-mode-prefix-key "M-p")
   (persp-switch-to-buffer-behavior 'switch)
   :config
   (setq switch-to-prev-buffer-skip

@@ -127,17 +127,16 @@ This user-defined function customizes the \=':PROPERTIES:' block from
     (org-node-ensure-crtime-property))
   
   :bind-keymap ("M-o" . org-node-global-prefix-map)
-  :bind-keymap (:map org-mode-map
-		     ("M-o" . org-node-org-prefix-map))
-
+  :commands org-node-org-prefix-map
   :functions
   org-node-cache-mode org-node-backlink-mode org-node-complete-at-point-mode
   org-node-ensure-crtime-property org-node-pop-to-fresh-file-buffer
-  user/org-node-new-file user/org-node-cache-ensure
   :defines
   org-node-proposed-title org-node-proposed-id org-node--new-unsaved-buffers
   org-node-creation-fn org-node-backlink-do-drawers
-  
+
+  :init
+  (keymap-set org-mode-map "M-o" #'org-node-org-prefix-map)
   :custom
   (org-node-creation-fn #'user/org-node-new-file)
   (org-node-file-directory-ask t)

@@ -232,8 +232,6 @@ See URL `https://vale.sh'."
   lsp-mode lsp-register-client make-lsp--client lsp-stdio-connection
   :defines lsp-language-id-configuration
 
-  :init
-  (add-to-list 'lsp-language-id-configuration '(fish-mode . "fish"))
   :custom
   (lsp-auto-guess-root t)
   (lsp-disabled-clients
@@ -258,7 +256,8 @@ See URL `https://vale.sh'."
     :new-connection (lsp-stdio-connection '("fish-lsp" "start"))
     :major-modes '(fish-mode)
     :server-id 'fish-ls))
-
+  (add-to-list 'lsp-language-id-configuration '(fish-mode . "fish"))
+  
   (lsp-register-client
    (make-lsp--client
     :new-connection (lsp-stdio-connection '("rumdl" "server"))
