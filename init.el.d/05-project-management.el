@@ -1,4 +1,4 @@
-;;; 05-project-management.el --- Project management and file navigation -*- lexical-binding: t; -*-
+;;; 05-project-management.el --- Project management and file navigation -*-lexical-binding: t; -*-
 
 ;;; Packages included:
 ;; deadgrep, disproject, docker, perspective, perspective-project-bridge,
@@ -65,10 +65,9 @@
   :defer t
   :bind ("C-c C-g" . rg-menu)
   :config
-  (use-package rg-isearch
-    :defer t
-    :bind (:map isearch-mode-map
-		("M-s r" . rg-isearch-menu))))
+  (require 'rg-isearch)
+  :bind (:map isearch-mode-map
+	      ("M-s r" . rg-isearch-menu)))
 
 (use-package perspective
   :demand t
