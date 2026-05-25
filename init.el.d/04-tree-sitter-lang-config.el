@@ -139,9 +139,40 @@
 (use-package sh-mode
   :defer t
   :ensure nil
-  :interpreter
-  (("sh"  . sh-mode)
-   ("zsh" . sh-mode)))
+  :preface
+  (defun user/zsh-redirect-error-echoes ()
+    "Redirect ERROR echo calls to stderr in zsh buffers."
+    (when (derived-mode-p 'sh-mode)
+      (save-excursion
+	(goto-char (point-min))
+	(while (search-forward "echo \"ERROR:" nil t)
+          (replace-match "echo >&2 \"ERROR:" t t)))))
+
+  (defun user/enable-zsh-error-echo-fix ()
+    "Enable automatic stderr redirection for zsh files."
+    (when (and (derived-mode-p 'sh-mode)
+               (boundp 'sh-shell)
+               (string= sh-shell "zsh"))
+      (add-hook 'before-save-hook #'user/zsh-redirect-error-echoes nil t)))
+
+  (defun my/fix-zsh-error-echoes (directory)
+    "Replace `echo \"ERROR:` with `echo >&2 \"ERROR:` in all .zsh files under DIRECTORY."
+    (interactive "DDirectory: ")
+    (dolist (file (directory-files-recursively directory "\\.zsh\\'"))
+      (with-temp-buffer
+	(insert-file-contents file)
+	(goto-char (point-min))
+	(let ((modified nil))
+          (while (search-forward "echo \"ERROR:" nil t)
+            (replace-match "echo >&2 \"ERROR:" t t)
+            (setq modified t))
+          (when modified
+            (write-region nil nil file nil 'silent)
+            (message "Updated: %s" file))))))
+  :mode ("\\.zsh\\'")
+  :interpreter ("sh" "zsh")
+  :config
+  (add-hook 'sh-mode-hook #'user/enable-zsh-error-echo-fix))
 
 (use-package toml-ts-mode
   :defer t
