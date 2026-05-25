@@ -76,14 +76,14 @@ to the user's device.")
 ;; =======  MCP  =======
 (use-package org-mcp
   :defer t
-  :command org-mcp-enable
+  :commands org-mcp-enable
   :custom
   (org-mcp-allowed-files
    (directory-files-recursively org-directory "\\.org\\'")))
 
 (use-package elisp-dev-mcp
   :defer t
-  :command elisp-dev-mcp-enable)
+  :commands elisp-dev-mcp-enable)
 
 
 ;; =======  GPTEL  =======
@@ -122,9 +122,8 @@ doubles as a model-switcher."
 	       backend-name gptel-model)))
   
   :commands gptel gptel-send
-  :functions
-  :defines
-  gptel-backend
+  :functions gptel-get-backend gptel-make-ollama gptel-make-openai
+  :defines gptel-backend
 
   :config
   (user/ensure-ollama-system-service)

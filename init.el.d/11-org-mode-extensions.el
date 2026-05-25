@@ -200,7 +200,7 @@ This user-defined function customizes the \=':PROPERTIES:' block from
 	   :source nil :package "org-pdftools" :id org-pdftools
 	   :fetcher github :repo "that1guycolin/org-pdftools"
 	   :files ("org-pdftools.el") :old-names (org-pdfview)
-	   :type git :protocol https :inherit :depth treeless)
+	   :type git :protocol https :inherit t :depth treeless)
   :defer t
   :hook (org-mode . org-pdftools-setup-link))
 
