@@ -11,49 +11,53 @@
 ;;; Code:
 ;; =======  VARIABLES & FUNCTIONS  =======
 (defvar user/ollama-alist
-  `((gpt-oss:120b-cloud     . ,(* 16 4096))
-    (llama3.1:latest        . ,(* 16 4096))
+  `((codegemma:2b	    . ,(* 1 4096))
+    (codellama:7b-instruct  . ,(* 2 4096))
+    (gemma4:e2b		    . ,(* 1 4096))
+    (gemma4:e4b		    . ,(* 2 4096))
+    (gpt-oss:120b-cloud	    . ,(* 16 4096))
+    (granite4.1:3b	    . ,(* 1 4096))
+    (granite4.1:8b          . ,(* 2 4096))
+    (granite-code:3b	    . ,(* 1 4096))
+    (granite-code:8b	    . ,(* 2 4096))
+    (lfm2.5-thinking:latest . ,(* 2 4096))
+    (llama3.1:8b	    . ,(* 2 4096))
+    (llama3.1:latest	    . ,(* 1 4096))
+    (llama3.2:1b	    . ,(* 1 4096))
+    (llama3.2:3b	    . ,(* 2 4096))
+    (llama3:8b		    . ,(* 2 4096))
+    (ministral-3:3b	    . ,(* 1 4096))
+    (opencoder:1.5b	    . ,(* 2 4096))
+    (opencoder:8b	    . ,(* 2 4096))
+    (qwen2.5:0.5b	    . ,(* 1 4096))
+    (qwen2.5:1.5b	    . ,(* 1 4096))
+    (qwen2.5-coder:0.5b	    . ,(* 1 4096))
+    (qwen2.5-coder:1.5b	    . ,(* 1 4096))
+    (qwen2.5-coder:3b	    . ,(* 2 4096))
+    (qwen2.5-coder:7b	    . ,(* 2 4096))
+    (qwen3:0.6b		    . ,(* 2 4096))
+    (qwen3:1.7b		    . ,(* 2 4096))
+    (qwen3:4b		    . ,(* 2 4096))
+    (qwen3.5:cloud	    . ,(* 16 4096))
+    (qwen3:8b		    . ,(* 2 4096))
     (qwen3-coder:480b-cloud . ,(* 16 4096))
     (qwen3-coder-next:cloud . ,(* 16 4096))
-    (qwen3.5:cloud          . ,(* 16 4096))
-    (granite-code:8b        . ,(* 2 4096))
-    (llama3:8b              . ,(* 2 4096))
-    (llama3.1:8b            . ,(* 1 4096))
-    (opencoder:8b           . ,(* 2 4096))
-    (qwen3:8b               . ,(* 2 4096))
-    (codellama:7b-instruct  . ,(* 1 4096))
-    (qwen2.5-coder:7b       . ,(* 2 4096))
-    (starcoder2:7b          . ,(* 2 4096))
-    (qwen3:4b               . ,(* 2 4096))
-    (gemma4:e4b             . ,(* 1 4096))
-    (phi4-mini:3.8b         . ,(* 2 4096))
-    (granite-code:3b        . ,(* 1 4096))
-    (granite3.1-moe:3b      . ,(* 1 4096))
-    (llama3.2:3b            . ,(* 1 4096))
-    (qwen2.5-coder:3b       . ,(* 1 4096))
-    (stable-code:3b         . ,(* 1 4096))
-    (starcoder2:3b          . ,(* 1 4096))
-    (gemma4:e2b             . ,(* 1 4096))
-    (codegemma:2b           . ,(* 1 4096))
-    (qwen3:1.7b             . ,(* 1 4096))
-    (opencoder:1.5b         . ,(* 1 4096))
-    (qwen2.5:1.5b           . ,(* 1 4096))
-    (qwen2.5-coder:1.5b     . ,(* 1 4096))
-    (yi-coder:1.5b          . ,(* 1 4096))
-    (granite3.1-moe:1b      . ,(* 1 4096))
-    (llama3.2:1b            . ,(* 1 4096))
-    (starcoder:1b           . ,(* 1 4096))
-    (qwen3:0.6b             . ,(* 1 4096))
-    (qwen2.5:0.5b           . ,(* 1 4096))
-    (qwen2.5-coder:0.5b     . ,(* 1 4096)))
+    (stable-code:3b	    . ,(* 1 4096))
+    (starcoder:1b	    . ,(* 1 4096))
+    (starcoder2:3b	    . ,(* 1 4096))
+    (starcoder2:7b	    . ,(* 2 4096))
+    (yi-coder:1.5b          . ,(* 1 4096)))
   "Alist containing Ollama models and their context length.
 Models on this list are either cloud-based or have already been downloaded
 to the user's device.")
 
+(defvar user/ollama-models (mapcar #'car user/ollama-alist)
+  "List of ollama-models (without their context lengths).")
+
 (defvar user/openrouter-list
-  '(openai/gpt-oss-120b:free
-    qwen/qwen3-coder:free meta-llama/llama-3.3-70b-instruct:free
-    qwen/qwen3-4b:free google/gemma-3-27b-it:free openrouter/free)
+  '(google/gemma-3-27b-it:free
+    meta-llama/llama-3.3-70b-instruct:free openai/gpt-oss-120b:free
+    openrouter/free qwen/qwen3-4b:free qwen/qwen3-coder:free)
   "A list of user-selected LLMs available through OpenRouter.")
 
 (defun user/ensure-ollama-system-service ()
@@ -71,58 +75,26 @@ to the user's device.")
 
 ;; =======  MCP  =======
 (use-package org-mcp
-  :functions org-mcp-enable
-  :config
-  (setq org-mcp-allowed-files
-	(directory-files "~/org/llm" t directory-files-no-dot-files-regexp))
-  (dolist (file '("~/org/.notes" "~/org/tasks/inbox.org"
-		  "~/org/tasks/org-gtd-tasks.org"))
-    (add-to-list 'org-mcp-allowed-files (expand-file-name file)))
-  (org-mcp-enable))
+  :defer t
+  :command org-mcp-enable
+  :custom
+  (org-mcp-allowed-files
+   (directory-files-recursively org-directory "\\.org\\'")))
 
 (use-package elisp-dev-mcp
-  :functions elisp-dev-mcp-enable
-  :config
-  (elisp-dev-mcp-enable))
+  :defer t
+  :command elisp-dev-mcp-enable)
 
-(defun user/switch-active-mcp ()
-  "Switch active mcp from `elisp-dev-mcp' to `org-mcp' and back."
-  (if ))
+
 ;; =======  GPTEL  =======
-(declare-function auth-source-pick-first-password "auth-source")
 (use-package gptel
   :defer t
-  :commands gptel gptel-send
-  
-  :functions
-  gptel-make-ollama gptel-make-openai gptel-get-backend
-
-  :defines
-  gptel-backend user/gptel--backend-map
-
-  :config
-  (user/ensure-ollama-system-service)
-  (setq
-   gptel-backend (gptel-make-ollama "Ollama"
-		   :host "localhost:11434"
-		   :stream t
-		   :models (mapcar #'car user/ollama-alist))
-   gptel-model 'llama3.2:3b)
-
-  (gptel-make-openai "OpenRouter"
-    :host "openrouter.ai"
-    :endpoint "/api/v1/chat/completions"
-    :stream t
-    :key (lambda ()
-	   (auth-source-pick-first-password
-	    :host "openrouter.ai"
-	    :user "apikey"))
-    :models user/openrouter-list)
+  :preface
+  (declare-function auth-source-pick-first-password "auth-source")
 
   (defvar user/gptel--backend-map
-    `(("Ollama" . (name "Ollama" models ,(mapcar #'car user/ollama-alist)))
-      
-      ("OpenRouter"  . (name "OpenRouter"  models user/openrouter-alist)))
+    '(("Ollama"      . (name "Ollama"      models user/ollama-models))
+      ("OpenRouter"  . (name "OpenRouter"  models user/openrouter-list)))
     "Alist mapping display names to backend metadata plists.")
 
   (defun user/gptel-switch-backend ()
@@ -147,7 +119,31 @@ doubles as a model-switcher."
 			      (cdr (assoc model models))
 			    (intern model)))
       (message "[gptel] Backend → %s | Model → %s"
-	       backend-name gptel-model))))
+	       backend-name gptel-model)))
+  
+  :commands gptel gptel-send
+  :functions
+  :defines
+  gptel-backend
+
+  :config
+  (user/ensure-ollama-system-service)
+  (setq
+   gptel-backend (gptel-make-ollama "Ollama"
+		   :host "localhost:11434"
+		   :stream t
+		   :models (mapcar #'car user/ollama-alist))
+   gptel-model 'llama3.2:3b)
+
+  (gptel-make-openai "OpenRouter"
+    :host "openrouter.ai"
+    :endpoint "/api/v1/chat/completions"
+    :stream t
+    :key (lambda ()
+	   (auth-source-pick-first-password
+	    :host "openrouter.ai"
+	    :user "apikey"))
+    :models user/openrouter-list))
 
 (use-package gptel-magit
   :defer t
@@ -179,15 +175,7 @@ doubles as a model-switcher."
 (use-package ellama
   :ensure (:wait t)
   :defer t
-  :commands ellama-transient-main-menu
-  :functions
-  make-llm-ollama user/ellama-set-tier ellama-disable-scroll
-  ellama-enable-scroll
-  :init
-  (setopt ellama-language "English")
-  :config
-  (require 'llm-ollama)
-
+  :preface
   ;; ----------- MODEL TYPES -----------
   ;; Fast:
   (defvar user/ellama-model-fast-chat
@@ -259,14 +247,22 @@ doubles as a model-switcher."
        (setopt ellama-provider user/ellama-model-heavy-chat)
        (setopt ellama-coding-provider user/ellama-model-heavy-code)
        (setopt ellama-summarization-provider user/ellama-model-balanced-summary)
-       (message "Ellama tier → HEAVY")))))
+       (message "Ellama tier → HEAVY"))))
 
-;; ----------- DISPLAY -----------
-(setopt ellama-chat-display-action-function #'display-buffer-full-frame)
-(setopt ellama-instant-display-action-function #'display-buffer-at-bottom)
+  :commands ellama-transient-main-menu
+  :functions
+  make-llm-ollama ellama-disable-scroll ellama-enable-scroll
+  :init
+  (setopt ellama-language "English")
+  :config
+  (require 'llm-ollama)
 
-(advice-add 'pixel-scroll-precision :before #'ellama-disable-scroll)
-(advice-add 'end-of-buffer :after #'ellama-enable-scroll)
+  ;; ----------- DISPLAY -----------
+  (setopt ellama-chat-display-action-function #'display-buffer-full-frame)
+  (setopt ellama-instant-display-action-function #'display-buffer-at-bottom)
+
+  (advice-add 'pixel-scroll-precision :before #'ellama-disable-scroll)
+  (advice-add 'end-of-buffer :after #'ellama-enable-scroll))
 
 
 ;; =======  TRANSIENT  =======
