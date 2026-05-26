@@ -76,6 +76,8 @@
     (keymap-global-unset keybind))
   (defvar ibuffer-sorting-mode)
   (declare-function ibuffer-do-sort-by-alphabetic "ibuffer")
+  (declare-function
+   user/function-after-emacsclient-frame "01-bootstrap-core.el")
   
   (defun user/persp-for-ibuffer ()
     "Correctly display persps in ibuffer-mode."
@@ -146,6 +148,21 @@ into the message."
 	(message msg))
        (t
 	(message "Added %s" buf)))))
+
+  (defun user/create-org-persp (&optional _args)
+    "Create a persp called \"org\".  Add open TODO and .org files to the persp."
+    (interactive)
+    (persp-new "org")
+    (persp-switch "org")
+    (user/add-list-to-persp :ext "org" "Added %s to org persp")
+    (user/add-list-to-persp :full "TODO" "Added %s to org persp")
+    (persp-switch-last))
+
+  (add-hook 'emacs-startup-hook #'user/create-org-persp)
+  (add-hook 'server-after-make-frame-hook
+	    #'(lambda ()
+		(user/function-after-emacsclient-frame
+		 #'user/create-org-persp)))
   
   :bind
   (("C-x b"      . persp-switch-to-buffer*)
@@ -156,8 +173,8 @@ into the message."
   :hook (ibuffer . user/persp-for-ibuffer)
 
   :functions
-  persp-ibuffer-set-filter-groups persp-add-buffer persp-mode
-  persp-is-current-buffer persp-switch
+  persp-ibuffer-set-filter-groups persp-add-buffer persp-new persp-switch-last
+  persp-mode persp-is-current-buffer persp-switch
   
   :init
   (persp-mode 1)
@@ -200,14 +217,15 @@ into the message."
   :preface
   (defun user/treemacs-switch-workspace-focus ()
     "Run `treemacs-switch-workspace' and ensure the Treemacs window is focused.
-The ending behaviour, where treemacs is selected, then unselected, then selected again, "
+The ending behaviour, where treemacs is selected, then unselected, then
+selected again,"
     (interactive)
     (call-interactively #'treemacs-switch-workspace)
     (let ((treemacs-win (treemacs-get-local-window)))
       (when (and treemacs-win (not (eq treemacs-win (selected-window))))
 	(select-window treemacs-win)
-	(when (fboundp 'treemacs-project-follow-mode))
-	(other-window 1)
+	(when (fboundp 'treemacs-project-follow-mode)
+	  (other-window 1))
 	(select-window treemacs-win))))
 
   (defun user/toggle-gitignored-wait-2 (&rest _args)
