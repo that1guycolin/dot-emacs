@@ -21,8 +21,7 @@
   :ensure nil
   :demand t
   :config
-  (savehist-mode 1)
-  (add-to-list 'savehist-additional-variables 'corfu-history))
+  (savehist-mode 1))
 
 (use-package orderless
   :demand t
@@ -56,18 +55,17 @@
 
 (use-package corfu
   :demand t
+  :bind (:map corfu-map
+	      ("C-n"   . corfu-next)
+	      ("C-p"   . corfu-previous)
+	      ("TAB"   . corfu-complete)
+	      ("RET"   . corfu-complete)
+	      ("C-RET" . corfu-reset)
+	      ("M-d"   . corfu-popupinfo-toggle)
+	      ("M-n"   . corfu-popupinfo-scroll-down)
+	      ("M-p"   . corfu-popupinfo-scroll-up))
   :functions
   global-corfu-mode corfu-history-mode corfu-popupinfo-mode
-  :bind
-  (:map corfu-map
-	("C-n"   . corfu-next)
-	("C-p"   . corfu-previous)
-	("TAB"   . corfu-complete)
-	("RET"   . corfu-complete)
-	("C-RET" . corfu-reset)
-	("M-d"   . corfu-popupinfo-toggle)
-	("M-n"   . corfu-popupinfo-scroll-down)
-	("M-p"   . corfu-popupinfo-scroll-up))
   
   :custom
   (corfu-auto t)
@@ -82,6 +80,7 @@
   :config
   (global-corfu-mode 1)
   (corfu-history-mode 1)
+  (add-to-list 'savehist-additional-variables 'corfu-history)
   (corfu-popupinfo-mode 1))
 
 (use-package cape
@@ -115,8 +114,6 @@
 (defvar elpaca-sources-directory)
 (use-package emacs
   :ensure nil
-  :functions
-  ibuffer-auto-mode
   :preface
   (defun user/check-parens-with-message ()
     "Run `check-parens'.  Print a message when all parentheses match."
@@ -129,7 +126,9 @@
    ("C-c #"   . display-line-numbers-mode)
    ("C-c C-#" . global-display-line-numbers-mode)
    ("C-c C-!" . restart-emacs))
+  :functions ibuffer-auto-mode
 
+  
   :custom
   (tab-always-indent 'complete)
   (text-mode-ispell-word-completion nil)

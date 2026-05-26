@@ -215,7 +215,10 @@ See URL `https://vale.sh'."
 ;; ==========================
 (use-package lsp-mode
   :defer t
-  :preface
+  :bind
+  (("C-c C-l" . lsp)
+   :map lsp-mode-map
+   ("C-c F" . lsp-format-buffer))
   :hook
   ((cmake-ts-mode    . lsp-deferred)
    (fish-mode        . lsp-deferred)
@@ -224,10 +227,6 @@ See URL `https://vale.sh'."
    (markdown-ts-mode . lsp-deferred)
    (python-ts-mode   . lsp-deferred)
    (toml-ts-mode     . lsp-deferred))
-  :bind
-  (("C-c C-l" . lsp)
-   :map lsp-mode-map
-   ("C-c F" . lsp-format-buffer))
   :functions
   lsp-mode lsp-register-client make-lsp--client lsp-stdio-connection
   :defines lsp-language-id-configuration

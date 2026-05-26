@@ -106,8 +106,9 @@
 	("C-c C-k m" . python-skeleton-import)
 	("C-c C-k t" . python-skeleton-try)
 	("C-c C-k w" . python-skeleton-while))
-  :mode "\\.py\\'"
   :interpreter ("python3" "uv")
+  :mode "\\.py\\'"
+
 
   :functions
   python-skeleton-class python-skeleton-def python-skeleton-for

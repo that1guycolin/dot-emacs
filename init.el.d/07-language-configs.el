@@ -157,8 +157,8 @@
 ;; ===============================
 (use-package fish-mode
   :defer t
-  :mode ("\\.fish\\'")
   :interpreter ("fish")
+  :mode ("\\.fish\\'")
   :custom
   (fish-enable-auto-indent t))
 

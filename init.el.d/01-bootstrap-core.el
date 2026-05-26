@@ -74,7 +74,6 @@
 ;; ==================================
 (use-package gcmh
   :demand t
-  :functions gcmh-mode
   :preface
   (defun user/restore-sane-gcmh-values ()
     "Set gcmh values back to something reasonable.  Useful after startup."
@@ -82,6 +81,7 @@
      gcmh-high-cons-threshold (* 100 1024 1024)
      gc-cons-percentage 0.1))
   :hook (emacs-startup . user/restore-sane-gcmh-values)
+  :functions gcmh-mode
   :init (gcmh-mode 1))
 
 (use-package exec-path-from-shell
@@ -97,8 +97,8 @@
 
 (use-package envrc
   :defer t
-  :functions envrc-global-mode
-  :hook (emacs-startup . envrc-global-mode))
+  :hook (emacs-startup . envrc-global-mode)
+  :functions envrc-global-mode)
 
 (use-package transient
   :demand t)
@@ -148,6 +148,14 @@ creating org nodes."
 	       org-id-prefix)))
       (apply orig-fn args)))
   (advice-add 'org-id-new :around #'user/org-id-dynamic-prefix)
+
+  (defun user/convert-md-links-to-org ()
+    "Convert all md-style links in the current buffer to org-style."
+    (interactive)
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward "\\[\\([^]]+\\)\\](\\([^)]+\\))" nil t)
+	(replace-match "[[\\2][\\1]]" nil nil))))
   
   :bind
   (("C-c o o" . org-mode)
