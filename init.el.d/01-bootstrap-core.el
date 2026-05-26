@@ -186,6 +186,7 @@ creating org nodes."
   (org-use-sub-superscripts '{})
   
   :config
+  (require 'ox-texinfo)
   (setq org-babel-default-header-args
 	(cons '(:results . "value verbatim replace")
 	      (assq-delete-all :results org-babel-default-header-args)))
