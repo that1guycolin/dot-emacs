@@ -11,42 +11,42 @@
 ;;; Code:
 ;; =======  VARIABLES & FUNCTIONS  =======
 (defvar user/ollama-alist
-  `((codegemma:2b	    . ,(* 1 4096))
-    (codellama:7b-instruct  . ,(* 2 4096))
-    (gemma4:e2b		    . ,(* 1 4096))
-    (gemma4:e4b		    . ,(* 2 4096))
-    (gpt-oss:120b-cloud	    . ,(* 16 4096))
-    (granite4.1:3b	    . ,(* 1 4096))
-    (granite4.1:8b          . ,(* 2 4096))
-    (granite-code:3b	    . ,(* 1 4096))
-    (granite-code:8b	    . ,(* 2 4096))
-    (lfm2.5-thinking:latest . ,(* 2 4096))
-    (llama3.1:8b	    . ,(* 2 4096))
-    (llama3.1:latest	    . ,(* 1 4096))
-    (llama3.2:1b	    . ,(* 1 4096))
-    (llama3.2:3b	    . ,(* 2 4096))
-    (llama3:8b		    . ,(* 2 4096))
-    (ministral-3:3b	    . ,(* 1 4096))
-    (opencoder:1.5b	    . ,(* 2 4096))
-    (opencoder:8b	    . ,(* 2 4096))
-    (qwen2.5:0.5b	    . ,(* 1 4096))
-    (qwen2.5:1.5b	    . ,(* 1 4096))
-    (qwen2.5-coder:0.5b	    . ,(* 1 4096))
-    (qwen2.5-coder:1.5b	    . ,(* 1 4096))
-    (qwen2.5-coder:3b	    . ,(* 2 4096))
-    (qwen2.5-coder:7b	    . ,(* 2 4096))
-    (qwen3:0.6b		    . ,(* 2 4096))
-    (qwen3:1.7b		    . ,(* 2 4096))
-    (qwen3:4b		    . ,(* 2 4096))
-    (qwen3.5:cloud	    . ,(* 16 4096))
-    (qwen3:8b		    . ,(* 2 4096))
-    (qwen3-coder:480b-cloud . ,(* 16 4096))
-    (qwen3-coder-next:cloud . ,(* 16 4096))
-    (stable-code:3b	    . ,(* 1 4096))
-    (starcoder:1b	    . ,(* 1 4096))
-    (starcoder2:3b	    . ,(* 1 4096))
-    (starcoder2:7b	    . ,(* 2 4096))
-    (yi-coder:1.5b          . ,(* 1 4096)))
+  `((codegemma:2b		 . ,(* 1 4096))
+    (codellama:7b-instruct	 . ,(* 2 4096))
+    (gemma4:e2b			 . ,(* 1 4096))
+    (gemma4:e4b			 . ,(* 2 4096))
+    (gpt-oss:120b-cloud		 . ,(* 16 4096))
+    (granite4.1:3b		 . ,(* 1 4096))
+    (granite4.1:8b		 . ,(* 2 4096))
+    (granite-code:3b		 . ,(* 1 4096))
+    (granite-code:8b		 . ,(* 2 4096))
+    (lfm2.5-thinking:latest	 . ,(* 2 4096))
+    (llama3.1:8b		 . ,(* 2 4096))
+    (llama3.1:latest		 . ,(* 1 4096))
+    (llama3.2:1b		 . ,(* 1 4096))
+    (llama3.2:3b		 . ,(* 2 4096))
+    (llama3:8b			 . ,(* 2 4096))
+    (ministral-3:3b		 . ,(* 1 4096))
+    (opencoder:1.5b		 . ,(* 2 4096))
+    (opencoder:8b		 . ,(* 2 4096))
+    (qwen2.5:0.5b		 . ,(* 1 4096))
+    (qwen2.5:1.5b		 . ,(* 1 4096))
+    (qwen2.5-coder:0.5b		 . ,(* 1 4096))
+    (qwen2.5-coder:1.5b		 . ,(* 1 4096))
+    (qwen2.5-coder:3b		 . ,(* 2 4096))
+    (qwen2.5-coder:7b		 . ,(* 2 4096))
+    (qwen3:0.6b			 . ,(* 2 4096))
+    (qwen3:1.7b			 . ,(* 2 4096))
+    (qwen3:4b			 . ,(* 2 4096))
+    (qwen3.5:cloud		 . ,(* 16 4096))
+    (qwen3:8b			 . ,(* 2 4096))
+    (qwen3-coder:480b-cloud	 . ,(* 16 4096))
+    (qwen3-coder-next:cloud	 . ,(* 16 4096))
+    (stable-code:3b		 . ,(* 1 4096))
+    (starcoder:1b		 . ,(* 1 4096))
+    (starcoder2:3b		 . ,(* 1 4096))
+    (starcoder2:7b		 . ,(* 2 4096))
+    (yi-coder:1.5b		 . ,(* 1 4096)))
   "Alist containing Ollama models and their context length.
 Models on this list are either cloud-based or have already been downloaded
 to the user's device.")
@@ -144,36 +144,98 @@ doubles as a model-switcher."
 	    :user "apikey"))
     :models user/openrouter-list))
 
-(use-package gptel-magit
-  :defer t
-  :hook (magit-mode . gptel-magit-install))
-
-(defvar git-commit-mode-map)
-(use-package gptel-commit
-  :after gptel
-  :functions
-  gptel-commit gptel-commit-rationale
-  :custom
-  (gptel-commit-stream t)
-  :config
-  (with-eval-after-load 'git-commit
-    (transient-append-suffix
-      'git-commit-insert-trailer
-      "C-d"
-      '("C-g" "Gptel Commit" gptel-commit-rationale))))
-
 (use-package gptel-forge-prs
-  :after forge
-  :functions gptel-forge-prs-install
-  :config
-  (when (featurep 'gptel)
-    (gptel-forge-prs-install)))
+  :defer t
+  :hook (forge-pullreq-mode . gptel-forge-pers-install))
 
 
 ;; =======  ELLAMA  =======
 (use-package ellama
-  :ensure (:wait t)
+  :ensure (ellama :source "MELPA" :package "ellama" :id ellama
+		  :repo "s-kostyaev/ellama" :fetcher github
+		  :files ("*.el" "*.el.in" "dir" "*.info" "*.texi" "*.texinfo"
+			  "doc/dir" "doc/*.info" "doc/*.texi" "doc/*.texinfo"
+			  "lisp/*.el" "docs/dir" "docs/*.info" "docs/*.texi"
+			  "docs/*.texinfo" "llm/"
+			  (:exclude ".dir-locals.el" "test.el" "tests.el"
+				    "*-test.el" "*-tests.el" "LICENSE"
+				    "README*" "*-pkg.el"))
+		  :type git :protocol https :inherit t :depth treeless)
   :defer t
+  :preface
+  (with-eval-after-load 'llm
+    (  ;; ----------- MODEL TYPES -----------
+     ;; Fast:
+     (defvar user/ellama-model-fast-chat
+       (make-llm-ollama
+	:chat-model "llama3.2:3b"
+	:embedding-model "nomic-embed-text"
+	:default-chat-non-standard-params '(("num_ctx" . 4096))))
+
+     (defvar user/ellama-model-fast-code
+       (make-llm-ollama
+	:chat-model "codegemma:2b"
+	:embedding-model "nomic-embed-text"
+	:default-chat-non-standard-params '(("num_ctx" . 4096))))
+
+     ;; Balanced:
+     (defvar user/ellama-model-balanced-chat
+       (make-llm-ollama
+	:chat-model "phi4-mini:3.8b"
+	:embedding-model "nomic-embed-text"
+	:default-chat-non-standard-params '(("num_ctx" . 8192))))
+
+     (defvar user/ellama-model-balanced-summary
+       (make-llm-ollama
+	:chat-model "qwen3:4b"
+	:embedding-model "nomic-embed-text"
+	:default-chat-non-standard-params '(("num_ctx" . 8192))))
+
+     (defvar user/ellama-model-balanced-code
+       (make-llm-ollama
+	:chat-model "codellama:7b-instruct"
+	:embedding-model "nomic-embed-text"
+	:default-chat-non-standard-params '(("num_ctx" . 4096))))
+
+     ;; Heavy
+     (defvar user/ellama-model-heavy-chat
+       (make-llm-ollama
+	:chat-model "llama3.1:8b"
+	:embedding-model "nomic-embed-text"
+	:default-chat-non-standard-params '(("num_ctx" . 4096))))
+
+     (defvar user/ellama-model-heavy-code
+       (make-llm-ollama
+	:chat-model "qwen2.5-coder:7b"
+	:embedding-model "nomic-embed-text"
+	:default-chat-non-standard-params '(("num_ctx" . 4096))))
+
+     ;; ----------- FUNCTIONS -----------
+     (defun user/ellama-set-tier (tier)
+       "Activate default models for TIER."
+       (pcase tier
+	 ('fast
+	  (setopt ellama-provider user/ellama-model-fast-chat)
+	  (setopt ellama-coding-provider user/ellama-model-fast-code)
+	  (setopt ellama-summarization-provider user/ellama-model-fast-chat)
+	  (message "Ellama tier → FAST"))
+
+	 ('balanced
+	  (setopt ellama-provider user/ellama-model-balanced-chat)
+	  (setopt ellama-coding-provider user/ellama-model-balanced-code)
+	  (setopt ellama-summarization-provider
+		  user/ellama-model-balanced-summary)
+	  (message "Ellama tier → BALANCED"))
+
+	 ('heavy
+	  (setopt ellama-provider user/ellama-model-heavy-chat)
+	  (setopt ellama-coding-provider user/ellama-model-heavy-code)
+	  (setopt ellama-summarization-provider
+		  user/ellama-model-balanced-summary)
+	  (message "Ellama tier → HEAVY")))))
+    ;; ----------- DISPLAY -----------
+    (advice-add 'pixel-scroll-precision :before #'ellama-disable-scroll)
+    (advice-add 'end-of-buffer :after #'ellama-enable-scroll))
 
   :commands ellama-transient-main-menu
   :functions
@@ -181,90 +243,14 @@ doubles as a model-switcher."
   :init
   (setopt ellama-language "English")
   :config
-  (use-package llm-ollama
-    :after ellama
-    :preface
-    ;; ----------- MODEL TYPES -----------
-    ;; Fast:
-    (defvar user/ellama-model-fast-chat
-      (make-llm-ollama
-       :chat-model "llama3.2:3b"
-       :embedding-model "nomic-embed-text"
-       :default-chat-non-standard-params '(("num_ctx" . 4096))))
-
-    (defvar user/ellama-model-fast-code
-      (make-llm-ollama
-       :chat-model "codegemma:2b"
-       :embedding-model "nomic-embed-text"
-       :default-chat-non-standard-params '(("num_ctx" . 4096))))
-
-    ;; Balanced:
-    (defvar user/ellama-model-balanced-chat
-      (make-llm-ollama
-       :chat-model "phi4-mini:3.8b"
-       :embedding-model "nomic-embed-text"
-       :default-chat-non-standard-params '(("num_ctx" . 8192))))
-
-    (defvar user/ellama-model-balanced-summary
-      (make-llm-ollama
-       :chat-model "qwen3:4b"
-       :embedding-model "nomic-embed-text"
-       :default-chat-non-standard-params '(("num_ctx" . 8192))))
-
-    (defvar user/ellama-model-balanced-code
-      (make-llm-ollama
-       :chat-model "codellama:7b-instruct"
-       :embedding-model "nomic-embed-text"
-       :default-chat-non-standard-params '(("num_ctx" . 4096))))
-
-    ;; Heavy
-    (defvar user/ellama-model-heavy-chat
-      (make-llm-ollama
-       :chat-model "llama3.1:8b"
-       :embedding-model "nomic-embed-text"
-       :default-chat-non-standard-params '(("num_ctx" . 4096))))
-
-    (defvar user/ellama-model-heavy-code
-      (make-llm-ollama
-       :chat-model "qwen2.5-coder:7b"
-       :embedding-model "nomic-embed-text"
-       :default-chat-non-standard-params '(("num_ctx" . 4096))))
-
-    ;; Defaults:
-    (setopt ellama-provider user/ellama-model-fast-chat)
-    (setopt ellama-coding-provider user/ellama-model-fast-code)
-    (setopt ellama-summarization-provider user/ellama-model-balanced-summary)
-
-    ;; ----------- FUNCTIONS -----------
-    (defun user/ellama-set-tier (tier)
-      "Activate default models for TIER."
-      (pcase tier
-	('fast
-	 (setopt ellama-provider user/ellama-model-fast-chat)
-	 (setopt ellama-coding-provider user/ellama-model-fast-code)
-	 (setopt ellama-summarization-provider user/ellama-model-fast-chat)
-	 (message "Ellama tier → FAST"))
-
-	('balanced
-	 (setopt ellama-provider user/ellama-model-balanced-chat)
-	 (setopt ellama-coding-provider user/ellama-model-balanced-code)
-	 (setopt ellama-summarization-provider
-		 user/ellama-model-balanced-summary)
-	 (message "Ellama tier → BALANCED"))
-
-	('heavy
-	 (setopt ellama-provider user/ellama-model-heavy-chat)
-	 (setopt ellama-coding-provider user/ellama-model-heavy-code)
-	 (setopt ellama-summarization-provider
-		 user/ellama-model-balanced-summary)
-	 (message "Ellama tier → HEAVY")))))
-  ;; ----------- DISPLAY -----------
-  (setopt ellama-chat-display-action-function #'display-buffer-full-frame)
-  (setopt ellama-instant-display-action-function #'display-buffer-at-bottom)
-
-  (advice-add 'pixel-scroll-precision :before #'ellama-disable-scroll)
-  (advice-add 'end-of-buffer :after #'ellama-enable-scroll))
-
+  ;; Defaults:
+  (setopt
+   ellama-provider user/ellama-model-fast-chat
+   ellama-coding-provider user/ellama-model-fast-code
+   ellama-summarization-provider user/ellama-model-balanced-summary
+   ;; Display:
+   ellama-chat-display-action-function #'display-buffer-full-frame
+   ellama-instant-display-action-function #'display-buffer-at-bottom))
 
 ;; =======  TRANSIENT  =======
 (declare-function transient-define-prefix "transient")
@@ -276,13 +262,12 @@ doubles as a model-switcher."
    ["Gptel"
     ("g ." "Activate @ cursor" gptel-send)
     ("g b" "Chat buffer"       gptel)
-    ("g s" "Switch backend"    user/gptel-switch-backend)]
+    ("g s" "Switch backend"    user/gptel-switch-backend) :transient t]
    ["Ellama / MCP"
     ("e"   "Ellama Menu"       ellama-transient-main-menu)
     ("m s" "Server Start"      mcp-server-lib-start)
     ("m e" "Server Stop"       mcp-server-lib-stop)]])
-(declare-function user/llm-dispatch "12-llm-integration")
-(bind-keys ("C-c a" . user/llm-dispatch))
+(keymap-global-set "C-c a" #'user/llm-dispatch)
 
 
 (provide '12-llm-integration)
