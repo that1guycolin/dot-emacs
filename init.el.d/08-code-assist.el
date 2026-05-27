@@ -385,10 +385,12 @@ See URL `https://vale.sh'."
   :hook (yas-minor-mode . yasnippet-snippets-initialize))
 
 (use-package yasnippet-capf
-  :after (yasnippet cape)
-  :functions yasnippet-capf
-  :config
-  (add-to-list 'completion-at-point-functions #'yasnippet-capf))
+  :defer t
+  :preface
+  (defun user/setup-yasnippet-capf ()
+    "Add yasnippet-capf to `completion-at-point-functions'."
+    (add-to-list 'completion-at-point-functions #'yasnippet-capf))
+  :hook (yas-minor-mode . user/setup-yasnippet-capf))
 
 
 (provide '08-code-assist)
