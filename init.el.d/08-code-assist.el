@@ -333,16 +333,19 @@ See URL `https://vale.sh'."
    (text-mode . apheleia-mode))
 
   :config
-  (setf (alist-get 'shfmt apheleia-formatters)
-	'("shfmt" "-i" "4" "-ci" "-"))
-  (setf (alist-get 'neocmakelsp apheleia-formatters)
-        '("neocmakelsp" "format" (buffer-file-name)))
+  (when (eq major-mode 'sh-mode)
+    (apheleia-mode -1))
+  
   (setf (alist-get 'jq apheleia-formatters)
 	'("jq" "." "-M" "--indent" "2"))
+  (setf (alist-get 'neocmakelsp apheleia-formatters)
+        '("neocmakelsp" "format" (buffer-file-name)))
   (setf (alist-get 'ruff apheleia-formatters)
         '("ruff" "format" "-"))
   (setf (alist-get 'rumdl apheleia-formatters)
 	'("rumdl" "fmt" "--stdin" "-"))
+  (setf (alist-get 'shfmt apheleia-formatters)
+	'("shfmt" "-i" "4" "-ci" "-"))
   (setf (alist-get 'tombi apheleia-formatters)
         '("tombi" "fmt" "-"))
   (setf (alist-get 'xmlstarlet apheleia-formatters)
@@ -358,8 +361,7 @@ See URL `https://vale.sh'."
   (setf (alist-get 'toml-ts-mode apheleia-mode-alist) 'tombi)
   (setf (alist-get 'conf-toml-mode apheleia-mode-alist) 'tombi)
   (setf (alist-get 'nxml-mode apheleia-mode-alist) 'xmlstarlet)
-  (setf (alist-get 'yaml-ts-mode apheleia-mode-alist) 'yq-yaml)
-  (setf (alist-get 'sh-mode apheleia-mode-alist) nil))
+  (setf (alist-get 'yaml-ts-mode apheleia-mode-alist) 'yq-yaml))
 
 
 ;; =======  SNIPPETS  =======
