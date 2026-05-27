@@ -19,24 +19,29 @@ When writing a use-package object, all keys are available but optional.
   (use-package example-package)
 #+end_src
 
-The above is a perfeclty valid use-package object.
+The above is a perfeclty valid Emacs-lisp item even though it includes no keys. 
 
-As Emacs' seemingly infinte ability for customization is one of its greatest
-attractions for new users, we only make one small change: requiring one (and
-only one) of three-keys that indicate the method by which the package should be
-loaded.
+While Emacs' seemingly infinte ability for customization is one of its greatest
+attractions for new users, this style guide does add on a requirement: Every
+use-package object must include =one= (*and only one*) of ~:demand t~, ~:defer t~,
+or ~:after {{package or list of packages}}~.
 
-The keys are '~:demand t~ ', '~:defer t~', & '~:after ${package or list of
-packages}~'. '~:demand~' loads a pacakge as soon as the parser evaluates the
-use-package object; '~:defer~' readies a pacakge but holds off loading it until
-some condition (typically user-specified) becomes true. '~:after~' is useful for
-loading packages sequentially; for example, I might not want to load the package
-=python= until I open a file with ext '.py', but once python loads, I might want
-to immediatley load =elpy=.
+'~:demand t~' - loads a pacakge as soon as the parser evaluates the use-package
+object
 
-While ~:defer t~ is technically redundant when using certain keys (e.g., ~:bind~,
-~:hook~, or ~:mode~), it is this user's belief that explicitly declaring the
-load-type for each package ultimately creates a more carefully constructed init.
+'~:defer t~' - readies a pacakge, but holds off loading it until some condition
+(typically user-specified) becomes true
+
+'~:after~' - useful for loading packages sequentially; for example, I might not
+want to load the package =python= until I open a file with ext '.py', but once
+python loads, I might want to immediatley load =elpy=.
+
+
+*NOTE*: While ~:defer t~ is technically redundant when using certain keys (e.g.,
+~:bind~, ~:hook~, or ~:mode~), it is the position of this style guide that explicitly
+declaring the load-type for each package ultimately creates a more carefully
+constructed init. It helps avoide the misconception that there's a middle ground
+way of loading pacakges between deferring and demanding; there is not.
 
 For additonal information on available keys, see the [[https://www.gnu.org/software/emacs/manual/html_node/use-package/][use-package user manual]]
 (also available [[info:use-package][as an info file]].)
@@ -45,17 +50,27 @@ For additonal information on available keys, see the [[https://www.gnu.org/softw
 
 When writing use-package objects, keys shall appear in the following order. This
 order is designed so that a symbol's definition is most likely to appear before
-its use.[fn:1] Of course, it is impossible to account for every situation, and
-there are times when following this order that use might appear before
-definition. While tempting to allow exceptions in these circumstances, in
-virtually every formatting spec, the exceptions allowed in its infancy have led
-to enormous complications down the line. For this reason, even if it seems
-absurd, please follow this order in every use-package object.
+its use.[fn:1] Of course, it is impossible to account for every situation, and,
+when following this order, there are instances in which a symbol will be used
+before it is defined. While it might feel innocuous to allow an exception when
+this happens, we cannot give into this temptation. Virtually every formatting
+spec has allowed exceptions in its infancy thathave led to enormous
+complications and conflicts later. For this reason, even if it seems absurd,
+please follow this order *NO MATTER WHAT*.
+
+This order does closely, but not exactly, follow the order in which the keys are
+executed, with one major exception: ~:preface~ runs before ~:defer~, ~:demand~, or
+~:after~. Ultimately, the method by which a package loads is so significant, it
+should be easy to spot when looking at a use-package object; for some pacakges,
+the ~:preface~ key defines so many functions that you have to scroll through
+multiple screens just to get to the next item. For consistency, it is best to
+always keep the load-key right near the top.
 
 A reminder that not every key needs to appear in every object; in fact, most
 won't.
 
 - ~:ensure~
+- ~:load-path~
 - =ONE OF=
   - ~:defer~
   - ~:demand~
@@ -64,6 +79,7 @@ won't.
 - ~:bind~
 - ~:hook~
 - ~:interpreter~  
+- ~:magit~
 - ~:mode~
 - ~:commands~
 - ~:functions~
@@ -71,30 +87,313 @@ won't.
 - ~:init~
 - ~:custom~
 - ~:config~
- 
+
+Notice that the keys are grouped into natural categories:
+
+- How/when to load: ~:ensure~ ~:load-path~ (~:defer~ ~:demand~ ~:after~)
+- Function/variable declarations & definitions: ~:preface~
+- Trigger load: ~:bind~, ~:hook~, ~:interpreter~, ~:magit~, ~:mode~, ~:commands~
+- Satisfy flymake/flycheck: ~:functions~, ~:defines~
+- Settings: ~:init~, ~:custom~, ~:config~
+  
 * Helpful Functions
+:PROPERTIES:
+:ID:       internal-use-package-style-guide:15x7tyb0eyk0
+:END:
 
-These functions aid in `linting` an init file or directory for this guide
-(mainly for maintaining consistent key order for all use-package objects). 
+These functions aid in `linting` an init file or directory so every use-package
+object follows the load order defined by this guide.
 
-Let's define the key order in a variable:
-#+begin_src emacs-lisp
-  (defvar user/use-package-key-order
-    '(:ensure :defer :demand :after :preface :bind :hook :interpreter
-  	    :mode :commands :functions :defines :init :custom
-  	    :config)
-    "Style guide key order for use-package blocks.")
+** Outline
+
+If we were to package these functions, a rough outline of the primary .el file might be
+
+#+begin_src elisp :noweb yes :tangle style-use-package.el
+  <<package-start-metadata>>
+
+  <<pkg-prefix>>
+
+  <<key-order-variable>>
+
+  <<extract-keys-function>>
+
+  <<single-object-check>>
+
+  <<report-violations>>
+
+  <<reuse-logic>>
+
+  <<check-buffer>>
+
+  <<check-directory>>
+
+  <<func-for-hook>>
+
+  <<package-end-metadata>>
 #+end_src
 
-Assume we a function that iterates over a file (or set of files) and turns each
-use-package object into a list (using =read=). We can then extract the keys from
-that list (or form).
-#+begin_src emacs-lisp
-  (defun user/use-package-keys (form)
-    "Extract the keyword keys from a use-package FORM (a list)."
+** Package Prefix
+
+Even though we're not really going to package the tools defined in this guide
+for a repository like MELPA, when naming functions and variables it's helpful if
+we use the syntax we would use if we were writing a traditional package.
+
+#+NAME: pkg-prefix
+#+begin_src elisp
+  (defgroup style-use-package nil
+    "Maintain consistency and readability across all `use-package' objects."
+    :group 'use-package
+    :prefix "style-use-package-")
+#+end_src
+
+** Variable: Key Order
+
+We're going to need a reference variable for the canonical order in which
+use-package keys should appear. This variable *SHOULD NEVER CHANGE*, so we'll
+define it with ~defconst~ instead of ~defvar~.
+
+#+NAME: key-order-variable
+#+begin_src elisp
+  (defconst style-use-package-key-order
+    '(:ensure :load-path :defer :demand :after :preface :bind :hook
+  	    :interpreter :magic :mode :commands :functions :defines :init
+  	    :custom :config)
+    "Style guide key order for `use-package' blocks.")
+#+end_src
+
+** Function: Extract Keys
+
+Assume we have a function that iterates over a file (or set of files) and turns
+each use-package object into a list (using =read=). We can then extract the keys
+from that list (or form).
+
+#+NAME: extract-keys-function
+#+begin_src elisp
+  (defun style-use-package-get-keys (form)
+    "Extract the keyword keys from a `use-package' FORM (a list)."
     (cl-loop for elt in (cddr form)
   	   when (keywordp elt)
   	   collect elt))
+#+end_src
+
+When evaluating the use-package list, this function skips the first two elements
+(=use-package= & ={package-name}=) and then collects anything that looks like a
+keyword symbol in Elisp.
+
+** Function: Check a Use-Package Object
+
+Let's focus on checking a single use-package object before worrying about
+checking multiple. We will want it to return =t= if keys are in the canonical
+order and =nil= if they are not.
+
+#+NAME: single-object-check
+#+begin_src elisp
+  (defun style-use-package-keys-in-order-p (keys)
+    "Return nil if KEYS violate the canonical order or t if they do not.
+  Checks the relative-order of keys against `style-use-package-key-order'."
+    (let* ((positions
+  	  (cl-loop for k in keys
+  		   for pos = (cl-position k style-use-package-key-order)
+  		   when pos collect pos))
+  	 (sorted (sort (copy-sequence positions) #'<)))
+      (equal positions sorted)))
+#+end_src
+
+We assign each key its position in the canonical order. We ignore keys not in
+the canonical list (assign them nil) because addressing undefined use-package
+keys is beyond the scope of this guide, use-package does allow users to write
+their own keys (which they would then need to handle on their own), and because
+`use-package` itself will error on an invalid key.
+
+The positions of each key should steadily increase. If they do not, "(equal
+positions sorted)" will return =nil=.
+
+** Function: Report Violations
+
+While it's obviously helpful to know that keys are out of order for an object,
+it's far more useful to know which keys in which object are out of
+compliance. Let's push this information to a dedicated buffer:
+~*style-use-package-violations*~.
+
+#+NAME: report-violations
+#+begin_src elisp
+  (defun style-use-package-report-violations (violations &optional file rel)
+    "Display VIOLATIONS in a dedicated buffer.
+  If optional FILE is provided, it will be included in the final report.
+  If REL is non-nil, print filepath relative to `user-emacs-directory'."
+    (let* ((report-buf (get-buffer-create "*style-use-package-violations*"))
+  	 (filename (if file file (buffer-file-name)))
+  	 (rel-file
+  	  (if rel
+  	      (file-relative-name filename user-emacs-directory)
+  	    filename)))
+      (with-current-buffer report-buf
+        (read-only-mode -1)
+        (erase-buffer)
+        (insert "use-package key order violations\n")
+        (insert (make-string 40 ?=) "\n\n")
+        (pcase-dolist (`(,pos ,name ,keys) violations)
+  	(insert (format "File: %s\n" rel-file))
+  	(insert (format "  Package: %s (buffer position %d)\n" name pos))
+  	(insert (format "  Keys found:    %s\n" keys))
+  	(insert (format "  Expected order from: %s\n\n"
+  			(cl-remove-if-not
+  			 (lambda (k) (memq k keys))
+  			 style-use-package-key-order))))
+        (read-only-mode 1)
+        (goto-char (point-min)))
+      (display-buffer report-buf)))
+#+end_src
+
+** Function: Check All Use-Package Objects in a Buffer
+
+Moving away from internal functions and towards user-activated functions, let's
+check every use-package object in a buffer. Assume we will write
+`style-use-package-get-buffer-violations`.
+
+#+NAME: check-buffer
+#+begin_src elisp
+  (defun style-use-package-check-buffer ()
+    "Check key order of all `use-package' forms in the current buffer.
+  The order in which keys appear in each form should match
+  `style-use-package-key-order'.  Violations are reported in a
+  ,*style-use-package-violations* buffer."
+    (interactive)
+    (let* ((buf (current-buffer))
+  	 (violations (style-use-package-get-buffer-violations buf)))
+      (if (null violations)
+  	(message "All `use-package' blocks are in order.")
+        (style-use-package-report-violations violations))))
+#+end_src
+
+** Function: Check Entire Directory
+
+While the previous function is certainly useful when actively editing a file or
+if you happen to only use a single ~.emacs~ file, at some point users with a
+~.emacs.d~ or ~.config/emacs~ directory will want to check all `use-package` objects
+across the entire thing (or at least within their =lisp/= subdirectory). If you
+were an incredible stickler for style-consistency, you could even integrate this
+into a CI pipeline.
+
+#+NAME: check-directory
+#+begin_src elisp
+  (defun style-use-package-check-directory (dir)
+    "Check all .el files in DIR for `use-package' key order violations."
+    (interactive "DCheck Directory: " user-emacs-directory)
+    (let ((files (directory-files-recursively dir "\\.el$")))
+      (dolist (file files)
+        (with-temp-buffer
+  	(insert-file-contents file)
+  	 (let ((all-violations
+  		(style-use-package-get-buffer-violations
+  		 (current-buffer) file)))
+  	   (if (null all-violations)
+  	       (message
+  		"All `use-package' blocks accross %d files are in order."
+  		(length files))
+  	     (style-use-package-report-violations all-violations)))))))
+#+end_src
+
+** Function: Internal Buffer Check
+
+We're now going to define the internal-buffer-check function we referenced
+above. The function needs to take a buffer as an argument and return a list of
+violations. Notice that the function turning a use-package object into a list
+appears within: `(form (read buf))`.
+
+#+NAME: reuse-logic
+#+begin_src elisp
+  (defun style-use-package-get-buffer-violations (buf &optional file)
+    "Return a list of all style guide violations in BUF.
+  Provide optional FILE if you want to include specific filename in report."
+      (let ((violations '()))
+        (save-excursion
+        (goto-char (point-min))
+        (condition-case nil
+  	  (while t
+  	    (let* ((start (point))
+  		   (form (read buf)))
+  	      (when (and (listp form)
+  			 (eq (car form) 'use-package))
+  		(let* ((name (cadr form))
+  		       (keys (style-use-package-get-keys form)))
+  		  (unless (style-use-package-keys-in-order-p keys)
+  		    (push (list (when file file) start name keys)
+  			  violations))))))
+  	(end-of-file nil)))
+        violations))
+#+end_src
+
+** Function: Automatic Check on Save
+
+When editing a file in their init directory, a user might find it useful to
+automatically check key order on save. This function is designed for that
+purpose; it can be added to `after-save-hook`.
+
+#+NAME: func-for-hook
+#+begin_src elisp
+  (defun style-use-package-maybe-check-buffer-objects (&optional dir)
+    "Check the order of each `use-package' in files in `user-emacs-directory'.
+  Optionally, specify an alternate DIR (including subdirs of
+  `user-emacs-directory').  This function is designed to be an
+  `after-save-hook'.  Add with:
+  \(add-to-list \='after-save-hook
+                #\='style-use-package-maybe-check-buffer-objects)
+  OR
+  \(add-to-list \='after-save-hook
+               (lambda ()
+                 (style-use-package-maybe-check-buffer-objects
+                   (expand-file-name \"lisp\" user-emacs-directory))))"
+    (let ((check-dir (if dir
+  		       (expand-file-name dir)
+  		     (expand-file-name user-emacs-directory))))
+      (when (and buffer-file-name
+  	       (string-prefix-p check-dir
+  				(expand-file-name buffer-file-name))
+  	       (string-suffix-p ".el" buffer-file-name))
+        (style-use-package-check-buffer))))
+#+end_src
+
+** Metadata
+
+Here's boilerplace stuff to keep Emacs and flycheck happy.
+
+#+NAME: package-start-metadata
+#+begin_src elisp
+  ;;; style-use-package.el --- Enforce init-dir style guide -*- lexical-binding: t; -*-
+
+  ;; Copyright (C) 2026 Loeffler, Colin
+
+  ;; Author: Colin Loeffler (that1guycolin)
+  ;; Version: 0.1.0
+  ;; Package-Requires: ((emacs "29.1"))
+  ;; Keywords: internal maint tools
+  ;; URL: https://github.com/that1guycolin
+
+  ;;; Commentary:
+  ;; Tools with which to ensure all use-package blocks in a user's init
+  ;; directory follow the included style guide.
+
+  ;; INSTALLATION:
+  ;; It's safe to assume this package will almost universally be called via
+  ;; `use-package'.  This object binds a directory check to "M-*" in
+  ;; `emacs-lisp-mode' and adds the recommended after-save-hook.
+  ;;
+  ;;    (use-package style-use-package
+  ;;      :ensure {t OR straight.el OR elpaca-recipe}
+  ;;      :defer t
+  ;;      :bind (:map emacs-lisp-mode-map
+  ;;                  ("M-*" . style-use-package-check-directory))
+  ;;      :hook (after-save . style-use-package-maybe-check-buffer-objects))
+
+  ;;; Code:
+  (require 'use-package)
+#+end_src
+
+#+NAME: package-end-metadata
+#+begin_src elisp
+  (provide 'style-use-package)
+  ;;; style-use-package.el ends here
 #+end_src
 
 * Footnotes
