@@ -28,6 +28,7 @@
 	  (html "https://github.com/tree-sitter/tree-sitter-html")
 	  (javascript "https://github.com/tree-sitter/tree-sitter-javascript"
 		      "master" "src")
+	  (just "https://github.com/casey/tree-sitter-just")
 	  (json "https://github.com/tree-sitter/tree-sitter-json")
           (kdl "https://github.com/tree-sitter-grammars/tree-sitter-kdl")
 	  (lua "https://github.com/MunifTanjim/tree-sitter-lua")

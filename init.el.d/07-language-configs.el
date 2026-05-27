@@ -191,6 +191,7 @@
 ;; `dockerfile-mode' (support Dockerfiles)
 ;; `eask-mode' (support Eask files)
 ;; `glsl-mode' (support OpenGL Shading Language)
+;; `just-ts-mode' (justfile-support)
 ;; `ini-mode' (config file support)
 ;; `kdl-mode' (support .kdl)
 ;; ===================================
@@ -223,6 +224,10 @@
   (("\\.ini\\'"     . ini-mode)
    ("\\.desktop\\'" . ini-mode)
    ("\\.hook\\'"    . ini-mode)))
+
+(use-package just-ts-mode
+  :defer t
+  :mode "^justfile\\'")
 
 (use-package kdl-mode
   :defer t
