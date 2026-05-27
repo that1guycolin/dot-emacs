@@ -17,6 +17,7 @@
 ;; `rg' (project ripgrep search & more)
 ;; `perspective' (separate workspaces for separate projects)
 ;; `perspective-project-bridge' (integrate project.el & perspective)
+;; `activities' (save/restore workspaces)
 ;; `docker' (Docker support for Emacs)
 ;; =================================
 (defvar user/projects-directory)
@@ -184,6 +185,22 @@ into the message."
     (persp-switch (project-name))
     (perspective-project-bridge-find-perspectives-for-all-buffers))
   (advice-add 'project-switch-project :after #'user/project-switch-perspective))
+
+(use-package activities
+  :demand t
+  :init
+  (activities-mode)
+  (activities-tabs-mode)
+  :bind
+  (("C-x C-a C-n" . activities-new)
+   ("C-x C-a C-d" . activities-define)
+   ("C-x C-a C-a" . activities-resume)
+   ("C-x C-a C-s" . activities-suspend)
+   ("C-x C-a C-k" . activities-kill)
+   ("C-x C-a RET" . activities-switch)
+   ("C-x C-a b" . activities-switch-buffer)
+   ("C-x C-a g" . activities-revert)
+   ("C-x C-a l" . activities-list)))
 
 (use-package docker
   :defer t

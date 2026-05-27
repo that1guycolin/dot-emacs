@@ -122,8 +122,7 @@
 (defvar elpaca-sources-directory)
 (use-package emacs
   :ensure nil
-  :functions
-  ibuffer-auto-mode
+  :functions ibuffer-auto-mode
   :bind
   (("C-c x"   . toggle-frame-maximized)
    ("C-c ("   . user/check-parens-with-message)
@@ -132,13 +131,14 @@
    ("C-c C-!" . restart-emacs))
 
   :custom
-  (tab-always-indent 'complete)
-  (text-mode-ispell-word-completion nil)
+  (auto-save-visited-interval 60)
+  (edebug-inhibit-emacs-lisp-mode-bindings t)
   (enable-recursive-minibuffers t)
-  (read-extended-command-predicate #'command-completion-default-include-p)
   (minibuffer-prompt-properties
    '(read-only t cursor-intangible t face minibuffer-prompt))
-  (auto-save-visited-interval 60)
+  (read-extended-command-predicate #'command-completion-default-include-p)
+  (tab-always-indent 'complete)
+  (text-mode-ispell-word-completion nil)
 
   :config
   (require 'cl-lib)
@@ -151,13 +151,7 @@
 
   (add-hook 'ibuffer-mode-hook #'(lambda ()
 				   (hl-line-mode)
-				   (ibuffer-auto-mode)))
-  
-  (with-eval-after-load 'info
-    (add-to-list 'Info-directory-list
-		 (expand-file-name elpaca-builds-directory))
-    (add-to-list 'Info-directory-list
-		 (expand-file-name elpaca-sources-directory))))
+				   (ibuffer-auto-mode))))
 
 
 (provide '02-completion-setup)
