@@ -1,6 +1,7 @@
 ;;; 03-visual-settings.el --- Core UI configuration -*- lexical-binding: t; -*-
 
 ;;; Packages included:
+
 ;; editorconfig, ef-themes, folding-mode, minions, modus-themes, nerd-icons,
 ;; nerd-icons-corfu, tab-line-nerd-icons, visual-fill-column, which-key
 
@@ -21,11 +22,11 @@
   modus-themes-include-derivatives-mode modus-themes-load-random-dark
   modus-themes-select-dark modus-themes-load-random modus-themes-rotate)
 
-(declare-function user/function-after-emacsclient-frame "01-bootstrap-core.el")
 (use-package ef-themes
   :demand t
   :preface
-  ;; Ensure theme message prints after startup
+  (declare-function user/function-after-emacsclient-frame
+		    "01-bootstrap-core.el")
   (defvar user/ef-themes-startup-messages nil)
 
   (defun user/flush-startup-messages ()

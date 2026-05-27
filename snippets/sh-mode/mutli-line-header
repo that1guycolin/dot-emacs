@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: mutli-line-header
+# key: header_multi
+# --
+#----------------------------
+# ${1:title}
+#----------------------------
+$0
