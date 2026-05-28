@@ -124,7 +124,7 @@
 ;; `python-pytest' (integrate testing)
 ;; `python-x' (enhance built-in python(-ts)-mode)
 ;; ========================
-(defvar python-mode-map)
+(defvar python-base-mode-map)
 ;; FUNCTIONS
 (defun user/python-uv-script-p ()
   "Return non-nil if current buffer is a uv script."
@@ -150,23 +150,17 @@
              (shell-quote-argument buffer-file-name))))))
 
 (with-eval-after-load 'python
-  (define-key python-mode-map (kbd "C-c C-r") #'user/python-run-smart))
+  (define-key python-base-mode-map (kbd "C-c C-r") #'user/python-run-smart))
 
 ;; PACKAGES
-(use-package dwim-coder-mode
-  :hook
-  ((c-ts-mode      . dwim-coder-mode)
-   (python-ts-mode . dwim-coder-mode)
-   (rust-ts-mode   . dwim-coder-mode)))
-
 (use-package live-py-mode
   :defer t
-  :bind (:map python-mode-map
+  :bind (:map python-base-mode-map
               ("C-c L" . live-py-mode)))
 
 (use-package python-pytest
   :config
-  (keymap-set python-mode-map "C-c C-t" 'python-pytest-dispatch))
+  (keymap-set python-base-mode-map "C-c C-t" 'python-pytest-dispatch))
 
 (use-package python-x
   :defer t
