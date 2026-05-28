@@ -13,8 +13,8 @@
 ;; `elpaca-use-package' (integration with existing macro)
 ;; ========================
 (defvar elpaca-directory       (expand-file-name "elpaca" user-emacs-directory))
-(defvar elpaca-builds-directory (expand-file-name "builds" elpaca-directory))
-(defvar elpaca-sources-directory (expand-file-name "sources" elpaca-directory))
+(defvar elpaca-builds-directory  (expand-file-name "builds"   elpaca-directory))
+(defvar elpaca-sources-directory (expand-file-name "sources"  elpaca-directory))
 
 (defvar elpaca-use-package)
 (defvar use-package-always-ensure)
@@ -25,30 +25,25 @@
 (declare-function elpaca-wait             "elpaca")
 
 ;; Load autoloads only unless they do not exist.
-(defun user/load-elpaca-if-setup (file)
-  "Load elpaca and elpaca-use-package if installed.
-Provide full path to elpaca's autoloads FILE."
-  (add-to-list 'load-path (expand-file-name "elpaca" elpaca-builds-directory))
-  (load file nil t)
-  (message "Loaded existing Elpaca autoloads")
-  (add-to-list 'load-path
-	       (expand-file-name "elpaca-use-package" elpaca-builds-directory))
-  (require 'elpaca-use-package-autoloads)
-  (elpaca-use-package-mode 1))
-
-(defun user/bootstrap-elpaca ()
-  "Bootstrap elpaca and use it to load/install elpaca-use-package."
-  (require 'elpaca-bootstrap)
-  (elpaca elpaca-use-package
-    (elpaca-use-package-mode 1)))
-
-(let ((al-file
-       (expand-file-name "elpaca-autoloads.el" elpaca-sources-directory)))
-  (if (file-exists-p al-file)
-      (user/load-elpaca-if-setup al-file)
-    (user/bootstrap-elpaca)))
+(if (file-exists-p
+     (expand-file-name "elpaca/elpaca-autoloads.el" elpaca-sources-directory))
+    (progn
+      (add-to-list 'load-path
+		   (expand-file-name "elpaca" elpaca-sources-directory))
+      (require 'elpaca-autoloads)
+      (message "Loaded existing Elpaca autoloads")
+      (add-to-list 'load-path
+		   (expand-file-name "elpaca" elpaca-builds-directory))
+      (add-to-list 'load-path
+		   (expand-file-name
+		    "elpaca-use-package" elpaca-builds-directory))
+      (require 'elpaca-use-package-autoloads))
+  (progn
+    (require 'elpaca-bootstrap)
+    (elpaca elpaca-use-package)))
 
 (keymap-global-set "C-c M-c" #'elpaca-manager)
+(elpaca-use-package-mode 1)
 (setq use-package-always-ensure t)
 
 
