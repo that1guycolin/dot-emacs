@@ -169,15 +169,27 @@
    (python-ts-mode . python-x-setup)))
 
 
-;; =======  SHELL SCRIPTS  =======
+;; =======  ADDITIONAL LANGUAGE SUPPORT  =======
 ;; `fish-mode' (fish shell support)
-;; ===============================
+;; `rustic' (rust/cargo support)
+;; =============================================
 (use-package fish-mode
   :defer t
   :mode ("\\.fish\\'")
   :interpreter ("fish")
   :custom
   (fish-enable-auto-indent t))
+
+(use-package rustic
+  :defer t
+  :mode ("\\.rs\\'" . rustic-mode)
+  :custom
+  (compilation-ask-about-save t)
+  (rustic-analyzer-command '("/usr/lib/rustup/bin/rust-analyzer"))
+  (rustic-cargo-use-last-stored-arguments t)
+  (rustic-format-on-save-method 'rustic-format-buffer)
+  (rustic-format-trigger 'on-save)
+  (rustic-lsp-client 'lsp-mode))
 
 
 ;; =======  CONFIG FILE MODES  =======
@@ -232,6 +244,7 @@
   :mode
   (("\\.service\\'" . systemd-mode)
    ("\\.socket\\'"  . systemd-mode)))
+
 
 ;; =======  ENHANCE BUILT-INS  =======
 ;; `auto-rename-tag' (xml tag assistant)

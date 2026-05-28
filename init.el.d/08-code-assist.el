@@ -182,6 +182,7 @@ See URL `https://vale.sh'."
    (lua-ts-mode    . lsp-deferred)
    (markdown-mode  . lsp-deferred)
    (python-ts-mode . lsp-deferred)
+   (rustic-mode    . lsp-deferred)
    (toml-ts-mode   . lsp-deferred))
   :bind ("C-c C-l" . lsp)
   :functions
@@ -200,6 +201,8 @@ See URL `https://vale.sh'."
   (lsp-log-io nil)
   (lsp-lua-runtime-version "LuaJIT")
   (lsp-lua-diagnostics-globals ["mp"])
+  (lsp-rust-analyzer-cargo-watch-command "cargo-clippy")
+  (lsp-rust-server 'rust-analyzer)
   (lsp-use-plists t)
   :config
   (lsp-register-client
@@ -270,11 +273,13 @@ See URL `https://vale.sh'."
 (use-package apheleia
   :bind ("C-c f" . apheleia-format-buffer)
   :hook
-  ((prog-mode     . apheleia-mode)
-   (markdown-mode . apheleia-mode)
-   (org-mode      . apheleia-mode))
+  ((prog-mode . apheleia-mode)
+   (text-mode . apheleia-mode))
 
   :config
+  (when (or (equal major-mode 'rustic-mode)
+	    (equal major-mode 'sh-mode))
+    (apheleia-mode -1))
   (setf (alist-get 'shfmt apheleia-formatters)
 	'("shfmt" "-i" "4" "-ci" "-"))
   (setf (alist-get 'neocmakelsp apheleia-formatters)
@@ -300,8 +305,7 @@ See URL `https://vale.sh'."
   (setf (alist-get 'toml-ts-mode apheleia-mode-alist) 'tombi)
   (setf (alist-get 'conf-toml-mode apheleia-mode-alist) 'tombi)
   (setf (alist-get 'nxml-mode apheleia-mode-alist) 'xmlstarlet)
-  (setf (alist-get 'yaml-ts-mode apheleia-mode-alist) 'yq-yaml)
-  (setf (alist-get 'sh-mode apheleia-mode-alist) nil))
+  (setf (alist-get 'yaml-ts-mode apheleia-mode-alist) 'yq-yaml))
 
 
 ;; =======  SNIPPETS  =======
