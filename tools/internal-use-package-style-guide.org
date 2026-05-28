@@ -279,7 +279,7 @@ into a CI pipeline.
 #+begin_src elisp
   (defun style-use-package-check-directory (dir)
     "Check all .el files in DIR for `use-package' key order violations."
-    (interactive "DCheck Directory: " user-emacs-directory)
+    (interactive "DCheck Directory: ")
     (let ((files (directory-files-recursively dir "\\.el$")))
       (dolist (file files)
         (with-temp-buffer

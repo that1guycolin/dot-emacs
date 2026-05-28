@@ -33,17 +33,13 @@
 
 (use-package smartparens
   :defer t
-  :hook
-  ((prog-mode . smartparens-mode)
-   (text-mode . smartparens-mode))
+  :hook ((prog-mode text-mode) . smart-parens-mode)
   :config
   (require 'smartparens-config))
 
 (use-package adaptive-wrap
   :defer t
-  :hook
-  ((prog-mode . adaptive-wrap-prefix-mode)
-   (text-mode . adaptive-wrap-prefix-mode)))
+  :hook ((prog-mode text-mode) . adaptive-wrap-prefix-mode))
 
 (use-package docstr
   :defer t
@@ -145,9 +141,7 @@ See URL `https://vale.sh'."
     :modes (markdown-mode gfm-mode text-mode org-mode org-gtd-clarify-mode
 			  flycheck-error-message-mode))
   
-  :hook
-  ((prog-mode . flycheck-mode)
-   (text-mode . flycheck-mode))
+  :hook ((prog-mode text-mode) . flycheck-mode)
   :functions flycheck-select-checker flycheck-add-mode
 
   :custom
@@ -161,21 +155,12 @@ See URL `https://vale.sh'."
   (dolist (chk '(fish-self markdown-rumdl text-vale))
     (add-to-list 'flycheck-checkers chk))
 
-  (let ((flycheck-modes-alist
-	 '((fish-mode        . fish-self)
-	   (markdown-mode    . markdown-rumdl)
-	   (gfm-mode         . markdown-rumdl)
-	   (markdown-ts-mode . markdown-rumdl)
-	   (org-mode         . org-lint))))
-    (dolist (mode (mapcar #'car flycheck-modes-alist))
-      (let ((hook (intern (concat (symbol-name mode) "-hook")))
-	    (checker (cdr (assoc mode flycheck-modes-alist))))
-	(add-hook hook (lambda ()
-			 (flycheck-select-checker checker)))))))
+  (add-hook 'org-mode-hook #'(lambda ()
+			       (flycheck-select-checker 'org-lint))))
 
 (use-package flyover
   :defer t
-  :bind ("C-c y" . )
+  :bind ("C-c y"       . flyover-mode)
   :hook (flycheck-mode . flyover-mode)
   :defines flyover-checkers
   
@@ -306,10 +291,9 @@ See URL `https://vale.sh'."
   :custom
   (dap-auto-configure-features '(sessions locals controls tooltip))
   (dap-lldb-debug-program "/usr/bin/lldb-dap")
+  (dap-python-debugger 'debugpy)
   :config
-  (use-package dap-python
-    :after (dap-mode python-ts-mode)
-    :custom (dap-python-debugger 'debugpy)))
+  (require 'dap-python))
 
 
 ;; =======  FORMATTING  =======
@@ -328,12 +312,10 @@ See URL `https://vale.sh'."
 (use-package apheleia
   :defer t
   :bind ("C-c f" . apheleia-format-buffer)
-  :hook
-  ((prog-mode . apheleia-mode)
-   (text-mode . apheleia-mode))
+  :hook ((prog-mode text-mode) . apheleia-mode)
 
   :config
-  (when (eq major-mode 'sh-mode)
+  (when (equal major-mode 'sh-mode)
     (apheleia-mode -1))
   
   (setf (alist-get 'jq apheleia-formatters)
@@ -371,9 +353,7 @@ See URL `https://vale.sh'."
 ;; ==========================
 (use-package yasnippet
   :defer t
-  :hook
-  ((prog-mode . yas-minor-mode)
-   (text-mode . yas-minor-mode))
+  :hook ((prog-mode text-mode) . yas-minor-mode)
   :functions yas-reload-all
   :config
   (add-to-list 'yas-snippet-dirs
@@ -390,7 +370,8 @@ See URL `https://vale.sh'."
   (defun user/setup-yasnippet-capf ()
     "Add yasnippet-capf to `completion-at-point-functions'."
     (add-to-list 'completion-at-point-functions #'yasnippet-capf))
-  :hook (yas-minor-mode . user/setup-yasnippet-capf))
+  :hook (yas-minor-mode . user/setup-yasnippet-capf)
+  :functions yasnippet-capf)
 
 
 (provide '08-code-assist)

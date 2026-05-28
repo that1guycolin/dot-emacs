@@ -40,15 +40,14 @@
 
 (use-package diff-hl
   :defer t
+  :preface (defvar user/diff-hl-dispatch)
   :bind ("C-x v o" . diff-hl-mode)
   :hook
-  ((prog-mode          . diff-hl-mode)
-   (text-mode          . diff-hl-mode)
-   (magit-post-refresh . diff-hl-magit-post-refresh))
+  (((prog-mode text-mode) . diff-hl-mode)
+   (magit-post-refresh    . diff-hl-magit-post-refresh))
   :custom
   (diff-hl-show-staged-changes nil)
   :config
-  (defvar user/diff-hl-dispatch)
   (transient-define-prefix user/diff-hl-dispatch ()
     "Custom transient for diff highlight commands."
     ["Diff Highlight Mode"

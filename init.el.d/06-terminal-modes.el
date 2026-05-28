@@ -29,11 +29,35 @@
 
 
 ;; =======  TERMINAL SHELLS  =======
+;; `eat' (Emulate A Terminal)
+;; `ghostel' (terminal shell based on libghostty)
 ;; `mistty' (commit shell layer)
 ;; `vterm' (fully functional terminal shell)
-;; `ghostel' (terminal shell based on libghostty)
-;; `eat' (Emulate A Terminal)
 ;; =================================
+(use-package eat
+  :defer t
+  :bind ("C-c S e"   . eat)
+  :hook (eshell-mode . eat-eshell-visual-command-mode))
+
+(use-package ghostel
+  :ensure (ghostel
+	   :source nil :package "ghostel" :id ghostel :fetcher github
+	   :repo "dakra/ghostel"
+	   :files (:defaults
+		   "README.md" "etc" "src" "vendor" "build.zig" "build.zig.zon"
+		   "symbols.map" ("build" "Makefile"))
+	   :type git :protocol https :inherit t :depth treeless)
+  :defer t
+  :preface (advice-add 'ghostty :around #'user/call-in-other-window-advice)
+  :bind ("C-c S g" . ghostel)
+  :custom
+  (ghostel-module-auto-install 'compile)
+  :config
+  (with-eval-after-load 'disproject
+    (transient-append-suffix 'disproject-dispatch
+      "s"
+      '("o" "Ghostel" ghostel-project))))
+
 (use-package mistty
   :defer t
   :preface (advice-add 'mistty :around #'user/call-in-other-window-advice)
@@ -55,30 +79,6 @@
   :bind
   (("C-c S v" . vterm)
    ("C-c S V" . vterm-other-window)))
-
-(use-package ghostel
-  :ensure (ghostel
-	   :source nil :package "ghostel" :id ghostel :fetcher github
-	   :repo "dakra/ghostel"
-	   :files (:defaults
-		   "README.md" "etc" "src" "vendor" "build.zig" "build.zig.zon"
-		   "symbols.map" ("build" "Makefile"))
-	   :type git :protocol https :inherit t :depth treeless)
-  :defer t
-  :preface (advice-add 'ghostty :around #'user/call-in-other-window-advice)
-  :bind ("C-c S g" . ghostel)
-  :custom
-  (ghostel-module-auto-install 'compile)
-  :config
-  (with-eval-after-load 'disproject
-    (transient-append-suffix 'disproject-dispatch
-      "s"
-      '("o" "Ghostel" ghostel-project))))
-
-(use-package eat
-  :defer t
-  :bind ("C-c S e"   . eat)
-  :hook (eshell-mode . eat-eshell-visual-command-mode))
 
 
 ;; =======  ESHELL  =======
@@ -128,10 +128,7 @@
 ;; `with-editor' (set envar EDITOR to current Emacs session)
 ;; ========================
 (use-package with-editor
-  :hook
-  ((shell-mode  . with-editor-export-editor)
-   (eshell-mode . with-editor-export-editor)
-   (vterm-mode  . with-editor-export-editor)))
+  :hook ((eshell-mode shell-mode vterm-mode) . with-editor-export-editor))
 
 (use-package native-complete
   :ensure (:wait t)

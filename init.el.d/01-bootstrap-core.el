@@ -142,6 +142,14 @@ creating org nodes."
       (while (re-search-forward "\\[\\([^]]+\\)\\](\\([^)]+\\))" nil t)
 	(replace-match "[[\\2][\\1]]" nil nil))))
   
+  (defun user/ensure-babel-langs-ready ()
+    "Ensure all languages ready before running `org-babel-do-load-languages.'"
+    (unless (or (not (assoc 'rust org-babel-load-languages))
+		(featurep 'ob-rust))
+      (org-babel-do-load-languages
+       'org-babel-load-languages
+       org-babel-load-languages)))
+  
   :bind
   (("C-c o o" . org-mode)
    ("C-c o l" . org-store-link)
@@ -150,10 +158,7 @@ creating org nodes."
    :map org-mode-map
    ("C-c l"   . org-toggle-link-display)
    ("C-c C-q" . org-set-tags-command))
-  :mode
-  (("\\.org\\'"   . org-mode)
-   ("TODO\\'"     . org-mode)
-   ("\\.notes\\'" . org-mode))
+  :mode (("\\.org\\'" "TODO\\'" "\\.notes\\'") . org-mode)
   :defines org-mode-map
   
   :init
@@ -175,10 +180,6 @@ creating org nodes."
   (setq org-babel-default-header-args
 	(cons '(:results . "value verbatim replace")
 	      (assq-delete-all :results org-babel-default-header-args)))
-  (org-babel-do-load-languages
-   'org-babel-load-languages '((emacs-lisp . t) (lisp . t) (lua . t)
-			       (makefile . t) (org . t) (python . t)
-			       (shell . t)))
   
   (setq org-src-lang-modes (assoc-delete-all "bash" org-src-lang-modes))
   (dolist (lang-mode-cons '(("bash" . bash-ts) ("cmake" . cmake-ts)

@@ -151,16 +151,6 @@ doubles as a model-switcher."
 
 ;; =======  ELLAMA  =======
 (use-package ellama
-  :ensure (ellama :source "MELPA" :package "ellama" :id ellama
-		  :repo "s-kostyaev/ellama" :fetcher github
-		  :files ("*.el" "*.el.in" "dir" "*.info" "*.texi" "*.texinfo"
-			  "doc/dir" "doc/*.info" "doc/*.texi" "doc/*.texinfo"
-			  "lisp/*.el" "docs/dir" "docs/*.info" "docs/*.texi"
-			  "docs/*.texinfo" "llm/"
-			  (:exclude ".dir-locals.el" "test.el" "tests.el"
-				    "*-test.el" "*-tests.el" "LICENSE"
-				    "README*" "*-pkg.el"))
-		  :type git :protocol https :inherit t :depth treeless)
   :defer t
   :preface
   (with-eval-after-load 'llm

@@ -56,7 +56,7 @@
   :ensure nil
   :defer t
   :interpreter "bash"
-  :mode ("\\.bash\\'"))
+  :mode "\\.bash\\'")
 
 (use-package cmake-ts-mode
   :ensure nil
@@ -95,10 +95,10 @@
   :ensure nil
   :defer t
   :preface
-  (defvar python-mode-map)
+  (defvar python-base-mode-map)
   
   :bind
-  (:map python-mode-map
+  (:map python-base-mode-map
 	("C-c C-k c" . python-skeleton-class)
 	("C-c C-k d" . python-skeleton-def)
 	("C-c C-k f" . python-skeleton-for)
@@ -108,8 +108,7 @@
 	("C-c C-k w" . python-skeleton-while))
   :interpreter ("python3" "uv")
   :mode "\\.py\\'"
-
-
+  
   :functions
   python-skeleton-class python-skeleton-def python-skeleton-for
   python-skeleton-if python-skeleton-import python-skeleton-try
@@ -118,7 +117,7 @@
   (python-indent-offset 4)
   (python-shell-interpreter "python3")
   :config
-  (keymap-unset python-mode-map "C-c C-t"))
+  (keymap-unset python-base-mode-map "C-c C-t"))
 
 (use-package sh-mode
   :ensure nil
@@ -139,10 +138,10 @@
                (string= sh-shell "zsh"))
       (add-hook 'before-save-hook #'user/zsh-redirect-error-echoes nil t)))
 
-  (defun my/fix-zsh-error-echoes (directory)
-    "Replace `echo \"ERROR:` with `echo >&2 \"ERROR:` in all .zsh files under DIRECTORY."
+  (defun my/fix-zsh-error-echoes (dir)
+    "Replace `echo \"ERROR:` with `echo >&2 \"ERROR:` on all .zsh files in DIR."
     (interactive "DDirectory: ")
-    (dolist (file (directory-files-recursively directory "\\.zsh\\'"))
+    (dolist (file (directory-files-recursively dir "\\.zsh\\'"))
       (with-temp-buffer
 	(insert-file-contents file)
 	(goto-char (point-min))
@@ -166,8 +165,8 @@
 (use-package nxml-mode
   :ensure nil
   :defer t
-  :mode ("\\.xml\\'"
-	 "\\.xsd\\'" "\\.xslt\\'" "\\.svg\\'" "\\.rss\\'" "\\.pom\\'")
+  :mode ("\\.xml\\'" "\\.xsd\\'" "\\.xslt\\'" "\\.svg\\'" "\\.rss\\'"
+	 "\\.pom\\'")
   :custom
   (nxml-child-indent 2)
   (nxml-attribute-indent 2)

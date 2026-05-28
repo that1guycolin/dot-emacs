@@ -27,6 +27,7 @@
   (defvar user/scripts-directory)
   (defvar org-directory)
   (defvar user-emacs-directory)
+
   (defun user/project-reset-projects ()
     "Clear the project list and repopulate it."
     (interactive)
@@ -44,7 +45,7 @@
   :functions project-remember-projects-under
   :custom
   (project-list-exclude
-   (list (regexp-quote (expand-file-name elpaca-sources-directory))
+   (list (regexp-quote (expand-file-name elpaca-directory))
 	 (regexp-quote (expand-file-name "~/dotfiles/terminals/alacritty"))))
   (project-vc-ignores '("^node_modules$" "^\\.venv$" "^\\.uv$")))
 
@@ -53,7 +54,8 @@
   :preface
   (keymap-global-unset "C-x p")
   :bind (:map ctl-x-map
-	      ("p" . disproject-dispatch)))
+	      ("p" . disproject-dispatch))
+  :functions disproject-find-file)
 
 (use-package deadgrep
   :defer t
@@ -211,7 +213,6 @@ into the message."
 ;; `treemacs-perspective' (perspective + treemacs integration)
 ;; `treemacs-nerd-icons' (nerd-icons + treemacs integration)
 ;; ==========================
-(defvar treemacs-mode-map)
 (use-package treemacs
   :defer t
   :preface
@@ -307,6 +308,7 @@ Wait two seconds before activating the mode."
   treemacs-select-window treemacs-project-follow-mode treemacs-root-up
   treemacs-get-local-window treemacs-hide-gitignored-files-mode
   treemacs--select-workspace-by-name treemacs-switch-workspace
+  :defines treemacs-mode-map
 
   :custom
   (treemacs-width 35)

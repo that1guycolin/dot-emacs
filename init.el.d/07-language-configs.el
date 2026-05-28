@@ -34,15 +34,11 @@
 ;; =========================
 (use-package adjust-parens
   :defer t
-  :hook
-  ((emacs-lisp-mode . adjust-parens-mode)
-   (lisp-mode       . adjust-parens-mode)))
+  :hook ((emacs-lisp-mode lisp-mode) . adjust-parens-mode))
 
 (use-package lisp-semantic-hl
   :defer t
-  :hook
-  ((emacs-lisp-mode . lisp-semantic-hl-mode)
-   (lisp-mode       . lisp-semantic-hl-mode)))
+  :hook ((emacs-lisp-mode . lisp-mode) . lisp-semantic-hl-mode))
 
 (use-package checkdoc
   :ensure nil
@@ -109,26 +105,27 @@
   (let ((ql-setup "~/quicklisp/setup.lisp"))
     (when (file-exists-p ql-setup)
       (setq sly-lisp-implementations
-            (mapcar (lambda (impl)
-                      (append impl
-                              (list
-			       :init (lambda (port-filename coding-system)
-                                       (format "(progn (load \"%s\") %s)\n"
-                                               (expand-file-name ql-setup)
-                                               (sly-init-string
-						port-filename
-						coding-system))))))
-                    sly-lisp-implementations))))
+            (mapcar
+	     (lambda (impl)
+               (append impl
+                       (list
+			:init
+			(lambda (port-filename coding-system)
+                          (format "(progn (load \"%s\") %s)\n"
+                                  (expand-file-name ql-setup)
+                                  (sly-init-string
+				   port-filename
+				   coding-system))))))
+             sly-lisp-implementations))))
   (add-to-list 'sly-contribs 'sly-mrepl))
 
 
 ;; =======  PYTHON  =======
-;; `dwim-coder-mode' (hacks to reduce effort)
 ;; `live-py-mode' (live coding)
 ;; `python-pytest' (integrate testing)
 ;; `python-x' (enhance built-in python(-ts)-mode)
 ;; ========================
-(defvar python-mode-map)
+(defvar python-base-mode-map)
 ;; FUNCTIONS
 (defun user/python-uv-script-p ()
   "Return non-nil if current buffer is a uv script."
@@ -154,31 +151,22 @@
              (shell-quote-argument buffer-file-name))))))
 
 (with-eval-after-load 'python
-  (define-key python-mode-map (kbd "C-c C-r") #'user/python-run-smart))
+  (define-key python-base-mode-map (kbd "C-c C-r") #'user/python-run-smart))
 
 ;; PACKAGES
-(use-package dwim-coder-mode
-  :defer t
-  :hook
-  ((c-ts-mode      . dwim-coder-mode)
-   (python-ts-mode . dwim-coder-mode)
-   (rust-ts-mode   . dwim-coder-mode)))
-
 (use-package live-py-mode
   :defer t
-  :bind (:map python-mode-map
+  :bind (:map python-base-mode-map
               ("C-c L" . live-py-mode)))
 
 (use-package python-pytest
   :defer t
-  :bind (:map python-ts-mode-map
+  :bind (:map python-base-mode-map
 	      ("C-c C-t" . python-pytest-dispatch)))
 
 (use-package python-x
   :defer t
-  :hook
-  ((python-mode    . python-x-setup)
-   (python-ts-mode . python-x-setup)))
+  :hook ((python-mode python-ts-mode) . python-x-setup))
 
 
 ;; =======  SHELL SCRIPTS  =======
@@ -186,8 +174,8 @@
 ;; ===============================
 (use-package fish-mode
   :defer t
-  :interpreter ("fish")
-  :mode ("\\.fish\\'")
+  :interpreter "fish"
+  :mode "\\.fish\\'"
   :custom
   (fish-enable-auto-indent t))
 
@@ -198,48 +186,47 @@
 ;; `eask-mode' (support Eask files)
 ;; `glsl-mode' (support OpenGL Shading Language)
 ;; `ini-mode' (config file support)
+;; `just-ts-mode' (justfile support)
 ;; `kdl-mode' (support .kdl)
 ;; `systemd' (support services & sockets)
 ;; ===================================
 (use-package csv-mode
   :defer t
-  :mode ("\\.csv\\'" . csv-mode)
+  :preface
+  (defun user/function-for-csv-mode-hook ()
+    "Use this as a the hook for `csv-mode'."
+    (visual-line-mode -1)
+    (toggle-truncate-lines 1)
+    (csv-guess-set-separator)
+    (csv-align-mode 1))
+  :hook (csv-mode . user/function-for-csv-mode-hook)
+  :mode "\\.csv\\'"
   :functions
-  csv-guess-set-separator csv-align-mode
-  :config
-  (add-hook 'csv-mode-hook #'(lambda ()
-			       (visual-line-mode -1)
-			       (toggle-truncate-lines 1)
-			       (csv-guess-set-separator)
-			       (csv-align-mode))))
+  csv-guess-set-separator csv-align-mode)
+
 (use-package dockerfile-mode
   :defer t
-  :mode ("^Dockerfile\\'" . dockerfile-mode))
+  :mode "^Dockerfile\\'")
 
 (use-package eask-mode
   :defer t
-  :mode ("^Eask\\'" . eask-mode))
+  :mode "^Eask\\'")
 
 (use-package glsl-mode
   :defer t
-  :mode ("\\.glsl\\'" . glsl-mode))
+  :mode "\\.glsl\\'")
 
 (use-package ini-mode
   :defer t
-  :mode
-  (("\\.ini\\'"     . ini-mode)
-   ("\\.desktop\\'" . ini-mode)
-   ("\\.hook\\'"    . ini-mode)))
+  :mode ("\\.ini\\'" "\\.desktop\\'" "\\.hook\\'"))
 
 (use-package kdl-mode
   :defer t
-  :mode ("\\.kdl\\'" . kdl-mode))
+  :mode "\\.kdl\\'")
 
 (use-package systemd
   :defer t
-  :mode
-  (("\\.service\\'" . systemd-mode)
-   ("\\.socket\\'"  . systemd-mode)))
+  :mode (("\\.service\\'" "\\.socket\\'")  . systemd-mode))
 
 
 ;; =======  ENHANCE BUILT-INS  =======
@@ -256,8 +243,8 @@
   :defer t
   :hook (cmake-ts-mode . eldoc-cmake-enable))
 
-(defvar markdown-ts-mode-map)
 (use-package grip-mode
+  :preface (defvar markdown-ts-mode-map)
   :defer t
   :bind (:map markdown-ts-mode-map
 	      ("C-c j" . grip-mode))

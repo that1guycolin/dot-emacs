@@ -9,7 +9,7 @@
 ;; Core UI elements that provide visual feedback and interaction.
 
 ;;; Code:
-;; Start fullscreen with my preferred font height.
+;; Start fullscreen.
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
 ;; =======  THEMES  =======
@@ -86,9 +86,9 @@ as well."
   :demand t
   :functions nerd-icons-install-fonts
   :config
-  (unless (member "Symbols Nerd Font Mono" (font-family-list))
-    (when (window-system)
-      (nerd-icons-install-fonts t))))
+  (unless (and (member "Symbols Nerd Font Mono" (font-family-list))
+	       (window-system))
+    (nerd-icons-install-fonts t)))
 
 (use-package tab-line-nerd-icons
   :after nerd-icons
@@ -96,11 +96,12 @@ as well."
   :config
   (tab-line-nerd-icons-global-mode 1))
 
-(defvar corfu-margin-formatters)
 (use-package nerd-icons-corfu
+  :preface (defvar corfu-margin-formatters)
   :after nerd-icons
   :config
   (add-to-list 'corfu-margin-formatters 'nerd-icons-corfu-formatter))
+
 
 ;; =======  MODELINE  =======
 ;; `minons' (declutter modeline w/ menu for minor-modes)
@@ -123,23 +124,19 @@ as well."
 ;; =============================
 (use-package editorconfig
   :defer t
-  :hook
-  ((prog-mode . editorconfig-mode)
-   (text-mode . editorconfig-mode)
-   (conf-mode . editorconfig-mode)))
+  :hook ((prog-mode text-mode conf-mode) . editorconfig-mode))
 
 (use-package visual-fill-column
   :defer t
   :hook
-  ((visual-line-mode . visual-fill-column-mode)
-   (prog-mode        . visual-line-mode)
-   (text-mode        . visual-line-mode)
-   (conf-mode        . visual-line-mode)))
+  ((visual-line-mode                . visual-fill-column-mode)
+   ((prog-mode text-mode conf-mode) . visual-line-mode)))
 
 (use-package folding-mode
   :ensure nil
   :defer t
   :bind ("C-|" . folding-mode))
+
 
 ;; =======  WHICH-KEY  =======
 ;; `which-key' (needs to load before many other functions)

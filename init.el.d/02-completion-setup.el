@@ -42,14 +42,11 @@
 
 (use-package marginalia
   :demand t
-  :bind
-  (
-   :map minibuffer-local-map
-   ("M-A" . marginalia-cycle)
-   :map completion-list-mode-map
-   ("M-A" . marginalia-cycle))
-  :functions
-  marginalia-mode marginalia-cycle
+  :bind (:map minibuffer-local-map
+	      ("M-A" . marginalia-cycle)
+	      :map completion-list-mode-map
+	      ("M-A" . marginalia-cycle))
+  :functions marginalia-mode
   :config
   (marginalia-mode 1))
 
@@ -89,10 +86,10 @@
   :functions
   cape-dabbrev cape-file cape-elisp-block cape-history
   :init
-  (add-hook 'completion-at-point-functions #'cape-dabbrev)
-  (add-hook 'completion-at-point-functions #'cape-file)
-  (add-hook 'completion-at-point-functions #'cape-elisp-block)
-  (add-hook 'completion-at-point-functions #'cape-history))
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  (add-to-list 'completion-at-point-functions #'cape-elisp-block)
+  (add-to-list 'completion-at-point-functions #'cape-history))
 
 (dolist (bind '("C-h f" "C-h v" "C-h k" "C-h x" "C-h F" "C-z"))
   (keymap-global-unset bind))
@@ -109,17 +106,20 @@
    ("C-h F" . helpful-function)
    ("C-h z" . helpful-kill-buffers)))
 
-(defvar Info-directory-list)
-(defvar elpaca-builds-directory)
-(defvar elpaca-sources-directory)
 (use-package emacs
   :ensure nil
+  :demand t
   :preface
   (defun user/check-parens-with-message ()
     "Run `check-parens'.  Print a message when all parentheses match."
     (interactive)
     (when (not (check-parens))
       (message "All parentheses match!")))
+
+  (defun user/ibuffer-hook-functions ()
+    "Group of functions to include in `ibuffer-mode-hook'."
+    (hl-line-mode 1)
+    (ibuffer-auto-mode 1))
   :bind
   (("C-c x"   . toggle-frame-maximized)
    ("C-c ("   . user/check-parens-with-message)
@@ -127,8 +127,6 @@
    ("C-c C-#" . global-display-line-numbers-mode)
    ("C-c C-!" . restart-emacs))
   :functions ibuffer-auto-mode
-
-  
   :custom
   (tab-always-indent 'complete)
   (text-mode-ispell-word-completion nil)
@@ -137,24 +135,15 @@
   (minibuffer-prompt-properties
    '(read-only t cursor-intangible t face minibuffer-prompt))
   (auto-save-visited-interval 60)
-
   :config
-  (dolist (xtra-lib '(bs cl-lib hl-line mouse seq subr-x))
-    (require xtra-lib))
+  (dolist (lib '(bs cl-lib hl-line mouse seq subr-x))
+    (require lib))
 
   (global-display-fill-column-indicator-mode 1)
   (context-menu-mode 1)
   (auto-save-visited-mode 1)
 
-  (add-hook 'ibuffer-mode-hook #'(lambda ()
-				   (hl-line-mode)
-				   (ibuffer-auto-mode)))
-  
-  (with-eval-after-load 'info
-    (add-to-list 'Info-directory-list
-		 (expand-file-name elpaca-builds-directory))
-    (add-to-list 'Info-directory-list
-		 (expand-file-name elpaca-sources-directory))))
+  (add-hook 'ibuffer-mode-hook #'user/ibuffer-hook-functions))
 
 
 (provide '02-completion-setup)
