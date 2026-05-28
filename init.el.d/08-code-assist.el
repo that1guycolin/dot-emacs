@@ -331,6 +331,18 @@ See URL `https://vale.sh'."
   :config
   (add-to-list 'completion-at-point-functions #'yasnippet-capf))
 
+(use-package tempel
+  :defer t
+  :preface
+  (defun user/tempel-setup-capf ()
+    "Locally add relevant tempel items to `completion-at-point-functions'."
+    (setq-local completion-at-point-functions
+		(cons #'tempel-expand completion-at-point-functions)))
+  :bind
+  (("M-+" . tempel-complete)
+   ("M-*" . tempel-insert))
+  :hook ((text-mode prog-mode) . user/tempel-setup-capf))
+
 
 (provide '08-code-assist)
 ;;; 08-code-assist.el ends here
