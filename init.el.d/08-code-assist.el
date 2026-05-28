@@ -218,7 +218,7 @@ See URL `https://vale.sh'."
   (lsp-register-client
    (make-lsp--client
     :new-connection (lsp-stdio-connection '("rumdl" "server" "--stdio"))
-    :major-modes '(markdown-mode gfm-mode)
+    :major-modes '(markdown-mode gfm-mode markdown-ts-mode)
     :server-id 'rumdl-ls))
 
   (lsp-register-client
