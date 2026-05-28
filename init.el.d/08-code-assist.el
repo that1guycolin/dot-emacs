@@ -337,11 +337,14 @@ See URL `https://vale.sh'."
   (defun user/tempel-setup-capf ()
     "Locally add relevant tempel items to `completion-at-point-functions'."
     (setq-local completion-at-point-functions
-		(cons #'tempel-expand completion-at-point-functions)))
+		(cons #'tempel-complete completion-at-point-functions)))
   :bind
   (("M-+" . tempel-complete)
    ("M-*" . tempel-insert))
-  :hook ((text-mode prog-mode) . user/tempel-setup-capf))
+  :hook
+  (((text-mode prog-mode) . tempel-abbrev-mode)
+   ((text-mode prog-mode) . user/tempel-setup-capf))
+  :functions tempel-complete)
 
 
 (provide '08-code-assist)
