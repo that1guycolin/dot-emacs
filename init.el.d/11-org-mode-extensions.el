@@ -272,6 +272,16 @@ With a prefix ARG, remove start location."
     (add-hook 'pdf-annot-activate-handler-functions
 	      #'org-noter-pdftools-jump-to-note)))
 
+;; =======  BABEL  =======
+;; `ob-rust'
+;; =======================
+(use-package ob-rust
+  :after org
+  :custom
+  (org-babel-rust-command "rust-script")
+  :config
+  (add-to-list 'org-babel-load-languages '(rust . t)))
+
 
 ;; =======  MISC  =======
 ;; `org-tidy' (make drawers invisible)

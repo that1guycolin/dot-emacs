@@ -63,10 +63,11 @@ Provide full path to elpaca's autoloads FILE."
   gcmh-mode user/restore-sane-gcmh-values
   :config
   (gcmh-mode 1)
-  (setopt gcmh-high-cons-threshold most-positive-fixnum
-          gcmh-low-cons-threshold (* 8 1024 1024)
-          gcmh-idle-delay 'auto
-          gc-cons-percentage 0.8)
+  (setopt
+   gcmh-high-cons-threshold most-positive-fixnum
+   gcmh-low-cons-threshold (* 8 1024 1024)
+   gcmh-idle-delay 'auto
+   gc-cons-percentage 0.8)
 
   (defun user/restore-sane-gcmh-values ()
     "Set gcmh values back to something reasonable.  Useful after startup."
@@ -100,6 +101,19 @@ Provide full path to elpaca's autoloads FILE."
 (use-package org
   :ensure (:wait t)
   :demand t
+  :preface
+  (defun org-babel-execute:zsh (body params)
+    "Handle zsh as language in org src blocks."
+    (org-babel-execute:shell body params))
+
+  (defun user/load-babel-langs-when-ready ()
+    "Load org-babel languages only when they are all ready to be loaded."
+    (unless
+        (or (not (assoc 'rust org-babel-load-languages))
+            (featurep 'ob-rust))
+      (org-babel-do-load-languages
+       'org-babel-load-languages
+       org-babel-load-languages)))
   :mode
   (("\\.org\\'"   . org-mode)
    ("TODO\\'"     . org-mode)
@@ -110,9 +124,15 @@ Provide full path to elpaca's autoloads FILE."
   (setq org-directory (expand-file-name "~/org"))
 
   :custom
+  (org-babel-default-header-args
+   (cons '(:results . "value verbatim replace")
+	 (assq-delete-all :results org-babel-default-header-args)))
+  (org-babel-default-header-args:zsh
+   '((:results . "output")))
   (org-babel-lisp-eval-fn #'sly-eval)
   (org-confirm-babel-evaluate nil)
   (org-default-notes-file (expand-file-name ".notes" org-directory))
+  (org-edit-src-content-indentation 0)
   (org-id-extra-files (directory-files-recursively org-directory "\\.org$"))
   (org-id-locations-file (expand-file-name ".id-locations" org-directory))
   (org-id-method 'org)
@@ -123,26 +143,22 @@ Provide full path to elpaca's autoloads FILE."
   
   :config
   (setq org-src-lang-modes (assoc-delete-all "bash" org-src-lang-modes))
-  (dolist (lang-mode-cons '(("bash" . bash-ts) ("cmake" . cmake-ts)
-  			    ("json" . json-ts) ("lua" . lua-ts)
-  			    ("python" . python-ts) ("sh" . sh)
-			    ("toml" . toml-ts) ("yaml" . yaml-ts)
-			    ("zsh" . shell)))
+  (dolist (lang-mode-cons '(("bash"   . bash-ts)   ("cmake" . cmake-ts)
+  			    ("json"   . json-ts)   ("lua"   . lua-ts)
+  			    ("python" . python-ts) ("sh"    . sh)
+			    ("toml"   . toml-ts)   ("yaml"  . yaml-ts)
+			    ("zsh"    . shell)))
     (add-to-list 'org-src-lang-modes lang-mode-cons))
 
-  (setq org-babel-default-header-args
-	(cons '(:results . "value verbatim replace")
-	      (assq-delete-all :results org-babel-default-header-args)))
-
-  (defun org-babel-execute:zsh (body params)
-    (org-babel-execute:shell body params))
-  (setq org-babel-default-header-args:zsh
-	'((:results . "output")))
-
-  (org-babel-do-load-languages
-   'org-babel-load-languages '((emacs-lisp . t) (lisp . t) (lua . t)
-			       (makefile . t) (org . t) (python . t)
-			       (shell . t)))
+  (dolist (lang '((lisp		 . t)
+		  (lua		 . t)
+		  (makefile	 . t)
+		  (org		 . t)
+		  (python	 . t)
+		  (shell	 . t)))
+    (add-to-list 'org-babel-load-languages lang))
+  
+  (run-with-idle-timer 10 nil #'user/load-babel-langs-when-ready)
 
   (defun user/org-id-prefix-slug (s)
     "Turn S into a safe(-ish) `org-id-prefix'."
