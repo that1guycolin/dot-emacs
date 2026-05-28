@@ -12,40 +12,32 @@
 ;; `elpaca' (asyncronous package manager)
 ;; `elpaca-use-package' (integration with existing macro)
 ;; ========================
-(defvar elpaca-directory       (expand-file-name "elpaca" user-emacs-directory))
-(defvar elpaca-builds-directory  (expand-file-name "builds"   elpaca-directory))
-(defvar elpaca-sources-directory (expand-file-name "sources"  elpaca-directory))
-
-(defvar elpaca-use-package)
-(defvar use-package-always-ensure)
-
 (declare-function elpaca                  "elpaca")
 (declare-function elpaca-manager          "elpaca")
-(declare-function elpaca-use-package-mode "elpaca")
-(declare-function elpaca-wait             "elpaca")
+(declare-function elpaca-use-package-mode "elpaca-use-package")
+(defvar           elpaca-use-package)
+(defvar           use-package-always-ensure)
 
-;; Load autoloads only unless they do not exist.
-(if (file-exists-p
-     (expand-file-name "elpaca/elpaca-autoloads.el" elpaca-sources-directory))
+(let ((elpaca-bootstrap
+       (expand-file-name "elpaca/sources/elpaca/doc/installer.el"
+			 user-emacs-directory)))
+  (if (file-exists-p elpaca-bootstrap)
+      (load-file elpaca-bootstrap)
     (progn
-      (add-to-list 'load-path
-		   (expand-file-name "elpaca" elpaca-sources-directory))
-      (require 'elpaca-autoloads)
-      (message "Loaded existing Elpaca autoloads")
-      (add-to-list 'load-path
-		   (expand-file-name "elpaca" elpaca-builds-directory))
-      (add-to-list 'load-path
-		   (expand-file-name
-		    "elpaca-use-package" elpaca-builds-directory))
-      (require 'elpaca-use-package-autoloads))
-  (progn
-    (require 'elpaca-bootstrap)
-    (elpaca elpaca-use-package)))
+      (require 'url)
+      (with-current-buffer
+	  (url-retrieve-synchronously
+	   "https://raw.githubusercontent.com/progfolio/elpaca\
+/refs/heads/master/doc/installer.el" 'silent 'inhibit-cookies 10)
+	(goto-char (point-min))
+	(re-search-forward "^$")
+	(forward-char)
+	(eval-print-last-sexp)))))
 
-(keymap-global-set "C-c M-c" #'elpaca-manager)
-(elpaca-use-package-mode 1)
+(elpaca elpaca-use-package
+  (elpaca-use-package-mode 1))
 (setq use-package-always-ensure t)
-
+(keymap-global-set "C-c e" #'elpaca-manager)
 
 ;; =======  OTHER BOOTSTRAPS  =======
 ;; `gcmh' (smart garbage collection)
