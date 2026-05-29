@@ -124,19 +124,23 @@ creating org nodes."
   (advice-add 'org-id-new :around #'user/org-id-dynamic-prefix)
 
   (defun user/org-get-heading-location ()
-    "Prompt to select a heading in the current document.  Return its location.
-Location is the value of the character at which the heading begins in
-the current document."
-    (interactive)
-    (let* ((options
+    "Prompt for a heading or buffer-name and return its buffer location."
+    (let* ((doc-option `(,(buffer-name) . document))
+	   (heading-options
 	    (org-map-entries
 	     (lambda ()
-	       (let ((heading (org-get-heading t t t t))
-		     (pos (point)))
-		 (cons heading pos)))
+	       (let* ((path (org-get-outline-path t t))
+		      (heading (org-get-heading t t t t))
+		      (display (string-join (append path (list heading))
+					    " ")))
+		 (cons dislpay (point))))
 	     nil 'file))
-	   (choice (completing-read "Heading: " options nil t)))
-      (cdr (assoc choice options))))
+	   (options (cons doc-option heading-options))
+	   (choice (completing-read "Location: " options nil t))
+	   (location (cdr (assoc choice options))))
+      (if (eq location 'document)
+	  (point-min)
+	location)))
 
   (defun user/org-create-properties-block ()
     "Create an org-node properties block at an interactively-selected heading."
@@ -156,7 +160,7 @@ the current document."
       (goto-char (point-min))
       (while (re-search-forward "\\[\\([^]]+\\)\\](\\([^)]+\\))" nil t)
 	(replace-match "[[\\2][\\1]]" nil nil))))
-  
+
   (defun user/ensure-babel-langs-ready ()
     "Ensure all languages ready before running `org-babel-do-load-languages.'"
     (unless (or (not (assoc 'rust org-babel-load-languages))
@@ -164,7 +168,7 @@ the current document."
       (org-babel-do-load-languages
        'org-babel-load-languages
        org-babel-load-languages)))
-  
+
   :bind
   (("C-c o o" . org-mode)
    ("C-c o l" . org-store-link)
@@ -177,7 +181,7 @@ the current document."
   (("\\.org\\'"   . org-mode)
    ("\\.notes\\'" . org-mode))
   :defines org-mode-map
-  
+
   :init
   (setq org-directory (expand-file-name "~/org"))
   :custom
@@ -191,10 +195,10 @@ the current document."
   (org-insert-mode-line-in-empty-file t)
   (org-startup-folded 'content)
   (org-use-sub-superscripts '{})
-  
+
   :config
   (require 'ox-texinfo)
-  
+
   (setq org-src-lang-modes (assoc-delete-all "bash" org-src-lang-modes))
   (dolist (lang-mode-cons '(("bash"   . bash-ts) ("cmake" . cmake-ts)
   			    ("json"   . json-ts) ("lua"   . lua-ts)
