@@ -110,6 +110,17 @@
       (unless (file-exists-p vale-install)
 	(shell-command command))))
 
+  :hook ((prog-mode text-mode) . flycheck-mode)
+  :functions flycheck-select-checker flycheck-add-mode
+
+  :custom
+  (flycheck-emacs-lisp-load-path 'inherit)
+  (flycheck-disabled-checkers
+   '(emacs-lisp-elsa sh-bash yaml-jsyaml yaml-ruby))
+
+  :config
+  (flycheck-add-mode 'org-lint 'org-gtd-clarify-mode)
+
   (flycheck-define-checker fish-self
     "The shell for the 90's built-in syntax checker.
 See URL `https://fishshell.com'."
@@ -141,17 +152,6 @@ See URL `https://vale.sh'."
     :modes (markdown-mode gfm-mode text-mode org-mode org-gtd-clarify-mode
 			  flycheck-error-message-mode))
   
-  :hook ((prog-mode text-mode) . flycheck-mode)
-  :functions flycheck-select-checker flycheck-add-mode
-
-  :custom
-  (flycheck-emacs-lisp-load-path 'inherit)
-  (flycheck-disabled-checkers
-   '(emacs-lisp-elsa sh-bash yaml-jsyaml yaml-ruby))
-
-  :config
-  (flycheck-add-mode 'org-lint 'org-gtd-clarify-mode)
-
   (dolist (chk '(fish-self markdown-rumdl text-vale))
     (add-to-list 'flycheck-checkers chk))
 
