@@ -86,8 +86,8 @@ as well."
   :demand t
   :functions nerd-icons-install-fonts
   :config
-  (unless (and (member "Symbols Nerd Font Mono" (font-family-list))
-	       (window-system))
+  (when (and (not (member "Symbols Nerd Font Mono" (font-family-list)))
+	     (window-system))
     (nerd-icons-install-fonts t)))
 
 (use-package tab-line-nerd-icons
