@@ -263,7 +263,7 @@
 
   :hook
   ((elpaca-after-init       . dashboard-insert-startupify-lists)
-   (elpaca-after-init       . dashborad-initialize)
+   (elpaca-after-init       . dashboard-initialize)
    (server-after-make-frame . user/emacs-server-dashboard))
   :functions
   dashboard-insert-startupify-lists dashboard-initialize
