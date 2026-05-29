@@ -248,6 +248,23 @@ With a prefix ARG, remove start location."
     (add-hook 'pdf-annot-activate-handler-functions
 	      #'org-noter-pdftools-jump-to-note)))
 
+;; =======  BABEL  =======
+;; `ob-rust'
+;; =======================
+(use-package ob-rust
+  :after org
+  :custom
+  (org-babel-rust-command "rust-script")
+  :config
+  (add-to-list 'org-babel-load-languages '(rust . t)))
+
+;; Ensure all languages added to org-babel-load-languages before evaluating.
+(unless (or (not (assoc 'rust org-babel-load-languages))
+	    (featurep 'ob-rust))
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   org-babel-load-languages))
+
 
 ;; =======  MISC  =======
 ;; `el2org' (make .org from .el)

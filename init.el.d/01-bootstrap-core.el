@@ -161,14 +161,6 @@ creating org nodes."
       (while (re-search-forward "\\[\\([^]]+\\)\\](\\([^)]+\\))" nil t)
 	(replace-match "[[\\2][\\1]]" nil nil))))
 
-  (defun user/ensure-babel-langs-ready ()
-    "Ensure all languages ready before running `org-babel-do-load-languages.'"
-    (unless (or (not (assoc 'rust org-babel-load-languages))
-		(featurep 'ob-rust))
-      (org-babel-do-load-languages
-       'org-babel-load-languages
-       org-babel-load-languages)))
-
   :bind
   (("C-c o o" . org-mode)
    ("C-c o l" . org-store-link)
@@ -185,12 +177,17 @@ creating org nodes."
   :init
   (setq org-directory (expand-file-name "~/org"))
   :custom
+  (org-babel-default-header-args
+   (cons '(:results . "value verbatim replace")
+	 (assq-delete-all :results org-babel-default-header-args)))
+  (org-babel-default-header-args:zsh
+   '((:results . "output")))
   (org-babel-lisp-eval-fn #'sly-eval)
   (org-confirm-babel-evaluate nil)
   (org-default-notes-file (expand-file-name ".notes" org-directory))
+  (org-edit-src-content-indentation 0)
   (org-id-extra-files (if (file-directory-p org-directory)
-			  (directory-files-recursively org-directory "\\.org$")
-			nil))
+			  (directory-files-recursively org-directory "\\.org$")))
   (org-id-locations-file (expand-file-name ".id-locations" org-directory))
   (org-id-method 'org)
   (org-id-prefix "unk")
@@ -209,9 +206,6 @@ creating org nodes."
 			    ("zsh"    . shell)))
     (add-to-list 'org-src-lang-modes lang-mode-cons))
 
-  (setq org-babel-default-header-args
-	(cons '(:results . "value verbatim replace")
-	      (assq-delete-all :results org-babel-default-header-args)))
   (dolist (lang '(lisp lua makefile org python shell))
     (add-to-list 'org-babel-load-languages `(,lang . t))))
 
