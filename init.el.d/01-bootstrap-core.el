@@ -194,9 +194,6 @@ the current document."
   
   :config
   (require 'ox-texinfo)
-  (setq org-babel-default-header-args
-	(cons '(:results . "value verbatim replace")
-	      (assq-delete-all :results org-babel-default-header-args)))
   
   (setq org-src-lang-modes (assoc-delete-all "bash" org-src-lang-modes))
   (dolist (lang-mode-cons '(("bash"   . bash-ts) ("cmake" . cmake-ts)
@@ -204,8 +201,14 @@ the current document."
   			    ("python" . python-ts) ("sh"  . sh)
 			    ("toml"   . toml-ts) ("yaml"  . yaml-ts)
 			    ("zsh"    . shell)))
+    (add-to-list 'org-src-lang-modes lang-mode-cons))
 
-    (add-to-list 'org-src-lang-modes lang-mode-cons)))
+  (setq org-babel-default-header-args
+	(cons '(:results . "value verbatim replace")
+	      (assq-delete-all :results org-babel-default-header-args)))
+  (dolist (lang '(lisp lua makefile org python shell))
+    (add-to-list 'org-babel-load-languages `(,lang . t))))
+
 
 
 ;; =======  EMACSCLIENT FRAME FUNCTION  =======
