@@ -303,7 +303,7 @@ Wait two seconds before activating the mode."
      
      ["Shell"
       ("S" "Project Shell"             project-shell)
-      ("E" "Project EShell"            project-shell)
+      ("E" "Project EShell"            project-eshell)
       ("A" "Project Async Shell Cmd"   project-async-shell-command)
       ("C" "Project Shell Cmd"         project-shell-command)]
      
