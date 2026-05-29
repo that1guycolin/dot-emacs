@@ -54,11 +54,11 @@ folder."
    ("C-c C-p a" . org-project-capture-agenda-for-current-project))
   
   :custom
-  (org-project-capture-per-project-filepath "TODO")
+  (org-project-capture-per-project-filepath "TODO.org")
   :config
   (require 'org-category-capture)
   (dolist (project (project-known-project-roots))
-    (let ((project-todo (expand-file-name "TODO" project)))
+    (let ((project-todo (expand-file-name "TODO.org" project)))
       (when (file-exists-p project-todo)
 	(add-to-list 'org-agenda-files project-todo))))
   

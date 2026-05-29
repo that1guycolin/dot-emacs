@@ -33,7 +33,7 @@
 
 (use-package smartparens
   :defer t
-  :hook ((prog-mode text-mode) . smart-parens-mode)
+  :hook ((prog-mode text-mode) . smartparens-mode)
   :config
   (require 'smartparens-config))
 

@@ -38,7 +38,7 @@
 
 (use-package lisp-semantic-hl
   :defer t
-  :hook ((emacs-lisp-mode . lisp-mode) . lisp-semantic-hl-mode))
+  :hook ((emacs-lisp-mode lisp-mode) . lisp-semantic-hl-mode))
 
 (use-package checkdoc
   :ensure nil
@@ -245,7 +245,9 @@
 
 (use-package systemd
   :defer t
-  :mode (("\\.service\\'" "\\.socket\\'")  . systemd-mode))
+  :mode
+  (("\\.service\\'" . systemd-mode)
+   ("\\.socket\\'"  . systemd-mode)))
 
 
 

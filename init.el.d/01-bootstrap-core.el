@@ -173,7 +173,9 @@ the current document."
    :map org-mode-map
    ("C-c l"   . org-toggle-link-display)
    ("C-c C-q" . org-set-tags-command))
-  :mode (("\\.org\\'" "TODO\\'" "\\.notes\\'") . org-mode)
+  :mode
+  (("\\.org\\'"   . org-mode)
+   ("\\.notes\\'" . org-mode))
   :defines org-mode-map
   
   :init
