@@ -123,8 +123,12 @@ as well."
 ;; `visual-fill-column' (fill-column for visual-line-mode)
 ;; =============================
 (use-package editorconfig
+  :preface
+  (defun user/function-for-editorconfig-hook ()
+    "Use this as the function to add to *-mode-hook for editorconfig."
+    (editorconfig-mode 1))
   :defer t
-  :hook ((prog-mode text-mode conf-mode) . editorconfig-mode))
+  :hook ((prog-mode text-mode conf-mode) . user/function-for-editorconfig-hook))
 
 (use-package visual-fill-column
   :defer t
