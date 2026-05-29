@@ -50,6 +50,26 @@
   :config
   (marginalia-mode 1))
 
+;; tempel goes here because it needs to load before corfu
+(use-package tempel
+  :demand t
+  :preface
+  (defun user/tempel-setup-capf ()
+    "Locally add relevant tempel items to `completion-at-point-functions'."
+    (setq-local completion-at-point-functions
+		(cons #'tempel-complete completion-at-point-functions))
+    (tempel-abbrev-mode 1))
+  :bind
+  (("M-+" . tempel-complete)
+   ("M-*" . tempel-insert))
+  :hook
+  ((text-mode prog-mode conf-mode) . user/tempel-setup-capf)
+  :functions
+  tempel-complete tempel-abbrev-mode)
+
+(use-package tempel-collection
+  :after tempel)
+
 (use-package corfu
   :demand t
   :bind (:map corfu-map
@@ -120,6 +140,7 @@
     "Group of functions to include in `ibuffer-mode-hook'."
     (hl-line-mode 1)
     (ibuffer-auto-mode 1))
+
   :bind
   (("C-c x"   . toggle-frame-maximized)
    ("C-c ("   . user/check-parens-with-message)
@@ -128,13 +149,13 @@
    ("C-c C-!" . restart-emacs))
   :functions ibuffer-auto-mode
   :custom
-  (tab-always-indent 'complete)
-  (text-mode-ispell-word-completion nil)
+  (auto-save-visited-interval 60)
   (enable-recursive-minibuffers t)
-  (read-extended-command-predicate #'command-completion-default-include-p)
   (minibuffer-prompt-properties
    '(read-only t cursor-intangible t face minibuffer-prompt))
-  (auto-save-visited-interval 60)
+  (read-extended-command-predicate #'command-completion-default-include-p)
+  (tab-always-indent 'complete)
+  (text-mode-ispell-word-completion nil)
   :config
   (dolist (lib '(bs cl-lib hl-line mouse seq subr-x))
     (require lib))
@@ -142,7 +163,6 @@
   (global-display-fill-column-indicator-mode 1)
   (context-menu-mode 1)
   (auto-save-visited-mode 1)
-
   (add-hook 'ibuffer-mode-hook #'user/ibuffer-hook-functions))
 
 

@@ -60,15 +60,16 @@
 
 (use-package inspector
   :defer t
-  :bind ("M-I e" . inspector-inspect-expression)
+  :bind (:map emacs-lisp-mode-map
+	      ("M-I e" . inspector-inspect-expression))
   :custom
   (inspector-switch-to-buffer nil))
 
 (use-package eros-inspector
   :after eros inspector
-  :bind
-  (([remap eros-eval-last-sexp] . eros-inspector-eval-last-sexp)
-   ([remap eros-eval-defun]     . eros-inspector-eval-defun)))
+  :bind (:map emacs-lisp-mode-map
+	      ([remap eros-eval-last-sexp] . eros-inspector-eval-last-sexp)
+	      ([remap eros-eval-defun]     . eros-inspector-eval-defun)))
 
 (use-package macrostep
   :defer t
@@ -86,9 +87,9 @@
 
 (use-package tree-inspector
   :defer t
-  :bind
-  (("M-I t" . tree-inspector-inspect-expression)
-   ("M-I s" . tree-inspector-inspect-last-sexp)))
+  :bind (:map emacs-lisp-mode-map
+	      ("M-I t" . tree-inspector-inspect-expression)
+	      ("M-I s" . tree-inspector-inspect-last-sexp)))
 
 (use-package sly
   :defer t
@@ -164,14 +165,16 @@
   :bind (:map python-base-mode-map
 	      ("C-c C-t" . python-pytest-dispatch)))
 
+
 (use-package python-x
   :defer t
   :hook ((python-mode python-ts-mode) . python-x-setup))
 
 
-;; =======  SHELL SCRIPTS  =======
+;; =======  ADDITIONAL LANGUAGE SUPPORT  =======
 ;; `fish-mode' (fish shell support)
-;; ===============================
+;; `rustic' (rust/cargo support)
+;; =============================================
 (use-package fish-mode
   :defer t
   :interpreter "fish"
@@ -179,12 +182,24 @@
   :custom
   (fish-enable-auto-indent t))
 
+(use-package rustic
+  :defer t
+  :mode ("\\.rs\\'" . rustic-mode)
+  :custom
+  (compilation-ask-about-save t)
+  (rustic-analyzer-command '("/usr/lib/rustup/bin/rust-analyzer"))
+  (rustic-cargo-use-last-stored-arguments t)
+  (rustic-format-on-save-method 'rustic-format-buffer)
+  (rustic-format-trigger 'on-save)
+  (rustic-lsp-client 'lsp-mode))
+
 
 ;; =======  CONFIG FILE MODES  =======
 ;; `csv-mode' (support csv files)
 ;; `dockerfile-mode' (support Dockerfiles)
 ;; `eask-mode' (support Eask files)
 ;; `glsl-mode' (support OpenGL Shading Language)
+;; `just-ts-mode' (justfile-support)
 ;; `ini-mode' (config file support)
 ;; `just-ts-mode' (justfile support)
 ;; `kdl-mode' (support .kdl)
@@ -220,6 +235,10 @@
   :defer t
   :mode ("\\.ini\\'" "\\.desktop\\'" "\\.hook\\'"))
 
+(use-package just-ts-mode
+  :defer t
+  :mode "^justfile\\'")
+
 (use-package kdl-mode
   :defer t
   :mode "\\.kdl\\'")
@@ -227,6 +246,7 @@
 (use-package systemd
   :defer t
   :mode (("\\.service\\'" "\\.socket\\'")  . systemd-mode))
+
 
 
 ;; =======  ENHANCE BUILT-INS  =======

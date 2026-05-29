@@ -249,6 +249,8 @@ See URL `https://vale.sh'."
   (lsp-log-io nil)
   (lsp-lua-runtime-version "LuaJIT")
   (lsp-lua-diagnostics-globals ["mp"])
+  (lsp-rust-analyzer-cargo-watch-command "cargo-clippy")
+  (lsp-rust-server 'rust-analyzer)
   (lsp-use-plists t)
   :config
   (lsp-register-client
@@ -283,6 +285,13 @@ See URL `https://vale.sh'."
   (add-hook 'fish-mode-hook
             (lambda ()
 	      (setq-local lsp-enable-file-watchers nil))))
+
+(use-package lsp-snippet-tempel
+  :ensure (lsp-snippet-tempel
+	   :type git :host github :repo "svaante/lsp-snippet")
+  :after lsp-mode
+  :config
+  (lsp-snippet-tempel-lsp-mode-init))
 
 (use-package dap-mode
   :defer t

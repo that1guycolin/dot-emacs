@@ -12,45 +12,32 @@
 ;; `elpaca' (asyncronous package manager)
 ;; `elpaca-use-package' (integration with existing macro)
 ;; ========================
-(defvar elpaca-directory       (expand-file-name "elpaca" user-emacs-directory))
-(defvar elpaca-builds-directory (expand-file-name "builds" elpaca-directory))
-(defvar elpaca-sources-directory (expand-file-name "sources" elpaca-directory))
-
-(defvar elpaca-use-package)
-(defvar use-package-always-ensure)
-
 (declare-function elpaca                  "elpaca")
 (declare-function elpaca-manager          "elpaca")
-(declare-function elpaca-use-package-mode "elpaca")
-(declare-function elpaca-wait             "elpaca")
+(declare-function elpaca-use-package-mode "elpaca-use-package")
+(defvar           elpaca-use-package)
+(defvar           use-package-always-ensure)
 
-;; Load autoloads only unless they do not exist.
-(defun user/load-elpaca-if-setup (file)
-  "Load elpaca and elpaca-use-package if installed.
-Provide full path to elpaca's autoloads FILE."
-  (add-to-list 'load-path (expand-file-name "elpaca" elpaca-builds-directory))
-  (load file nil t)
-  (message "Loaded existing Elpaca autoloads")
-  (add-to-list 'load-path
-	       (expand-file-name "elpaca-use-package" elpaca-builds-directory))
-  (require 'elpaca-use-package-autoloads)
+(let ((elpaca-bootstrap
+       (expand-file-name "elpaca/sources/elpaca/doc/installer.el"
+			 user-emacs-directory)))
+  (if (file-exists-p elpaca-bootstrap)
+      (load-file elpaca-bootstrap)
+    (progn
+      (require 'url)
+      (with-current-buffer
+	  (url-retrieve-synchronously
+	   "https://raw.githubusercontent.com/progfolio/elpaca\
+/refs/heads/master/doc/installer.el" 'silent 'inhibit-cookies 10)
+	(goto-char (point-min))
+	(re-search-forward "^$")
+	(forward-char)
+	(eval-print-last-sexp)))))
+
+(elpaca elpaca-use-package
   (elpaca-use-package-mode 1))
-
-(defun user/bootstrap-elpaca ()
-  "Bootstrap elpaca and use it to load/install elpaca-use-package."
-  (require 'elpaca-bootstrap)
-  (elpaca elpaca-use-package
-    (elpaca-use-package-mode 1)))
-
-(let ((al-file
-       (expand-file-name "elpaca-autoloads.el" elpaca-sources-directory)))
-  (if (file-exists-p al-file)
-      (user/load-elpaca-if-setup al-file)
-    (user/bootstrap-elpaca)))
-
-(keymap-global-set "C-c M-c" #'elpaca-manager)
 (setq use-package-always-ensure t)
-
+(keymap-global-set "C-c e" #'elpaca-manager)
 
 ;; =======  OTHER BOOTSTRAPS  =======
 ;; `gcmh' (smart garbage collection)
@@ -65,9 +52,11 @@ Provide full path to elpaca's autoloads FILE."
     (setopt
      gcmh-high-cons-threshold (* 100 1024 1024)
      gc-cons-percentage 0.1))
-  :hook (emacs-startup . user/restore-sane-gcmh-values)
+
   :functions gcmh-mode
-  :init (gcmh-mode 1))
+  :hook (emacs-startup . user/restore-sane-gcmh-values)
+  :init
+  (gcmh-mode 1))
 
 (use-package exec-path-from-shell
   :demand t
@@ -134,6 +123,32 @@ creating org nodes."
       (apply orig-fn args)))
   (advice-add 'org-id-new :around #'user/org-id-dynamic-prefix)
 
+  (defun user/org-get-heading-location ()
+    "Prompt to select a heading in the current document.  Return its location.
+Location is the value of the character at which the heading begins in
+the current document."
+    (interactive)
+    (let* ((options
+	    (org-map-entries
+	     (lambda ()
+	       (let ((heading (org-get-heading t t t t))
+		     (pos (point)))
+		 (cons heading pos)))
+	     nil 'file))
+	   (choice (completing-read "Heading: " options nil t)))
+      (cdr (assoc choice options))))
+
+  (defun user/org-create-properties-block ()
+    "Create an org-node properties block at an interactively-selected heading."
+    (interactive)
+    (unless (derived-mode-p 'org-mode)
+      (user-error "This buffer is not in org-mode"))
+    (goto-char (user/org-get-heading-location))
+    (org-id-get-create)
+    (unless (org-entry-get nil "CREATED")
+      (org-entry-put nil "CREATED"
+		     (format-time-string "[%Y-%m-%d %a %H:%M:%S]"))))
+
   (defun user/convert-md-links-to-org ()
     "Convert all md-style links in the current buffer to org-style."
     (interactive)
@@ -182,11 +197,11 @@ creating org nodes."
 	      (assq-delete-all :results org-babel-default-header-args)))
   
   (setq org-src-lang-modes (assoc-delete-all "bash" org-src-lang-modes))
-  (dolist (lang-mode-cons '(("bash" . bash-ts) ("cmake" . cmake-ts)
-  			    ("json" . json-ts) ("lua" . lua-ts)
-  			    ("python" . python-ts) ("sh" . sh)
-			    ("toml" . toml-ts) ("yaml" . yaml-ts)
-			    ("zsh" . shell)))
+  (dolist (lang-mode-cons '(("bash"   . bash-ts) ("cmake" . cmake-ts)
+  			    ("json"   . json-ts) ("lua"   . lua-ts)
+  			    ("python" . python-ts) ("sh"  . sh)
+			    ("toml"   . toml-ts) ("yaml"  . yaml-ts)
+			    ("zsh"    . shell)))
 
     (add-to-list 'org-src-lang-modes lang-mode-cons)))
 

@@ -138,7 +138,7 @@
                (string= sh-shell "zsh"))
       (add-hook 'before-save-hook #'user/zsh-redirect-error-echoes nil t)))
 
-  (defun my/fix-zsh-error-echoes (dir)
+  (defun user/fix-zsh-error-echoes (dir)
     "Replace `echo \"ERROR:` with `echo >&2 \"ERROR:` on all .zsh files in DIR."
     (interactive "DDirectory: ")
     (dolist (file (directory-files-recursively dir "\\.zsh\\'"))

@@ -6,18 +6,20 @@
 ;; and applies early UI optimizations before the main config loads.
 
 ;;; Code:
-;; Set the environment variable "EMACS_PROFILE_STARTUP" to yes (or to any
-;; string) to create a cpu profile report on your startup.
+(defvar package-quickstart)
+(defvar auth-sources)
+
+(declare-function profiler-report "profiler")
 (defvar user/profile-startup nil
   "When non-nil, enable CPU profiling during startup.")
 (when user/profile-startup
   (setq debug-on-error t)
   (profiler-start 'cpu)
-  (add-hook 'emacs-startup-hook
-	    #'(lambda ()
-		(profiler-cpu-stop)
-		(require 'profiler)
-		(profiler-report))))
+  (run-with-idle-timer 30 nil #'(lambda ()
+				  (profiler-stop)
+				  (require 'profiler)
+				  (with-eval-after-load 'profiler
+				    (profiler-report)))))
 
 ;; Variables modified for startup then reset once started.
 ;; Ignore `tramp' and `compressed'/`archive' files during start.  Do not
@@ -52,7 +54,6 @@
  ;; Reduce startup "noise"
  inhibit-startup-message t
  inhibit-startup-echo-area-message user-login-name
- inhibit-startup-screen t
  initial-scratch-message nil
  auto-mode-case-fold nil
  frame-inhibit-implied-resize t
@@ -66,6 +67,8 @@
  use-short-answers t)
 
 ;; Variables depending on package load
+(defvar ffap-machine-p-known)
+(defvar which-func-update-delay)
 (with-eval-after-load 'ffap
   (setq ffap-machine-p-known 'reject))
 (with-eval-after-load 'which-function-mode

@@ -54,8 +54,7 @@
   :preface
   (keymap-global-unset "C-x p")
   :bind (:map ctl-x-map
-	      ("p" . disproject-dispatch))
-  :functions disproject-find-file)
+	      ("p" . disproject-dispatch)))
 
 (use-package deadgrep
   :defer t
@@ -201,6 +200,24 @@ into the message."
   :config
   (advice-add 'project-switch-project
 	      :after #'user/project-switch-perspective))
+
+(use-package activities
+  :demand t
+  :bind
+  (("C-x C-a C-n" . activities-new)
+   ("C-x C-a C-d" . activities-define)
+   ("C-x C-a C-a" . activities-resume)
+   ("C-x C-a C-s" . activities-suspend)
+   ("C-x C-a C-k" . activities-kill)
+   ("C-x C-a RET" . activities-switch)
+   ("C-x C-a b"   . activities-switch-buffer)
+   ("C-x C-a g"   . activities-revert)
+   ("C-x C-a l"   . activities-list))
+  :functions
+  activities-mode activities-tabs-mode
+  :init
+  (activities-mode 1)
+  (activities-tabs-mode 1))
 
 (use-package docker
   :defer t
