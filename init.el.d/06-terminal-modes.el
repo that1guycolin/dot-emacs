@@ -10,22 +10,33 @@
 
 ;;; Code:
 ;; =======  HELPFUL FUNCTIONS  =======
+(defun user/normal-window-p (win)
+  "Return non-nil if WIN is a normal, non-side, non-minibuffer window."
+  (and (window-live-p win)
+       (not (window-minibuffer-p win))
+       (not (window-parameter win 'window-side))))
+
+(defun user/get-normal-window ()
+  "Return a normal, non-side, non-minibuffer window."
+  (get-window-with-predicate #'user/normal-window-p nil t))
+
 (defun user/only-one-non-side-window-p ()
   "Return non-nil if there is only one non-side, non-minibuffer window."
-  (= 1 (length (seq-remove
-		(lambda (win)
-		  (or (window-minibuffer-p win)
-		      (window-parameter win 'window-side)))
-		(window-list nil 'no-minibuf)))))
+  (= 1 (length (seq-filter #'user/normal-window-p
+			   (window-list nil 'no-minibuf)))))
 
 (defun user/call-in-other-window-advice (orig-fn &rest args)
   "Call ORIG-FN (with ARGS) in another normal window, splitting if needed."
-  (if (user/only-one-non-side-window-p)
-      (progn
-	(split-window-right)
-	(other-window 1))
-    (other-window 1))
-  (apply orig-fn args))
+  (let ((normal-window (user/get-normal-window)))
+    (unless normal-window
+      (error "No normal window available"))
+    (select-window normal-window)
+    (if (user/only-one-non-side-window-p)
+	(progn
+	  (split-window-right)
+	  (other-window 1))
+      (other-window 1))
+    (apply orig-fn args)))
 
 
 ;; =======  TERMINAL SHELLS  =======
