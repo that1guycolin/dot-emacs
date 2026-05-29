@@ -10,58 +10,62 @@
 
 ;;; Code:
 ;; =======  VARIABLES & FUNCTIONS  =======
-(defvar user/ollama-alist
-  '((codegemma:2b		 . ,(* 1  4096))
-    (codegemma:7b		 . ,(* 2  4096))
-    (codellama:7b-instruct	 . ,(* 2  4096))
-    (cogito:3b			 . ,(* 1  4096))
-    (cogito:8b			 . ,(* 2  4096))
-    (gemma4:e2b			 . ,(* 1  4096))
-    (gemma4:e4b			 . ,(* 2  4096))
-    (gpt-oss:120b-cloud		 . ,(* 16 4096))
-    (granite4.1:3b		 . ,(* 1  4096))
-    (granite4.1:8b		 . ,(* 2  4096))
-    (granite-code:3b		 . ,(* 1  4096))
-    (granite-code:8b		 . ,(* 2  4096))
-    (lfm2.5-thinking:1.2b	 . ,(* 2  4096))
-    (llama3.1:8b		 . ,(* 2  4096))
-    (llama3.2:1b		 . ,(* 1  4096))
-    (llama3.2:3b		 . ,(* 2  4096))
-    (nomic-embed-text:latest	 . ,(* 2  4096))
-    (opencoder:1.5b		 . ,(* 1  4096))
-    (opencoder:8b		 . ,(* 2  4096))
-    (qwen3:0.6b			 . ,(* 1  4096))
-    (qwen3:1.7b			 . ,(* 1  4096))
-    (qwen3:4b			 . ,(* 2  4096))
-    (qwen3.5:cloud		 . ,(* 16 4096))
-    (qwen3:8b			 . ,(* 2  4096))
-    (qwen3-coder:480b-cloud	 . ,(* 16 4096))
-    (qwen3-coder-next:cloud	 . ,(* 16 4096))
-    (stable-code:3b		 . ,(* 1  4096)))
-  "Alist containing Ollama models and their context length.
+(use-package llm
+  :demand t
+  :preface
+  (defvar user/ollama-alist
+    `((codegemma:2b		 . ,(* 1  4096))
+      (codegemma:7b		 . ,(* 2  4096))
+      (codellama:7b-instruct	 . ,(* 2  4096))
+      (cogito:3b		 . ,(* 1  4096))
+      (cogito:8b		 . ,(* 2  4096))
+      (gemma4:e2b		 . ,(* 1  4096))
+      (gemma4:e4b		 . ,(* 2  4096))
+      (gpt-oss:120b-cloud	 . ,(* 16 4096))
+      (granite4.1:3b		 . ,(* 1  4096))
+      (granite4.1:8b		 . ,(* 2  4096))
+      (granite-code:3b		 . ,(* 1  4096))
+      (granite-code:8b		 . ,(* 2  4096))
+      (lfm2.5-thinking:1.2b	 . ,(* 2  4096))
+      (llama3.1:8b		 . ,(* 2  4096))
+      (llama3.2:1b		 . ,(* 1  4096))
+      (llama3.2:3b		 . ,(* 2  4096))
+      (nomic-embed-text:latest	 . ,(* 2  4096))
+      (opencoder:1.5b		 . ,(* 1  4096))
+      (opencoder:8b		 . ,(* 2  4096))
+      (qwen3:0.6b		 . ,(* 1  4096))
+      (qwen3:1.7b		 . ,(* 1  4096))
+      (qwen3:4b			 . ,(* 2  4096))
+      (qwen3.5:cloud		 . ,(* 16 4096))
+      (qwen3:8b			 . ,(* 2  4096))
+      (qwen3-coder:480b-cloud	 . ,(* 16 4096))
+      (qwen3-coder-next:cloud	 . ,(* 16 4096))
+      (stable-code:3b		 . ,(* 1  4096)))
+    "Alist containing Ollama models and their context length.
 Models on this list are either cloud-based or have already been downloaded
 to the user's device.")
 
-(defvar user/ollama-models (mapcar #'car user/ollama-alist)
-  "List of ollama-models (without their context lengths).")
+  (defvar user/ollama-models (mapcar #'car user/ollama-alist)
+    "List of ollama-models (without their context lengths).")
 
-(defvar user/openrouter-list
-  '(google/gemma-3-27b-it:free
-    meta-llama/llama-3.3-70b-instruct:free openai/gpt-oss-120b:free
-    openrouter/free qwen/qwen3-4b:free qwen/qwen3-coder:free)
-  "A list of user-selected LLMs available through OpenRouter.")
+  (defvar user/openrouter-list
+    '(google/gemma-3-27b-it:free
+      meta-llama/llama-3.3-70b-instruct:free openai/gpt-oss-120b:free
+      openrouter/free qwen/qwen3-4b:free qwen/qwen3-coder:free)
+    "A list of user-selected LLMs available through OpenRouter.")
 
-(defun user/ensure-ollama-system-service ()
-  "Check if the system-wide Ollama service is active and start it if not."
-  (interactive)
-  (let ((status (shell-command-to-string "systemctl is-active ollama")))
-    (if (string-prefix-p "active" (string-trim status))
-        (message "Ollama system service is already running.")
-      (progn
-        (message "Ollama is down. Requesting system start...")
-        (shell-command "systemctl start ollama &")
-        (message "Ollama service start command sent.")
-	(kill-buffer "*Async Shell Command*")))))
+  (defun user/ensure-ollama-system-service ()
+    "Check if the system-wide Ollama service is active and start it if not."
+    (interactive)
+    (let ((status (shell-command-to-string "systemctl is-active ollama")))
+      (if (string-prefix-p "active" (string-trim status))
+          (message "Ollama system service is already running.")
+	(progn
+          (message "Ollama is down. Requesting system start...")
+          (shell-command "systemctl start ollama &")
+          (message "Ollama service start command sent.")
+	  (kill-buffer "*Async Shell Command*")))))
+  :functions make-llm-ollama)
 
 
 ;; =======  MCP  =======
@@ -137,14 +141,14 @@ doubles as a model-switcher."
 
 (use-package gptel-forge-prs
   :defer t
-  :hook (forge-pullreq-mode . gptel-forge-pers-install))
+  :hook (forge-pullreq-mode . gptel-forge-prs-install))
 
 
 ;; =======  ELLAMA  =======
 (use-package ellama
   :defer t
   :preface
-  (with-eval-after-load 'llm
+  (with-eval-after-load 'llm-ollama
     (defun user/llm-ollama-model-setup (model)
       "Setup Ollama MODEL for use with llm, ellama, etc..."
       (interactive
