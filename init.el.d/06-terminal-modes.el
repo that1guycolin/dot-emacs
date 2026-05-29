@@ -139,6 +139,7 @@
 ;; `with-editor' (set envar EDITOR to current Emacs session)
 ;; ========================
 (use-package with-editor
+  :defer t
   :hook ((eshell-mode shell-mode vterm-mode) . with-editor-export-editor))
 
 (use-package native-complete
