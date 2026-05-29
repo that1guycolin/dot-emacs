@@ -73,9 +73,7 @@ First, print a heading.  The heading links FILE's pretty name to the
 actual file.  Next, print a list containing all the elpaca-installed
 packages whose `use-package' block appears in file.  The entry for each
 package links to its online repo."
-  (let* ((filename-ext
-	  (string-replace "/home/colin-l/.emacs.d/init.el.d/"
-			  nil file))
+  (let* ((filename-ext (file-name-nondirectory file))
 	 (file-url
 	  (concat
 	   "https://github.com/that1guycolin/dot-emacs/blob/main/init.el.d/"
