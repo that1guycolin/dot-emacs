@@ -177,12 +177,6 @@ creating org nodes."
   :init
   (setq org-directory (expand-file-name "~/org"))
   :custom
-  (org-babel-default-header-args
-   (cons '(:results . "value verbatim replace")
-	 (assq-delete-all :results org-babel-default-header-args)))
-  (org-babel-default-header-args:zsh
-   '((:results . "output")))
-  (org-babel-lisp-eval-fn #'sly-eval)
   (org-confirm-babel-evaluate nil)
   (org-default-notes-file (expand-file-name ".notes" org-directory))
   (org-edit-src-content-indentation 0)
@@ -206,8 +200,17 @@ creating org nodes."
 			    ("zsh"    . shell)))
     (add-to-list 'org-src-lang-modes lang-mode-cons))
 
-  (dolist (lang '(lisp lua makefile org python shell))
-    (add-to-list 'org-babel-load-languages `(,lang . t))))
+  (with-eval-after-load 'ob
+    (setq org-babel-default-header-args
+	  (cons '(:results . "value verbatim replace")
+		(assq-delete-all :results org-babel-default-header-args)))
+    (setq org-babel-default-header-args:zsh '((:results . "output")))
+    (setq org-babel-lisp-eval-fn #'sly-eval)
+    (dolist (lang '(lisp lua makefile org python shell))
+      (add-to-list 'org-babel-load-languages `(,lang . t)))
+    (org-babel-do-load-languages
+     'org-babel-load-languages
+     org-babel-load-languages)))
 
 
 

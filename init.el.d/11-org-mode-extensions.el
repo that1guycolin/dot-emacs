@@ -258,13 +258,6 @@ With a prefix ARG, remove start location."
   :config
   (add-to-list 'org-babel-load-languages '(rust . t)))
 
-;; Ensure all languages added to org-babel-load-languages before evaluating.
-(unless (or (not (assoc 'rust org-babel-load-languages))
-	    (featurep 'ob-rust))
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   org-babel-load-languages))
-
 
 ;; =======  MISC  =======
 ;; `el2org' (make .org from .el)
@@ -274,7 +267,6 @@ With a prefix ARG, remove start location."
 ;; `org-tidy' (invisible drawers)
 ;; ======================
 (use-package el2org
-  :ensure (:wait t)
   :defer t
   :bind
   (("C-c 2 f" . el2org-generate-file)
@@ -310,7 +302,7 @@ With a prefix ARG, remove start location."
 	   :host github :repo "jdtsmith/org-modern-indent" :files (:defaults)
 	   :method https)
   :defer t
-  :hook (org-mode . org-modern-indent-mode))
+  :hook (org-modern-mode . org-modern-indent-mode))
 
 (use-package org-pomodoro
   :defer t
@@ -320,6 +312,7 @@ With a prefix ARG, remove start location."
   (org-pomodoro-manual-break t))
 
 (use-package org-tidy
+  :ensure (:wait t)
   :defer t
   :bind ("C-:" . org-tidy-toggle)
   :hook (org-mode . org-tidy-mode)

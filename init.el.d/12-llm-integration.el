@@ -65,10 +65,27 @@ to the user's device.")
           (shell-command "systemctl start ollama &")
           (message "Ollama service start command sent.")
 	  (kill-buffer "*Async Shell Command*")))))
+  
+  (defun user/llm-ollama-model-setup (model)
+    "Setup Ollama MODEL for use with llm, ellama, etc..."
+    (interactive
+     (list
+      (completing-read "Model: " (mapcar #'car user/ollama-alist) nil t)))
+    (unless (member model (mapcar #'car user/ollama-alist))
+      (error "Model not in `user/ollama-alist'"))
+    (make-llm-ollama
+     :chat-model (symbol-name model)
+     :embedding-model "nomic-embed-text"
+     :default-chat-max-tokens (cdr (assoc model user/ollama-alist))))
+  
   :functions make-llm-ollama)
 
 
 ;; =======  MCP  =======
+(use-package mcp-server-lib
+  :defer t
+  :commands (mcp-server-lib-start mcp-server-lib-stop))
+
 (use-package org-mcp
   :defer t
   :commands org-mcp-enable
@@ -88,8 +105,8 @@ to the user's device.")
   (declare-function auth-source-pick-first-password "auth-source")
 
   (defvar user/gptel--backend-map
-    '(("Ollama"      . (name "Ollama"      models user/ollama-models))
-      ("OpenRouter"  . (name "OpenRouter"  models user/openrouter-list)))
+    `(("Ollama"     . (name "Ollama"  models ,(mapcar #'car user/ollama-alist)))
+      ("OpenRouter" . (name "OpenRouter"  models user/openrouter-list)))
     "Alist mapping display names to backend metadata plists.")
 
   (defun user/gptel-switch-backend ()
@@ -107,8 +124,7 @@ doubles as a model-switcher."
            (models (plist-get meta 'models))
            (model
 	    (completing-read
-	     (format "Model [%s]: " backend-name)
-	     models nil t)))
+	     (format "Model [%s]: " backend-name) models nil t)))
       (setq gptel-backend (gptel-get-backend gptel-name)
 	    gptel-model   (if (consp (car models))
 			      (cdr (assoc model models))
@@ -126,7 +142,7 @@ doubles as a model-switcher."
    gptel-backend (gptel-make-ollama "Ollama"
 		   :host "localhost:11434"
 		   :stream t
-		   :models user/ollama-models)
+		   :models (mapcar #'car user/ollama-alist))
    gptel-model 'llama3.2:3b)
 
   (gptel-make-openai "OpenRouter"
@@ -147,107 +163,93 @@ doubles as a model-switcher."
 ;; =======  ELLAMA  =======
 (use-package ellama
   :defer t
-  :preface
-  (with-eval-after-load 'llm-ollama
-    (defun user/llm-ollama-model-setup (model)
-      "Setup Ollama MODEL for use with llm, ellama, etc..."
-      (interactive
-       (list
-	(completing-read "Model: " (mapcar #'car user/ollama-alist) nil t)))
-      (unless (member model (mapcar #'car user/ollama-alist))
-	(error "Model not in `user/ollama-alist'"))
-      (make-llm-ollama
-       :chat-model (symbol-name model)
-       :embedding-model "nomic-embed-text"
-       :default-chat-max-tokens (cdr (assoc model user/ollama-alist))))
-    ;; ----------- MODEL TYPES -----------
-    ;; Fast:
-    (defvar user/ellama-model-fast-chat
-      (user/llm-ollama-model-setup 'lfm2.5-thinking:1.2b))
-
-    (defvar user/ellama-model-fast-code
-      (user/llm-ollama-model-setup 'cogito:3b))
-
-    ;; Balanced:
-    (defvar user/ellama-model-balanced-chat
-      (user/llm-ollama-model-setup 'llama3.2:3b))
-
-    (defvar user/ellama-model-balanced-summary
-      (user/llm-ollama-model-setup 'qwen3:4b))
-
-    (defvar user/ellama-model-balanced-code
-      (user/llm-ollama-model-setup 'codellama:7b-instruct))
-
-    ;; Heavy
-    (defvar user/ellama-model-heavy-chat
-      (user/llm-ollama-model-setup 'granite4.1:8b))
-
-    (defvar user/ellama-model-heavy-code
-      (user/llm-ollama-model-setup 'cogito:8b))
-
-    ;; Cloud-Based
-    (defvar user/ellama-model-cloud-chat
-      (user/llm-ollama-model-setup 'gpt-oss:120b-cloud))
-
-    (defvar user/ellama-model-cloud-summary
-      (user/llm-ollama-model-setup 'qwen3.5:cloud))
-
-    (defvar user/ellama-model-cloud-code
-      (user/llm-ollama-model-setup 'qwen3-coder-next:cloud))
-
-    ;; ----------- FUNCTIONS -----------
-    (defun user/ellama-set-tier (tier)
-      "Activate default models for TIER."
-      (interactive
-       (list
-	(completing-read "Tier: " '(fast heavy cloud balanced))))
-      (pcase tier
-	('fast
-	 (setopt
-	  ellama-provider user/ellama-model-fast-chat
-	  ellama-coding-provider user/ellama-model-fast-code
-	  ellama-summarization-provider user/ellama-model-fast-chat)
-	 (message "Ellama tier → FAST"))
-
-	('balanced
-	 (setopt
-	  ellama-provider user/ellama-model-balanced-chat
-	  ellama-coding-provider user/ellama-model-balanced-code
-	  ellama-summarization-provider user/ellama-model-balanced-summary)
-	 (message "Ellama tier → BALANCED"))
-
-	('heavy
-	 (setopt
-	  ellama-provider user/ellama-model-heavy-chat
-	  ellama-coding-provider user/ellama-model-heavy-code
-	  ellama-summarization-provider user/ellama-model-balanced-summary)
-	 (message "Ellama tier → HEAVY"))
-
-	('cloud
-	 (setopt
-	  ellama-provider user/ellama-model-cloud-chat
-	  ellama-coding-provider user/ellama-model-cloud-code
-	  ellama-summarization-provider user/ellama-model-cloud-summary)
-	 (message "Ellama tier → CLOUD")))))
-
-  ;; ----------- DISPLAY -----------
-  (advice-add 'pixel-scroll-precision :before #'ellama-disable-scroll)
-  (advice-add 'end-of-buffer :after #'ellama-enable-scroll)
-
   :commands ellama-transient-main-menu
   :functions
   ellama-disable-scroll ellama-enable-scroll
   :init
   (setopt ellama-language "English")
   :config
+  ;; ----------- MODEL TYPES -----------
+  ;; Fast:
+  (defvar user/ellama-model-fast-chat
+    (user/llm-ollama-model-setup 'lfm2.5-thinking:1.2b))
+
+  (defvar user/ellama-model-fast-code
+    (user/llm-ollama-model-setup 'cogito:3b))
+
+  ;; Balanced:
+  (defvar user/ellama-model-balanced-chat
+    (user/llm-ollama-model-setup 'llama3.2:3b))
+
+  (defvar user/ellama-model-balanced-summary
+    (user/llm-ollama-model-setup 'qwen3:4b))
+
+  (defvar user/ellama-model-balanced-code
+    (user/llm-ollama-model-setup 'codellama:7b-instruct))
+
+  ;; Heavy
+  (defvar user/ellama-model-heavy-chat
+    (user/llm-ollama-model-setup 'granite4.1:8b))
+
+  (defvar user/ellama-model-heavy-code
+    (user/llm-ollama-model-setup 'cogito:8b))
+
+  ;; Cloud-Based
+  (defvar user/ellama-model-cloud-chat
+    (user/llm-ollama-model-setup 'gpt-oss:120b-cloud))
+
+  (defvar user/ellama-model-cloud-summary
+    (user/llm-ollama-model-setup 'qwen3.5:cloud))
+
+  (defvar user/ellama-model-cloud-code
+    (user/llm-ollama-model-setup 'qwen3-coder-next:cloud))
+
+  ;; ----------- FUNCTIONS -----------
+  (defun user/ellama-set-tier (tier)
+    "Activate default models for TIER."
+    (interactive
+     (list
+      (completing-read "Tier: " '(fast heavy cloud balanced))))
+    (pcase tier
+      ('fast
+       (setopt
+	ellama-provider user/ellama-model-fast-chat
+	ellama-coding-provider user/ellama-model-fast-code
+	ellama-summarization-provider user/ellama-model-fast-chat)
+       (message "Ellama tier → FAST"))
+
+      ('balanced
+       (setopt
+	ellama-provider user/ellama-model-balanced-chat
+	ellama-coding-provider user/ellama-model-balanced-code
+	ellama-summarization-provider user/ellama-model-balanced-summary)
+       (message "Ellama tier → BALANCED"))
+
+      ('heavy
+       (setopt
+	ellama-provider user/ellama-model-heavy-chat
+	ellama-coding-provider user/ellama-model-heavy-code
+	ellama-summarization-provider user/ellama-model-balanced-summary)
+       (message "Ellama tier → HEAVY"))
+
+      ('cloud
+       (setopt
+	ellama-provider user/ellama-model-cloud-chat
+	ellama-coding-provider user/ellama-model-cloud-code
+	ellama-summarization-provider user/ellama-model-cloud-summary)
+       (message "Ellama tier → CLOUD"))))
+  
   ;; Defaults:
   (setopt
    ellama-provider user/ellama-model-fast-chat
    ellama-coding-provider user/ellama-model-fast-code
    ellama-summarization-provider user/ellama-model-balanced-summary
-   ;; Display:
+   ;; ----------- DISPLAY -----------
    ellama-chat-display-action-function #'display-buffer-full-frame
-   ellama-instant-display-action-function #'display-buffer-at-bottom))
+   ellama-instant-display-action-function #'display-buffer-at-bottom)
+
+  (advice-add 'pixel-scroll-precision :before #'ellama-disable-scroll)
+  (advice-add 'end-of-buffer :after #'ellama-enable-scroll))
 
 ;; =======  TRANSIENT  =======
 (declare-function transient-define-prefix "transient")
@@ -259,7 +261,7 @@ doubles as a model-switcher."
    ["Gptel"
     ("g ." "Activate @ cursor" gptel-send)
     ("g b" "Chat buffer"       gptel)
-    ("g s" "Switch backend"    user/gptel-switch-backend) :transient t]
+    ("g s" "Switch backend"    user/gptel-switch-backend :transient t)]
    ["Ellama / MCP"
     ("e"   "Ellama Menu"       ellama-transient-main-menu)
     ("m s" "Server Start"      mcp-server-lib-start)
