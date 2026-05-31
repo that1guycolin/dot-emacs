@@ -180,7 +180,7 @@ into the message."
   :init
   (persp-mode 1)
   :custom
-  (persp-mode-prefix-key "M-p")
+  (persp-mode-prefix-key (kbd "M-p"))
   (persp-switch-to-buffer-behavior 'switch)
   :config
   (setq switch-to-prev-buffer-skip

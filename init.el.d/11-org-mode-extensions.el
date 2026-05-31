@@ -286,7 +286,7 @@ With a prefix ARG, remove start location."
   :defer t
   :bind (:map org-mode-map
 	      ("C-^" . org-make-toc-insert)
-	      ("C=&" . org-make-toc-set))
+	      ("C-&" . org-make-toc-set))
   :hook (org-mode . org-make-toc-mode)
   :custom
   (org-make-toc-insert-custom-ids t))
