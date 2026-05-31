@@ -70,7 +70,7 @@ folder."
   :defer t
   :hook (magit-mode . magit-org-todos-autoinsert)
   :custom
-  (magit-org-todos-filename "TODO"))
+  (magit-org-todos-filename "TODO.org"))
 
 
 ;; =======  KNOWLEDGE  =======

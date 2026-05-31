@@ -81,6 +81,11 @@
   :ensure (:wait t)
   :demand t
   :preface
+  (defun user/org-check ()
+    "User-error if buffer is not in `org-mode'."
+    (unless (derived-mode-p 'org-mode)
+      (user-error "This buffer is not in org mode")))
+  
   (defun user/org-id-prefix-slug (s)
     "Turn S into a safe(-ish) `org-id-prefix'."
     (when s
@@ -118,44 +123,96 @@
 Designed to wrap around ORIG-FN `org-id-new' (accepting the same ARGS) when
 creating org nodes."
     (let ((org-id-prefix
-	   (or (user/org-id-prefix-slug (user/org-id-context-prefix))
-	       org-id-prefix)))
+	   (if (derived-mode-p 'org-mode)
+	       (or (user/org-id-prefix-slug (user/org-id-context-prefix))
+		   org-id-prefix)
+	     (user/get-parent-directory))))
       (apply orig-fn args)))
   (advice-add 'org-id-new :around #'user/org-id-dynamic-prefix)
 
   (defun user/org-get-heading-location ()
-    "Prompt for a heading or buffer-name and return its buffer location."
+    "In an org-mode buffer, prompt user to pick a scope.
+The scope could be the entire buffer or a heading within that buffer.  For entire buffer, return the top of the buffer "
     (let* ((doc-option `(,(buffer-name) . document))
-	   (heading-options
-	    (org-map-entries
-	     (lambda ()
-	       (let* ((path (org-get-outline-path t t))
-		      (heading (org-get-heading t t t t))
-		      (display (string-join (append path (list heading))
-					    " ")))
-		 (cons dislpay (point))))
-	     nil 'file))
-	   (options (cons doc-option heading-options))
-	   (choice (completing-read "Location: " options nil t))
-	   (location (cdr (assoc choice options))))
+           (heading-options
+            (org-map-entries
+             (lambda ()
+               (let* ((path (org-get-outline-path t t))
+                      (heading (org-get-heading t t t t))
+                      (display (string-join (append path (list heading)) " / ")))
+		 (cons display (point))))
+             nil 'file))
+           (options (cons doc-option heading-options))
+           (choice (completing-read "Location: " options nil t))
+           (location (cdr (assoc choice options))))
       (if (eq location 'document)
-	  (point-min)
+          (point-min)
 	location)))
 
   (defun user/org-create-properties-block ()
     "Create an org-node properties block at an interactively-selected heading."
     (interactive)
-    (unless (derived-mode-p 'org-mode)
-      (user-error "This buffer is not in org-mode"))
+    (user/org-check)
     (goto-char (user/org-get-heading-location))
     (org-id-get-create)
     (unless (org-entry-get nil "CREATED")
       (org-entry-put nil "CREATED"
 		     (format-time-string "[%Y-%m-%d %a %H:%M:%S]"))))
 
+  (defun user/org-top-property-drawer-id ()
+    "Return ID from a top-of-file-property-drawer, or nil."
+    (save-excursion
+      (goto-char (point-min))
+      (when (looking-at org-property-drawer-re)
+	(save-restriction
+	  (narrow-to-region (match-beginning 0) (match-end 0))
+	  (goto-char (point-min))
+	  (when (re-search-forward "^:ID:[ \t]+\\(.+\\)$" nil t)
+	    (string-trim (match-string 1)))))))
+
+  (defun user/org-insert-header-block (title author)
+    "Insert a header block at the top of the current document.
+If there is a properties drawer at the top, the header block will go
+underneath it.  The header block will contain the following fields:
+'TITLE:, AUTHOR: CREATED_DATE:, LAST_EDITED:, ID:, FILETAGS:'."
+    (interactive
+     (list (read-string "Title: " (buffer-name))
+	   (read-string "Author: " nil nil "Colin Loeffler (that1guycolin)")))
+    (user/org-check)
+    (save-excursion
+      (goto-char (point-min))
+      (let ((id (or (user/org-top-property-drawer-id)
+		    (org-id-new))))
+	(when (looking-at org-property-drawer-re)
+	  (goto-char (match-end 0))
+	  (unless (bolp)
+	    (insert "\n")))
+	(insert "#+TITLE: " title
+		"\n#+AUTHOR: " author
+		"\n#+CREATED_DATE: "
+		(format-time-string "[%Y-%m-%d %a %H:%M:%S]")
+		"\n#+LAST_EDIT: "
+		"\n#+ID: " (org-id-get-create)
+		"\n#+FILETAGS: \n"))))
+  (defun user/org-update-last-edit-dt ()
+    "Update value of `LAST_EDIT:' header in the active Org buffer.
+The new value is the current date & time in this format: "
+    (when (derived-mode-p 'org-mode)
+      (save-excursion
+	(goto-char (point-min))
+	(when (re-search-forward
+               "^#\\+LAST_EDIT:[ \t]*.*$"
+               nil t)
+          (replace-match
+           (format-time-string
+            "#+LAST_EDIT: [%Y-%m-%d %a %H:%M:%S]"))))))
+
+  (add-hook 'before-save-hook #'user/org-update-last-edit-dt)
+  
   (defun user/convert-md-links-to-org ()
     "Convert all md-style links in the current buffer to org-style."
     (interactive)
+    (user/org-check)
     (save-excursion
       (goto-char (point-min))
       (while (re-search-forward "\\[\\([^]]+\\)\\](\\([^)]+\\))" nil t)
