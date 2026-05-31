@@ -38,11 +38,20 @@
 	    :custom :config)
   "Style guide key order for `use-package' blocks.")
 
+(defconst style-use-package-required-load-keys
+  '(:defer :demand :after)
+  "Exactly one of these keys must exist in each `use-package' block.")
+
 (defun style-use-package-get-keys (form)
   "Extract the keyword keys from a `use-package' FORM (a list)."
   (cl-loop for elt in (cddr form)
 	   when (keywordp elt)
 	   collect elt))
+
+(defun style-use-package-valid-load-key-count-p (keys)
+  (= 1 (length (cl-remove-if-not
+		(lambda (k) (memq k style-use-package-required-load-keys))
+		keys))))
 
 (defun style-use-package-keys-in-order-p (keys)
   "Return nil if KEYS violate the canonical order or t if they do not.
@@ -52,40 +61,41 @@ Checks the relative-order of keys against `style-use-package-key-order'."
 		   for pos = (cl-position k style-use-package-key-order)
 		   when pos collect pos))
 	 (sorted (sort (copy-sequence positions) #'<)))
-    (equal positions sorted)))
+    (and (style-use-package-valid-load-key-count-p keys)
+	 (equal positions sorted))))
 
 (defun style-use-package-report-violations (violations &optional file rel)
-  "Display VIOLATIONS in a dedicated buffer.
-If optional FILE is provided, it will be included in the final report.
-If REL is non-nil, print filepath relative to `user-emacs-directory'."
-  (let* ((report-buf (get-buffer-create "*style-use-package-violations*"))
-	 (filename (if file file (buffer-file-name)))
-	 (rel-file
-	  (if rel
-	      (file-relative-name filename user-emacs-directory)
-	    filename)))
-    (with-current-buffer report-buf
-      (read-only-mode -1)
-      (erase-buffer)
-      (insert "use-package key order violations\n")
-      (insert (make-string 40 ?=) "\n\n")
-      (pcase-dolist (`(,pos ,name ,keys) violations)
-	(insert (format "File: %s\n" rel-file))
-	(insert (format "  Package: %s (buffer position %d)\n" name pos))
+    "Display VIOLATIONS in a dedicated buffer.
+  If optional FILE is provided, it will be included in the final report.
+  If REL is non-nil, print filepath relative to `user-emacs-directory'."
+    (let* ((report-buf (get-buffer-create "*style-use-package-violations*"))
+	   (filename (if file file (buffer-file-name)))
+	   (rel-file
+	    (if rel
+		(file-relative-name filename user-emacs-directory)
+	      filename)))
+      (with-current-buffer report-buf
+	(read-only-mode -1)
+	(erase-buffer)
+	(insert "use-package key order violations\n")
+	(insert (make-string 40 ?=) "\n\n")
+	(pcase-dolist (`(,pos ,name ,keys) violations)
+  	(insert (format "File: %s\n" rel-file))
+  	(insert (format "  Package: %s (buffer position %d)\n" name pos))
 	(insert (format "  Keys found:    %s\n" keys))
 	(insert (format "  Expected order from: %s\n\n"
-			(cl-remove-if-not
-			 (lambda (k) (memq k keys))
-			 style-use-package-key-order))))
-      (read-only-mode 1)
-      (goto-char (point-min)))
-    (display-buffer report-buf)))
+  			(cl-remove-if-not
+  			 (lambda (k) (memq k keys))
+  			 style-use-package-key-order))))
+	(read-only-mode 1)
+	(goto-char (point-min)))
+      (display-buffer report-buf)))
 
 (defun style-use-package-get-buffer-violations (buf &optional file)
   "Return a list of all style guide violations in BUF.
 Provide optional FILE if you want to include specific filename in report."
-    (let ((violations '()))
-      (save-excursion
+  (let ((violations '()))
+    (save-excursion
       (goto-char (point-min))
       (condition-case nil
 	  (while t
@@ -99,9 +109,9 @@ Provide optional FILE if you want to include specific filename in report."
 		    (push (list (when file file) start name keys)
 			  violations))))))
 	(end-of-file nil)))
-      violations))
+    violations))
 
-(defun style-use-package-check-buffer ()
+(defun style-use-package-check-buffer () 
   "Check key order of all `use-package' forms in the current buffer.
 The order in which keys appear in each form should match
 `style-use-package-key-order'.  Violations are reported in a
@@ -115,19 +125,19 @@ The order in which keys appear in each form should match
 
 (defun style-use-package-check-directory (dir)
   "Check all .el files in DIR for `use-package' key order violations."
-  (interactive "DCheck Directory: " user-emacs-directory)
+  (interactive "DCheck Directory: ")
   (let ((files (directory-files-recursively dir "\\.el$")))
     (dolist (file files)
       (with-temp-buffer
 	(insert-file-contents file)
-	 (let ((all-violations
-		(style-use-package-get-buffer-violations
-		 (current-buffer) file)))
-	   (if (null all-violations)
-	       (message
-		"All `use-package' blocks accross %d files are in order."
-		(length files))
-	     (style-use-package-report-violations all-violations)))))))
+	(let ((all-violations
+	       (style-use-package-get-buffer-violations
+		(current-buffer) file)))
+	  (if (null all-violations)
+	      (message
+	       "All `use-package' blocks accross %d files are in order."
+	       (length files))
+	    (style-use-package-report-violations all-violations)))))))
 
 (defun style-use-package-maybe-check-buffer-objects (&optional dir)
   "Check the order of each `use-package' in files in `user-emacs-directory'.
@@ -135,12 +145,12 @@ Optionally, specify an alternate DIR (including subdirs of
 `user-emacs-directory').  This function is designed to be an
 `after-save-hook'.  Add with:
 \(add-to-list \='after-save-hook
-              #\='style-use-package-maybe-check-buffer-objects)
+    #\='style-use-package-maybe-check-buffer-objects)
 OR
 \(add-to-list \='after-save-hook
-             (lambda ()
-               (style-use-package-maybe-check-buffer-objects
-                 (expand-file-name \"lisp\" user-emacs-directory))))"
+               (lambda ()
+                 (style-use-package-maybe-check-buffer-objects
+                   (expand-file-name \"lisp\" user-emacs-directory))))"
   (let ((check-dir (if dir
 		       (expand-file-name dir)
 		     (expand-file-name user-emacs-directory))))

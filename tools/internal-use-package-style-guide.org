@@ -109,27 +109,31 @@ object follows the load order defined by this guide.
 If we were to package these functions, a rough outline of the primary .el file might be
 
 #+begin_src elisp :noweb yes :tangle style-use-package.el
-  <<package-start-metadata>>
+<<package-start-metadata>>
 
-  <<pkg-prefix>>
+<<pkg-prefix>>
 
-  <<key-order-variable>>
+<<key-order-variable>>
 
-  <<extract-keys-function>>
+<<required-keys-variable>>
 
-  <<single-object-check>>
+<<extract-keys-function>>
 
-  <<report-violations>>
+<<valid-load-key-count>>
 
-  <<reuse-logic>>
+<<single-object-check>>
 
-  <<check-buffer>>
+<<report-violations>>
 
-  <<check-directory>>
+<<reuse-logic>>
 
-  <<func-for-hook>>
+<<check-buffer>>
 
-  <<package-end-metadata>>
+<<check-directory>>
+
+<<func-for-hook>>
+
+<<package-end-metadata>>
 #+end_src
 
 ** Package Prefix
@@ -140,10 +144,10 @@ we use the syntax we would use if we were writing a traditional package.
 
 #+NAME: pkg-prefix
 #+begin_src elisp
-  (defgroup style-use-package nil
-    "Maintain consistency and readability across all `use-package' objects."
-    :group 'use-package
-    :prefix "style-use-package-")
+(defgroup style-use-package nil
+  "Maintain consistency and readability across all `use-package' objects."
+  :group 'use-package
+  :prefix "style-use-package-")
 #+end_src
 
 ** Variable: Key Order
@@ -154,11 +158,34 @@ define it with ~defconst~ instead of ~defvar~.
 
 #+NAME: key-order-variable
 #+begin_src elisp
-  (defconst style-use-package-key-order
-    '(:ensure :load-path :defer :demand :after :preface :bind :hook
-  	    :interpreter :magic :mode :commands :functions :defines :init
-  	    :custom :config)
-    "Style guide key order for `use-package' blocks.")
+(defconst style-use-package-key-order
+  '(:ensure :load-path :defer :demand :after :preface :bind :hook
+	    :interpreter :magic :mode :commands :functions :defines :init
+	    :custom :config)
+  "Style guide key order for `use-package' blocks.")
+#+end_src
+
+** Variable: Required Load Keys
+
+We also want to make sure one of these keys is always included.
+
+#+NAME: required-keys-variable
+#+begin_src elisp
+(defconst style-use-package-required-load-keys
+  '(:defer :demand :after)
+  "Exactly one of these keys must exist in each `use-package' block.")
+#+end_src
+
+** Function: Valid Load Key Count
+
+We can do that with this function:
+
+#+NAME: valid-load-key-count
+#+begin_src elisp
+(defun style-use-package-valid-load-key-count-p (keys)
+  (= 1 (length (cl-remove-if-not
+		(lambda (k) (memq k style-use-package-required-load-keys))
+		keys))))
 #+end_src
 
 ** Function: Extract Keys
@@ -169,11 +196,11 @@ from that list (or form).
 
 #+NAME: extract-keys-function
 #+begin_src elisp
-  (defun style-use-package-get-keys (form)
-    "Extract the keyword keys from a `use-package' FORM (a list)."
-    (cl-loop for elt in (cddr form)
-  	   when (keywordp elt)
-  	   collect elt))
+(defun style-use-package-get-keys (form)
+  "Extract the keyword keys from a `use-package' FORM (a list)."
+  (cl-loop for elt in (cddr form)
+	   when (keywordp elt)
+	   collect elt))
 #+end_src
 
 When evaluating the use-package list, this function skips the first two elements
@@ -188,15 +215,16 @@ order and =nil= if they are not.
 
 #+NAME: single-object-check
 #+begin_src elisp
-  (defun style-use-package-keys-in-order-p (keys)
-    "Return nil if KEYS violate the canonical order or t if they do not.
-  Checks the relative-order of keys against `style-use-package-key-order'."
-    (let* ((positions
-  	  (cl-loop for k in keys
-  		   for pos = (cl-position k style-use-package-key-order)
-  		   when pos collect pos))
-  	 (sorted (sort (copy-sequence positions) #'<)))
-      (equal positions sorted)))
+(defun style-use-package-keys-in-order-p (keys)
+  "Return nil if KEYS violate the canonical order or t if they do not.
+Checks the relative-order of keys against `style-use-package-key-order'."
+  (let* ((positions
+	  (cl-loop for k in keys
+		   for pos = (cl-position k style-use-package-key-order)
+		   when pos collect pos))
+	 (sorted (sort (copy-sequence positions) #'<)))
+    (and (style-use-package-valid-load-key-count-p keys)
+	 (equal positions sorted))))
 #+end_src
 
 We assign each key its position in the canonical order. We ignore keys not in
@@ -208,6 +236,8 @@ their own keys (which they would then need to handle on their own), and because
 The positions of each key should steadily increase. If they do not, "(equal
 positions sorted)" will return =nil=.
 
+We also check to make sure they contain one of ~:defer~, ~:demand~, or ~:after~.
+
 ** Function: Report Violations
 
 While it's obviously helpful to know that keys are out of order for an object,
@@ -217,31 +247,31 @@ compliance. Let's push this information to a dedicated buffer:
 
 #+NAME: report-violations
 #+begin_src elisp
-  (defun style-use-package-report-violations (violations &optional file rel)
+(defun style-use-package-report-violations (violations &optional file rel)
     "Display VIOLATIONS in a dedicated buffer.
   If optional FILE is provided, it will be included in the final report.
   If REL is non-nil, print filepath relative to `user-emacs-directory'."
     (let* ((report-buf (get-buffer-create "*style-use-package-violations*"))
-  	 (filename (if file file (buffer-file-name)))
-  	 (rel-file
-  	  (if rel
-  	      (file-relative-name filename user-emacs-directory)
-  	    filename)))
+	   (filename (if file file (buffer-file-name)))
+	   (rel-file
+	    (if rel
+		(file-relative-name filename user-emacs-directory)
+	      filename)))
       (with-current-buffer report-buf
-        (read-only-mode -1)
-        (erase-buffer)
-        (insert "use-package key order violations\n")
-        (insert (make-string 40 ?=) "\n\n")
-        (pcase-dolist (`(,pos ,name ,keys) violations)
+	(read-only-mode -1)
+	(erase-buffer)
+	(insert "use-package key order violations\n")
+	(insert (make-string 40 ?=) "\n\n")
+	(pcase-dolist (`(,pos ,name ,keys) violations)
   	(insert (format "File: %s\n" rel-file))
   	(insert (format "  Package: %s (buffer position %d)\n" name pos))
-  	(insert (format "  Keys found:    %s\n" keys))
-  	(insert (format "  Expected order from: %s\n\n"
+	(insert (format "  Keys found:    %s\n" keys))
+	(insert (format "  Expected order from: %s\n\n"
   			(cl-remove-if-not
   			 (lambda (k) (memq k keys))
   			 style-use-package-key-order))))
-        (read-only-mode 1)
-        (goto-char (point-min)))
+	(read-only-mode 1)
+	(goto-char (point-min)))
       (display-buffer report-buf)))
 #+end_src
 
@@ -253,17 +283,17 @@ check every use-package object in a buffer. Assume we will write
 
 #+NAME: check-buffer
 #+begin_src elisp
-  (defun style-use-package-check-buffer ()
-    "Check key order of all `use-package' forms in the current buffer.
-  The order in which keys appear in each form should match
-  `style-use-package-key-order'.  Violations are reported in a
-  ,*style-use-package-violations* buffer."
-    (interactive)
-    (let* ((buf (current-buffer))
-  	 (violations (style-use-package-get-buffer-violations buf)))
-      (if (null violations)
-  	(message "All `use-package' blocks are in order.")
-        (style-use-package-report-violations violations))))
+(defun style-use-package-check-buffer () 
+  "Check key order of all `use-package' forms in the current buffer.
+The order in which keys appear in each form should match
+`style-use-package-key-order'.  Violations are reported in a
+,*style-use-package-violations* buffer."
+  (interactive)
+  (let* ((buf (current-buffer))
+	 (violations (style-use-package-get-buffer-violations buf)))
+    (if (null violations)
+	(message "All `use-package' blocks are in order.")
+      (style-use-package-report-violations violations))))
 #+end_src
 
 ** Function: Check Entire Directory
@@ -277,21 +307,21 @@ into a CI pipeline.
 
 #+NAME: check-directory
 #+begin_src elisp
-  (defun style-use-package-check-directory (dir)
-    "Check all .el files in DIR for `use-package' key order violations."
-    (interactive "DCheck Directory: ")
-    (let ((files (directory-files-recursively dir "\\.el$")))
-      (dolist (file files)
-        (with-temp-buffer
-  	(insert-file-contents file)
-  	 (let ((all-violations
-  		(style-use-package-get-buffer-violations
-  		 (current-buffer) file)))
-  	   (if (null all-violations)
-  	       (message
-  		"All `use-package' blocks accross %d files are in order."
-  		(length files))
-  	     (style-use-package-report-violations all-violations)))))))
+(defun style-use-package-check-directory (dir)
+  "Check all .el files in DIR for `use-package' key order violations."
+  (interactive "DCheck Directory: ")
+  (let ((files (directory-files-recursively dir "\\.el$")))
+    (dolist (file files)
+      (with-temp-buffer
+	(insert-file-contents file)
+	(let ((all-violations
+	       (style-use-package-get-buffer-violations
+		(current-buffer) file)))
+	  (if (null all-violations)
+	      (message
+	       "All `use-package' blocks accross %d files are in order."
+	       (length files))
+	    (style-use-package-report-violations all-violations)))))))
 #+end_src
 
 ** Function: Internal Buffer Check
@@ -303,25 +333,25 @@ appears within: `(form (read buf))`.
 
 #+NAME: reuse-logic
 #+begin_src elisp
-  (defun style-use-package-get-buffer-violations (buf &optional file)
-    "Return a list of all style guide violations in BUF.
-  Provide optional FILE if you want to include specific filename in report."
-      (let ((violations '()))
-        (save-excursion
-        (goto-char (point-min))
-        (condition-case nil
-  	  (while t
-  	    (let* ((start (point))
-  		   (form (read buf)))
-  	      (when (and (listp form)
-  			 (eq (car form) 'use-package))
-  		(let* ((name (cadr form))
-  		       (keys (style-use-package-get-keys form)))
-  		  (unless (style-use-package-keys-in-order-p keys)
-  		    (push (list (when file file) start name keys)
-  			  violations))))))
-  	(end-of-file nil)))
-        violations))
+(defun style-use-package-get-buffer-violations (buf &optional file)
+  "Return a list of all style guide violations in BUF.
+Provide optional FILE if you want to include specific filename in report."
+  (let ((violations '()))
+    (save-excursion
+      (goto-char (point-min))
+      (condition-case nil
+	  (while t
+	    (let* ((start (point))
+		   (form (read buf)))
+	      (when (and (listp form)
+			 (eq (car form) 'use-package))
+		(let* ((name (cadr form))
+		       (keys (style-use-package-get-keys form)))
+		  (unless (style-use-package-keys-in-order-p keys)
+		    (push (list (when file file) start name keys)
+			  violations))))))
+	(end-of-file nil)))
+    violations))
 #+end_src
 
 ** Function: Automatic Check on Save
@@ -332,26 +362,26 @@ purpose; it can be added to `after-save-hook`.
 
 #+NAME: func-for-hook
 #+begin_src elisp
-  (defun style-use-package-maybe-check-buffer-objects (&optional dir)
-    "Check the order of each `use-package' in files in `user-emacs-directory'.
-  Optionally, specify an alternate DIR (including subdirs of
-  `user-emacs-directory').  This function is designed to be an
-  `after-save-hook'.  Add with:
-  \(add-to-list \='after-save-hook
-                #\='style-use-package-maybe-check-buffer-objects)
-  OR
-  \(add-to-list \='after-save-hook
+(defun style-use-package-maybe-check-buffer-objects (&optional dir)
+  "Check the order of each `use-package' in files in `user-emacs-directory'.
+Optionally, specify an alternate DIR (including subdirs of
+`user-emacs-directory').  This function is designed to be an
+`after-save-hook'.  Add with:
+\(add-to-list \='after-save-hook
+    #\='style-use-package-maybe-check-buffer-objects)
+OR
+\(add-to-list \='after-save-hook
                (lambda ()
                  (style-use-package-maybe-check-buffer-objects
                    (expand-file-name \"lisp\" user-emacs-directory))))"
-    (let ((check-dir (if dir
-  		       (expand-file-name dir)
-  		     (expand-file-name user-emacs-directory))))
-      (when (and buffer-file-name
-  	       (string-prefix-p check-dir
-  				(expand-file-name buffer-file-name))
-  	       (string-suffix-p ".el" buffer-file-name))
-        (style-use-package-check-buffer))))
+  (let ((check-dir (if dir
+		       (expand-file-name dir)
+		     (expand-file-name user-emacs-directory))))
+    (when (and buffer-file-name
+	       (string-prefix-p check-dir
+				(expand-file-name buffer-file-name))
+	       (string-suffix-p ".el" buffer-file-name))
+      (style-use-package-check-buffer))))
 #+end_src
 
 ** Metadata
