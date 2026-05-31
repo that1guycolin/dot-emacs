@@ -1,8 +1,8 @@
 ;;; 05-project-management.el --- Project management and file navigation -*-lexical-binding: t; -*-
 
 ;;; Packages included:
-;; deadgrep, disproject, docker, perspective, perspective-project-bridge,
-;; project, project-treemacs, rg, treemacs, treemacs-nerd-icons,
+;; activities, deadgrep, disproject, docker, perspective,
+;; perspective-project-bridge, project, rg, treemacs, treemacs-nerd-icons,
 ;; treemacs-perspective
 
 ;;; Commentary:

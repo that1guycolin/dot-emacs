@@ -1,7 +1,7 @@
 ;;; 04-tree-sitter-lang-config.el --- Enable tree-sitter support -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; bash-ts-mode, cmake-ts-mode, emacs-lisp-mode, ielm, json-ts-mode, lisp-mode,
+;; bash-ts-mode, cmake-ts-mode, emacs-lisp-mode, json-ts-mode, lisp-mode,
 ;; lua-ts-mode, markdown-ts-mode, nxml-mode, python-ts-mode, sh-mode,
 ;; toml-ts-mode, treesit, yaml-ts-mode
 

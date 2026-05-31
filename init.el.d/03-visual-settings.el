@@ -2,6 +2,7 @@
 
 ;;; Packages included:
 
+;;; Packages included:
 ;; editorconfig, ef-themes, folding-mode, minions, modus-themes, nerd-icons,
 ;; nerd-icons-corfu, tab-line-nerd-icons, visual-fill-column, which-key
 

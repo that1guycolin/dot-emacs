@@ -2,10 +2,10 @@
 
 ;;; Packages included:
 ;; adjust-parens, auto-rename-tag, checkdoc, csv-mode, dockerfile-mode,
-;; dwim-coder-mode, eask-mode, eldoc-cmake, elisp-def, eros, eros-inspector,
-;; fish-mode, glsl-mode, grip-mode, ini-mode, inspector, kdl-mode,
+;; eask-mode, eldoc-cmake, elisp-def, eros, eros-inspector, fish-mode,
+;; glsl-mode, grip-mode, ielm, ini-mode, inspector, just-ts-mode, kdl-mode,
 ;; lisp-semantic-hl, live-py-mode, macrostep, morlock, python-pytest, python-x,
-;; sly, suggest, systemd, tree-inspector, yaml-pro
+;; rustic, sly, suggest, systemd, tree-inspector, yaml-pro
 
 ;;; Commentary:
 ;; Provide packages and settings that enhance Emacs support for specific markup,

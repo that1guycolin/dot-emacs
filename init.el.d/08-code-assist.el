@@ -2,8 +2,8 @@
 
 ;;; Packages included:
 ;; adaptive-wrap, apheleia, comment-dwim-2, dap-mode, docstr, flycheck,
-;; flycheck-color-mode-line, flycheck-eask, flycheck-inline, flycheck-package,
-;; lsp-mode, lsp-treemacs, mason, smartparens, visual-regexp,
+;; flycheck-color-mode-line, flycheck-eask, flycheck-package, flyover,
+;; lsp-mode, lsp-snippet-tempel, smartparens, visual-regexp,
 ;; visual-regexp-steroids, yasnippet, yasnippet-capf, yasnippet-snippets
 
 ;;; Commentary:
