@@ -53,8 +53,8 @@
      gcmh-high-cons-threshold (* 100 1024 1024)
      gc-cons-percentage 0.1))
 
-  :functions gcmh-mode
   :hook (emacs-startup . user/restore-sane-gcmh-values)
+  :functions gcmh-mode
   :init
   (gcmh-mode 1))
 

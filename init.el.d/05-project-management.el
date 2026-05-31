@@ -64,11 +64,11 @@
 
 (use-package rg
   :defer t
-  :bind ("C-c C-g" . rg-menu)
+  :bind (("C-c C-g" . rg-menu)
+	 :map isearch-mode-map
+	 ("M-s r" . rg-isearch-menu))
   :config
-  (require 'rg-isearch)
-  :bind (:map isearch-mode-map
-	      ("M-s r" . rg-isearch-menu)))
+  (require 'rg-isearch))
 
 (use-package perspective
   :demand t

@@ -266,8 +266,8 @@
   :hook (cmake-ts-mode . eldoc-cmake-enable))
 
 (use-package grip-mode
-  :preface (defvar markdown-ts-mode-map)
   :defer t
+  :preface (defvar markdown-ts-mode-map)
   :bind (:map markdown-ts-mode-map
 	      ("C-c j" . grip-mode))
   :custom

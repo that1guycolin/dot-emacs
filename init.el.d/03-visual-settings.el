@@ -97,8 +97,8 @@ as well."
   (tab-line-nerd-icons-global-mode 1))
 
 (use-package nerd-icons-corfu
-  :preface (defvar corfu-margin-formatters)
   :after nerd-icons
+  :preface (defvar corfu-margin-formatters)
   :config
   (add-to-list 'corfu-margin-formatters 'nerd-icons-corfu-formatter))
 
@@ -123,11 +123,11 @@ as well."
 ;; `visual-fill-column' (fill-column for visual-line-mode)
 ;; =============================
 (use-package editorconfig
+  :defer t
   :preface
   (defun user/function-for-editorconfig-hook ()
     "Use this as the function to add to *-mode-hook for editorconfig."
     (editorconfig-mode 1))
-  :defer t
   :hook ((prog-mode text-mode conf-mode) . user/function-for-editorconfig-hook))
 
 (use-package visual-fill-column

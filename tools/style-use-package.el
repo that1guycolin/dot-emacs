@@ -49,6 +49,7 @@
 	   collect elt))
 
 (defun style-use-package-valid-load-key-count-p (keys)
+  "Ensure each `use-package' object contains one of the three required KEYS."
   (= 1 (length (cl-remove-if-not
 		(lambda (k) (memq k style-use-package-required-load-keys))
 		keys))))
@@ -65,28 +66,29 @@ Checks the relative-order of keys against `style-use-package-key-order'."
 	 (equal positions sorted))))
 
 (defun style-use-package-report-violations (violations &optional file rel)
-    "Display VIOLATIONS in a dedicated buffer.
-  If optional FILE is provided, it will be included in the final report.
-  If REL is non-nil, print filepath relative to `user-emacs-directory'."
-    (let* ((report-buf (get-buffer-create "*style-use-package-violations*"))
-	   (filename (if file file (buffer-file-name)))
-	   (rel-file
-	    (if rel
-		(file-relative-name filename user-emacs-directory)
-	      filename)))
+  "Display VIOLATIONS in a dedicated buffer.
+If optional FILE is provided, it will be included in the final report.
+If REL is non-nil, print filepath relative to `user-emacs-directory'."
+    (let ((report-buf (get-buffer-create "*style-use-package-violations*"))
+	  (default-file (or file (buffer-file-name))))
       (with-current-buffer report-buf
 	(read-only-mode -1)
 	(erase-buffer)
 	(insert "use-package key order violations\n")
 	(insert (make-string 40 ?=) "\n\n")
-	(pcase-dolist (`(,pos ,name ,keys) violations)
-  	(insert (format "File: %s\n" rel-file))
-  	(insert (format "  Package: %s (buffer position %d)\n" name pos))
-	(insert (format "  Keys found:    %s\n" keys))
-	(insert (format "  Expected order from: %s\n\n"
+	(pcase-dolist (`(,violation-file ,pos ,name ,keys) violations)
+	  (let* ((filename (or violation-file default-file))
+		 (rel-file
+		  (if (and rel filename)
+		      (file-relative-name filename user-emacs-directory)
+		    filename)))
+	    (insert (format "File: %s\n" rel-file))
+	    (insert (format "  Package: %s (buffer position %d)\n" name pos))
+	    (insert (format "  Keys found:    %s\n" keys))
+	    (insert (format "  Expected order from: %s\n\n"
   			(cl-remove-if-not
   			 (lambda (k) (memq k keys))
-  			 style-use-package-key-order))))
+  			 style-use-package-key-order)))))
 	(read-only-mode 1)
 	(goto-char (point-min)))
       (display-buffer report-buf)))
@@ -111,7 +113,7 @@ Provide optional FILE if you want to include specific filename in report."
 	(end-of-file nil)))
     violations))
 
-(defun style-use-package-check-buffer () 
+(defun style-use-package-check-buffer ()
   "Check key order of all `use-package' forms in the current buffer.
 The order in which keys appear in each form should match
 `style-use-package-key-order'.  Violations are reported in a
@@ -126,18 +128,20 @@ The order in which keys appear in each form should match
 (defun style-use-package-check-directory (dir)
   "Check all .el files in DIR for `use-package' key order violations."
   (interactive "DCheck Directory: ")
-  (let ((files (directory-files-recursively dir "\\.el$")))
+  (let ((files (directory-files-recursively dir "\\.el$"))
+	(all-violations '()))
     (dolist (file files)
       (with-temp-buffer
 	(insert-file-contents file)
-	(let ((all-violations
-	       (style-use-package-get-buffer-violations
-		(current-buffer) file)))
-	  (if (null all-violations)
-	      (message
-	       "All `use-package' blocks accross %d files are in order."
-	       (length files))
-	    (style-use-package-report-violations all-violations)))))))
+	(setq all-violations
+	      (append (style-use-package-get-buffer-violations
+		       (current-buffer) file)
+		      all-violations))))
+    (if (null all-violations)
+	(message
+	 "All `use-package' blocks across %d files are in order."
+	 (length files))
+      (style-use-package-report-violations (nreverse all-violations) nil t))))
 
 (defun style-use-package-maybe-check-buffer-objects (&optional dir)
   "Check the order of each `use-package' in files in `user-emacs-directory'.
