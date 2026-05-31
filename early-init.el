@@ -6,6 +6,9 @@
 ;; and applies early UI optimizations before the main config loads.
 
 ;;; Code:
+(defvar package-quickstart)
+(defvar auth-sources)
+
 (declare-function profiler-report "profiler")
 (defvar user/profile-startup nil
   "When non-nil, enable CPU profiling during startup.")

@@ -10,34 +10,7 @@
 ;;; Code:
 (use-package emms
   :defer t
-  :bind
-  (("<f6>"    . emms-browser)
-   ("C-c m b" . emms-browser)
-   ("<f7>"    . emms-smart-browse)
-   ("C-c m s" . emms-smart-browse))
-
-  :functions
-  emms-all emms-seek emms-player-mpv-pause emms-player-mpv-resume
-  user/toggle-play-pause emms-playlist-mode-go emms-playlist-mode-go-popup
-  emms-pause emms-next emms-previous emms-playlist-shuffle emms-seek-backward
-  emms-seek-forward user/seek-backward-med user/seek-forward-med
-  user/seek-backward-long user/seek-forward-long emms-play-playlist
-  emms-play-file emms-play-find emms-playlist-save emms-playlist-new emms-show
-  emms-sort emms-playlist-mode-yank
-
-  :defines
-  emms-info-functions emms-playlist-mode-map emms-player-mpv-command-name
-  emms-player-mpv-parameters emms-browser-default-browse-type
-  emms-browser-info-title-format
-  
-  :config
-  (require 'emms-setup)
-  (emms-all)
-  (setq emms-info-functions '(emms-info-native emms-info-exiftool)
-	emms-player-list '(emms-player-mpv)
-	emms-player-mpv-command-name "mpv"
-	emms-player-mpv-parameters '("--force-window=yes"))
-  
+  :preface
   (defun user/seek-backward-med ()
     "Seek backwards 30 seconds in Emms."
     (interactive)
@@ -70,13 +43,16 @@
 	  (setq user/player-is-playing nil))
       (progn
 	(emms-player-mpv-pause))))
-
-  (bind-keys
+  
+  :bind
+  (("<f6>"    . emms-browser)
+   ("C-c m b" . emms-browser)
+   ("<f7>"    . emms-smart-browse)
+   ("C-c m s" . emms-smart-browse)
    ("<f8>"    . emms-playlist-mode-go)
    ("C-c m g" . emms-playlist-mode-go)
    ("<f9>"    . emms-playlist-mode-go-popup)
    ("C-c m p" . emms-playlist-mode-go-popup)
-   
    :map emms-playlist-mode-map
    ("SPC"     . user/toggle-play-pause)
    ("m"       . emms-next)
@@ -95,7 +71,27 @@
    ("C-x n"   . emms-playlist-new)
    ("i"       . emms-show)
    ("l"       . emms-sort)
-   ("y"       . emms-playlist-mode-yank)))
+   ("y"       . emms-playlist-mode-yank))
+
+  :functions
+  emms-all emms-seek emms-player-mpv-pause emms-player-mpv-resume
+  emms-playlist-mode-go emms-playlist-mode-go-popup emms-pause emms-next
+  emms-previous emms-playlist-shuffle emms-seek-backward emms-seek-forward
+  emms-play-playlist emms-play-file emms-play-find emms-playlist-save
+  emms-playlist-new emms-show emms-sort emms-playlist-mode-yank
+  :defines
+  emms-info-functions emms-playlist-mode-map emms-player-mpv-command-name
+  emms-player-mpv-parameters emms-browser-default-browse-type
+  emms-browser-info-title-format
+  
+  :config
+  (require 'emms-setup)
+  (emms-all)
+  (setq
+   emms-info-functions '(emms-info-native emms-info-exiftool)
+   emms-player-list '(emms-player-mpv)
+   emms-player-mpv-command-name "mpv"
+   emms-player-mpv-parameters '("--force-window=yes")))
 
 (use-package emms-info-mediainfo
   :ensure (emms-info-mediainfo

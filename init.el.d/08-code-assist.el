@@ -2,8 +2,8 @@
 
 ;;; Packages included:
 ;; adaptive-wrap, apheleia, comment-dwim-2, dap-mode, docstr, flycheck,
-;; flycheck-color-mode-line, flycheck-eask, flycheck-inline, flycheck-package,
-;; lsp-mode, lsp-treemacs, mason, smartparens, visual-regexp,
+;; flycheck-color-mode-line, flycheck-eask, flycheck-package, flyover,
+;; lsp-mode, lsp-snippet-tempel, smartparens, visual-regexp,
 ;; visual-regexp-steroids, yasnippet, yasnippet-capf, yasnippet-snippets
 
 ;;; Commentary:
@@ -20,42 +20,66 @@
 ;; `comment-dwim-2' (easily switch between no-comment, comment, EOL comment)
 ;; ===================================
 (use-package visual-regexp
+  :defer t
   :bind
   (("C-c r" . vr/replace)
    ("C-c q" . vr/query-replace)))
 
 (use-package visual-regexp-steroids
-  :functions
-  vr/isearch-forward vr/isearch-backward
-  :after visual-regexp
-  :config
-  (bind-keys
-   ([remap isearch-forward-regexp]  . vr/isearch-forward)
+  :defer t
+  :bind
+  (([remap isearch-forward-regexp]  . vr/isearch-forward)
    ([remap isearch-backward-regexp] . vr/isearch-backward)))
 
 (use-package smartparens
-  :hook
-  ((prog-mode . smartparens-mode)
-   (text-mode . smartparens-mode))
+  :defer t
+  :hook ((prog-mode text-mode) . smartparens-mode)
   :config
   (require 'smartparens-config))
 
 (use-package adaptive-wrap
-  :hook
-  ((prog-mode . adaptive-wrap-prefix-mode)
-   (text-mode . adaptive-wrap-prefix-mode)))
+  :defer t
+  :hook ((prog-mode text-mode) . adaptive-wrap-prefix-mode))
 
 (use-package docstr
-  :functions
-  docstr-major-modes docstr-mode user/docstr-mode-hooks
-  :config
-  (dolist (mode (docstr-major-modes))
-    (add-hook (intern (concat (symbol-name mode) "-hook"))
-	      #'docstr-mode)))
+  :defer t
+  :preface
+  (defun user/print-docstr-hooks ()
+    "Print the `use-package' \":key\" values for `docstr'."
+    (interactive)
+    (insert ":hook (")
+    (dolist (mode (docstr-major-modes))
+      (let ((mode-str (symbol-name mode)))
+	(insert "\n(" mode-str " . docstr-mode)")))
+    (insert ")"))
+  :hook
+  ((actionscript-mode . docstr-mode)
+   (c-mode            . docstr-mode)
+   (c++-mode          . docstr-mode)
+   (csharp-mode       . docstr-mode)
+   (go-mode           . docstr-mode)
+   (groovy-mode       . docstr-mode)
+   (java-mode         . docstr-mode)
+   (javascript-mode   . docstr-mode)
+   (js-mode           . docstr-mode)
+   (js2-mode          . docstr-mode)
+   (js3-mode          . docstr-mode)
+   (lua-mode          . docstr-mode)
+   (objc-mode         . docstr-mode)
+   (php-mode          . docstr-mode)
+   (python-mode       . docstr-mode)
+   (rjsx-mode         . docstr-mode)
+   (ruby-mode         . docstr-mode)
+   (rust-mode         . docstr-mode)
+   (scala-mode        . docstr-mode)
+   (swift-mode        . docstr-mode)
+   (typescript-mode   . docstr-mode)
+   (web-mode          . docstr-mode))
+  :functions docstr-major-modes)
 
 (use-package comment-dwim-2
-  :bind
-  ([remap comment-dwim] . comment-dwim-2))
+  :defer t
+  :bind ([remap comment-dwim] . comment-dwim-2))
 
 
 ;; =======  FLYCHECK  =======
@@ -75,9 +99,18 @@
 ;; `flycheck-package' (Support Emacs' pacakges)
 ;; ==========================
 (use-package flycheck
-  :hook
-  ((prog-mode . flycheck-mode)
-   (text-mode . flycheck-mode))
+  :defer t
+  :preface
+  (defun user/setup-vale ()
+    "If not setup, install the vale from the .ini file in dot-Emacs."
+    (interactive)
+    (let* ((vale-config (expand-file-name ".vale.ini" user-emacs-directory))
+	   (vale-install (expand-file-name ".vale-styles" user-emacs-directory))
+	   (command (format "vale --config %s sync >/dev/null" vale-config)))
+      (unless (file-exists-p vale-install)
+	(shell-command command))))
+
+  :hook ((prog-mode text-mode) . flycheck-mode)
   :functions flycheck-select-checker flycheck-add-mode
 
   :custom
@@ -86,6 +119,8 @@
    '(emacs-lisp-elsa sh-bash yaml-jsyaml yaml-ruby))
 
   :config
+  (flycheck-add-mode 'org-lint 'org-gtd-clarify-mode)
+
   (flycheck-define-checker fish-self
     "The shell for the 90's built-in syntax checker.
 See URL `https://fishshell.com'."
@@ -93,8 +128,7 @@ See URL `https://fishshell.com'."
     :error-patterns
     ((error line-start (file-name) " (line " line "): " (message) line-end))
     :modes (fish-mode))
-  (add-to-list 'flycheck-checkers 'fish-self)
-  
+
   (flycheck-define-checker markdown-rumdl
     "A fast Markdown linter written in Rust.
 See URL `https://github.com/rvben/rumdl'."
@@ -104,13 +138,6 @@ See URL `https://github.com/rvben/rumdl'."
 	    ":" line ":" column ": "
 	    (id (one-or-more (not (any " ")))) " " (message) line-end))
     :modes (markdown-ts-mode markdown-mode gfm-mode))
-  (add-to-list 'flycheck-checkers 'markdown-rumdl)
-
-  (let* ((vale-config (expand-file-name ".vale.ini" user-emacs-directory))
-	 (vale-install (expand-file-name ".vale-styles" user-emacs-directory))
-	 (command (format "vale --config %s sync >/dev/null" vale-config)))
-    (unless (file-exists-p vale-install)
-      (shell-command command)))
 
   (flycheck-define-checker text-vale
     "Tool to bring code-like linting to prose.
@@ -124,25 +151,44 @@ See URL `https://vale.sh'."
 	      (id (one-or-more (not (any ":")))) ":" (message) line-end))
     :modes (markdown-mode gfm-mode text-mode org-mode org-gtd-clarify-mode
 			  flycheck-error-message-mode))
-  (add-to-list 'flycheck-checkers 'text-vale)
+  
+  (dolist (chk '(fish-self markdown-rumdl text-vale))
+    (add-to-list 'flycheck-checkers chk))
 
-  (flycheck-add-mode 'org-lint 'org-gtd-clarify-mode)
+  (add-hook 'org-mode-hook #'(lambda ()
+			       (flycheck-select-checker 'org-lint))))
 
-  (let ((flycheck-modes-alist
-	 '((fish-mode        . fish-self)
-	   (markdown-mode    . markdown-rumdl)
-	   (gfm-mode         . markdown-rumdl)
-	   (markdown-ts-mode . markdown-rumdl)
-	   (org-mode         . org-lint))))
-    (dolist (mode (mapcar #'car flycheck-modes-alist))
-      (let ((hook (intern (concat (symbol-name mode) "-hook")))
-	    (checker (cdr (assoc mode flycheck-modes-alist))))
-	(add-hook hook (lambda ()
-			 (flycheck-select-checker checker)))))))
-
-(use-package flycheck-inline
+(use-package flyover
   :defer t
-  :hook (flycheck-mode . flycheck-inline-mode))
+  :bind ("C-c y"       . flyover-mode)
+  :hook (flycheck-mode . flyover-mode)
+  :defines flyover-checkers
+  
+  :init (setq flyover-checkers '(flycheck))
+  
+  :custom
+  (flyover-levels '(error warning info))
+  (flyover-use-theme-colors t)
+  (flyover-background-lightness 45)
+  (flyover-text-tint 'lighter)
+  (flyover-text-tint-percent 50)
+  (flyover-icon-tint 'lighter)
+  (flyover-icon-tint-percent 50)
+  (flyover-icon-background-tint 'darker)
+  (flyover-icon-background-tint-percent 50)
+  (flyover-border-style 'arrow)
+  (flyover-border-match-icon t)
+  (flyover-hide-checker-name nil)
+  (flyover-show-error-id t)
+  (flyover-show-virtual-line t)
+  (flyover-virtual-line-type 'curved-arrow)
+  (flyover-line-position-offset 1)
+  (flyover-wrap-messages t)
+  (flyover-max-line-length 80)
+  (flyover-debounce-interval 0.1)
+  (flyover-cursor-debounce-interval 0.2)
+  (flyover-display-mode 'hide-on-same-line)
+  (flyover-hide-during-completion t))
 
 (use-package flycheck-color-mode-line
   :defer t
@@ -171,23 +217,25 @@ See URL `https://vale.sh'."
 ;; [OPTIONAL] xml: 'lemminx'
 ;; [OPTIONAL] yaml: 'yaml-language-server' (pacman -S yaml-language-server)
 ;; ------  EXTENSIONS  ------
-;; `lsp-treemacs' (treemacs integration)
 ;; `dap-mode' (debug protocol)
 ;; -- Requires 'debugpy': (uv tool install debugpy)
 ;; ==========================
 (use-package lsp-mode
+  :defer t
+  :bind
+  (("C-c C-l" . lsp)
+   :map lsp-mode-map
+   ("C-c F" . lsp-format-buffer))
   :hook
-  ((cmake-ts-mode  . lsp-deferred)
-   (fish-mode      . lsp-deferred)
-   (lua-ts-mode    . lsp-deferred)
-   (markdown-mode  . lsp-deferred)
-   (python-ts-mode . lsp-deferred)
-   (rustic-mode    . lsp-deferred)
-   (toml-ts-mode   . lsp-deferred))
-  :bind ("C-c C-l" . lsp)
+  ((cmake-ts-mode    . lsp-deferred)
+   (fish-mode        . lsp-deferred)
+   (lua-ts-mode      . lsp-deferred)
+   (markdown-mode    . lsp-deferred)
+   (markdown-ts-mode . lsp-deferred)
+   (python-ts-mode   . lsp-deferred)
+   (toml-ts-mode     . lsp-deferred))
   :functions
   lsp-mode lsp-register-client make-lsp--client lsp-stdio-connection
-  lsp-format-buffer lsp-enable-which-key-integration
   :defines lsp-language-id-configuration
 
   :custom
@@ -211,17 +259,17 @@ See URL `https://vale.sh'."
     :major-modes '(cmake-ts-mode)
     :server-id 'neocmakelsp))
 
-  (add-to-list 'lsp-language-id-configuration '(fish-mode . "fish"))
   (lsp-register-client
    (make-lsp--client
     :new-connection (lsp-stdio-connection '("fish-lsp" "start"))
     :major-modes '(fish-mode)
     :server-id 'fish-ls))
-
+  (add-to-list 'lsp-language-id-configuration '(fish-mode . "fish"))
+  
   (lsp-register-client
    (make-lsp--client
-    :new-connection (lsp-stdio-connection '("rumdl" "server" "--stdio"))
-    :major-modes '(markdown-mode gfm-mode markdown-ts-mode)
+    :new-connection (lsp-stdio-connection '("rumdl" "server"))
+    :major-modes '(markdown-mode markdown-ts-mode gfm-mode)
     :server-id 'rumdl-ls))
 
   (lsp-register-client
@@ -230,9 +278,6 @@ See URL `https://vale.sh'."
     :major-modes '(toml-mode toml-ts-mode)
     :server-id 'tombi-ls))
   
-  (bind-keys
-   :map lsp-mode-map
-   ("C-c F" . lsp-format-buffer))
   (dolist (dir '("[/\\\\]node_modules\\'" "[/\\\\]\\.git\\'" "[/\\\\]dist\\'"
                  "[/\\\\]build\\'" "[/\\\\]target\\'" "[/\\\\]\\.direnv\\'"
                  "[/\\\\]\\.cache\\'" "[/\\\\]vendor\\'"))
@@ -241,20 +286,23 @@ See URL `https://vale.sh'."
             (lambda ()
 	      (setq-local lsp-enable-file-watchers nil))))
 
-(use-package lsp-treemacs
-  :after lsp-mode)
+(use-package lsp-snippet-tempel
+  :ensure (lsp-snippet-tempel
+	   :type git :host github :repo "svaante/lsp-snippet")
+  :after lsp-mode
+  :config
+  (lsp-snippet-tempel-lsp-mode-init))
 
 (use-package dap-mode
   :defer t
-  :commands
-  dap-debug dap-debug-edit-template dap-auto-configure-mode
+  :commands (dap-debug dap-debug-edit-template dap-auto-configure-mode)
   :defines dap-python-debugger
   :custom
   (dap-auto-configure-features '(sessions locals controls tooltip))
   (dap-lldb-debug-program "/usr/bin/lldb-dap")
+  (dap-python-debugger 'debugpy)
   :config
-  (require 'dap-python)
-  (setq dap-python-debugger 'debugpy))
+  (require 'dap-python))
 
 
 ;; =======  FORMATTING  =======
@@ -271,25 +319,24 @@ See URL `https://vale.sh'."
 ;; yaml: 'yq-yqml' (pacman -S yq-yaml)
 ;; ============================
 (use-package apheleia
+  :defer t
   :bind ("C-c f" . apheleia-format-buffer)
-  :hook
-  ((prog-mode . apheleia-mode)
-   (text-mode . apheleia-mode))
+  :hook ((prog-mode text-mode) . apheleia-mode)
 
   :config
-  (when (or (equal major-mode 'rustic-mode)
-	    (equal major-mode 'sh-mode))
+  (when (equal major-mode 'sh-mode)
     (apheleia-mode -1))
-  (setf (alist-get 'shfmt apheleia-formatters)
-	'("shfmt" "-i" "4" "-ci" "-"))
-  (setf (alist-get 'neocmakelsp apheleia-formatters)
-        '("neocmakelsp" "format" (buffer-file-name)))
+  
   (setf (alist-get 'jq apheleia-formatters)
 	'("jq" "." "-M" "--indent" "2"))
+  (setf (alist-get 'neocmakelsp apheleia-formatters)
+        '("neocmakelsp" "format" (buffer-file-name)))
   (setf (alist-get 'ruff apheleia-formatters)
         '("ruff" "format" "-"))
   (setf (alist-get 'rumdl apheleia-formatters)
 	'("rumdl" "fmt" "--stdin" "-"))
+  (setf (alist-get 'shfmt apheleia-formatters)
+	'("shfmt" "-i" "4" "-ci" "-"))
   (setf (alist-get 'tombi apheleia-formatters)
         '("tombi" "fmt" "-"))
   (setf (alist-get 'xmlstarlet apheleia-formatters)
@@ -314,9 +361,8 @@ See URL `https://vale.sh'."
 ;; 'yasnippet-capf' (completions)
 ;; ==========================
 (use-package yasnippet
-  :hook
-  ((prog-mode . yas-minor-mode)
-   (text-mode . yas-minor-mode))
+  :defer t
+  :hook ((prog-mode text-mode) . yas-minor-mode)
   :functions yas-reload-all
   :config
   (add-to-list 'yas-snippet-dirs
@@ -324,31 +370,17 @@ See URL `https://vale.sh'."
   (yas-reload-all))
 
 (use-package yasnippet-snippets
-  :after yasnippet
-  :functions yasnippet-snippets-initialize
-  :init
-  (yasnippet-snippets-initialize))
+  :defer t
+  :hook (yas-minor-mode . yasnippet-snippets-initialize))
 
 (use-package yasnippet-capf
-  :after (yasnippet cape)
-  :functions yasnippet-capf
-  :config
-  (add-to-list 'completion-at-point-functions #'yasnippet-capf))
-
-(use-package tempel
   :defer t
   :preface
-  (defun user/tempel-setup-capf ()
-    "Locally add relevant tempel items to `completion-at-point-functions'."
-    (setq-local completion-at-point-functions
-		(cons #'tempel-complete completion-at-point-functions)))
-  :bind
-  (("M-+" . tempel-complete)
-   ("M-*" . tempel-insert))
-  :hook
-  (((text-mode prog-mode) . tempel-abbrev-mode)
-   ((text-mode prog-mode) . user/tempel-setup-capf))
-  :functions tempel-complete)
+  (defun user/setup-yasnippet-capf ()
+    "Add yasnippet-capf to `completion-at-point-functions'."
+    (add-to-list 'completion-at-point-functions #'yasnippet-capf))
+  :hook (yas-minor-mode . user/setup-yasnippet-capf)
+  :functions yasnippet-capf)
 
 
 (provide '08-code-assist)

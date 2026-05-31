@@ -46,24 +46,17 @@
 ;; ==================================
 (use-package gcmh
   :demand t
-  :functions
-  gcmh-mode user/restore-sane-gcmh-values
-  :config
-  (gcmh-mode 1)
-  (setopt
-   gcmh-high-cons-threshold most-positive-fixnum
-   gcmh-low-cons-threshold (* 8 1024 1024)
-   gcmh-idle-delay 'auto
-   gc-cons-percentage 0.8)
-
+  :preface
   (defun user/restore-sane-gcmh-values ()
     "Set gcmh values back to something reasonable.  Useful after startup."
-    (interactive)
     (setopt
      gcmh-high-cons-threshold (* 100 1024 1024)
      gc-cons-percentage 0.1))
-  
-  (add-hook 'emacs-startup-hook #'user/restore-sane-gcmh-values))
+
+  :hook (emacs-startup . user/restore-sane-gcmh-values)
+  :functions gcmh-mode
+  :init
+  (gcmh-mode 1))
 
 (use-package exec-path-from-shell
   :demand t
@@ -77,10 +70,9 @@
   (exec-path-from-shell-initialize))
 
 (use-package envrc
-  :demand t
-  :functions envrc-global-mode
-  :config
-  (envrc-global-mode 1))
+  :defer t
+  :hook (emacs-startup . envrc-global-mode)
+  :functions envrc-global-mode)
 
 (use-package transient
   :demand t)
@@ -89,64 +81,6 @@
   :ensure (:wait t)
   :demand t
   :preface
-  (defun org-babel-execute:zsh (body params)
-    "Handle zsh as language in org src blocks."
-    (org-babel-execute:shell body params))
-
-  (defun user/load-babel-langs-when-ready ()
-    "Load org-babel languages only when they are all ready to be loaded."
-    (unless
-        (or (not (assoc 'rust org-babel-load-languages))
-            (featurep 'ob-rust))
-      (org-babel-do-load-languages
-       'org-babel-load-languages
-       org-babel-load-languages)))
-  :mode
-  (("\\.org\\'"   . org-mode)
-   ("TODO\\'"     . org-mode)
-   ("\\.notes\\'" . org-mode))
-  :defines org-mode-map
-  
-  :init
-  (setq org-directory (expand-file-name "~/org"))
-
-  :custom
-  (org-babel-default-header-args
-   (cons '(:results . "value verbatim replace")
-	 (assq-delete-all :results org-babel-default-header-args)))
-  (org-babel-default-header-args:zsh
-   '((:results . "output")))
-  (org-babel-lisp-eval-fn #'sly-eval)
-  (org-confirm-babel-evaluate nil)
-  (org-default-notes-file (expand-file-name ".notes" org-directory))
-  (org-edit-src-content-indentation 0)
-  (org-id-extra-files (directory-files-recursively org-directory "\\.org$"))
-  (org-id-locations-file (expand-file-name ".id-locations" org-directory))
-  (org-id-method 'org)
-  (org-id-prefix "unk")
-  (org-insert-mode-line-in-empty-file t)
-  (org-startup-folded 'content)
-  (org-use-sub-superscripts '{})
-  
-  :config
-  (setq org-src-lang-modes (assoc-delete-all "bash" org-src-lang-modes))
-  (dolist (lang-mode-cons '(("bash"   . bash-ts)   ("cmake" . cmake-ts)
-  			    ("json"   . json-ts)   ("lua"   . lua-ts)
-  			    ("python" . python-ts) ("sh"    . sh)
-			    ("toml"   . toml-ts)   ("yaml"  . yaml-ts)
-			    ("zsh"    . shell)))
-    (add-to-list 'org-src-lang-modes lang-mode-cons))
-
-  (dolist (lang '((lisp		 . t)
-		  (lua		 . t)
-		  (makefile	 . t)
-		  (org		 . t)
-		  (python	 . t)
-		  (shell	 . t)))
-    (add-to-list 'org-babel-load-languages lang))
-  
-  (run-with-idle-timer 10 nil #'user/load-babel-langs-when-ready)
-
   (defun user/org-id-prefix-slug (s)
     "Turn S into a safe(-ish) `org-id-prefix'."
     (when s
@@ -189,14 +123,95 @@ creating org nodes."
       (apply orig-fn args)))
   (advice-add 'org-id-new :around #'user/org-id-dynamic-prefix)
 
-  (bind-keys
-   ("C-c o o" . org-mode)
+  (defun user/org-get-heading-location ()
+    "Prompt for a heading or buffer-name and return its buffer location."
+    (let* ((doc-option `(,(buffer-name) . document))
+	   (heading-options
+	    (org-map-entries
+	     (lambda ()
+	       (let* ((path (org-get-outline-path t t))
+		      (heading (org-get-heading t t t t))
+		      (display (string-join (append path (list heading))
+					    " ")))
+		 (cons dislpay (point))))
+	     nil 'file))
+	   (options (cons doc-option heading-options))
+	   (choice (completing-read "Location: " options nil t))
+	   (location (cdr (assoc choice options))))
+      (if (eq location 'document)
+	  (point-min)
+	location)))
+
+  (defun user/org-create-properties-block ()
+    "Create an org-node properties block at an interactively-selected heading."
+    (interactive)
+    (unless (derived-mode-p 'org-mode)
+      (user-error "This buffer is not in org-mode"))
+    (goto-char (user/org-get-heading-location))
+    (org-id-get-create)
+    (unless (org-entry-get nil "CREATED")
+      (org-entry-put nil "CREATED"
+		     (format-time-string "[%Y-%m-%d %a %H:%M:%S]"))))
+
+  (defun user/convert-md-links-to-org ()
+    "Convert all md-style links in the current buffer to org-style."
+    (interactive)
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward "\\[\\([^]]+\\)\\](\\([^)]+\\))" nil t)
+	(replace-match "[[\\2][\\1]]" nil nil))))
+
+  :bind
+  (("C-c o o" . org-mode)
    ("C-c o l" . org-store-link)
    ("C-c o a" . org-agenda)
    ("C-c c"   . org-capture)
    :map org-mode-map
    ("C-c l"   . org-toggle-link-display)
-   ("C-c C-q" . org-set-tags-command)))
+   ("C-c C-q" . org-set-tags-command))
+  :mode
+  (("\\.org\\'"   . org-mode)
+   ("\\.notes\\'" . org-mode))
+  :defines org-mode-map
+
+  :init
+  (setq org-directory (expand-file-name "~/org"))
+  :custom
+  (org-confirm-babel-evaluate nil)
+  (org-default-notes-file (expand-file-name ".notes" org-directory))
+  (org-edit-src-content-indentation 0)
+  (org-id-extra-files (if (file-directory-p org-directory)
+			  (directory-files-recursively org-directory "\\.org$")))
+  (org-id-locations-file (expand-file-name ".id-locations" org-directory))
+  (org-id-method 'org)
+  (org-id-prefix "unk")
+  (org-insert-mode-line-in-empty-file t)
+  (org-startup-folded 'content)
+  (org-use-sub-superscripts '{})
+
+  :config
+  (require 'ox-texinfo)
+
+  (setq org-src-lang-modes (assoc-delete-all "bash" org-src-lang-modes))
+  (dolist (lang-mode-cons '(("bash"   . bash-ts) ("cmake" . cmake-ts)
+  			    ("json"   . json-ts) ("lua"   . lua-ts)
+  			    ("python" . python-ts) ("sh"  . sh)
+			    ("toml"   . toml-ts) ("yaml"  . yaml-ts)
+			    ("zsh"    . shell)))
+    (add-to-list 'org-src-lang-modes lang-mode-cons))
+
+  (with-eval-after-load 'ob
+    (setq org-babel-default-header-args
+	  (cons '(:results . "value verbatim replace")
+		(assq-delete-all :results org-babel-default-header-args)))
+    (setq org-babel-default-header-args:zsh '((:results . "output")))
+    (setq org-babel-lisp-eval-fn #'sly-eval)
+    (dolist (lang '(lisp lua makefile org python shell))
+      (add-to-list 'org-babel-load-languages `(,lang . t)))
+    (org-babel-do-load-languages
+     'org-babel-load-languages
+     org-babel-load-languages)))
+
 
 
 ;; =======  EMACSCLIENT FRAME FUNCTION  =======

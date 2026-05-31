@@ -1,8 +1,8 @@
-;;; 05-project-management.el --- Project management and file navigation -*- lexical-binding: t; -*-
+;;; 05-project-management.el --- Project management and file navigation -*-lexical-binding: t; -*-
 
 ;;; Packages included:
-;; deadgrep, disproject, docker, perspective, perspective-project-bridge,
-;; project, project-treemacs, rg, treemacs, treemacs-nerd-icons,
+;; activities, deadgrep, disproject, docker, perspective,
+;; perspective-project-bridge, project, rg, treemacs, treemacs-nerd-icons,
 ;; treemacs-perspective
 
 ;;; Commentary:
@@ -10,52 +10,49 @@
 ;; occurs in "09-git-tools.el".
 
 ;;; Code:
-;; =======  PROJECT SUPPORT  =======
-;; `project.el' (project manager)
+;; =======  PROJECTS  =======
+;; `project.el' (management)
 ;; `disproject' (transient dispatch for project.el)
 ;; `deadgrep' (global ripgrep search)
 ;; `rg' (project ripgrep search & more)
-;; `perspective' (separate workspaces for separate projects)
+;; `perspective' (separate project workspaces)
 ;; `perspective-project-bridge' (integrate project.el & perspective)
-;; `activities' (save/restore workspaces)
-;; `docker' (Docker support for Emacs)
-;; =================================
-(defvar user/projects-directory)
-(defvar user/scripts-directory)
-(defvar org-directory)
-(defvar user-emacs-directory)
-
+;; `docker' (Docker support)
+;; ==========================
 (use-package project
   :ensure nil
-  :functions
-  project-remember-projects-under project-prompt-project-dir
+  :demand t
+  :preface
+  (defvar user/projects-directory)
+  (defvar user/scripts-directory)
+  (defvar org-directory)
+  (defvar user-emacs-directory)
 
-  :custom
-  (project-list-exclude
-   (list (concat "^" (regexp-quote (expand-file-name elpaca-directory)))))
-  :config
-  (dolist (dir '("^node_modules$" "^\\.venv$" "^\\.uv$"))
-    (add-to-list 'project-vc-ignores dir))
-  
   (defun user/project-reset-projects ()
     "Clear the project list and repopulate it."
     (interactive)
     (dolist (project (project-known-project-roots))
       (project-forget-project project))
     (message "Cleared all projects")
-    (dolist (dir `(,user/projects-directory
-		   ,user/scripts-directory
-		   "~/dotfiles"
-		   ,org-directory
-		   ,(expand-file-name user-emacs-directory)))
+    ;; Scan these directories recursively
+    (dolist (dir (list user/projects-directory user/scripts-directory))
       (project-remember-projects-under dir t))
-    (message "Successfully repopulated projects list")))
+    ;; Scan these directories (but not their subdirectories)
+    (dolist (dir (list user-emacs-directory org-directory "~/dotfiles"))
+      (project-remember-projects-under (expand-file-name dir)))
+    (message "Successfully repopulated projects list"))
 
-(dolist (keybind '("C-x b" "C-x k" "C-x C-b" "C-x p"))
-  (keymap-global-unset keybind))
+  :functions project-remember-projects-under
+  :custom
+  (project-list-exclude
+   (list (regexp-quote (expand-file-name elpaca-directory))
+	 (regexp-quote (expand-file-name "~/dotfiles/terminals/alacritty"))))
+  (project-vc-ignores '("^node_modules$" "^\\.venv$" "^\\.uv$")))
 
 (use-package disproject
   :defer t
+  :preface
+  (keymap-global-unset "C-x p")
   :bind (:map ctl-x-map
 	      ("p" . disproject-dispatch)))
 
@@ -67,52 +64,34 @@
 
 (use-package rg
   :defer t
-  :bind ("C-c s" . rg-menu)
+  :bind (("C-c C-g" . rg-menu)
+	 :map isearch-mode-map
+	 ("M-s r" . rg-isearch-menu))
   :config
-  (require 'rg-isearch)
-  (declare-function rg-isearch-menu "rg-isearch")
-  (bind-keys
-   :map isearch-mode-map
-   ("M-s r" . rg-isearch-menu)))
+  (require 'rg-isearch))
 
-(defvar ibuffer-sorting-mode)
-(declare-function ibuffer-do-sort-by-alphabetic "ibuffer")
 (use-package perspective
-  :functions
-  persp-mode persp-is-current-buffer persp-ibuffer-set-filter-groups
-  persp-switch-to-buffer* persp-ibuffer persp-kill-buffer* persp-buffer-menu
-  user/buffer-by-filename persp-add-buffer persp-curr persp-switch
+  :demand t
+  :preface
+  (dolist (keybind '("C-x b" "C-x k" "C-x C-b"))
+    (keymap-global-unset keybind))
+  (defvar ibuffer-sorting-mode)
+  (declare-function ibuffer-do-sort-by-alphabetic "ibuffer")
+  (declare-function
+   user/function-after-emacsclient-frame "01-bootstrap-core.el")
   
-  :init
-  (persp-mode 1)
+  (defun user/persp-for-ibuffer ()
+    "Correctly display persps in ibuffer-mode."
+    (persp-ibuffer-set-filter-groups)
+    (unless (eq ibuffer-sorting-mode 'alphabetic)
+      (ibuffer-do-sort-by-alphabetic)))
 
-  :custom
-  (persp-mode-prefix-key (kbd "M-p"))
-  (persp-switch-to-buffer-behavior 'switch)
-
-  :config
-  (setq switch-to-prev-buffer-skip
-	(lambda (_win buff _bury-or-kill)
-          (not (persp-is-current-buffer buff))))
-  (add-hook 'ibuffer-hook
-            (lambda ()
-	      (persp-ibuffer-set-filter-groups)
-	      (unless (eq ibuffer-sorting-mode 'alphabetic)
-		(ibuffer-do-sort-by-alphabetic))))
-  (require 'bs)
-  (keymap-global-set "C-x B" #'(lambda (arg)
-                                 (interactive "P")
-                                 (if (fboundp 'persp-bs-show)
-                                     (persp-bs-show arg)
-                                   (bs-show "all"))))
-
-  (bind-keys
-   ("C-x b"   . persp-switch-to-buffer*)
-   ("C-x C-b" . persp-ibuffer)
-   ("C-x k"   . persp-kill-buffer*)
-   ("C-x C-B" . persp-buffer-menu))
-
-  (require 'seq)
+  (defun user/safe-persp-bs-show (arg)
+    (interactive "P")
+    (if (fboundp 'persp-bs-show)
+        (persp-bs-show arg)
+      (bs-show "all")))
+  
   (defun user/buffer-by-filename (loc expr)
     "Filter all buffers whose filename contains EXPR.
 
@@ -169,28 +148,61 @@ into the message."
        (msg
 	(message msg))
        (t
-	(message "Added %s" buf))))))
+	(message "Added %s" buf)))))
+
+  (defun user/create-org-persp (&optional _args)
+    "Create a persp called \"org\".  Add open TODO and .org files to the persp."
+    (interactive)
+    (persp-new "org")
+    (persp-switch "org")
+    (user/add-list-to-persp :ext "org" "Added %s to org persp")
+    (user/add-list-to-persp :full "TODO" "Added %s to org persp")
+    (persp-switch-last))
+
+  (add-hook 'emacs-startup-hook #'user/create-org-persp)
+  (add-hook 'server-after-make-frame-hook
+	    #'(lambda ()
+		(user/function-after-emacsclient-frame
+		 #'user/create-org-persp)))
+  
+  :bind
+  (("C-x b"      . persp-switch-to-buffer*)
+   ("C-x C-b"    . persp-ibuffer)
+   ("C-x k"      . persp-kill-buffer*)
+   ("C-x B"      . user/safe-persp-bs-show)
+   ("C-x C-B"    . persp-buffer-menu))
+  :hook (ibuffer . user/persp-for-ibuffer)
+
+  :functions
+  persp-ibuffer-set-filter-groups persp-add-buffer persp-new persp-switch-last
+  persp-mode persp-is-current-buffer persp-switch
+  
+  :init
+  (persp-mode 1)
+  :custom
+  (persp-mode-prefix-key (kbd "M-p"))
+  (persp-switch-to-buffer-behavior 'switch)
+  :config
+  (setq switch-to-prev-buffer-skip
+	(lambda (_win buff _bury-or-kill)
+          (not (persp-is-current-buffer buff)))))
 
 (use-package perspective-project-bridge
-  :functions
-  perspective-project-bridge-mode
-  perspective-project-bridge-find-perspectives-for-all-buffers
-  perspective-project-bridge-kill-perspectives user/project-switch-perspective
-  :config
-  (perspective-project-bridge-mode 1)
-
+  :defer t
+  :preface
   (defun user/project-switch-perspective (&rest _args)
     "Switch to a perspective for the current project."
     (interactive)
     (persp-switch (project-name))
     (perspective-project-bridge-find-perspectives-for-all-buffers))
-  (advice-add 'project-switch-project :after #'user/project-switch-perspective))
+  :hook (persp-mode . perspective-project-bridge-mode)
+  :functions perspective-project-bridge-find-perspectives-for-all-buffers
+  :config
+  (advice-add 'project-switch-project
+	      :after #'user/project-switch-perspective))
 
 (use-package activities
   :demand t
-  :init
-  (activities-mode)
-  (activities-tabs-mode)
   :bind
   (("C-x C-a C-n" . activities-new)
    ("C-x C-a C-d" . activities-define)
@@ -198,9 +210,14 @@ into the message."
    ("C-x C-a C-s" . activities-suspend)
    ("C-x C-a C-k" . activities-kill)
    ("C-x C-a RET" . activities-switch)
-   ("C-x C-a b" . activities-switch-buffer)
-   ("C-x C-a g" . activities-revert)
-   ("C-x C-a l" . activities-list)))
+   ("C-x C-a b"   . activities-switch-buffer)
+   ("C-x C-a g"   . activities-revert)
+   ("C-x C-a l"   . activities-list))
+  :functions
+  activities-mode activities-tabs-mode
+  :init
+  (activities-mode 1)
+  (activities-tabs-mode 1))
 
 (use-package docker
   :defer t
@@ -213,38 +230,25 @@ into the message."
 ;; `treemacs-perspective' (perspective + treemacs integration)
 ;; `treemacs-nerd-icons' (nerd-icons + treemacs integration)
 ;; ==========================
-(defvar treemacs-mode-map)
 (use-package treemacs
-  :commands treemacs treemacs-refresh
   :defer t
-  :functions
-  treemacs-filewatch-mode treemacs-git-mode treemacs-git-commit-diff-mode
-  treemacs-select-window treemacs-project-follow-mode treemacs-root-up
-  treemacs-get-local-window treemacs-hide-gitignored-files-mode
-  treemacs--select-workspace-by-name treemacs-switch-workspace
-  user/treemacs-switch-workspace-and-focus user/toggle-gitignored-wait-2
-  user/close-treemacs
-
-  :custom
-  (treemacs-width 35)
-  (treemacs-is-never-other-window t)
-
-  :config
-  (treemacs-filewatch-mode 1)
-  (treemacs-git-mode 'deferred)
-  (treemacs-git-commit-diff-mode 1)
-
-  (defun user/treemacs-switch-workspace-and-focus ()
-    "Run `treemacs-switch-workspace' and ensure the Treemacs window is focused."
+  :preface
+  (defun user/treemacs-switch-workspace-focus ()
+    "Run `treemacs-switch-workspace' and ensure the Treemacs window is focused.
+The ending behaviour, where treemacs is selected, then unselected, then
+selected again,"
     (interactive)
     (call-interactively #'treemacs-switch-workspace)
     (let ((treemacs-win (treemacs-get-local-window)))
       (when (and treemacs-win (not (eq treemacs-win (selected-window))))
+	(select-window treemacs-win)
+	(when (fboundp 'treemacs-project-follow-mode)
+	  (other-window 1))
 	(select-window treemacs-win))))
 
   (defun user/toggle-gitignored-wait-2 (&rest _args)
     "Toggle `treemacs-hide-gitignored-files-mode' if treemacs window.
-Wait three seconds before activating the mode."
+Wait two seconds before activating the mode."
     (pcase (treemacs-current-visibility)
       ('visible
        (run-at-time 2 nil
@@ -261,19 +265,78 @@ Wait three seconds before activating the mode."
     "If a treemacs window exists, close it."
     (when (eq 'visible (treemacs-current-visibility))
       (treemacs)))
-  (advice-add 'disproject-dispatch :before #'user/close-treemacs)
-  
-  (bind-keys
-   :map treemacs-mode-map
-   ("F"           . treemacs-project-follow-mode)
-   ("<backspace>" . treemacs-root-up)))
 
-(use-package project-treemacs
-  :after treemacs
-  :functions project-treemacs-mode
+  (defvar user/project-treemacs-anywhere-dispatch)
+  (transient-define-prefix
+    user/project-treemacs-anywhere-dispatch ()
+    "Globally available commands for Treemacs & Project.el."
+    ["Treemacs" :pad-keys t
+     ["Project"
+      ("t" "Toggle"                    treemacs)
+      ("T" "Refresh"                   treemacs-refresh)
+      ("d" "Disproject"                disproject-dispatch)
+      ("r" "Rename Project"            treemacs-rename-project)]
+
+     ["View"
+      ("v f" "Focus to active file"    treemacs-find-file)
+      ("v p" "Add Project"             treemacs-add-project-to-workspace)
+      ("v c" "Collapse Other Projects" treemacs-collapse-other-projects)
+      ("v C" "Collapse"                treemacs-collapse-all-projects)
+      ("v r" "Current Project Only"    treemacs-create-workspace-from-project)]
+     
+     ["Workspace" :pad-keys t
+      ("w e" "Edit"                    treemacs-edit-workspaces)
+      ("w s" "Switch"                  user/treemacs-switch-workspace-focus)
+      ("w n" "New"                     treemacs-create-workspace)
+      ("w r" "Rename"                  treemacs-rename-workspace)
+      ("w d" "Delete"                  treemacs-remove-workspace)]]
+
+    ["Project.el" :pad-keys t
+     ["Search"
+      ("x" "Project Find Regexp"       project-find-regexp)
+      ("q" "Project Replace Regexp"    project-query-replace-regexp)
+      ("f" "Project Find File"         project-find-file)
+      ("s" "Project Search"            project-search)
+      ("a" "Add Project"               (lambda () (interactive)
+				         (call-interactively
+				          #'project-remember-project)))]
+     
+     ["Shell"
+      ("S" "Project Shell"             project-shell)
+      ("E" "Project EShell"            project-eshell)
+      ("A" "Project Async Shell Cmd"   project-async-shell-command)
+      ("C" "Project Shell Cmd"         project-shell-command)]
+     
+     ["Other"
+      ("D" "Set Project Dir-Locals"    project-customize-dirlocals)
+      ("R" "Ripgrep Project"           rg-project)
+      ("G" "DWIM Ripgrep Project"      rg-dwim-project-dir)
+      ("Z" "Forget Zombie Projects"    project-forget-zombie-projects)
+      ("p r" "Reset Known Projects"    user/project-reset-projects)]])
+
+  :bind
+  (("C-c t"       . user/project-treemacs-anywhere-dispatch)
+   :map treemacs-mode-map
+   ("C-x j"       . treemacs-project-follow-mode)
+   ("<backspace>" . treemacs-root-up))
+  :commands treemacs treemacs-refresh
+  :functions
+  treemacs-filewatch-mode treemacs-git-mode treemacs-git-commit-diff-mode
+  treemacs-select-window treemacs-project-follow-mode treemacs-root-up
+  treemacs-get-local-window treemacs-hide-gitignored-files-mode
+  treemacs--select-workspace-by-name treemacs-switch-workspace
+  :defines treemacs-mode-map
+
+  :custom
+  (treemacs-width 35)
+  (treemacs-is-never-other-window t)
+
   :config
-  (project-treemacs-mode 1)
-  (treemacs-project-follow-mode 1))
+  (treemacs-filewatch-mode 1)
+  (treemacs-git-mode 'deferred)
+  (treemacs-git-commit-diff-mode 1)
+  (treemacs-project-follow-mode 1)
+  (advice-add 'disproject-dispatch :before #'user/close-treemacs))
 
 (use-package treemacs-perspective
   :after treemacs)
@@ -284,60 +347,6 @@ Wait three seconds before activating the mode."
   :functions treemacs-nerd-icons-config
   :config
   (treemacs-nerd-icons-config))
-
-(declare-function dirvish "10-file-management.el")
-(defvar user/project-treemacs-anywhere-dispatch nil)
-(transient-define-prefix
-  user/project-treemacs-anywhere-dispatch ()
-  "Globally available commands for Treemacs & Project.el."
-  ["Treemacs" :pad-keys t
-   ["Project"
-    ("t" "Toggle"                      treemacs)
-    ("T" "Refresh"                     treemacs-refresh)
-    ("d" "Disproject"                  disproject-dispatch)
-    ("r" "Rename Project"              treemacs-rename-project)
-    ("c" "Dirvish"                     (lambda () (interactive)
-					 (call-interactively #'dirvish)))]
-
-   ["View"
-    ("v f" "Focus to active file"      treemacs-find-file)
-    ("v p" "Add Project"               treemacs-add-project-to-workspace)
-    ("v c" "Collapse Other Projects"   treemacs-collapse-other-projects)
-    ("v C" "Collapse"                  treemacs-collapse-all-projects)
-    ("v r" "Current Project Only"      treemacs-create-workspace-from-project)]
-   
-   ["Workspace"
-    ("w e" "Edit"                      treemacs-edit-workspaces)
-    ("w s" "Switch"                    user/treemacs-switch-workspace-and-focus)
-    ("w n" "New"                       treemacs-create-workspace)
-    ("w r" "Rename"                    treemacs-rename-workspace)
-    ("w d" "Delete"                    treemacs-remove-workspace)]]
-
-  ["Project.el" :pad-keys t
-   ["Search"
-    ("x" "Project Find Regexp"         project-find-regexp)
-    ("q" "Project Replace Regexp"      project-query-replace-regexp)
-    ("f" "Project Find File"           project-find-file)
-    ("s" "Project Search"              project-search)
-    ("a" "Add Project"                 (lambda () (interactive)
-					 (call-interactively
-					  #'project-remember-project)))]
-   
-   ["Shell"
-    ("S" "Project Shell"               project-shell)
-    ("E" "Project EShell"              project-shell)
-    ("A" "Project Async Shell Command" project-async-shell-command)
-    ("C" "Project Shell Command"       project-shell-command)
-    ("M" "MisTTY @ Project root"       mistty-in-project)]
-   
-   ["Other"
-    ("D" "Set Project Dir-Locals"      project-customize-dirlocals)
-    ("R" "Ripgrep Project"             rg-project)
-    ("G" "DWIM Ripgrep Project"        rg-dwim-project-dir)
-    ("Z" "Forget Zombie Projects"      project-forget-zombie-projects)
-    ("p r" "Reset Known Projects"      user/project-reset-projects)]])
-
-(keymap-global-set "C-c t" #'user/project-treemacs-anywhere-dispatch)
 
 
 (provide '05-project-management)
