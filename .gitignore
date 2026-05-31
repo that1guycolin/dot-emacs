@@ -27,6 +27,7 @@ ielm-history.eld
 mason
 .org-generic-id-locations
 .org-id-locations
+persist/
 projectile-bookmarks.eld
 .projectile-cache.eld
 *projects*
