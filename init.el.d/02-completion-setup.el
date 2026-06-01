@@ -1,8 +1,8 @@
 ;;; 02-completion-setup.el --- Completion stack -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; cape, corfu, emacs, helpful, marginalia, orderless, savehist, tempel,
-;; tempel-collection, vertico
+;; cape, consult, corfu, embark, embark-consult, helpful, marginalia, orderless,
+;; savehist, tempel, tempel-collection, vertico
 
 ;;; Commentary:
 ;; Completion UI stack; this needs to load early because many other packages
@@ -19,6 +19,7 @@
 ;; `corfu' (inline completion)
 ;; `consult' (gather data)
 ;; `embark' (mouse events on keyboard)
+;; `embark-consult' (integration)
 ;; `helpful' (better help)
 ;; =============================
 (use-package savehist
@@ -207,10 +208,16 @@
   (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
   (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly))
 
+(use-package embark-consult
+  :after (embark consult)
+  :hook (embark-collect-mode . consult-preview-at-point-mode))
 
 (use-package helpful
   :ensure (:wait t)
   :demand t
+  :preface
+  (dolist (bind '("C-h f" "C-h v" "C-h k" "C-h x" "C-h F" "C-z"))
+    (keymap-global-unset bind))
   :bind
   (("C-h f" . helpful-callable)
    ("C-h v" . helpful-variable)
