@@ -15,6 +15,7 @@
 ;; `orderless' (fuzzy matching)
 ;; `vertigo' (minibuffer completions)
 ;; `marginalia' (rich annotations)
+;; `tempel' (new completion framework)
 ;; `corfu' (inline completion)
 ;; `helpful' (better help)
 ;; =============================
@@ -58,15 +59,18 @@
   (defun user/tempel-setup-capf ()
     "Locally add relevant tempel items to `completion-at-point-functions'."
     (setq-local completion-at-point-functions
-		(cons #'tempel-complete completion-at-point-functions))
-    (tempel-abbrev-mode 1))
+		(cons #'tempel-complete completion-at-point-functions)))
   :bind
-  (("M-+" . tempel-complete)
-   ("M-*" . tempel-insert))
+  (("M-+"   . tempel-insert)
+   ("M-*"   . tempel-complete)
+   :map tempel-map
+   ("TAB"   . tempel-next)
+   ("C-TAB" . tempel-previous))
   :hook
   ((text-mode prog-mode conf-mode) . user/tempel-setup-capf)
   :functions
-  tempel-complete tempel-abbrev-mode)
+  tempel-complete tempel-abbrev-mode
+  :init (tempel-abbrev-mode 1))
 
 (use-package tempel-collection
   :after tempel)
