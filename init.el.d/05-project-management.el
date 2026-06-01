@@ -1,9 +1,8 @@
 ;;; 05-project-management.el --- Project management and file navigation -*-lexical-binding: t; -*-
 
 ;;; Packages included:
-;; activities, deadgrep, disproject, docker, perspective,
-;; perspective-project-bridge, project, rg, treemacs, treemacs-nerd-icons,
-;; treemacs-perspective
+;; activities, deadgrep, disproject, docker, project, rg, treemacs,
+;; treemacs-nerd-icons, treemacs-perspective
 
 ;;; Commentary:
 ;; Support project functionality in Emacs.  Git integration for said projects
@@ -15,8 +14,7 @@
 ;; `disproject' (transient dispatch for project.el)
 ;; `deadgrep' (global ripgrep search)
 ;; `rg' (project ripgrep search & more)
-;; `perspective' (separate project workspaces)
-;; `perspective-project-bridge' (integrate project.el & perspective)
+;; `activities' (save frame-state)
 ;; `docker' (Docker support)
 ;; ==========================
 (use-package project
@@ -70,149 +68,18 @@
   :config
   (require 'rg-isearch))
 
-(use-package perspective
-  :demand t
-  :preface
-  (dolist (keybind '("C-x b" "C-x k" "C-x C-b"))
-    (keymap-global-unset keybind))
-  (defvar ibuffer-sorting-mode)
-  (declare-function ibuffer-do-sort-by-alphabetic "ibuffer")
-  (declare-function
-   user/function-after-emacsclient-frame "01-bootstrap-core.el")
-  
-  (defun user/persp-for-ibuffer ()
-    "Correctly display persps in ibuffer-mode."
-    (persp-ibuffer-set-filter-groups)
-    (unless (eq ibuffer-sorting-mode 'alphabetic)
-      (ibuffer-do-sort-by-alphabetic)))
-
-  (defun user/safe-persp-bs-show (arg)
-    (interactive "P")
-    (if (fboundp 'persp-bs-show)
-        (persp-bs-show arg)
-      (bs-show "all")))
-  
-  (defun user/buffer-by-filename (loc expr)
-    "Filter all buffers whose filename contains EXPR.
-
-LOC can be one of:
-:prefix   Match files whose filename starts with EXPR.
-:suffix   Match files whose filename ends with EXPR.
-:full     Match files whose filename equals EXPR.
-:ext      Match files whose extension equals EXPR (do not include the '.').
-:contains Match files whose filename contains EXPR."
-    (mapcar #'buffer-name
-	    (seq-filter
-	     (lambda (buf)
-	       (let* ((fname (buffer-file-name buf)))
-		 (when fname
-		   (pcase loc
-		     (:prefix (string-prefix-p expr
-					       (file-name-nondirectory fname)))
-		     (:suffix (string-suffix-p expr
-					       (file-name-nondirectory fname)))
-		     (:full   (string= expr (file-name-nondirectory fname)))
-		     (:ext    (if (string-prefix-p expr ".")
-				  (string= expr (file-name-extension fname t))
-				(string= expr (file-name-extension fname))))
-		     (:contains (string-match-p (regexp-quote expr)
-						(file-name-nondirectory fname)))
-		     (_ (error "%s is not a valid value for loc" loc))))))
-	     (buffer-list))))
-
-  (defun user/add-list-to-persp (loc expr &optional msg)
-    "Add list of buffers returned by `user/buffer-by-filename' to active persp.
-Takes arguments EXPR and LOC to pass to `user/buffer-by-filename'.
-Optionally, override the built-in message by including MSG in the
-arguments.  Custom messages can include \"%s\" to insert the buffer name
-into the message."
-    (interactive
-     (list
-      (let ((loc-type-alist
-	     '(("Filename starts with: " . :prefix)
-	       ("Filename ends with: "   . :suffix)
-	       ("Filename is equal to: " . :full)
-	       ("File has extension: "   . :ext)
-	       ("Filename contains: "    . :contains))))
-	(cdr
-	 (assoc
-	  (completing-read "Search style: "
-			   (mapcar #'car loc-type-alist) nil t)
-	  loc-type-alist)))
-      (read-string "Enter string to search for: ")))
-    (dolist (buf (user/buffer-by-filename loc expr))
-      (persp-add-buffer buf)
-      (cond
-       ((and msg (string-match-p "\\%s" msg))
-	(message msg buf))
-       (msg
-	(message msg))
-       (t
-	(message "Added %s" buf)))))
-
-  (defun user/create-org-persp (&optional _args)
-    "Create a persp called \"org\".  Add open TODO and .org files to the persp."
-    (interactive)
-    (persp-new "org")
-    (persp-switch "org")
-    (user/add-list-to-persp :ext "org" "Added %s to org persp")
-    (user/add-list-to-persp :full "TODO" "Added %s to org persp")
-    (persp-switch-last))
-
-  (add-hook 'emacs-startup-hook #'user/create-org-persp)
-  (add-hook 'server-after-make-frame-hook
-	    #'(lambda ()
-		(user/function-after-emacsclient-frame
-		 #'user/create-org-persp)))
-  
-  :bind
-  (("C-x b"      . persp-switch-to-buffer*)
-   ("C-x C-b"    . persp-ibuffer)
-   ("C-x k"      . persp-kill-buffer*)
-   ("C-x B"      . user/safe-persp-bs-show)
-   ("C-x C-B"    . persp-buffer-menu))
-  :hook (ibuffer . user/persp-for-ibuffer)
-
-  :functions
-  persp-ibuffer-set-filter-groups persp-add-buffer persp-new persp-switch-last
-  persp-mode persp-is-current-buffer persp-switch
-  
-  :init
-  (persp-mode 1)
-  :custom
-  (persp-mode-prefix-key (kbd "M-p"))
-  (persp-switch-to-buffer-behavior 'switch)
-  :config
-  (setq switch-to-prev-buffer-skip
-	(lambda (_win buff _bury-or-kill)
-          (not (persp-is-current-buffer buff)))))
-
-(use-package perspective-project-bridge
-  :defer t
-  :preface
-  (defun user/project-switch-perspective (&rest _args)
-    "Switch to a perspective for the current project."
-    (interactive)
-    (persp-switch (project-name))
-    (perspective-project-bridge-find-perspectives-for-all-buffers))
-  :hook (persp-mode . perspective-project-bridge-mode)
-  :functions perspective-project-bridge-find-perspectives-for-all-buffers
-  :config
-  (advice-add 'project-switch-project
-	      :after #'user/project-switch-perspective))
-
 (use-package activities
   :demand t
   :bind
-  (("C-x C-a C-n" . activities-new)
-   ("C-x C-a C-d" . activities-define)
-   ("C-x C-a C-a" . activities-resume)
-   ("C-x C-a C-s" . activities-suspend)
-   ("C-x C-a C-k" . activities-kill)
-   ("C-x C-a RET" . activities-switch)
-   ("C-x C-a b"   . activities-switch-buffer)
-   ("C-x C-a g"   . activities-revert)
-   ("C-x C-a l"   . activities-list))
+  (("M-p n" . activities-new)
+   ("M-p d" . activities-define)
+   ("M-p r" . activities-resume)
+   ("M-p p" . activities-suspend)
+   ("M-p k" . activities-kill)
+   ("M-p s" . activities-switch)
+   ("M-p b" . activities-switch-buffer)
+   ("M-p v" . activities-revert)
+   ("M-p l" . activities-list))
   :functions
   activities-mode activities-tabs-mode
   :init
