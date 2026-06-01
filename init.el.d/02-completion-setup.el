@@ -18,6 +18,7 @@
 ;; `tempel' (new completion framework)
 ;; `corfu' (inline completion)
 ;; `consult' (gather data)
+;; `embark' (mouse events on keyboard)
 ;; `helpful' (better help)
 ;; =============================
 (use-package savehist
@@ -175,6 +176,36 @@
 
   (setq xref-show-xrefs-function #'consult-xref
         xref-show-definitions-function #'consult-xref))
+
+(use-package embark
+  :demand t
+  :preface
+  (defvar completion-category-overrides)
+  (defvar display-buffer-alist)
+  (defvar eldoc-documentation-strategy)
+  (defvar prefix-help-command)
+
+  :bind
+  (("C-."   . embark-act)
+   ("C-;"   . embark-dwim)
+   ("C-h B" . embark-bindings))
+
+  :init
+  (setq prefix-help-command #'embark-prefix-help-command)
+
+  :config
+  (add-to-list
+   'completion-category-overrides
+   '(embark-keybinding (styles . (substring))))
+
+  (add-to-list
+   'display-buffer-alist
+   '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+     nil
+     (window-parameters (mode-line-format . none))))
+
+  (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
+  (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly))
 
 
 (use-package helpful
