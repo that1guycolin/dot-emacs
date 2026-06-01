@@ -17,6 +17,7 @@
 ;; `marginalia' (rich annotations)
 ;; `tempel' (new completion framework)
 ;; `corfu' (inline completion)
+;; `consult' (gather data)
 ;; `helpful' (better help)
 ;; =============================
 (use-package savehist
@@ -116,8 +117,65 @@
   (add-to-list 'completion-at-point-functions #'cape-elisp-block)
   (add-to-list 'completion-at-point-functions #'cape-history))
 
-(dolist (bind '("C-h f" "C-h v" "C-h k" "C-h x" "C-h F" "C-z"))
-  (keymap-global-unset bind))
+(use-package consult
+  :demand t
+  :preface
+  (defvar register-preview-delay)
+  (defvar xref-show-xrefs-function)
+  (defvar xref-show-definitions-function)
+
+  :bind
+  (("C-c M-x"		 . consult-mode-command)
+   ("C-c h"		 . consult-history)
+   ("C-c k"		 . consult-kmacro)
+   ("C-c M-m"		 . consult-man)
+   ("C-c i"		 . consult-info)
+   ([remap Info-search]	 . consult-info)
+
+   ("C-x M-:"		 . consult-complex-command)
+   ("C-x b"		 . consult-buffer)
+   ("C-x 4 b"		 . consult-buffer-other-window)
+   ("C-x 5 b"		 . consult-buffer-other-frame)
+   ("C-x t b"		 . consult-buffer-other-tab)
+   ("C-x r b"		 . consult-bookmark)
+
+   ("C-x r j"		 . consult-register-load)
+   ("C-x r s"		 . consult-register-store)
+   ("C-x r M-r"		 . consult-register)
+
+   ("M-y"		 . consult-yank-pop)
+
+   ("M-s d"		 . consult-find)
+   ("M-s g"		 . consult-grep)
+   ("M-s G"		 . consult-git-grep)
+   ("M-s r"		 . consult-ripgrep)
+   ("M-s l"		 . consult-line)
+   ("M-s L"		 . consult-line-multi)
+   ("M-s k"		 . consult-keep-lines)
+   ("M-s u"		 . consult-focus-lines)
+
+   ([remap goto-line]	 . consult-goto-line)
+   ([remap imenu]	 . consult-imenu))
+
+  :init
+  (setq register-preview-delay 0.5)
+  (advice-add #'register-preview :override #'consult-register-window)
+
+  :custom
+  (consult-narrow-key "<")
+  (consult-project-function #'consult--default-project-function)
+
+  :config
+  (consult-customize
+   consult-ripgrep consult-git-grep consult-grep
+   consult-bookmark consult-recent-file consult-xref
+   consult-source-bookmark consult-source-file-register
+   consult-source-recent-file consult-source-project-recent-file
+   :preview-key '(:debounce 0.4 any))
+
+  (setq xref-show-xrefs-function #'consult-xref
+        xref-show-definitions-function #'consult-xref))
+
 
 (use-package helpful
   :ensure (:wait t)
