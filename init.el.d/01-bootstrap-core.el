@@ -52,10 +52,12 @@ https://raw.githubusercontent.com/progfolio/elpaca/refs/heads/master/doc/install
      gcmh-high-cons-threshold (* 100 1024 1024)
      gc-cons-percentage 0.1))
 
-  :hook (emacs-startup . user/restore-sane-gcmh-values)
-  :functions gcmh-mode
-  :init
-  (gcmh-mode 1))
+  (defun user/hook-for-gcmh ()
+    "Use as an Emacs startup hook to correctly set up GCMH."
+    (user/restore-sane-gcmh-values)
+    (gcmh-mode 1))
+  :hook (emacs-startup . user/hook-for-gcmh)
+  :functions gcmh-mode)
 
 (use-package exec-path-from-shell
   :demand t
