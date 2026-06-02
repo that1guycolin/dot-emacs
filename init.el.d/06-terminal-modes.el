@@ -1,7 +1,7 @@
 ;;; 06-terminal-modes.el --- Support for terminal and Emacs' shells -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; eat, esh-autosuggest, eshell, eshell-git-prompt, eshell-syntax-highlighting,
+;; eat, eshell, eshell-git-prompt, eshell-syntax-highlighting,
 ;; esh-help, ghostel, mistty, native-complete, vterm, with-editor
 
 ;;; Commentary:
@@ -94,7 +94,6 @@
 
 ;; =======  ESHELL  =======
 ;; `eshell-syntax-highlighting' (syntax-hl)
-;; `esh-autosuggest' (fish-like history-based suggestions)
 ;; `eshell-git-prompt' (themed prompt)
 ;; `esh-help' (display help like in .el buffer)
 ;; ========================
@@ -107,10 +106,6 @@
 (use-package eshell-syntax-highlighting
   :defer t
   :hook (eshell-mode . eshell-syntax-highlighting-global-mode))
-
-(use-package esh-autosuggest
-  :defer t
-  :hook (eshell-mode . esh-autosuggest-mode))
 
 (use-package eshell-git-prompt
   :after eshell
