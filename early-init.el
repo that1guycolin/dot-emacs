@@ -15,9 +15,11 @@
 (when user/profile-startup
   (setq debug-on-error t)
   (profiler-start 'cpu)
+  (add-hook 'emacs-startup-hook (lambda () (require 'profiler)))
   (run-with-idle-timer 30 nil #'(lambda ()
-				  (profiler-stop)
-				  (require 'profiler)
+				  (profiler-cpu-stop)
+				  (unless (featurep 'profiler)
+				    (require 'profiler))
 				  (with-eval-after-load 'profiler
 				    (profiler-report)))))
 
@@ -25,8 +27,9 @@
 ;; Ignore `tramp' and `compressed'/`archive' files during start.  Do not
 ;; display messages during startup.
 (defvar user/file-name-handler-alist-backup file-name-handler-alist)
-(setq file-name-handler-alist nil
-      inhibit-message t)
+(setq
+ file-name-handler-alist nil
+ inhibit-message t)
 (add-hook 'emacs-startup-hook
           (lambda ()
             (setq
@@ -73,8 +76,6 @@
   (setq ffap-machine-p-known 'reject))
 (with-eval-after-load 'which-function-mode
   (setq which-func-update-delay 1.0))
-(with-eval-after-load 'dired
-  (setq-default dired-kill-when-opening-new-dired-buffer t))
 
 ;; Configure autosaves and backups.
 (let ((backup-dir (expand-file-name "~/backups/"))
@@ -103,5 +104,4 @@
 
 
 (provide 'early-init)
-
 ;;; early-init.el ends here
