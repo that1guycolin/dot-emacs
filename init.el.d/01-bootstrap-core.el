@@ -72,8 +72,9 @@ https://raw.githubusercontent.com/progfolio/elpaca/refs/heads/master/doc/install
 
 (use-package envrc
   :defer t
-  :hook (emacs-startup . envrc-global-mode)
-  :functions envrc-global-mode)
+  :functions envrc-global-mode
+  :config
+  (envrc-global-mode 1))
 
 (use-package transient
   :demand t)
