@@ -38,7 +38,7 @@ accidentally createing a TODO file.  A TODO file in the org-directory is
 by definition redundant, since any TODO items should go in the tasks
 folder."
     (interactive)
-    (let ((org-dir-todo (expand-file-name "TODO" org-directory)))
+    (let ((org-dir-todo (expand-file-name "TODO.org" org-directory)))
       (if (file-exists-p org-dir-todo)
 	  (progn
 	    (delete-file org-dir-todo)
@@ -46,7 +46,10 @@ folder."
 	(when (called-interactively-p 'any)
 	  (message "There is no TODO file in the org directory.")))))
 
-  (add-hook 'org-mode-hook #'user/remove-org-todo)
+  (defvar-keymap user/org-project-capture-map
+    :prefix t
+    :doc "Project specific options for org-capture."
+    "c" #'org-project-capture-capture-for-current-project)
   
   :bind
   (("C-c C-p c" . org-project-capture-capture-for-current-project)
@@ -56,15 +59,16 @@ folder."
   :custom
   (org-project-capture-per-project-filepath "TODO.org")
   :config
-  (require 'org-category-capture)
   (dolist (project (project-known-project-roots))
     (let ((project-todo (expand-file-name "TODO.org" project)))
       (when (file-exists-p project-todo)
 	(add-to-list 'org-agenda-files project-todo))))
   
-  (unless (boundp 'org-refile-targets)
+  (unless org-refile-targets
     (setq org-refile-targets '((nil :maxlevel . 9)
-                               (org-agenda-files :maxlevel . 9)))))
+                               (org-agenda-files :maxlevel . 9))))
+
+  (add-hook 'org-mode-hook #'user/remove-org-todo))
 
 (use-package magit-org-todos
   :defer t
