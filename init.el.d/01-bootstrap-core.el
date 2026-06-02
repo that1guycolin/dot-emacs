@@ -15,6 +15,7 @@
 (declare-function elpaca                  "elpaca")
 (declare-function elpaca-manager          "elpaca")
 (declare-function elpaca-use-package-mode "elpaca-use-package")
+(defvar           elpaca-queue-limit      8)
 (defvar           elpaca-use-package)
 (defvar           use-package-always-ensure)
 
@@ -23,16 +24,14 @@
 			 user-emacs-directory)))
   (if (file-exists-p elpaca-bootstrap)
       (load-file elpaca-bootstrap)
-    (progn
-      (require 'url)
-      (with-current-buffer
-	  (url-retrieve-synchronously
-	   "https://raw.githubusercontent.com/progfolio/elpaca\
-/refs/heads/master/doc/installer.el" 'silent 'inhibit-cookies 10)
-	(goto-char (point-min))
-	(re-search-forward "^$")
-	(forward-char)
-	(eval-print-last-sexp)))))
+    (let ((online-bootstrap
+	   (expand-file-name "bootstrap.el" user-emacs-directory)))
+      (shell-command
+       (format "wget -O %s \
+https://raw.githubusercontent.com/progfolio/elpaca/refs/heads/master/doc/installer.el"
+	       online-bootstrap))
+      (load-file online-bootstrap)
+      (delete-file online-bootstrap))))
 
 (elpaca elpaca-use-package
   (elpaca-use-package-mode 1))
