@@ -108,50 +108,45 @@ as well."
 ;; `minons' (declutter modeline w/ menu for minor-modes)
 ;; ==========================
 (use-package minions
-  :defer t
-  :hook (emacs-startup . minions-mode)
-  :config
-  (with-eval-after-load 'flycheck
-    (add-to-list 'minions-prominent-modes 'flycheck-mode))
-  (with-eval-after-load 'lsp-mode
-    (add-to-list 'minions-prominent-modes 'lsp-mode))
-  (with-eval-after-load 'perspective
-    (add-to-list 'minions-prominent-modes 'persp-mode)))
-
-
-;; =======  VISUAL LINE  =======
-;; `editorconfig' (support .editorconfig)
-;; `visual-fill-column' (fill-column for visual-line-mode)
-;; =============================
-(use-package editorconfig
-  :defer t
-  :preface
-  (defun user/function-for-editorconfig-hook ()
-    "Use this as the function to add to *-mode-hook for editorconfig."
-    (editorconfig-mode 1))
-  :hook ((prog-mode text-mode conf-mode) . user/function-for-editorconfig-hook))
-
-(use-package visual-fill-column
-  :defer t
-  :hook
-  ((visual-line-mode                . visual-fill-column-mode)
-   ((prog-mode text-mode conf-mode) . visual-line-mode)))
-
-(use-package folding-mode
-  :ensure nil
-  :defer t
-  :bind ("C-|" . folding-mode))
-
-
-;; =======  WHICH-KEY  =======
-;; `which-key' (needs to load before many other functions)
-;; ===========================
-(use-package which-key
-  :ensure (:wait t)
   :demand t
+  :functions minions-mode
   :config
-  (which-key-mode 1))
+  (minions-mode 1))
 
 
-(provide '03-visual-settings)
+  ;; =======  VISUAL LINE  =======
+  ;; `editorconfig' (support .editorconfig)
+  ;; `visual-fill-column' (fill-column for visual-line-mode)
+  ;; =============================
+  (use-package editorconfig
+    :defer t
+    :preface
+    (defun user/function-for-editorconfig-hook ()
+      "Use this as the function to add to *-mode-hook for editorconfig."
+      (editorconfig-mode 1))
+    :hook ((prog-mode text-mode conf-mode) . user/function-for-editorconfig-hook))
+
+  (use-package visual-fill-column
+    :defer t
+    :hook
+    ((visual-line-mode                . visual-fill-column-mode)
+     ((prog-mode text-mode conf-mode) . visual-line-mode)))
+
+  (use-package folding-mode
+    :ensure nil
+    :defer t
+    :bind ("C-|" . folding-mode))
+
+
+  ;; =======  WHICH-KEY  =======
+  ;; `which-key' (needs to load before many other functions)
+  ;; ===========================
+  (use-package which-key
+    :ensure (:wait t)
+    :demand t
+    :config
+    (which-key-mode 1))
+
+
+  (provide '03-visual-settings)
 ;;; 03-visual-settings.el ends here
