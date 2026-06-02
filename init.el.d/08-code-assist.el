@@ -101,6 +101,7 @@
 (use-package flycheck
   :defer t
   :preface
+  (defvar minions-prominent-modes)
   (defun user/setup-vale ()
     "If not setup, install the vale from the .ini file in dot-Emacs."
     (interactive)
@@ -119,6 +120,7 @@
    '(emacs-lisp-elsa sh-bash yaml-jsyaml yaml-ruby))
 
   :config
+  (add-to-list 'minions-prominent-modes 'flycheck-mode)
   (flycheck-add-mode 'org-lint 'org-gtd-clarify-mode)
 
   (flycheck-define-checker fish-self
@@ -222,6 +224,8 @@ See URL `https://vale.sh'."
 ;; ==========================
 (use-package lsp-mode
   :defer t
+  :preface
+  (defvar minions-prominent-modes)
   :bind
   (("C-c C-l" . lsp)
    :map lsp-mode-map
@@ -253,6 +257,8 @@ See URL `https://vale.sh'."
   (lsp-rust-server 'rust-analyzer)
   (lsp-use-plists t)
   :config
+  (add-to-list 'minions-prominent-modes lsp-mode)
+  
   (lsp-register-client
    (make-lsp--client
     :new-connection (lsp-stdio-connection '("neocmakelsp" "stdio"))
