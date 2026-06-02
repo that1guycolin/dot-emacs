@@ -247,12 +247,37 @@ The returned list does not include packages with :ensure explicitly set to nil."
     ("t n" "Rotate theme"        modus-themes-rotate)]])
 (keymap-global-set "C-c u" 'user/visual-settings-dispatch)
 
-(defvar-keymap user/update-elpaca-map
+(declare-function elpaca-manager "elpaca")
+(declare-function elpaca-fetch "elpaca")
+(declare-function elpaca-fetch-all "elpaca")
+(declare-function elpaca-merge "elpaca")
+(declare-function elpaca-merge-all "elpaca")
+(declare-function elpaca-rebuild "elpaca")
+(declare-function elpaca-update "elpaca")
+(declare-function elpaca-update-all "elpaca")
+(declare-function elpaca-build-autoloads "elpaca")
+(declare-function elpaca-build-docs "elpaca")
+(declare-function elpaca-build-docs-process-sentinel "elpaca")
+(declare-function elpaca-build-compile "elpaca")
+(defvar-keymap user/elpaca-options-map
   :prefix t
-  :doc "Functions for updating Elpaca package manager"
-  "m" #'user/update-elpaca-menus
-  "p" #'user/elpaca-update-packages)
-(keymap-global-set "M-E" 'user/update-elpaca-map)
+  :doc "Functions for Elpaca package manager"
+  "g"	 #'elpaca-manager
+  "n"	 #'user/update-elpaca-menus
+  "p"	 #'user/elpaca-update-packages
+  "f"	 #'elpaca-fetch
+  "F"	 #'elpaca-fetch-all
+  "m"	 #'elpaca-merge
+  "M"	 #'elpaca-merge-all
+  "r"	 #'elpaca-rebuild
+  "u"	 #'elpaca-update
+  "U"	 #'elpaca-update-all
+  "b a"	 #'elpaca-build-autoloads
+  "b d"	 #'elpaca-build-docs
+  "b D"	 #'elpaca-build-docs-process-sentinel
+  "b c"	 #'elpaca-build-compile)
+
+(keymap-global-set "C-c e" 'user/elpaca-options-map)
 
 
 (provide '15-user-functions)

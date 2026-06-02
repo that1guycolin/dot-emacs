@@ -36,7 +36,6 @@ https://raw.githubusercontent.com/progfolio/elpaca/refs/heads/master/doc/install
 (elpaca elpaca-use-package
   (elpaca-use-package-mode 1))
 (setq use-package-always-ensure t)
-(keymap-global-set "C-c e" #'elpaca-manager)
 
 ;; =======  OTHER BOOTSTRAPS  =======
 ;; `gcmh' (smart garbage collection)
@@ -139,9 +138,9 @@ The scope could be the entire buffer or a heading within that buffer.  For entir
            (heading-options
             (org-map-entries
              (lambda ()
-               (let* ((path (org-get-outline-path t t))
-                      (heading (org-get-heading t t t t))
-                      (display (string-join (append path (list heading)) " / ")))
+	       (let* ((path (org-get-outline-path t t))
+		      (heading (org-get-heading t t t t))
+		      (display (string-join (append path (list heading)) " / ")))
 		 (cons display (point))))
              nil 'file))
            (options (cons doc-option heading-options))
@@ -203,8 +202,8 @@ The new value is the current date & time in this format: "
       (save-excursion
 	(goto-char (point-min))
 	(when (re-search-forward
-               "^#\\+LAST_EDIT:[ \t]*.*$"
-               nil t)
+	       "^#\\+LAST_EDIT:[ \t]*.*$"
+	       nil t)
           (replace-match
            (format-time-string
             "#+LAST_EDIT: [%Y-%m-%d %a %H:%M:%S]"))))))
