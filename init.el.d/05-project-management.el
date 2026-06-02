@@ -1,8 +1,9 @@
 ;;; 05-project-management.el --- Project management and file navigation -*-lexical-binding: t; -*-
 
 ;;; Packages included:
-;; activities, deadgrep, disproject, docker, project, rg, treemacs,
-;; treemacs-nerd-icons, treemacs-perspective
+;; activities, deadgrep, disproject, docker, perspective,
+;; perspective-project-bridge, project, rg, treemacs, treemacs-nerd-icons,
+;; treemacs-perspective
 
 ;;; Commentary:
 ;; Support project functionality in Emacs.  Git integration for said projects
@@ -189,20 +190,30 @@ into the message."
 	      :after #'user/project-switch-perspective))
 
 (use-package activities
-  :demand t
-  :bind
-  (("M-p n" . activities-new)
-   ("M-p d" . activities-define)
-   ("M-p r" . activities-resume)
-   ("M-p p" . activities-suspend)
-   ("M-p k" . activities-kill)
-   ("M-p s" . activities-switch)
-   ("M-p b" . activities-switch-buffer)
-   ("M-p v" . activities-revert)
-   ("M-p l" . activities-list))
+  :defer t
+  :preface
+  (defvar edebug-inhibit-emacs-lisp-mode-bindings)
+
+  (defvar-keymap user/activities-map
+    :prefix t
+    :doc "Functions from the package activities.el"
+    "n" #'activities-new
+    "d" #'activities-define
+    "r" #'activities-resume
+    "p" #'activities-suspend
+    "k" #'activities-kill
+    "s" #'activities-switch
+    "b" #'activities-switch-buffer
+    "v" #'activities-revert
+    "l" #'activities-list)
+  :bind-keymap ("C-x C-a" . user/activities-map)
   :functions
-  activities-mode activities-tabs-mode
+  activities-new activities-define activities-resume activities-suspend
+  activities-kill activities-switch activities-switch-buffer activities-revert
+  activities-list activities-mode activities-tabs-mode
+
   :init
+  (setq edebug-inhibit-emacs-lisp-mode-bindings t)
   (activities-mode 1)
   (activities-tabs-mode 1))
 
