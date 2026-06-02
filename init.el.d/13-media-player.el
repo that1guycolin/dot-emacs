@@ -43,16 +43,21 @@
 	  (setq user/player-is-playing nil))
       (progn
 	(emms-player-mpv-pause))))
-  
+
+  (defvar-keymap user/emms-view-options-map
+    :prefix t
+    :doc "Different options for viewing & interacting with EMMS."
+    "b" #'emms-browser
+    "s" #'emms-smart-browse
+    "g" #'emms-playlist-mode-go
+    "p" #'emms-playlist-mode-go-popup)
+
+  :bind-keymap ("C-c m" . user/emms-view-options-map)
   :bind
   (("<f6>"    . emms-browser)
-   ("C-c m b" . emms-browser)
    ("<f7>"    . emms-smart-browse)
-   ("C-c m s" . emms-smart-browse)
    ("<f8>"    . emms-playlist-mode-go)
-   ("C-c m g" . emms-playlist-mode-go)
    ("<f9>"    . emms-playlist-mode-go-popup)
-   ("C-c m p" . emms-playlist-mode-go-popup)
    :map emms-playlist-mode-map
    ("SPC"     . user/toggle-play-pause)
    ("m"       . emms-next)
@@ -98,8 +103,8 @@
 	   :host github :repo "that1guycolin/emms-info-mediainfo"
 	   :files (:defaults) :method https :wait t)
   :after emms
-  :config
-  (setq emms-info-functions (append '(emms-info-mediainfo) emms-info-functions)))
+  :custom
+  (emms-info-functions (append '(emms-info-mediainfo) emms-info-functions)))
 
 
 (provide '13-media-player)

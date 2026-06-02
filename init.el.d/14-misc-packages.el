@@ -1,7 +1,7 @@
 ;;; 14-misc-packages.el --- Misc & Dashboard -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; casual, casual-avy, dashboard, emacs-everywhere, free-keys, popper, telega
+;; casual, casual-avy, dashboard, emacs-everywhere,free-keys, popper, telega
 
 ;;; Commentary:
 ;; Packages that don't fit nicely into another category or, as is the case with
