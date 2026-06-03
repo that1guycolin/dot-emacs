@@ -114,30 +114,6 @@ as well."
   (minions-mode 1))
 
 
-  ;; =======  VISUAL LINE  =======
-  ;; `editorconfig' (support .editorconfig)
-  ;; `visual-fill-column' (fill-column for visual-line-mode)
-  ;; =============================
-  (use-package editorconfig
-    :defer t
-    :preface
-    (defun user/function-for-editorconfig-hook ()
-      "Use this as the function to add to *-mode-hook for editorconfig."
-      (editorconfig-mode 1))
-    :hook ((prog-mode text-mode conf-mode) . user/function-for-editorconfig-hook))
-
-  (use-package visual-fill-column
-    :defer t
-    :hook
-    ((visual-line-mode                . visual-fill-column-mode)
-     ((prog-mode text-mode conf-mode) . visual-line-mode)))
-
-  (use-package folding-mode
-    :ensure nil
-    :defer t
-    :bind ("C-|" . folding-mode))
-
-
   ;; =======  WHICH-KEY  =======
   ;; `which-key' (needs to load before many other functions)
   ;; ===========================
@@ -149,4 +125,28 @@ as well."
 
 
   (provide '03-visual-settings)
+;; =======  VISUAL LINE  =======
+;; `editorconfig' (support .editorconfig)
+;; `visual-fill-column' (fill-column for visual-line-mode)
+;; =============================
+(use-package editorconfig
+  :defer t
+  :preface
+  (defun user/function-for-editorconfig-hook ()
+    "Use this as the function to add to *-mode-hook for editorconfig."
+    (editorconfig-mode 1))
+  :hook ((prog-mode text-mode conf-mode) . user/function-for-editorconfig-hook))
+
+(use-package visual-fill-column
+  :defer t
+  :hook
+  ((visual-line-mode               . visual-fill-column-for-vline)
+   ((prog-mode text-mode conf-mode) . visual-line-mode)))
+
+(use-package folding-mode
+  :ensure nil
+  :defer t
+  :bind ("C-|" . folding-mode))
+
+
 ;;; 03-visual-settings.el ends here
