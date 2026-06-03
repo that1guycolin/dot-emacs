@@ -6,6 +6,13 @@
 ;; and applies early UI optimizations before the main config loads.
 
 ;;; Code:
+(when (eq system-type 'android)
+  (setenv "PATH" (format "%s:%s" "/data/data/com.termux/files/usr/bin"
+			 (getenv "PATH")))
+  (push "/data/data/com.termux/files/usr/bin" exec-path)
+  (setenv "PKG_CONFIG_PATH"
+	  "/data/data/com.termux/files/usr/lib/pkgconfig/"))
+
 (defvar package-quickstart)
 (defvar auth-sources)
 

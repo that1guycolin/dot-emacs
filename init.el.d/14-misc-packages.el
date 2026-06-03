@@ -15,14 +15,15 @@
 ;; `telega' (chat in Emacs)
 ;; ======================
 ;; Configuration is done primarly in DE.
-(use-package emacs-everywhere
-  :demand t
-  :config
-  ;; Customizing the frame appearance for a "popup" feel
-  (setq emacs-everywhere-frame-parameters
-        '((name . "emacs-everywhere") (width . 80) (height . 20)
-	  (menu-bar-lines . 0) (tool-bar-lines . 0)
-	  (vertical-scroll-bars . nil))))
+(unless (eq system-type 'android)
+  (use-package emacs-everywhere
+    :demand t
+    :config
+    ;; Customizing the frame appearance for a "popup" feel
+    (setq emacs-everywhere-frame-parameters
+          '((name . "emacs-everywhere") (width . 80) (height . 20)
+	    (menu-bar-lines . 0) (tool-bar-lines . 0)
+	    (vertical-scroll-bars . nil)))))
 
 (use-package free-keys
   :defer t
@@ -46,40 +47,41 @@
   (popper-mode +1)
   (popper-echo-mode +1))
 
-(use-package telega
-  :defer t
-  :preface
-  (defun user/telega-setup (&optional frame)
-    "Define settings for telega."
-    (with-selected-frame (or frame (selected-frame))
-      (when (display-graphic-p)
-        (telega-mode-line-mode 1))))
-  
-  :bind ("C-M-g" . telega)
-  :functions
-  telega-mode-line-mode telega-appindicator-mode
-  telega-auto-download-mode telega-autoplay-mode telega-chat-auto-fill-mode
-  telega-highlight-text-mode telega-notifications-mode
-  telega-root-auto-fill-mode telega-transient-keymaps-mode
-  
-  :init
-  (setq telega-use-images t)
-  (if (daemonp)
-      (with-eval-after-load 'telega
-	(add-hook 'after-make-frame-functions #'user/telega-setup))
-    (add-hook 'telega-load-hook #'user/telega-setup))
-  :custom (telega-use-docker "podman")
-  :config
-  (telega-appindicator-mode 1)
-  (telega-auto-download-mode 1)
-  (telega-autoplay-mode 1)
-  (telega-chat-auto-fill-mode 1)
-  (telega-highlight-text-mode 1)
-  (telega-notifications-mode 1)
-  (telega-root-auto-fill-mode 1)
-  (telega-transient-keymaps-mode 1)
-  
-  (message "Telega loaded successfully."))
+(unless (eq system-type 'android)
+  (use-package telega
+    :defer t
+    :preface
+    (defun user/telega-setup (&optional frame)
+      "Define settings for telega."
+      (with-selected-frame (or frame (selected-frame))
+	(when (display-graphic-p)
+          (telega-mode-line-mode 1))))
+    
+    :bind ("C-M-g" . telega)
+    :functions
+    telega-mode-line-mode telega-appindicator-mode
+    telega-auto-download-mode telega-autoplay-mode telega-chat-auto-fill-mode
+    telega-highlight-text-mode telega-notifications-mode
+    telega-root-auto-fill-mode telega-transient-keymaps-mode
+    
+    :init
+    (setq telega-use-images t)
+    (if (daemonp)
+	(with-eval-after-load 'telega
+	  (add-hook 'after-make-frame-functions #'user/telega-setup))
+      (add-hook 'telega-load-hook #'user/telega-setup))
+    :custom (telega-use-docker "podman")
+    :config
+    (telega-appindicator-mode 1)
+    (telega-auto-download-mode 1)
+    (telega-autoplay-mode 1)
+    (telega-chat-auto-fill-mode 1)
+    (telega-highlight-text-mode 1)
+    (telega-notifications-mode 1)
+    (telega-root-auto-fill-mode 1)
+    (telega-transient-keymaps-mode 1)
+    
+    (message "Telega loaded successfully.")))
 
 
 ;; =======  CASUAL  =======
@@ -285,8 +287,7 @@
 		     (recents  . 5)))
 
   :config
-  (dashboard-setup-startup-hook)
-  (setq inhibit-redisplay nil))
+  (dashboard-setup-startup-hook))
 
 
 (provide '14-misc-packages)

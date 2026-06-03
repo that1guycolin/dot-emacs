@@ -1,6 +1,5 @@
 ;;; init.el --- that1guycolin's dot-Emacs  -*- lexical-binding: t; -*-
 ;; Copyright (C) 2026  Loeffler, Colin (that1guycolin)
-;; Created date: 2026-03-09
 
 ;; Author: Loeffler, Colin <that1guycolin@gmail.com>
 ;; URL: https://github.com/that1guycolin/dot-Emacs
@@ -23,10 +22,6 @@
 ;;; Commentary:
 ;; that1guycolin's personal Emacs configuration.  Uses Elpaca as package manager
 ;; with an optimized load order.
-
-;;; Languages configured:
-;; Bash, CMake, Common Lisp, Emacs Lisp, Fish, JSON, Lua, Markdown, Org, Python,
-;; TOML, XML, YAML
 
 ;;; Packages included:
 ;; activities, adaptive-wrap, adjust-parens, apheleia, auto-rename-tag,
@@ -114,11 +109,11 @@
 ;; Extensions for Org-mode
 (require '11-org-mode-extensions)
 
-;; Configure Emacs to work with LLMs
-(require '12-llm-integration)
-
-;; Listen to music & watch videos
-(require '13-media-player)
+(unless (eq system-type 'android)
+  ;; Configure Emacs to work with LLMs
+  (require '12-llm-integration)
+  ;; Listen to music & watch videos
+  (require '13-media-player))
 
 ;; Misc & Dashboard
 (require '14-misc-packages)

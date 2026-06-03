@@ -238,7 +238,9 @@ The new value is the current date & time in this format: "
   :defines org-mode-map
 
   :init
-  (setq org-directory (expand-file-name "~/org"))
+  (if (eq system-type 'android)
+      (setq org-directory "/storage/emulated/0/Documents/org")
+    (setq org-directory (expand-file-name "~/org")))
   :custom
   (org-confirm-babel-evaluate nil)
   (org-default-notes-file (expand-file-name ".notes" org-directory))
