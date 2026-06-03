@@ -221,7 +221,9 @@ into the message."
 
 (use-package docker
   :defer t
-  :bind ("C-c D" . docker))
+  :bind ("C-c D" . docker)
+  :custom
+  (docker-command "podman"))
 
 (use-package deadgrep
   :defer t
