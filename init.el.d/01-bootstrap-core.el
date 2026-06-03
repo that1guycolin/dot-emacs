@@ -184,17 +184,22 @@ underneath it.  The header block will contain the following fields:
       (goto-char (point-min))
       (let ((id (or (user/org-top-property-drawer-id)
 		    (org-id-new))))
-	(when (looking-at org-property-drawer-re)
-	  (goto-char (match-end 0))
-	  (unless (bolp)
-	    (insert "\n")))
+	(if (looking-at org-property-drawer-re)
+	    (progn
+	      (goto-char (match-end 0))
+	      (unless (bolp)
+		(insert "\n")))
+	  (insert ":PROPERTIES:\n"
+		  ":ID:       " id "\n"
+		  ":END:\n"))
 	(insert "#+TITLE: " title
 		"\n#+AUTHOR: " author
 		"\n#+CREATED_DATE: "
 		(format-time-string "[%Y-%m-%d %a %H:%M:%S]")
 		"\n#+LAST_EDIT: "
-		"\n#+ID: " (org-id-get-create)
+		"\n#+ID: " id
 		"\n#+FILETAGS: \n"))))
+  
   (defun user/org-update-last-edit-dt ()
     "Update value of `LAST_EDIT:' header in the active Org buffer.
 The new value is the current date & time in this format: "
