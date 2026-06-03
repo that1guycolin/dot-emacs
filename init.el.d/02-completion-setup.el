@@ -122,6 +122,7 @@
 (use-package consult
   :demand t
   :preface
+  (declare-function consult-register-window "consult-register")
   (defvar register-preview-delay)
   (defvar xref-show-xrefs-function)
   (defvar xref-show-definitions-function)
@@ -158,10 +159,13 @@
 
    ([remap goto-line]	 . consult-goto-line)
    ([remap imenu]	 . consult-imenu))
+  :functions
+  consult--customize-put consult-xref
 
   :init
   (setq register-preview-delay 0.5)
-  (advice-add #'register-preview :override #'consult-register-window)
+  (with-eval-after-load 'consult-register
+    (advice-add #'register-preview :override #'consult-register-window))
 
   :custom
   (consult-narrow-key "<")
@@ -176,7 +180,7 @@
    :preview-key '(:debounce 0.4 any))
 
   (setq xref-show-xrefs-function #'consult-xref
-        xref-show-definitions-function #'consult-xref))
+	xref-show-definitions-function #'consult-xref))
 
 (use-package embark
   :demand t
@@ -190,6 +194,8 @@
   (("C-."   . embark-act)
    ("C-;"   . embark-dwim)
    ("C-h B" . embark-bindings))
+  :functions
+  embark-prefix-help-command embark-eldoc-first-target
 
   :init
   (setq prefix-help-command #'embark-prefix-help-command)
