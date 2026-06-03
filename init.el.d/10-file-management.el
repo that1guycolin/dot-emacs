@@ -167,7 +167,7 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
   (declare-function transient-define-prefix "transient")
 
   :bind ("C-x d" . dirvish)
-  :commands dirvish dirvish-dwim
+  :commands dirvish-dwim
 
   :functions
   dired-create-directory dired-create-empty-file dired-current-directory
@@ -214,8 +214,7 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
       ("M-w" "Copy"                 user/dirvish-copy)
       ("C-y" "Paste here"           user/dirvish-paste)
       ("c f" "Create file"          dired-create-empty-file)
-      ("c d" "Create directory"     dired-create-directory)
-      ("F"   "FFmpeg Actions"       user/ffmpeg-actions-map)]
+      ("c d" "Create directory"     dired-create-directory)]
 
      ["Dirvish native menus"
       ("a"   "Setup UI"             dirvish-setup-menu)
@@ -301,7 +300,9 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
    :map dirvish-mode-map
    ("F" . user/ffmpeg-actions-map))
   :commands dwim-shell-command-on-marked-files
-  :config)
+  :config
+  (transient-append-suffix 'user/dirvish-dispatch "c d"
+    '("F" "FFmpeg Actions" user/ffmpeg-actions-map)))
 
 (use-package ready-player
   :defer t
