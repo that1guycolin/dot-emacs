@@ -176,16 +176,18 @@ into the message."
           (not (persp-is-current-buffer buff)))))
 
 (use-package perspective-project-bridge
-  :defer t
+  :after perspective
   :preface
   (defun user/project-switch-perspective (&rest _args)
     "Switch to a perspective for the current project."
     (interactive)
     (persp-switch (project-name))
     (perspective-project-bridge-find-perspectives-for-all-buffers))
-  :hook (persp-mode . perspective-project-bridge-mode)
-  :functions perspective-project-bridge-find-perspectives-for-all-buffers
+  :functions
+  perspective-project-bridge-mode
+  perspective-project-bridge-find-perspectives-for-all-buffers
   :config
+  (perspective-project-bridge-mode 1)
   (advice-add 'project-switch-project
 	      :after #'user/project-switch-perspective))
 
