@@ -15,9 +15,13 @@
 (declare-function elpaca                  "elpaca")
 (declare-function elpaca-manager          "elpaca")
 (declare-function elpaca-use-package-mode "elpaca-use-package")
-(defvar           elpaca-queue-limit      8)
+(defvar           elpaca-queue-limit)
 (defvar           elpaca-use-package)
 (defvar           use-package-always-ensure)
+
+(if (eq system-type 'android)
+    (setq elpaca-queue-limit 4)
+  (setq elpaca-queue-limit 8))
 
 (let ((elpaca-bootstrap
        (expand-file-name "elpaca/sources/elpaca/doc/installer.el"
