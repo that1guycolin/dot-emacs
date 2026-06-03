@@ -316,7 +316,6 @@ With a prefix ARG, remove start location."
   (org-pomodoro-manual-break t))
 
 (use-package org-tidy
-  :ensure (:wait t)
   :defer t
   :bind ("C-:" . org-tidy-toggle)
   :hook (org-mode . org-tidy-mode)

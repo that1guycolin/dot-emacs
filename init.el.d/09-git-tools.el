@@ -65,7 +65,6 @@
   :mode ("\\.dockerignore\\'" . gitignore-mode))
 
 (use-package treemacs-magit
-  :ensure (:wait t)
   :after (treemacs magit))
 
 

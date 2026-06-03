@@ -355,7 +355,6 @@ Wait two seconds before activating the mode."
   (advice-add 'disproject-dispatch :before #'user/close-treemacs))
 
 (use-package treemacs-nerd-icons
-  :ensure (:wait t)
   :after treemacs
   :functions treemacs-nerd-icons-config
   :config

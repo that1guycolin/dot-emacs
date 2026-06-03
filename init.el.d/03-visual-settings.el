@@ -114,17 +114,6 @@ as well."
   (minions-mode 1))
 
 
-  ;; =======  WHICH-KEY  =======
-  ;; `which-key' (needs to load before many other functions)
-  ;; ===========================
-  (use-package which-key
-    :ensure (:wait t)
-    :demand t
-    :config
-    (which-key-mode 1))
-
-
-  (provide '03-visual-settings)
 ;; =======  VISUAL LINE  =======
 ;; `editorconfig' (support .editorconfig)
 ;; `visual-fill-column' (fill-column for visual-line-mode)
@@ -149,4 +138,14 @@ as well."
   :bind ("C-|" . folding-mode))
 
 
+;; =======  WHICH-KEY  =======
+;; `which-key' (needs to load before many other functions)
+;; ===========================
+(use-package which-key
+  :demand t
+  :config
+  (which-key-mode 1))
+
+
+(provide '03-visual-settings)
 ;;; 03-visual-settings.el ends here

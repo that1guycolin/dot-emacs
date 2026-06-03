@@ -219,7 +219,6 @@
   :hook (embark-collect-mode . consult-preview-at-point-mode))
 
 (use-package helpful
-  :ensure (:wait t)
   :demand t
   :preface
   (dolist (bind '("C-h f" "C-h v" "C-h k" "C-h x" "C-h F" "C-z"))

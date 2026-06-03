@@ -101,7 +101,7 @@
 (use-package emms-info-mediainfo
   :ensure (emms-info-mediainfo
 	   :host github :repo "that1guycolin/emms-info-mediainfo"
-	   :files (:defaults) :method https :wait t)
+	   :files (:defaults) :method https)
   :after emms
   :custom
   (emms-info-functions (append '(emms-info-mediainfo) emms-info-functions)))

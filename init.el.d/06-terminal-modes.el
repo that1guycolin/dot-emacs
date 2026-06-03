@@ -138,7 +138,6 @@
   :hook ((eshell-mode shell-mode vterm-mode) . with-editor-export-editor))
 
 (use-package native-complete
-  :ensure (:wait t)
   :defer t
   :preface
   (defun user/setup-native-complete ()
