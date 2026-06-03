@@ -79,9 +79,10 @@ https://raw.githubusercontent.com/progfolio/elpaca/refs/heads/master/doc/install
   :demand t)
 
 (use-package org
-  :ensure (:wait t)
   :demand t
   :preface
+  (declare-function sly-eval "sly")
+  
   (defun user/org-check ()
     "User-error if buffer is not in `org-mode'."
     (unless (derived-mode-p 'org-mode)
@@ -104,7 +105,7 @@ https://raw.githubusercontent.com/progfolio/elpaca/refs/heads/master/doc/install
 	(file-name-directory buffer-file-name)))))
 
   (defun user/org-id-context-prefix ()
-    "Return `org-id-prefix' based on the node's level."
+    "Return `org-id-prefix' based on node level."
     (cond
      ((org-before-first-heading-p)
       (user/get-parent-directory))
@@ -133,14 +134,16 @@ creating org nodes."
 
   (defun user/org-get-heading-location ()
     "In an org-mode buffer, prompt user to pick a scope.
-The scope could be the entire buffer or a heading within that buffer.  For entire buffer, return the top of the buffer "
+The scope could be the entire buffer or a heading within that buffer.
+For entire buffer, return the top of the buffer."
     (let* ((doc-option `(,(buffer-name) . document))
            (heading-options
             (org-map-entries
              (lambda ()
 	       (let* ((path (org-get-outline-path t t))
 		      (heading (org-get-heading t t t t))
-		      (display (string-join (append path (list heading)) " / ")))
+		      (display (string-join
+				(append path (list heading)) " / ")))
 		 (cons display (point))))
              nil 'file))
            (options (cons doc-option heading-options))
@@ -151,7 +154,7 @@ The scope could be the entire buffer or a heading within that buffer.  For entir
 	location)))
 
   (defun user/org-create-properties-block ()
-    "Create an org-node properties block at an interactively-selected heading."
+    "Create org properties drawer at an interactively-selected heading."
     (interactive)
     (user/org-check)
     (goto-char (user/org-get-heading-location))
@@ -175,7 +178,7 @@ The scope could be the entire buffer or a heading within that buffer.  For entir
     "Insert a header block at the top of the current document.
 If there is a properties drawer at the top, the header block will go
 underneath it.  The header block will contain the following fields:
-'TITLE:, AUTHOR: CREATED_DATE:, LAST_EDITED:, ID:, FILETAGS:'."
+\='TITLE:, AUTHOR: CREATED_DATE:, LAST_EDITED:, ID:, FILETAGS:'."
     (interactive
      (list (read-string "Title: " (buffer-name))
 	   (read-string "Author: " nil nil "Colin Loeffler (that1guycolin)")))
@@ -201,7 +204,7 @@ underneath it.  The header block will contain the following fields:
 		"\n#+FILETAGS: \n"))))
   
   (defun user/org-update-last-edit-dt ()
-    "Update value of `LAST_EDIT:' header in the active Org buffer.
+    "Update value of `LAST_EDIT' header in the active Org buffer.
 The new value is the current date & time in this format: "
     (when (derived-mode-p 'org-mode)
       (save-excursion
@@ -235,7 +238,12 @@ The new value is the current date & time in this format: "
   :mode
   (("\\.org\\'"   . org-mode)
    ("\\.notes\\'" . org-mode))
-  :defines org-mode-map
+  :functions
+  org-before-first-heading-p org-get-heading org-map-entries org-back-to-heading
+  org-outline-level org-up-heading-safe org-get-outline-path org-id-get-create
+  org-entry-get org-entry-put org-id-new
+  :defines
+  org-babel-default-header-args:zsh org-babel-lisp-eval-fn
 
   :init
   (if (eq system-type 'android)
@@ -270,7 +278,10 @@ The new value is the current date & time in this format: "
 	  (cons '(:results . "value verbatim replace")
 		(assq-delete-all :results org-babel-default-header-args)))
     (setq org-babel-default-header-args:zsh '((:results . "output")))
-    (setq org-babel-lisp-eval-fn #'sly-eval)
+    (with-eval-after-load 'sly
+      (if org-babel-lisp-eval-fn
+	  (setq org-babel-lisp-eval-fn #'sly-eval)
+	(defvar org-babel-lisp-eval-fun #'sly-eval)))
     (dolist (lang '(lisp lua makefile org python shell))
       (add-to-list 'org-babel-load-languages `(,lang . t)))
     (org-babel-do-load-languages
