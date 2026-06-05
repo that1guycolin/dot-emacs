@@ -1,4 +1,4 @@
-;;; 05-project-management.el --- Project management and file navigation -*-lexical-binding: t; -*-
+;;; 05-project-management.el --- Projects & Workspaces -*-lexical-binding: t; -*-
 
 ;;; Packages included:
 ;; activities, deadgrep, disproject, docker, perspective,

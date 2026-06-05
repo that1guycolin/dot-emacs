@@ -251,21 +251,22 @@ doubles as a model-switcher."
   (advice-add 'end-of-buffer :after #'ellama-enable-scroll))
 
 ;; =======  TRANSIENT  =======
-(declare-function transient-define-prefix "transient")
-(defvar user/llm-dispatch nil)
-(transient-define-prefix
-  user/llm-dispatch ()
-  "Commands to interact with LLMs in Emacs."
-  ["LLM Integrations"
-   ["Gptel"
-    ("g ." "Activate @ cursor" gptel-send)
-    ("g b" "Chat buffer"       gptel)
-    ("g s" "Switch backend"    user/gptel-switch-backend :transient t)]
-   ["Ellama / MCP"
-    ("e"   "Ellama Menu"       ellama-transient-main-menu)
-    ("m s" "Server Start"      mcp-server-lib-start)
-    ("m e" "Server Stop"       mcp-server-lib-stop)]])
-(keymap-global-set "C-c a" #'user/llm-dispatch)
+(with-eval-after-load 'transient
+  (declare-function transient-define-prefix "transient")
+  (defvar user/llm-dispatch nil)
+  (transient-define-prefix
+   user/llm-dispatch ()
+   "Commands to interact with LLMs in Emacs."
+   ["LLM Integrations"
+    ["Gptel"
+     ("g ." "Activate @ cursor" gptel-send)
+     ("g b" "Chat buffer"       gptel)
+     ("g s" "Switch backend"    user/gptel-switch-backend :transient t)]
+    ["Ellama / MCP"
+     ("e"   "Ellama Menu"       ellama-transient-main-menu)
+     ("m s" "Server Start"      mcp-server-lib-start)
+     ("m e" "Server Stop"       mcp-server-lib-stop)]])
+  (keymap-global-set "C-c a" #'user/llm-dispatch))
 
 
 (provide '12-llm-integration)

@@ -178,9 +178,10 @@ If not in a side window, jump to the first found side window."
 
 
 ;; =======  TRANSIENT  =======
-(declare-function transient-define-prefix "transient")
-(defvar user/visual-settings-dispatch nil)
-(transient-define-prefix
+(with-eval-after-load 'transient
+  (declare-function transient-define-prefix "transient")
+  (defvar user/visual-settings-dispatch nil)
+  (transient-define-prefix
   user/visual-settings-dispatch ()
   "Display functions that change how the user-interface looks."
   ["Modify UI"
@@ -192,7 +193,7 @@ If not in a side window, jump to the first found side window."
     ("t s" "Switch theme"        modus-themes-select-dark)
     ("t r" "Random theme"        modus-themes-load-random-dark)
     ("t n" "Rotate theme"        modus-themes-rotate)]])
-(keymap-global-set "C-c u" 'user/visual-settings-dispatch)
+  (keymap-global-set "C-c u" 'user/visual-settings-dispatch))
 
 (declare-function elpaca-manager "elpaca")
 (declare-function elpaca-fetch "elpaca")
