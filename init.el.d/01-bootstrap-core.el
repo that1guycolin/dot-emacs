@@ -15,6 +15,7 @@
 (declare-function elpaca                  "elpaca")
 (declare-function elpaca-manager          "elpaca")
 (declare-function elpaca-use-package-mode "elpaca-use-package")
+(declare-function elpaca-wait             "elpaca")
 (defvar           elpaca-queue-limit)
 (defvar           elpaca-use-package)
 (defvar           use-package-always-ensure)
@@ -40,6 +41,8 @@ https://raw.githubusercontent.com/progfolio/elpaca/refs/heads/master/doc/install
 (elpaca elpaca-use-package
   (elpaca-use-package-mode 1))
 (setq use-package-always-ensure t)
+(elpaca-wait)
+
 
 ;; =======  OTHER BOOTSTRAPS  =======
 ;; `gcmh' (smart garbage collection)
@@ -80,6 +83,7 @@ https://raw.githubusercontent.com/progfolio/elpaca/refs/heads/master/doc/install
   (envrc-global-mode 1))
 
 (use-package transient
+  :ensure (:wait t)
   :demand t)
 
 (use-package org
@@ -128,6 +132,7 @@ https://raw.githubusercontent.com/progfolio/elpaca/refs/heads/master/doc/install
     "Dynamically compute org-id-prefix' each time an ID is created.
 Designed to wrap around ORIG-FN `org-id-new' (accepting the same ARGS) when
 creating org nodes."
+    (defvar org-id-prefix)
     (let ((org-id-prefix
 	   (if (derived-mode-p 'org-mode)
 	       (or (user/org-id-prefix-slug (user/org-id-context-prefix))
