@@ -91,17 +91,23 @@ folder."
   (declare-function org-id-get-create "org-id")
   (defvar org-directory)
 
-  (defun user/setup-org-mem ()
+  (defvar user/org-mem-setup-p nil
+    "Non-nil if `user/org-mem-setup' has completed.")
+  
+  (defun user/org-mem-setup ()
     "Initialize the org-mem id database."
     (org-id-update-id-locations)
     (org-mem-roamy-db-mode 1)
-    (org-mem-updater-mode 1))
+    (org-mem-updater-mode 1)
+    (setq user/org-mem-setup-p t))
 
-  (defun user/org-mem-wait-15 ()
-    "Wait 15 seconds before org-mem setup.."
-    (run-at-time 15 nil #'user/setup-org-mem))
+  (cl-defun user/org-mem-setup-wait (&optional (sec 5))
+    "Wait SEC seconds before `org-mem-setup' (default: 5)."
+    (unless (integerp sec)
+      (error "Value of sec must be an INT, current value: %s" sec))
+    (run-at-time sec nil #'user/org-mem-setup))
 
-  :hook (emacs-startup . user/org-mem-wait-15)
+  :hook (emacs-startup . user/org-mem-setup-wait)
   :functions
   org-mem-roamy-db-mode org-mem-updater-mode org-mem-reset org-mem-await
   org-mem-tip-if-empty
@@ -113,25 +119,37 @@ folder."
 (use-package org-node
   :defer t
   :preface
-  (declare-function org-id-new "org-id")
+  (declare-function org-id-new                   "org-id")
+  (declare-function user/org-insert-header-block "01-bootstrap-core")
   
-  (defun user/org-node-new-file (&optional title id)
-    "Create a new file containing a new node.  Set as `org-node-creation-fn'.
-This user-defined function customizes the \=':PROPERTIES:' block from
-`org-node-new-file' in \"org-node.el\"."
-    (unless title (or (setq title org-node-proposed-title)
-  		      (error "Proposed title was nil")))
-    (org-node-pop-to-fresh-file-buffer title)
-    (goto-char (point-max))
-    (let ((file-id (if id id (org-id-new))))
-      (insert ":PROPERTIES:"
-	      "\nID": file-id
-	      "\n:END:"
-	      "\n#+TITLE: " title
-	      "\n#+AUTHOR:"
-	      "\n#+ID:" file-id
-  	      "\n#+FILETAGS:"
-	      "\n"))
+  (defun user/org-node-new-file (&optional title cust-id)
+    "Create a new file for a new node.
+Optionally, provide the TITLE and CUST-ID for the new node. While based
+on the function `org-node-new-file
+function customizes the \=':PROPERTIES:' block.  Set this function
+as `org-node-creation-fn'."
+
+    (let ((title (or title (or org-node-proposed-title
+			       (error "Proposed title was nil")))))
+      (org-node-pop-to-fresh-file-buffer title)
+      (goto-char (point-min))
+      (if cust-id
+	  (insert ":PROPERTIES:"
+		  "\n:ID:       " cust-id
+		  "\n:END:"
+		  "\n#+TITLE: " title
+		  "\n#+AUTHOR: "
+		  "\n#+CREATED_DATE: "
+		  (format-time-string "[%Y-%m-%d %a %H:%M:%S]")
+		  "\n#+LAST_EDIT: "
+		  "\n#+ID:      " cust-id
+  		  "\n#+FILETAGS:"
+		  "\n")
+	(progn
+	  (org-id-get-create)
+	  (user/org-insert-header-block
+	   title "Colin Loeffler (that1guycolin)"))))
+
     (push (current-buffer) org-node--new-unsaved-buffers)
     (run-hooks 'org-node-creation-hook))
 
@@ -147,12 +165,10 @@ This user-defined function customizes the \=':PROPERTIES:' block from
   (org-node-creation-fn #'user/org-node-new-file)
   (org-node-file-directory-ask t)
   (org-node-prefer-with-heading nil)
-  (org-node--first-init nil)
 
   :config
   (org-node-cache-mode 1)
-  (unless org-mem-updater-mode
-    (org-mem-updater-mode 1))
+  (org-mem-updater-mode 1)
   (org-mem-reset nil "Org-node waiting for org-mem...")
   (org-mem-await "Org-node waiting for org-mem..." 60)
   (org-mem-tip-if-empty)
@@ -191,6 +207,11 @@ This user-defined function customizes the \=':PROPERTIES:' block from
   (("C-c n n". org-noter)
    :map dired-mode-map
    ("N"      . org-noter-start-from-dired))
+
+  :init
+  (let ((note-dir (expand-file-name "notes" org-directory)))
+    (unless (file-directory-p note-dir)
+      (make-directory note-dir t)))
   :custom
   (org-noter-auto-save-last-location t)
   (org-noter-notes-search-path (expand-file-name "notes" org-directory))
@@ -310,12 +331,37 @@ With a prefix ARG, remove start location."
 (use-package org-pomodoro
   :defer t
   :bind (:map org-mode-map
-	      ("C-c P" . org-pomodoro))
+	      ("M-P" . org-pomodoro))
   :custom
   (org-pomodoro-manual-break t))
 
 (use-package org-tidy
   :defer t
+  :preface
+  (defun user/org-tidy-get-styles-cons ()
+    "Return a cons list of values for `org-tidy-properties-style'.
+Values are mapped to informative strings."
+    (cond
+     ((eq 'invisible org-tidy-properties-style)
+      '(("Invisible (current)" . invisible)
+	("Fringe" . fringe) ("Inline" . inline)))
+     ((eq 'fringe org-tidy-properties-style)
+      '(("Fringe (current)" . fringe)
+	("Inline" . inline) ("Invisible" . invisible)))
+     ((eq 'inline org-tidy-properties-style)
+      '(("Inline (current)" . inline)
+	("Invisible" . invisible) ("Fringe" . fringe)))))
+  
+  (defun user/org-tidy-switch-style ()
+    "Interactively change the value of `org-tidy-properties-style'."
+    (interactive)
+    (let* ((cons-list (user/org-tidy-get-styles-cons))
+	   (new-style-cons-string
+	    (completing-read "Select new `org-tidy-properties-style': "
+			     (mapcar #'car cons-list) nil t))
+	   (new-style (cdr (assoc new-style-cons-string cons-list))))
+      (unless (eq org-tidy-properties-style new-style)
+	(setq org-tidy-properties-style new-style))))
   :bind ("C-:" . org-tidy-toggle)
   :hook (org-mode . org-tidy-mode)
   :custom
