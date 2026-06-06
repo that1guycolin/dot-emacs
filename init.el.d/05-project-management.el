@@ -233,7 +233,7 @@ into the message."
 
 (use-package rg
   :defer t
-  :bind (("C-c C-g" . rg-menu)
+  :bind (("C-c g" . rg-menu)
 	 :map isearch-mode-map
 	 ("M-s r" . rg-isearch-menu))
   :config

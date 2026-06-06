@@ -32,7 +32,6 @@
   (defvar org-refile-targets)
   (defun user/remove-org-todo ()
     "Delete a TODO file in the org-directory if it exists.
-
 Because the org-directory is a git repo, there is a possibility of
 accidentally createing a TODO file.  A TODO file in the org-directory is
 by definition redundant, since any TODO items should go in the tasks
