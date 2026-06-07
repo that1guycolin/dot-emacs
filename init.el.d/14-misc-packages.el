@@ -50,28 +50,25 @@
 (unless (eq system-type 'android)
   (use-package telega
     :defer t
-    :preface
-    (defun user/telega-setup (&optional frame)
-      "Define settings for telega."
-      (with-selected-frame (or frame (selected-frame))
-	(when (display-graphic-p)
-          (telega-mode-line-mode 1))))
-    
     :bind ("C-M-g" . telega)
     :functions
     telega-mode-line-mode telega-appindicator-mode
-    telega-auto-download-mode telega-autoplay-mode telega-chat-auto-fill-mode
-    telega-highlight-text-mode telega-notifications-mode
-    telega-root-auto-fill-mode telega-transient-keymaps-mode
-    
+    telega-auto-download-mode telega-autoplay-mode
+    telega-chat-auto-fill-mode telega-highlight-text-mode
+    telega-notifications-mode telega-root-auto-fill-mode
+    telega-transient-keymaps-mode
     :init
-    (setq telega-use-images t)
-    (if (daemonp)
-	(with-eval-after-load 'telega
-	  (add-hook 'after-make-frame-functions #'user/telega-setup))
-      (add-hook 'telega-load-hook #'user/telega-setup))
-    :custom (telega-use-docker "podman")
+    (setq
+     telega-use-docker "podman"
+     telega-use-images t)
     :config
+    (if (daemonp)
+	(add-hook 'after-make-frame-functions
+		  (lambda (frame)
+		    (with-selected-frame frame
+		      (unless telega-mode-line-mode
+			(telega-mode-line-mode 1)))))
+      (telega-mode-line-mode 1))
     (telega-appindicator-mode 1)
     (telega-auto-download-mode 1)
     (telega-autoplay-mode 1)
