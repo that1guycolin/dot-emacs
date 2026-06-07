@@ -3,8 +3,9 @@
 ;;; Packages included:
 ;; adaptive-wrap, apheleia, comment-dwim-2, dap-mode, docstr, flycheck,
 ;; flycheck-color-mode-line, flycheck-eask, flycheck-package, flyover,
-;; lsp-mode, lsp-snippet-tempel, smartparens, visual-regexp,
-;; visual-regexp-steroids, yasnippet, yasnippet-capf, yasnippet-snippets
+;; lsp-mode, lsp-snippet-tempel, rainbow-delimiters, smartparens,
+;; visual-regexp, visual-regexp-steroids, yasnippet, yasnippet-capf,
+;; yasnippet-snippets
 
 ;;; Commentary:
 ;; Call packages that support efficient & productive coding at a global scope.
@@ -15,6 +16,7 @@
 ;; `visual-regexp' (hl regexp as you type)
 ;; `visual-regexp-steroids' (use python-style regexp instead of Emacs)
 ;; `smartparens' (auto-close "", {}, [], ())
+;; `rainbow-delimiters' (colorize "", {}, [], ())
 ;; `adaptive-wrap' (smart text wrapping)
 ;; `docstr' (composing/formatting DocStrings)
 ;; `comment-dwim-2' (easily switch between no-comment, comment, EOL comment)
@@ -36,6 +38,10 @@
   :hook ((prog-mode text-mode) . smartparens-mode)
   :config
   (require 'smartparens-config))
+
+(use-package rainbow-delimiters
+  :defer t
+  :hook ((prog-mode conf-mode) . rainbow-delimiters-mode))
 
 (use-package adaptive-wrap
   :defer t
