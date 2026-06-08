@@ -234,8 +234,10 @@ If there is a properties drawer at the top, the header block will go
 underneath it.  The header block will contain the following fields:
 \='TITLE:, AUTHOR: CREATED_DATE:, LAST_EDITED:, ID:, FILETAGS:'."
     (interactive
-     (list (read-string "Title: " (buffer-name))
-	   (read-string "Author: " nil nil "Colin Loeffler (that1guycolin)")))
+     (list (read-string "Title: " (file-name-base (buffer-name)))
+	   (let ((default "Colin Loeffler (that1guycolin)"))
+	     (read-string (format "Author [DEFAULT: \"%s\"]: " default)
+			  nil nil default))))
     (user/org-check)
     (save-excursion
       (goto-char (point-min))
@@ -259,7 +261,8 @@ underneath it.  The header block will contain the following fields:
   
   (defun user/org-update-last-edit-dt ()
     "Update value of `LAST_EDIT' header in the active Org buffer.
-The new value is the current date & time in this format: "
+The new value is the current date & time in this format:
+YYYY-MM-DD DAY HH:MM:ss (e.g., 2026-03-15 SUN 14:24:06)"
     (when (derived-mode-p 'org-mode)
       (save-excursion
 	(goto-char (point-min))
@@ -269,7 +272,6 @@ The new value is the current date & time in this format: "
           (replace-match
            (format-time-string
             "#+LAST_EDIT: [%Y-%m-%d %a %H:%M:%S]"))))))
-
   (add-hook 'before-save-hook #'user/org-update-last-edit-dt)
   
   (defun user/convert-md-links-to-org ()
@@ -285,7 +287,7 @@ The new value is the current date & time in this format: "
   (("C-c o o" . org-mode)
    ("C-c o l" . org-store-link)
    ("C-c o a" . org-agenda)
-   ("C-c c"   . org-capture)
+   ("C-c c c" . org-capture)
    :map org-mode-map
    ("C-c l"   . org-toggle-link-display)
    ("C-c C-q" . org-set-tags-command))
