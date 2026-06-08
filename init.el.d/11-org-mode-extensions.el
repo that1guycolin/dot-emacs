@@ -21,17 +21,11 @@
   :hook (org-mode . org-edna-mode))
 
 (use-package org-project-capture
-  :ensure (org-project-capture
-	   :source "MELPA" :package "org-project-capture" :fetcher github
-	   :id org-project-capture :repo "colonelpanic8/org-project-capture"
-	   :files ("org-project-capture.el"
-		   "org-project-capture-backend.el"
-		   "org-category-capture.el" "README.org"))
   :demand t
   :preface
   (defvar org-refile-targets)
   (defun user/remove-org-todo ()
-    "Delete a TODO file in the org-directory if it exists.
+    "If a TODO.org file exists in the org directory, delete it.
 Because the org-directory is a git repo, there is a possibility of
 accidentally createing a TODO file.  A TODO file in the org-directory is
 by definition redundant, since any TODO items should go in the tasks
@@ -48,12 +42,15 @@ folder."
   (defvar-keymap user/org-project-capture-map
     :prefix t
     :doc "Project specific options for org-capture."
-    "c" #'org-project-capture-capture-for-current-project)
+    "c" #'org-project-capture-capture-for-current-project
+    "p" #'org-project-capture-project-todo-completing-read
+    "a" #'org-project-capture-agenda-for-current-project)
   
-  :bind
-  (("C-c C-p c" . org-project-capture-capture-for-current-project)
-   ("C-c C-p p" . org-project-capture-project-todo-completing-read)
-   ("C-c C-p a" . org-project-capture-agenda-for-current-project))
+  :bind-keymap ("C-c c p" . user/org-project-capture-map)
+  :functions
+  org-project-capture-capture-for-current-project
+  org-project-capture-project-todo-completing-read
+  org-project-capture-agenda-for-current-project
   
   :custom
   (org-project-capture-per-project-filepath "TODO.org")
