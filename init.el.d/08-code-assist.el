@@ -94,15 +94,16 @@
 ;; json: 'jsonlint' (npm install -g jsonlint)
 ;; lua: 'luacheck' (pacman -S luacheck)
 ;; markdown: 'rumdl' (pacman -S rumdl)
+;; systemd: 'systemdlint' (uv tool install systemdlint)
 ;; toml: 'tombi' (uv tool install tombi)
 ;; xml: 'xmllint' (pacman -S libxml2)
 ;; yaml: 'yamllint' (pacman -S yamllint)
 ;; --------------------------
 ;; Extensions:
-;; `flycheck-inline' (display errors in buffer)
+;; `flyover' (display errors in buffer)
 ;; `flycheck-color-mode-line'
 ;; `flycheck-eask' (Support Eask files)
-;; `flycheck-package' (Support Emacs' pacakges)
+;; `flycheck-package' (Support Emacs' pacakge files)
 ;; ==========================
 (use-package flycheck
   :defer t
@@ -147,6 +148,16 @@ See URL `https://github.com/rvben/rumdl'."
 	    (id (one-or-more (not (any " ")))) " " (message) line-end))
     :modes (markdown-ts-mode markdown-mode gfm-mode))
 
+  (flycheck-define-checker systemd-systemdlint
+    "A Systemd unit file linter.
+See URL `https://github.com/priv-kweihmann/systemdlint'."
+    :command ("systemdlint" source)
+    :error-patterns
+    ((warning line-start (file-name) ":" line ":" (message) line-end))
+    :modes systemd-mode)
+
+  (add-to-list 'flycheck-checkers 'systemd-systemdlint)
+
   (flycheck-define-checker text-vale
     "Tool to bring code-like linting to prose.
 See URL `https://vale.sh'."
@@ -160,7 +171,7 @@ See URL `https://vale.sh'."
     :modes (markdown-mode gfm-mode text-mode org-mode org-gtd-clarify-mode
 			  flycheck-error-message-mode))
   
-  (dolist (chk '(fish-self markdown-rumdl text-vale))
+  (dolist (chk '(fish-self markdown-rumdl systemd-systemdlint text-vale))
     (add-to-list 'flycheck-checkers chk))
 
   (add-hook 'org-mode-hook #'(lambda ()
