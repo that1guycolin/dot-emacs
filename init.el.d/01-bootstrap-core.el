@@ -1,7 +1,7 @@
 ;;; 01-bootstrap-core.el --- Load startup and core packages -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; envrc, exec-path-from-shell, gcmh, org, transient
+;; elpaca, elpaca-use-package, envrc, exec-path-from-shell, gcmh, org, transient
 
 ;;; Commentary:
 ;; Elpaca package manager bootstrap and packages that must load first because
@@ -42,6 +42,50 @@ https://raw.githubusercontent.com/progfolio/elpaca/refs/heads/master/doc/install
   (elpaca-use-package-mode 1))
 (setq use-package-always-ensure t)
 (elpaca-wait)
+
+
+;; =======  EMACS DUMMY PACKAGE (for global settings)  =======
+(use-package emacs
+  :ensure nil
+  :demand t
+  :preface
+  (defun user/check-parens-with-message ()
+    "Run `check-parens'.  Print a message when all parentheses match."
+    (interactive)
+    (when (not (check-parens))
+      (message "All parentheses match!")))
+
+  (defun user/ibuffer-hook-functions ()
+    "Group of functions to include in `ibuffer-mode-hook'."
+    (hl-line-mode 1)
+    (ibuffer-auto-mode 1))
+
+  (defvar user/emacs-load-libs '(bs cl-lib hl-line mouse seq subr-x)
+    "List of optional Emacs libraries to load at Emacs start.")
+
+  :bind
+  (("C-c x"   . toggle-frame-maximized)
+   ("C-c ("   . user/check-parens-with-message)
+   ("C-c #"   . display-line-numbers-mode)
+   ("C-c C-#" . global-display-line-numbers-mode)
+   ("C-c C-$" . restart-emacs))
+  :functions ibuffer-auto-mode
+  :custom
+  (auto-save-visited-interval 60)
+  (enable-recursive-minibuffers t)
+  (minibuffer-prompt-properties
+   '(read-only t cursor-intangible t face minibuffer-prompt))
+  (read-extended-command-predicate #'command-completion-default-include-p)
+  (tab-always-indent 'complete)
+  (text-mode-ispell-word-completion nil)
+  :config
+  (dolist (lib user/emacs-load-libs)
+    (require lib))
+
+  (global-display-fill-column-indicator-mode 1)
+  (context-menu-mode 1)
+  (auto-save-visited-mode 1)
+  (add-hook 'ibuffer-mode-hook #'user/ibuffer-hook-functions))
 
 
 ;; =======  OTHER BOOTSTRAPS  =======

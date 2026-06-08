@@ -69,10 +69,8 @@
    :map tempel-map
    ("TAB"   . tempel-next)
    ("C-TAB" . tempel-previous))
-  :hook
-  ((text-mode prog-mode conf-mode) . user/tempel-setup-capf)
-  :functions
-  tempel-complete tempel-abbrev-mode
+  :hook ((text-mode prog-mode conf-mode) . user/tempel-setup-capf)
+  :functions tempel-complete tempel-abbrev-mode
   :init (tempel-abbrev-mode 1))
 
 (use-package tempel-collection
@@ -231,45 +229,6 @@
    ("C-h ;" . helpful-at-point)
    ("C-h F" . helpful-function)
    ("C-h z" . helpful-kill-buffers)))
-
-(use-package emacs
-  :ensure nil
-  :demand t
-  :preface
-  (defun user/check-parens-with-message ()
-    "Run `check-parens'.  Print a message when all parentheses match."
-    (interactive)
-    (when (not (check-parens))
-      (message "All parentheses match!")))
-
-  (defun user/ibuffer-hook-functions ()
-    "Group of functions to include in `ibuffer-mode-hook'."
-    (hl-line-mode 1)
-    (ibuffer-auto-mode 1))
-
-  :bind
-  (("C-c x"   . toggle-frame-maximized)
-   ("C-c ("   . user/check-parens-with-message)
-   ("C-c #"   . display-line-numbers-mode)
-   ("C-c C-#" . global-display-line-numbers-mode)
-   ("C-c C-!" . restart-emacs))
-  :functions ibuffer-auto-mode
-  :custom
-  (auto-save-visited-interval 60)
-  (enable-recursive-minibuffers t)
-  (minibuffer-prompt-properties
-   '(read-only t cursor-intangible t face minibuffer-prompt))
-  (read-extended-command-predicate #'command-completion-default-include-p)
-  (tab-always-indent 'complete)
-  (text-mode-ispell-word-completion nil)
-  :config
-  (dolist (lib '(bs cl-lib hl-line mouse seq subr-x))
-    (require lib))
-
-  (global-display-fill-column-indicator-mode 1)
-  (context-menu-mode 1)
-  (auto-save-visited-mode 1)
-  (add-hook 'ibuffer-mode-hook #'user/ibuffer-hook-functions))
 
 
 (provide '02-completion-setup)
