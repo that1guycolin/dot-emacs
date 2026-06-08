@@ -108,12 +108,16 @@ https://raw.githubusercontent.com/progfolio/elpaca/refs/heads/master/doc/install
 
 (use-package exec-path-from-shell
   :demand t
+  :preface
+  (defvar user/exec-path-from-shell-vars
+    '("CC" "CXX" "PKG_CONFIG_PATH" "SSH_AGENT_PID" "SSH_AUTH_SOCK"
+      "LSP_USE_PLISTS")
+    "List of environment variables to load at Emacs start.")
   :functions exec-path-from-shell-initialize
   :custom
   (exec-path-from-shell-shell-name "zsh")
   :config
-  (dolist (var '("CC" "CXX" "PKG_CONFIG_PATH" "SSH_AGENT_PID" "SSH_AUTH_SOCK"
-		 "LSP_USE_PLISTS"))
+  (dolist (var user/exec-path-from-shell-vars)
     (add-to-list 'exec-path-from-shell-variables var))
   (exec-path-from-shell-initialize))
 
