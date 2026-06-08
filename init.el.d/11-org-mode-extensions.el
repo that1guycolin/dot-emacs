@@ -121,27 +121,27 @@ folder."
   
   (defun user/org-node-new-file (&optional title cust-id)
     "Create a new file for a new node.
-Optionally, provide the TITLE and CUST-ID for the new node. While based
-on the function `org-node-new-file
-function customizes the \=':PROPERTIES:' block.  Set this function
-as `org-node-creation-fn'."
+Optionally, provide the TITLE and CUST-ID for the new node. This is the
+original `org-node-new-fn' with a custom \=':PROPERTIES:' block.  Set
+this function as `org-node-creation-fn'."
 
     (let ((title (or title (or org-node-proposed-title
 			       (error "Proposed title was nil")))))
       (org-node-pop-to-fresh-file-buffer title)
       (goto-char (point-min))
       (if cust-id
-	  (insert ":PROPERTIES:"
-		  "\n:ID:       " cust-id
-		  "\n:END:"
-		  "\n#+TITLE: " title
-		  "\n#+AUTHOR: "
-		  "\n#+CREATED_DATE: "
-		  (format-time-string "[%Y-%m-%d %a %H:%M:%S]")
-		  "\n#+LAST_EDIT: "
-		  "\n#+ID:      " cust-id
-  		  "\n#+FILETAGS:"
-		  "\n")
+	  (insert
+	   ":PROPERTIES:"
+	   "\n:ID:       " cust-id
+	   "\n:END:"
+	   "\n#+TITLE: " title
+	   "\n#+AUTHOR: "
+	   "\n#+CREATED_DATE: "
+	   (format-time-string "[%Y-%m-%d %a %H:%M:%S]")
+	   "\n#+LAST_EDIT: "
+	   "\n#+ID:      " cust-id
+  	   "\n#+FILETAGS:"
+	   "\n")
 	(progn
 	  (org-id-get-create)
 	  (user/org-insert-header-block
@@ -156,6 +156,7 @@ as `org-node-creation-fn'."
   org-node-pop-to-fresh-file-buffer org-node-cache-mode
   org-node-complete-at-point-mode org-node-backlink-mode
   :defines org-node-backlink-do-drawers
+  
   :init
   (keymap-set org-mode-map "M-o" #'org-node-org-prefix-map)
   :custom
@@ -335,6 +336,8 @@ With a prefix ARG, remove start location."
 (use-package org-tidy
   :defer t
   :preface
+  (declare-function user/org-check "01-bootstrap-core")
+  
   (defun user/org-tidy-get-styles-cons ()
     "Return a cons list of values for `org-tidy-properties-style'.
 Values are mapped to informative strings."
@@ -352,6 +355,7 @@ Values are mapped to informative strings."
   (defun user/org-tidy-switch-style ()
     "Interactively change the value of `org-tidy-properties-style'."
     (interactive)
+    (user/org-check)
     (let* ((cons-list (user/org-tidy-get-styles-cons))
 	   (new-style-cons-string
 	    (completing-read "Select new `org-tidy-properties-style': "
