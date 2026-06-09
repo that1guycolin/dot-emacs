@@ -1,8 +1,22 @@
 emacs-lisp-mode
 
 (decf "(declare-function " (p "func") " \"" (p "pkg") "\")")
+(kgbset "(keymap-global-set \"" (p "keys") "\" #'" (p "func") ")")
+(kset "(keymap-set " (p "keymap") " \"" (p "keys") "\" #'" (p "func") ")")
+
+sh-mode
+
+(shbang "#!/bin/sh")
+(zshbang "#!/bin/zsh")
+(zrcd "#!/bin/zsh" n "# "
+      (p (or (file-name-nondirectory buffer-file-name)
+	     "No file")))
+
+toml-ts-mode
+(bdil (p "name") " = { source = \"" (p "source") "\", target = \"" (p "link_loc") "\", direct = " (p "bool") " }" n)
 
 ;; Local Variables:
 ;; mode: lisp-data
 ;; outline-regexp: "[a-z]"
+;; fill-column: 200
 ;; End:
