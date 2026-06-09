@@ -39,26 +39,26 @@
 
 (use-package diff-hl
   :defer t
-  :preface (defvar user/diff-hl-dispatch)
-  :bind ("C-x v o" . diff-hl-mode)
+  :preface
+  (defvar-keymap user/diff-hl-functions
+    :prefix t
+    :doc "Functions to use in diff-hl-mode."
+    "*" '(menu-item "Show Hunk"       diff-hl-show-hunk)
+    "=" '(menu-item "Goto Hunk"       diff-hl-diff-goto-hunk)
+    "S" '(menu-item "Stage"           diff-hl-stage-dwim)
+    "n" '(menu-item "Revert"          diff-hl-revert-hunk)
+    "[" '(menu-item "Previous Hunk"   diff-hl-previous-hunk)
+    "]" '(menu-item "Next Hunk"       diff-hl-next-hunk)
+    "{" '(menu-item "Show Prev. Hunk" diff-hl-show-hunk-previous)
+    "}" '(menu-item "Show Next Hunk"  diff-hl-show-hunk-next))
+  :bind
+  (("C-x v o" . diff-hl-mode)
+   ("C-x v ?" . user/diff-hl-functions))
   :hook
   (((prog-mode text-mode) . diff-hl-mode)
    (magit-post-refresh    . diff-hl-magit-post-refresh))
   :custom
-  (diff-hl-show-staged-changes nil)
-  :config
-  (transient-define-prefix user/diff-hl-dispatch ()
-    "Custom transient for diff highlight commands."
-    ["Diff Highlight Mode"
-     [("*" "Show Hunk"       diff-hl-show-hunk)
-      ("=" "Goto Hunk"       diff-hl-diff-goto-hunk)
-      ("S" "Stage"           diff-hl-stage-dwim)
-      ("n" "Revert"          diff-hl-revert-hunk)]
-
-     [("[" "Previous Hunk"   diff-hl-previous-hunk)
-      ("]" "Next Hunk"       diff-hl-next-hunk)
-      ("{" "Show Prev. Hunk" diff-hl-show-hunk-previous)
-      ("}" "Show Next Hunk"  diff-hl-show-hunk-next)]]))
+  (diff-hl-show-staged-changes nil))
 
 (use-package git-modes
   :defer t
