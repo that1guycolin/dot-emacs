@@ -24,10 +24,11 @@
   :demand t
   :preface
   (defvar org-refile-targets)
+
   (defun user/remove-org-todo ()
     "If a TODO.org file exists in the org directory, delete it.
 Because the org-directory is a git repo, there is a possibility of
-accidentally createing a TODO file.  A TODO file in the org-directory is
+accidentally creating a TODO file.  A TODO file in the org-directory is
 by definition redundant, since any TODO items should go in the tasks
 folder."
     (interactive)
@@ -39,22 +40,36 @@ folder."
 	(when (called-interactively-p 'any)
 	  (message "There is no TODO file in the org directory.")))))
 
-  (defvar-keymap user/org-project-capture-map
+  (defvar-keymap user/org-capture-options
     :prefix t
-    :doc "Project specific options for org-capture."
-    "c" #'org-project-capture-capture-for-current-project
-    "p" #'org-project-capture-project-todo-completing-read
-    "a" #'org-project-capture-agenda-for-current-project)
-  
-  :bind-keymap ("C-c c p" . user/org-project-capture-map)
+    :doc "Keymap containing available org-capture options."
+    "p" '(menu-item "Current Project"
+		    org-project-capture-capture-for-current-project)
+    "n" '(menu-item "Non-active Project"
+		    org-project-capture-project-todo-completing-read)
+    "g" '(menu-item "General Capture" org-capture))
+
+  (defvar-keymap user/org-agenda-options
+    :prefix t
+    :doc "Keymap containing availble org-agenda views."
+    "p" '(menu-item "Current Project"
+		    org-project-capture-agenda-for-current-project)
+    "g" '(menu-item "General Agenda" org-agenda))
+
   :functions
   org-project-capture-capture-for-current-project
   org-project-capture-project-todo-completing-read
   org-project-capture-agenda-for-current-project
-  
+
   :custom
+  (org-project-capture-default-backend (make-instance
+					'org-project-capture-project-backend))
+  (org-project-capture-strategy (make-instance
+				 'org-project-capture-per-project-strategy))
   (org-project-capture-per-project-filepath "TODO.org")
   :config
+  (keymap-global-set "C-c c" user/org-capture-options)
+  (keymap-global-set "C-c a" user/org-agenda-options)
   (dolist (project (project-known-project-roots))
     (let ((project-todo (expand-file-name "TODO.org" project)))
       (when (file-exists-p project-todo)

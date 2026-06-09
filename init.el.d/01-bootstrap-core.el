@@ -274,7 +274,7 @@ YYYY-MM-DD DAY HH:MM:ss (e.g., 2026-03-15 SUN 14:24:06)"
             "#+LAST_EDIT: [%Y-%m-%d %a %H:%M:%S]"))))))
   (add-hook 'before-save-hook #'user/org-update-last-edit-dt)
   
-  (defun user/convert-md-links-to-org ()
+  (defun user/org-convert-md-links ()
     "Convert all md-style links in the current buffer to org-style."
     (interactive)
     (user/org-check)
@@ -286,8 +286,6 @@ YYYY-MM-DD DAY HH:MM:ss (e.g., 2026-03-15 SUN 14:24:06)"
   :bind
   (("C-c o o" . org-mode)
    ("C-c o l" . org-store-link)
-   ("C-c o a" . org-agenda)
-   ("C-c c c" . org-capture)
    :map org-mode-map
    ("C-c l"   . org-toggle-link-display)
    ("C-c C-q" . org-set-tags-command))
