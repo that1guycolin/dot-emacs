@@ -100,14 +100,25 @@
   ((visual-line-mode               . visual-fill-column-for-vline)
    ((prog-mode text-mode conf-mode) . visual-line-mode)))
 
-(use-package folding-mode
+(use-package hideshow
   :ensure nil
   :defer t
-  :bind ("C-|" . folding-mode))
+  :preface
+  (defun user/hideshow-toggle-fold ()
+    "Reliably toggle folding on the current block by jumping to EOL first."
+    (interactive)
+    (save-excursion
+      (end-of-line)
+      (hs-toggle-hiding)))
+  :hook (prog-mode . hs-minor-mode)
+  :bind (:map hs-minor-mode-map
+	      ("C-c TAB" . user/hideshow-toggle-fold)
+	      ("C-c M-h" . hs-hide-all)
+	      ("C-c M-s" . hs-show-all)))
 
 
 ;; =======  WHICH-KEY  =======
-;; `which-key' (needs to load before many other functions)
+;; `which-key' (diplay keymap in minibuf)
 ;; ===========================
 (use-package which-key
   :demand t
