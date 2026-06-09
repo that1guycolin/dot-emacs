@@ -63,9 +63,19 @@
     "Locally add relevant tempel items to `completion-at-point-functions'."
     (setq-local completion-at-point-functions
 		(cons #'tempel-complete completion-at-point-functions)))
+
+  (defun user/tempel-edit-custom-templates ()
+    "Open tempel template file(s) in another window."
+    (interactive)
+    (if (listp tempel-path)
+	(dolist (file tempel-path)
+	  (find-file-other-window file))
+      (find-file-other-window tempel-path)))
+  
   :bind
   (("M-+"   . tempel-insert)
    ("M-*"   . tempel-complete)
+   ("C-M-+" . user/tempel-edit-custom-templates)
    :map tempel-map
    ("TAB"   . tempel-next)
    ("C-TAB" . tempel-previous))
