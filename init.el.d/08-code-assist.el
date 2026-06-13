@@ -228,90 +228,48 @@ See URL `https://vale.sh'."
   :after (consult flycheck))
 
 
+;; ============================  EGLOT  =============================
+;; ---------------------------  REQUIRED  ---------------------------
+;; cmake:	 'neocmakelsp'		 (cargo install neocmakelsp)
+;; fish:	 'fish-lsp'		 (npm install -g fish-lsp)
+;; lua:          'lua-language-server'	 (pacman -S lua-language-server)
+;; markdown:	 'rumdl'		 (pacman -S rumdl)
+;; python:	 'ty'			 (uv tool install ty)
+;; python:	 'ruff'			 (uv tool install ruff)
+;; toml:         'tombi'                 (pacman -S tombi)
+;; ---------------------------  OPTIONAL  ---------------------------
+;; bash:	 'bash-language-server'	 (pacman -S bash-language-server)
+;; json:	 'json-language-server'	 (pacman -S json-language-server)
+;; xml:          'lemminx'		 (github.com/eclipse-lemminx/lemminx)
+;; yaml:	 'yaml-language-server'	 (pacman -S yaml-language-server)
+;; --------------------------  EXTENSIONS  --------------------------
+;; `consult-eglot' `consult-eglot-embark' `flycheck-eglot' (integrations)
+;; `lsp-snippet' (integrate lsp with templ & yasnippet)
+;; ==================================================================
+(use-package eglot
+  :ensure nil
   :defer t
   :preface
-  (defvar minions-prominent-modes)
-  :bind
-  (("C-c C-l" . lsp)
-   :map lsp-mode-map
-   ("C-c F" . lsp-format-buffer))
+  (defun user/interactive-eglot ()
+    "Call `eglot' interactively."
+    (interactive)
+    (call-interactively #'eglot))
+  
+  :bind ("C-c l" . user/interactive-eglot)
   :hook
-  ((cmake-ts-mode    . lsp-deferred)
-   (fish-mode        . lsp-deferred)
-   (lua-ts-mode      . lsp-deferred)
-   (markdown-mode    . lsp-deferred)
-   (markdown-ts-mode . lsp-deferred)
-   (python-ts-mode   . lsp-deferred)
-   (toml-ts-mode     . lsp-deferred))
-  :functions
-  lsp-mode lsp-register-client make-lsp--client lsp-stdio-connection
-  :defines lsp-language-id-configuration
-
-  :custom
-  (lsp-auto-guess-root t)
-  (lsp-disabled-clients
-   '(cmake-language-server marksman pylsp pyright semgrep-ls taplo))
-  (lsp-enable-file-watchers nil)
-  (lsp-enable-on-type-formatting nil)
-  (lsp-headerline-breadcrumb-enable t)
-  (lsp-idle-delay 0.8)
-  (lsp-log-io nil)
-  (lsp-lua-runtime-version "LuaJIT")
-  (lsp-lua-diagnostics-globals ["mp"])
-  (lsp-rust-analyzer-cargo-watch-command "cargo-clippy")
-  (lsp-rust-server 'rust-analyzer)
-  (lsp-use-plists t)
+  ((cmake-ts-mode fish-mode lua-ts-mode markdown-mode markdown-ts-mode
+		  python-base-mode toml-ts-mode) . user/interactive-eglot)
+  
   :config
-  (add-to-list 'minions-prominent-modes lsp-mode)
-  
-  (lsp-register-client
-   (make-lsp--client
-    :new-connection (lsp-stdio-connection '("neocmakelsp" "stdio"))
-    :major-modes '(cmake-ts-mode)
-    :server-id 'neocmakelsp))
+  (dolist
+      (lsp-cons
+       '(((lua-mode lua-ts-mode) .
+	  (expand-file-name "~/.luarocks/bin/lua-language-server"))
+	 ((fish-mode) . ("fish-lsp" "start"))
+	 ((markdown-mode markdown-ts-mode) . ("rumdl" "start"))
+	 (nxml-mode . ("lemminx"))))
+    (add-to-list 'eglot-server-programs lsp-cons)))
 
-  (lsp-register-client
-   (make-lsp--client
-    :new-connection (lsp-stdio-connection '("fish-lsp" "start"))
-    :major-modes '(fish-mode)
-    :server-id 'fish-ls))
-  (add-to-list 'lsp-language-id-configuration '(fish-mode . "fish"))
-  
-  (lsp-register-client
-   (make-lsp--client
-    :new-connection (lsp-stdio-connection '("rumdl" "server"))
-    :major-modes '(markdown-mode markdown-ts-mode gfm-mode)
-    :server-id 'rumdl-ls))
-
-  (lsp-register-client
-   (make-lsp--client
-    :new-connection (lsp-stdio-connection '("tombi" "lsp"))
-    :major-modes '(toml-mode toml-ts-mode)
-    :server-id 'tombi-ls))
-  
-  (dolist (dir '("[/\\\\]node_modules\\'" "[/\\\\]\\.git\\'" "[/\\\\]dist\\'"
-                 "[/\\\\]build\\'" "[/\\\\]target\\'" "[/\\\\]\\.direnv\\'"
-                 "[/\\\\]\\.cache\\'" "[/\\\\]vendor\\'"))
-    (add-to-list 'lsp-file-watch-ignored-directories dir))
-  (add-hook 'fish-mode-hook
-            (lambda ()
-	      (setq-local lsp-enable-file-watchers nil))))
-
-(use-package lsp-snippet-tempel
-  :ensure (lsp-snippet-tempel
-	   :type git :host github :repo "svaante/lsp-snippet")
-  :after lsp-mode
-  :config
-  (lsp-snippet-tempel-lsp-mode-init))
-
-(use-package dap-mode
-  :defer t
-  :commands (dap-debug dap-debug-edit-template dap-auto-configure-mode)
-  :defines dap-python-debugger
-  :custom
-  (dap-auto-configure-features '(sessions locals controls tooltip))
-  (dap-lldb-debug-program "/usr/bin/lldb-dap")
-  (dap-python-debugger 'debugpy)
   :config
   (require 'dap-python))
 
