@@ -354,6 +354,22 @@ See URL `https://vale.sh'."
   (setf (alist-get 'yaml-ts-mode	apheleia-mode-alist) 'yq-yaml))
 
 
+;; =======  FLYSPELL  =======
+;; `flyspell-correct'		 (correct w/ flyspell...)
+;; `flyspell-correct-avy-menu'	 (... and your favorite interface)
+;; ==========================
+(use-package flyspell
+  :ensure nil
+  :defer t
+  :hook ((prog-mode conf-mode text-mode) . flyspell-mode))
+
+(use-package flyspell-correct
+  :after flyspell
+  :bind (:map flyspell-mode-map
+	      ("C-&" . flyspell-correct-wrapper)))
+
+(use-package flyspell-correct-avy-menu
+  :after (flyspell-correct avy))
 
 
 (provide '08-code-assist)
