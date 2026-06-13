@@ -1,9 +1,10 @@
 ;;; 11-org-mode-extensions.el --- Extensions for Org-mode -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; djvu, el2org, magit-org-todos, nov, ob-rust, org-edna, org-make-toc, org-mem,
-;; org-modern, org-modern-indent, org-node, org-noter, org-noter-pdftools,
-;; org-pdftools, org-pomodoro, org-project-capture, org-tidy, pdf-tools
+;; djvu, el2org, magit-org-todos, nov, ob-rust, org-edna, org-make-toc,
+;; org-mem, org-modern, org-modern-indent, org-node, org-noter,
+;; org-noter-pdftools, org-pdftools, org-pomodoro, org-project-capture,
+;; org-tidy, pdf-tools
 
 ;;; Commentary:
 ;; Provide extensions for Emacs' Org-mode.  NOTE: Many extensions in this file
@@ -173,7 +174,7 @@ this function as `org-node-creation-fn'."
   :defines org-node-backlink-do-drawers
   
   :init
-  (keymap-set org-mode-map "M-o" #'org-node-org-prefix-map)
+  (keymap-set org-mode-map "M-o" org-node-org-prefix-map)
   :custom
   (org-node-creation-fn #'user/org-node-new-file)
   (org-node-file-directory-ask t)
