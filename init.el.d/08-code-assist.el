@@ -299,17 +299,17 @@ See URL `https://vale.sh'."
 
 
 ;; =======  FORMATTING  =======
-;; bash: 'shfmt' (pacman -S shfmt)
-;; cmake: 'neocmakelsp' (cargo install neocmakelsp)
-;; fish: 'fish_indent' (bundled with fish shell)
-;; emacs-lisp: 'lisp-indent' (built-in)
-;; json: 'jq' (pacman -S jq)
-;; lua: `stylua'
-;; markdown: 'rumdl' (pacman -S rumdl)
-;; python: 'ruff' (uv tool install ruff)
-;; toml: 'tombi' (pacman -S tombi)
-;; xml: 'xmlstarlet' (pacman -S xmlstarlet)
-;; yaml: 'yq-yqml' (pacman -S yq-yaml)
+;; bash:	 'shfmt'	 (pacman -S shfmt)
+;; cmake:	 'neocmakelsp'	 (cargo install neocmakelsp)
+;; fish:	 'fish_indent'	 (bundled with fish shell)
+;; emacs-lisp:	 'lisp-indent'	 (built-in)
+;; json:	 'jq'		 (pacman -S jq)
+;; lua:          'stylua'        (pacman -S stylua)
+;; markdown:	 'rumdl'	 (pacman -S rumdl)
+;; python:	 'ruff'		 (uv tool install ruff)
+;; toml:	 'tombi'	 (pacman -S tombi)
+;; xml:          'xmlstarlet'	 (pacman -S xmlstarlet)
+;; yaml:	 'yq-yqml'	 (pacman -S yq-yaml)
 ;; ============================
 (use-package apheleia
   :defer t
@@ -317,35 +317,43 @@ See URL `https://vale.sh'."
   :hook ((prog-mode text-mode) . apheleia-mode)
 
   :config
-  (when (equal major-mode 'sh-mode)
+  (when ()
     (apheleia-mode -1))
   
-  (setf (alist-get 'jq apheleia-formatters)
+  (setf (alist-get 'jq		apheleia-formatters)
 	'("jq" "." "-M" "--indent" "2"))
+  
   (setf (alist-get 'neocmakelsp apheleia-formatters)
         '("neocmakelsp" "format" (buffer-file-name)))
-  (setf (alist-get 'ruff apheleia-formatters)
+  
+  (setf (alist-get 'ruff	apheleia-formatters)
         '("ruff" "format" "-"))
-  (setf (alist-get 'rumdl apheleia-formatters)
+  
+  (setf (alist-get 'rumdl	apheleia-formatters)
 	'("rumdl" "fmt" "--stdin" "-"))
-  (setf (alist-get 'shfmt apheleia-formatters)
+  
+  (setf (alist-get 'shfmt	apheleia-formatters)
 	'("shfmt" "-i" "4" "-ci" "-"))
-  (setf (alist-get 'tombi apheleia-formatters)
+  
+  (setf (alist-get 'tombi	apheleia-formatters)
         '("tombi" "fmt" "-"))
-  (setf (alist-get 'xmlstarlet apheleia-formatters)
+  
+  (setf (alist-get 'xmlstarlet	apheleia-formatters)
         '("xmlstarlet" "fo" "--indent-spaces" "2" "-"))
 
-  (setf (alist-get 'cmake-ts-mode apheleia-mode-alist) 'neocmakelsp)
-  (setf (alist-get 'eask-mode apheleia-mode-alist) 'lisp-indent)
-  (setf (alist-get 'fish-mode apheleia-mode-alist) 'fish-indent)
-  (setf (alist-get 'json-ts-mode apheleia-mode-alist) 'jq)
-  (setf (alist-get 'markdown-mode apheleia-mode-alist) 'rumdl)
-  (setf (alist-get 'gfm-mode apheleia-mode-alist) 'rumdl)
-  (setf (alist-get 'python-ts-mode apheleia-mode-alist) 'ruff)
-  (setf (alist-get 'toml-ts-mode apheleia-mode-alist) 'tombi)
-  (setf (alist-get 'conf-toml-mode apheleia-mode-alist) 'tombi)
-  (setf (alist-get 'nxml-mode apheleia-mode-alist) 'xmlstarlet)
-  (setf (alist-get 'yaml-ts-mode apheleia-mode-alist) 'yq-yaml))
+  (setf (alist-get 'cmake-ts-mode	apheleia-mode-alist) 'neocmakelsp)
+  (setf (alist-get 'eask-mode		apheleia-mode-alist) 'lisp-indent)
+  (setf (alist-get 'fish-mode		apheleia-mode-alist) 'fish-indent)
+  (setf (alist-get 'json-ts-mode	apheleia-mode-alist) 'jq)
+  (setf (alist-get 'markdown-mode	apheleia-mode-alist) 'rumdl)
+  (setf (alist-get 'gfm-mode		apheleia-mode-alist) 'rumdl)
+  (setf (alist-get 'python-ts-mode	apheleia-mode-alist) 'ruff)
+  (setf (alist-get 'toml-ts-mode	apheleia-mode-alist) 'tombi)
+  (setf (alist-get 'conf-toml-mode	apheleia-mode-alist) 'tombi)
+  (setf (alist-get 'nxml-mode		apheleia-mode-alist) 'xmlstarlet)
+  (setf (alist-get 'yaml-ts-mode	apheleia-mode-alist) 'yq-yaml))
+
+
 
 
 (provide '08-code-assist)
