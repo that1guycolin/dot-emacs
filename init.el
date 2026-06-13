@@ -19,40 +19,41 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-;;; Commentary:
-;; that1guycolin's personal Emacs configuration.  Uses Elpaca as package manager
-;; with an optimized load order.
-
 ;;; Packages included:
 ;; activities, adaptive-wrap, adjust-parens, apheleia, auto-rename-tag,
 ;; bash-ts-mode, cape, casual, casual-avy, checkdoc, cmake-ts-mode,
-;; comment-dwim-2, corfu, csv-mode, dap-mode, dashboard, deadgrep, diff-hl,
-;; dirvish, disproject, djvu, docker, dockerfile-mode, docstr,
-;; dwim-shell-command, eask-mode, eat, editorconfig, ef-themes, el2org,
-;; eldoc-cmake, elisp-def, elisp-dev-mcp, ellama, emacs, emacs-everywhere,
-;; emacs-lisp-mode, emms, emms-info-mediainfo, envrc, eros, eros-inspector,
-;; esh-autosuggest, eshell, eshell-git-prompt, eshell-syntax-highlighting,
+;; comment-dwim-2, consult, consult-eglot, consult-eglot-embark,
+;; consult-flycheck, consult-project-extra, consult-yasnippet, corfu, csv-mode,
+;; dashboard, deadgrep, diff-hl, dirvish, disproject, djvu, docker,
+;; dockerfile-ts-mode, docstr, dwim-shell-command, eask-mode, eat,
+;; editorconfig, ef-themes, eglot, el2org, eldoc-cmake, elisp-def,
+;; elisp-dev-mcp, ellama, elpaca, elpaca-use-package, emacs, emacs-lisp-mode,
+;; embark, embark-consult, emms, emms-info-mediainfo, envrc, eros,
+;; eros-inspector, eshell, eshell-git-prompt, eshell-syntax-highlighting,
 ;; esh-help, exec-path-from-shell, fish-mode, flycheck,
-;; flycheck-color-mode-line, flycheck-eask, flycheck-package, flyover,
-;; folding-mode, forge, free-keys, gcmh, ghostel, git-commit-ts-mode,
-;; git-modes, glsl-mode, gptel, gptel-forge-prs, grip-mode, helpful, ielm,
-;; ini-mode, inspector, json-ts-mode, just-ts-mode, kdl-mode, lisp-mode,
-;; lisp-semantic-hl, live-py-mode, llm, lsp-mode, lsp-snippet-tempel,
-;; lua-ts-mode, macrostep, magit, magit-org-todos, marginalia,
-;; markdown-ts-mode, mcp-server-lib, minions, mistty, modus-themes, morlock,
-;; native-complete, nerd-icons, nerd-icons-corfu, nov, nxml-mode, ob-rust,
-;; orderless, org, org-edna, org-make-toc, org-mcp, org-mem, org-modern,
-;; org-modern-indent, org-node, org-noter, org-noter-pdftools, org-pdftools,
-;; org-pomodoro, org-project-capture, org-tidy, pdf-tools, perspective,
-;; perspective-project-bridge, popper, project, python-pytest, python-ts-mode,
-;; python-x, ready-player, rg, rustic, savehist, sh-mode, sly, smartparens,
-;; suggest, systemd, tab-line-nerd-icons, telega, tempel, tempel-collection,
-;; toml-ts-mode, transient, tree-inspector, treemacs, treemacs-magit,
-;; treemacs-nerd-icons, treemacs-perspective, treesit, vertico,
-;; visual-fill-column, visual-regexp, visual-regexp-steroids, vterm, which-key,
-;; with-editor, yaml-pro, yaml-ts-mode, yasnippet, yasnippet-capf,
+;; flycheck-color-mode-line, flycheck-eask, flycheck-eglot, flycheck-package,
+;; flyover, flyspell, flyspell-correct, flyspell-correct-avy-menu, forge,
+;; free-keys, gcmh, ghostel, git-commit-ts-mode, git-modes, glsl-mode, gptel,
+;; gptel-forge-prs, grip-mode, helpful, hideshow, ielm, ini-mode, inspector,
+;; json-ts-mode, just-ts-mode, kdl-mode, lisp-mode, lisp-semantic-hl,
+;; live-py-mode, llm, lsp-snippet, lua-ts-mode, macrostep, magit,
+;; magit-org-todos, marginalia, markdown-ts-mode, mcp-server-lib, minions,
+;; mistty, modus-themes, morlock, native-complete, nerd-icons,
+;; nerd-icons-corfu, nov, nxml-mode, ob-rust, orderless, org, org-edna,
+;; org-make-toc, org-mcp, org-mem, org-modern, org-modern-indent, org-node,
+;; org-noter, org-noter-pdftools, org-pdftools, org-pomodoro,
+;; org-project-capture, org-tidy, pdf-tools, popper, project, python-pytest,
+;; python-ts-mode, python-x, rainbow-delimiters, ready-player, rg, rustic,
+;; savehist, shfmt, sh-mode, sly, smartparens, suggest, systemd,
+;; tab-line-nerd-icons, tempel, tempel-collection, toml-ts-mode, transient,
+;; tree-inspector, treemacs, treemacs-magit, treemacs-nerd-icons, treesit,
+;; vertico, visual-fill-column, visual-regexp, visual-regexp-steroids, vterm,
+;; which-key, with-editor, yaml-pro, yaml-ts-mode, yasnippet, yasnippet-capf,
 ;; yasnippet-snippets
 
+;;; Commentary:
+;; that1guycolin's personal Emacs configuration.  Reduces startup time by
+;; optimizing load-order and using `Elpaca' as package manager.
 
 ;;; Code:
 ;; =======  LOAD PATHS  =======
