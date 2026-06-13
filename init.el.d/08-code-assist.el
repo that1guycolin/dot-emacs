@@ -12,39 +12,21 @@
 
 ;;; Code:
 ;; =======  TEXT MANIPULATION  =======
+;; `adaptive-wrap' (smart text wrapping)
+;; `comment-dwim-2' (easily switch between no-comment, comment, EOL comment)
+;; `docstr' (composing/formatting DocStrings)
+;; `rainbow-delimiters' (colorize "", {}, [], ())
+;; `smartparens' (auto-close "", {}, [], ())
 ;; `visual-regexp' (hl regexp as you type)
 ;; `visual-regexp-steroids' (use python-style regexp instead of Emacs)
-;; `smartparens' (auto-close "", {}, [], ())
-;; `rainbow-delimiters' (colorize "", {}, [], ())
-;; `adaptive-wrap' (smart text wrapping)
-;; `docstr' (composing/formatting DocStrings)
-;; `comment-dwim-2' (easily switch between no-comment, comment, EOL comment)
 ;; ===================================
-(use-package visual-regexp
-  :defer t
-  :bind
-  (("C-c r" . vr/replace)
-   ("C-c q" . vr/query-replace)))
-
-(use-package visual-regexp-steroids
-  :defer t
-  :bind
-  (([remap isearch-forward-regexp]  . vr/isearch-forward)
-   ([remap isearch-backward-regexp] . vr/isearch-backward)))
-
-(use-package smartparens
-  :defer t
-  :hook ((prog-mode text-mode) . smartparens-mode)
-  :config
-  (require 'smartparens-config))
-
-(use-package rainbow-delimiters
-  :defer t
-  :hook ((prog-mode conf-mode) . rainbow-delimiters-mode))
-
 (use-package adaptive-wrap
   :defer t
   :hook ((prog-mode text-mode) . adaptive-wrap-prefix-mode))
+
+(use-package comment-dwim-2
+  :defer t
+  :bind ([remap comment-dwim] . comment-dwim-2))
 
 (use-package docstr
   :defer t
@@ -82,9 +64,27 @@
    (web-mode          . docstr-mode))
   :functions docstr-major-modes)
 
-(use-package comment-dwim-2
+(use-package rainbow-delimiters
   :defer t
-  :bind ([remap comment-dwim] . comment-dwim-2))
+  :hook ((prog-mode conf-mode) . rainbow-delimiters-mode))
+
+(use-package smartparens
+  :defer t
+  :hook ((prog-mode text-mode) . smartparens-mode)
+  :config
+  (require 'smartparens-config))
+
+(use-package visual-regexp
+  :defer t
+  :bind
+  (("C-c r" . vr/replace)
+   ("C-c q" . vr/query-replace)))
+
+(use-package visual-regexp-steroids
+  :defer t
+  :bind
+  (([remap isearch-forward-regexp]  . vr/isearch-forward)
+   ([remap isearch-backward-regexp] . vr/isearch-backward)))
 
 
 ;; =======  FLYCHECK  =======
@@ -202,7 +202,7 @@ See URL `https://vale.sh'."
   (flyover-virtual-line-type 'curved-arrow)
   (flyover-line-position-offset 1)
   (flyover-wrap-messages t)
-  (flyover-max-line-length 80)
+  (flyover-max-line-length 120)
   (flyover-debounce-interval 0.1)
   (flyover-cursor-debounce-interval 0.2)
   (flyover-display-mode 'hide-on-same-line)
