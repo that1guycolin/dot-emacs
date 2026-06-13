@@ -176,41 +176,48 @@ If not in a side window, jump to the first found side window."
   (add-to-list 'load-path user/tools-directory)
   (require 'generate-readme))
 
+(declare-function elpaca-update-menus "elpaca")
+(defun user/elpaca-update-menus ()
+  "Non-interactively run `elpaca-update-menus'."
+  (interactive)
+  (funcall #'elpaca-update-menus))
+
 
 ;; =======  TRANSIENT  =======
 (with-eval-after-load 'transient
   (declare-function transient-define-prefix "transient")
   (defvar user/visual-settings-dispatch nil)
   (transient-define-prefix
-  user/visual-settings-dispatch ()
-  "Display functions that change how the user-interface looks."
-  ["Modify UI"
-   ["Fonts"
-    ("f s" "Switch font"         user/switch-font)
-    ("f r" "Random font"         user/random-font)
-    ("f b" "Font size behaviour" user/set-font-size-behaviour :transient t)]
-   ["Theme"
-    ("t s" "Switch theme"        modus-themes-select-dark)
-    ("t r" "Random theme"        modus-themes-load-random-dark)
-    ("t n" "Rotate theme"        modus-themes-rotate)]])
+    user/visual-settings-dispatch ()
+    "Display functions that change how the user-interface looks."
+    ["Modify UI"
+     ["Fonts"
+      ("f s" "Switch font"         user/switch-font)
+      ("f r" "Random font"         user/random-font)
+      ("f b" "Font size behaviour" user/set-font-size-behaviour :transient t)]
+     ["Theme"
+      ("t s" "Switch theme"        modus-themes-select-dark)
+      ("t r" "Random theme"        modus-themes-load-random-dark)
+      ("t n" "Rotate theme"        modus-themes-rotate)]])
   (keymap-global-set "C-c u" 'user/visual-settings-dispatch))
 
-(declare-function elpaca-manager "elpaca")
-(declare-function elpaca-fetch "elpaca")
-(declare-function elpaca-fetch-all "elpaca")
-(declare-function elpaca-merge "elpaca")
-(declare-function elpaca-merge-all "elpaca")
-(declare-function elpaca-rebuild "elpaca")
-(declare-function elpaca-update "elpaca")
-(declare-function elpaca-update-all "elpaca")
-(declare-function elpaca-build-autoloads "elpaca")
-(declare-function elpaca-build-docs "elpaca")
-(declare-function elpaca-build-docs-process-sentinel "elpaca")
-(declare-function elpaca-build-compile "elpaca")
+(declare-function elpaca-manager			"elpaca")
+(declare-function elpaca-fetch				"elpaca")
+(declare-function elpaca-fetch-all			"elpaca")
+(declare-function elpaca-merge				"elpaca")
+(declare-function elpaca-merge-all			"elpaca")
+(declare-function elpaca-rebuild			"elpaca")
+(declare-function elpaca-update                         "elpaca")
+(declare-function elpaca-update-all                     "elpaca")
+(declare-function elpaca-build-autoloads		"elpaca")
+(declare-function elpaca-build-docs                     "elpaca")
+(declare-function elpaca-build-docs-process-sentinel	"elpaca")
+(declare-function elpaca-build-compile			"elpaca")
 (defvar-keymap user/elpaca-options-map
   :prefix t
   :doc "Functions for Elpaca package manager"
   "g"	 #'elpaca-manager
+  "n"    #'user/elpaca-update-menus
   "f"	 #'elpaca-fetch
   "F"	 #'elpaca-fetch-all
   "m"	 #'elpaca-merge
