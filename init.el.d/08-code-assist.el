@@ -1,11 +1,10 @@
 ;;; 08-code-assist.el --- Linting, formatting, & LSPs -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; adaptive-wrap, apheleia, comment-dwim-2, dap-mode, docstr, flycheck,
+;; adaptive-wrap, apheleia, comment-dwim-2, docstr, flycheck,
 ;; flycheck-color-mode-line, flycheck-eask, flycheck-package, flyover,
-;; lsp-mode, lsp-snippet-tempel, rainbow-delimiters, smartparens,
-;; visual-regexp, visual-regexp-steroids, yasnippet, yasnippet-capf,
-;; yasnippet-snippets
+;; lsp-mode, lsp-snippet, rainbow-delimiters, smartparens, visual-regexp,
+;; visual-regexp-steroids
 
 ;;; Commentary:
 ;; Call packages that support efficient & productive coding at a global scope.
@@ -376,34 +375,6 @@ See URL `https://vale.sh'."
   (setf (alist-get 'conf-toml-mode apheleia-mode-alist) 'tombi)
   (setf (alist-get 'nxml-mode apheleia-mode-alist) 'xmlstarlet)
   (setf (alist-get 'yaml-ts-mode apheleia-mode-alist) 'yq-yaml))
-
-
-;; =======  SNIPPETS  =======
-;; 'yasnippet' (functions)
-;; 'yasnippet-snippets' (library)
-;; 'yasnippet-capf' (completions)
-;; ==========================
-(use-package yasnippet
-  :defer t
-  :hook ((prog-mode text-mode) . yas-minor-mode)
-  :functions yas-reload-all
-  :config
-  (add-to-list 'yas-snippet-dirs
-	       (expand-file-name "snippets" user-emacs-directory))
-  (yas-reload-all))
-
-(use-package yasnippet-snippets
-  :defer t
-  :hook (yas-minor-mode . yasnippet-snippets-initialize))
-
-(use-package yasnippet-capf
-  :defer t
-  :preface
-  (defun user/setup-yasnippet-capf ()
-    "Add yasnippet-capf to `completion-at-point-functions'."
-    (add-to-list 'completion-at-point-functions #'yasnippet-capf))
-  :hook (yas-minor-mode . user/setup-yasnippet-capf)
-  :functions yasnippet-capf)
 
 
 (provide '08-code-assist)

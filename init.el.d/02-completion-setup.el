@@ -1,21 +1,83 @@
 ;;; 02-completion-setup.el --- Completion stack -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; cape, consult, corfu, embark, embark-consult, helpful, marginalia, orderless,
-;; savehist, tempel, tempel-collection, vertico
+;; cape, consult, corfu, embark, embark-consult, helpful, marginalia,
+;; orderless, savehist, tempel, tempel-collection, vertico, yasnippet,
+;; yasnippet-capf, yasnippet-snippets
 
 ;;; Commentary:
-;; Completion UI stack; this needs to load early because many other packages
-;; depend on these.  Also, Emacs UI can get real weird the first time you call
-;; these functions unless loaded early in startup process.
+;; This file sets up snippets and completions; this needs to load early because
+;; many other packages depend on these.  (Plus, Emacs UI can get real weird the
+;; first time you call these functions unless loaded early in startup process.)
+;; We need to load snippets before completions because of the way snippets hook into the completion framework.
 
 ;;; Code:
+;; =======  SNIPPETS  =======
+;; 'yasnippet' (functions)
+;; 'yasnippet-snippets' (library)
+;; 'yasnippet-capf' (completions)
+;; `tempel' (modern snippet framework w ancient roots)
+;; `tempel-collection' (library)
+;; ==========================
+(use-package yasnippet
+  :defer t
+  :hook ((prog-mode text-mode) . yas-minor-mode)
+  :functions yas-reload-all
+  :config
+  (add-to-list 'yas-snippet-dirs
+	       (expand-file-name "snippets" user-emacs-directory))
+  (yas-reload-all))
+
+(use-package yasnippet-snippets
+  :defer t
+  :hook (yas-minor-mode . yasnippet-snippets-initialize))
+
+(use-package yasnippet-capf
+  :defer t
+  :preface
+  (defun user/setup-yasnippet-capf ()
+    "Add yasnippet-capf to `completion-at-point-functions'."
+    (add-to-list 'completion-at-point-functions #'yasnippet-capf))
+  :hook (yas-minor-mode . user/setup-yasnippet-capf)
+  :functions yasnippet-capf)
+
+(use-package tempel
+  :demand t
+  :preface
+  (defun user/tempel-setup-capf ()
+    "Locally add relevant tempel items to `completion-at-point-functions'."
+    (setq-local completion-at-point-functions
+		(cons #'tempel-complete completion-at-point-functions)))
+
+  (defun user/tempel-edit-custom-templates ()
+    "Open tempel template file(s) in another window."
+    (interactive)
+    (if (listp tempel-path)
+	(dolist (file tempel-path)
+	  (find-file-other-window file))
+      (find-file-other-window tempel-path)))
+  
+  :bind
+  (("M-+"   . tempel-insert)
+   ("M-*"   . tempel-complete)
+   ("C-M-+" . user/tempel-edit-custom-templates)
+   :map tempel-map
+   ("TAB"   . tempel-next)
+   ("C-TAB" . tempel-previous))
+  :hook ((text-mode prog-mode conf-mode) . user/tempel-setup-capf)
+  :functions tempel-complete tempel-abbrev-mode
+  :init
+  (tempel-abbrev-mode 1))
+
+(use-package tempel-collection
+  :after tempel)
+
+
 ;; =======  COMPLETIONS  =======
 ;; `savehist' (history across sessions)
 ;; `orderless' (fuzzy matching)
 ;; `vertigo' (minibuffer completions)
 ;; `marginalia' (rich annotations)
-;; `tempel' (new completion framework)
 ;; `corfu' (inline completion)
 ;; `consult' (gather data)
 ;; `embark' (mouse events on keyboard)
@@ -54,37 +116,6 @@
   :functions marginalia-mode
   :config
   (marginalia-mode 1))
-
-;; tempel goes here because it needs to load before corfu
-(use-package tempel
-  :demand t
-  :preface
-  (defun user/tempel-setup-capf ()
-    "Locally add relevant tempel items to `completion-at-point-functions'."
-    (setq-local completion-at-point-functions
-		(cons #'tempel-complete completion-at-point-functions)))
-
-  (defun user/tempel-edit-custom-templates ()
-    "Open tempel template file(s) in another window."
-    (interactive)
-    (if (listp tempel-path)
-	(dolist (file tempel-path)
-	  (find-file-other-window file))
-      (find-file-other-window tempel-path)))
-  
-  :bind
-  (("M-+"   . tempel-insert)
-   ("M-*"   . tempel-complete)
-   ("C-M-+" . user/tempel-edit-custom-templates)
-   :map tempel-map
-   ("TAB"   . tempel-next)
-   ("C-TAB" . tempel-previous))
-  :hook ((text-mode prog-mode conf-mode) . user/tempel-setup-capf)
-  :functions tempel-complete tempel-abbrev-mode
-  :init (tempel-abbrev-mode 1))
-
-(use-package tempel-collection
-  :after tempel)
 
 (use-package corfu
   :demand t
