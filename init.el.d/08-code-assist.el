@@ -270,6 +270,18 @@ See URL `https://vale.sh'."
 	 (nxml-mode . ("lemminx"))))
     (add-to-list 'eglot-server-programs lsp-cons)))
 
+(use-package consult-eglot
+  :after (consult eglot)
+  :commands (consult-eglot-symbols))
+
+(use-package consult-eglot-embark
+  :after (consult-eglot embark)
+  :functions consult-eglot-embark-mode
+  :config (consult-eglot-embark-mode 1))
+
+(use-package flycheck-eglot
+  :after (flycheck eglot))
+
   :config
   (require 'dap-python))
 
