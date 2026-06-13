@@ -1,11 +1,11 @@
 ;;; 07-language-configs.el --- Packages & settings for select languages -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; adjust-parens, auto-rename-tag, checkdoc, csv-mode, dockerfile-mode,
-;; eask-mode, eldoc-cmake, elisp-def, eros, eros-inspector, fish-mode,
-;; glsl-mode, grip-mode, ielm, ini-mode, inspector, just-ts-mode, kdl-mode,
-;; lisp-semantic-hl, live-py-mode, macrostep, morlock, python-pytest, python-x,
-;; rustic, sly, suggest, systemd, tree-inspector, yaml-pro
+;; adjust-parens, auto-rename-tag, checkdoc, csv-mode, eask-mode, eldoc-cmake,
+;; elisp-def, eros, eros-inspector, fish-mode, glsl-mode, grip-mode, ielm,
+;; ini-mode, inspector, just-ts-mode, kdl-mode, lisp-semantic-hl, live-py-mode,
+;; macrostep, morlock, python-pytest, python-x, rustic, sly, suggest, systemd,
+;; tree-inspector, yaml-pro
 
 ;;; Commentary:
 ;; Provide packages and settings that enhance Emacs support for specific markup,
@@ -196,7 +196,6 @@
 
 ;; =======  CONFIG FILE MODES  =======
 ;; `csv-mode' (support csv files)
-;; `dockerfile-mode' (support Dockerfiles)
 ;; `eask-mode' (support Eask files)
 ;; `glsl-mode' (support OpenGL Shading Language)
 ;; `just-ts-mode' (justfile-support)
@@ -218,10 +217,6 @@
   :mode "\\.csv\\'"
   :functions
   csv-guess-set-separator csv-align-mode)
-
-(use-package dockerfile-mode
-  :defer t
-  :mode "^Dockerfile\\'")
 
 (use-package eask-mode
   :defer t
@@ -248,7 +243,6 @@
   :mode
   (("\\.service\\'" . systemd-mode)
    ("\\.socket\\'"  . systemd-mode)))
-
 
 
 ;; =======  ENHANCE BUILT-INS  =======
