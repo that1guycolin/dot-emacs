@@ -5,8 +5,19 @@ emacs-lisp-mode
 (kset "(keymap-set " (p "keymap") " \"" (p "keys") "\" #'" (p "func") ")")
 
 sh-mode
-
+(bash-safe "#!/usr/bin/env bash" n "set -euo pipefail" n "IFS=$\'\\n\\t\'")
+(fusage "function usage {" n> "cat <<EOF" n
+	"USAGE: ${funcstack[2]} [OPTIONS] " (p "req arguments") n n
+	(p "description") n n "OPTIONS:" n "  " (p "flag") n
+	"      " (p "flag description") n n "  -h, --help" n
+	"      Display this message and exit." n n "EOF" n "}")
 (shbang "#!/bin/sh")
+(usage "function usage {" n> "cat <<EOF" n
+	"USAGE: ${0##*/} [OPTIONS] " (p "req arguments") n n
+	(p "description") n n "OPTIONS:" n "  " (p "flag") n
+	"      " (p "flag description") n n "  -h, --help" n
+	"      Display this message and exit." n n "EOF" n "}")
+
 (zshbang "#!/bin/zsh")
 (zrcd "#!/bin/zsh" n "# "
       (p (or (file-name-nondirectory buffer-file-name)
@@ -14,6 +25,10 @@ sh-mode
 
 toml-ts-mode
 (bdil (p "name") " = { source = \"" (p "source") "\", target = \"" (p "link_loc") "\", direct = " (p "bool") " }" n)
+
+lisp-mode
+(s2o "((or (string-equal string \"" (p "name" method) "\")" n>
+     "(string-equal string \":" method "\"))" n> ":" method ")")
 
 ;; Local Variables:
 ;; mode: lisp-data
