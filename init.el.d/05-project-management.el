@@ -1,9 +1,8 @@
 ;;; 05-project-management.el --- Projects & Workspaces -*-lexical-binding: t; -*-
 
 ;;; Packages included:
-;; activities, deadgrep, disproject, docker, perspective,
-;; perspective-project-bridge, project, rg, treemacs, treemacs-nerd-icons,
-;; treemacs-perspective
+;; activities, consult-project-extra, deadgrep, disproject, docker, project,
+;; rg, treemacs, treemacs-nerd-icons
 
 ;;; Commentary:
 ;; Support project functionality in Emacs.  Git integration for said projects
@@ -13,10 +12,9 @@
 ;; =======  PROJECTS  =======
 ;; `project.el' (management)
 ;; `disproject' (transient dispatch for project.el)
+;; `consult-project-extra' (integration)
 ;; `deadgrep' (global ripgrep search)
 ;; `rg' (project ripgrep search & more)
-;; `perspective' (isolate frame buffers)
-;; `perspective-project-bridge' (integration)
 ;; `activities' (save frame-state)
 ;; `docker' (Docker support)
 ;; ==========================
@@ -57,144 +55,24 @@
   :bind (:map ctl-x-map
 	      ("p" . disproject-dispatch)))
 
-(use-package perspective
-  :demand t
-  :preface
-  (dolist (keybind '("C-x b" "C-x k" "C-x C-b"))
-    (keymap-global-unset keybind))
-  (defvar ibuffer-sorting-mode)
-  (defvar minions-prominent-modes)
-  (declare-function ibuffer-do-sort-by-alphabetic "ibuffer")
-  (declare-function
-   user/function-after-emacsclient-frame "01-bootstrap-core.el")
-  
-  (defun user/persp-for-ibuffer ()
-    "Correctly display persps in ibuffer-mode."
-    (persp-ibuffer-set-filter-groups)
-    (unless (eq ibuffer-sorting-mode 'alphabetic)
-      (ibuffer-do-sort-by-alphabetic)))
-
-  (defun user/safe-persp-bs-show (arg)
-    (interactive "P")
-    (if (fboundp 'persp-bs-show)
-        (persp-bs-show arg)
-      (bs-show "all")))
-  
-  (defun user/buffer-by-filename (loc expr)
-    "Filter all buffers whose filename contains EXPR.
-
-LOC can be one of:
-:prefix   Match files whose filename starts with EXPR.
-:suffix   Match files whose filename ends with EXPR.
-:full     Match files whose filename equals EXPR.
-:ext      Match files whose extension equals EXPR (do not include the '.').
-:contains Match files whose filename contains EXPR."
-    (mapcar #'buffer-name
-	    (seq-filter
-	     (lambda (buf)
-	       (let* ((fname (buffer-file-name buf)))
-		 (when fname
-		   (pcase loc
-		     (:prefix (string-prefix-p expr
-					       (file-name-nondirectory fname)))
-		     (:suffix (string-suffix-p expr
-					       (file-name-nondirectory fname)))
-		     (:full   (string= expr (file-name-nondirectory fname)))
-		     (:ext    (if (string-prefix-p expr ".")
-				  (string= expr (file-name-extension fname t))
-				(string= expr (file-name-extension fname))))
-		     (:contains (string-match-p (regexp-quote expr)
-						(file-name-nondirectory fname)))
-		     (_ (error "%s is not a valid value for loc" loc))))))
-	     (buffer-list))))
-
-  (defun user/add-list-to-persp (loc expr &optional msg)
-    "Add list of buffers returned by `user/buffer-by-filename' to active persp.
-Takes arguments EXPR and LOC to pass to `user/buffer-by-filename'.
-Optionally, override the built-in message by including MSG in the
-arguments.  Custom messages can include \"%s\" to insert the buffer name
-into the message."
-    (interactive
-     (list
-      (let ((loc-type-alist
-	     '(("Filename starts with: " . :prefix)
-	       ("Filename ends with: "   . :suffix)
-	       ("Filename is equal to: " . :full)
-	       ("File has extension: "   . :ext)
-	       ("Filename contains: "    . :contains))))
-	(cdr
-	 (assoc
-	  (completing-read "Search style: "
-			   (mapcar #'car loc-type-alist) nil t)
-	  loc-type-alist)))
-      (read-string "Enter string to search for: ")))
-    (dolist (buf (user/buffer-by-filename loc expr))
-      (persp-add-buffer buf)
-      (cond
-       ((and msg (string-match-p "\\%s" msg))
-	(message msg buf))
-       (msg
-	(message msg))
-       (t
-	(message "Added %s" buf)))))
-
-  (defun user/create-org-persp (&optional _args)
-    "Create a persp called \"org\".  Add open TODO and .org files to the persp."
-    (interactive)
-    (persp-new "org")
-    (persp-switch "org")
-    (user/add-list-to-persp :ext "org" "Added %s to org persp")
-    (persp-switch-last))
-
-  (add-hook 'emacs-startup-hook #'user/create-org-persp)
-  (add-hook 'server-after-make-frame-hook
-	    #'(lambda ()
-		(user/function-after-emacsclient-frame
-		 #'user/create-org-persp)))
-  
+(use-package consult-project-extra
+  :after (consult project)
   :bind
-  (("C-x b"      . persp-switch-to-buffer*)
-   ("C-x C-b"    . persp-ibuffer)
-   ("C-x k"      . persp-kill-buffer*)
-   ("C-x B"      . user/safe-persp-bs-show)
-   ("C-x C-B"    . persp-buffer-menu))
-  :hook (ibuffer . user/persp-for-ibuffer)
-
-  :functions
-  persp-ibuffer-set-filter-groups persp-add-buffer persp-new persp-switch-last
-  persp-mode persp-is-current-buffer persp-switch
-  
-  :init
-  (add-to-list 'minions-prominent-modes 'persp-mode)
-  (persp-mode 1)
+  (("C-c p f" . consult-project-extra-find)
+   ("C-c p o" . consult-project-extra-find-other-window))
   :custom
-  (persp-mode-prefix-key (kbd "M-p"))
-  (persp-switch-to-buffer-behavior 'switch)
+  (consult-project-function #'consult-project-extra-project-fn)
   :config
-  (setq switch-to-prev-buffer-skip
-	(lambda (_win buff _bury-or-kill)
-          (not (persp-is-current-buffer buff)))))
-
-(use-package perspective-project-bridge
-  :after perspective
-  :preface
-  (defun user/project-switch-perspective (&rest _args)
-    "Switch to a perspective for the current project."
-    (interactive)
-    (persp-switch (project-name))
-    (perspective-project-bridge-find-perspectives-for-all-buffers))
-  :functions
-  perspective-project-bridge-mode
-  perspective-project-bridge-find-perspectives-for-all-buffers
-  :config
-  (perspective-project-bridge-mode 1)
-  (advice-add 'project-switch-project
-	      :after #'user/project-switch-perspective))
+  (transient-append-suffix 'disproject-dispatch "&"
+    '("C f" "Consult Project Find" consult-project-extra-find))
+  (transient-append-suffix 'disproject-dispatch "C f"
+    '("C o" "C. P. Find Other Window" consult-project-extra-find-other-window)))
 
 (use-package activities
   :defer t
   :preface
-  (defvar edebug-inhibit-emacs-lisp-mode-bindings)
+  (defvar edebug-inhibit-emacs-lisp-mode-bindings t)
+  (setq edebug-inhibit-emacs-lisp-mode-bindings t)
 
   (defvar-keymap user/activities-map
     :prefix t
@@ -215,7 +93,6 @@ into the message."
   activities-list activities-mode activities-tabs-mode
 
   :init
-  (setq edebug-inhibit-emacs-lisp-mode-bindings t)
   (activities-mode 1)
   (activities-tabs-mode 1))
 
@@ -243,7 +120,6 @@ into the message."
 ;; =======  TREEMACS  =======
 ;; `treemacs' (functional side panel)
 ;; `project-treemacs' (project.el + treemacs integration)
-;; `treemacs-perspective' (perspective + treemacs integration)
 ;; `treemacs-nerd-icons' (nerd-icons + treemacs integration)
 ;; ==========================
 (use-package treemacs
@@ -359,9 +235,6 @@ Wait two seconds before activating the mode."
   :functions treemacs-nerd-icons-config
   :config
   (treemacs-nerd-icons-config))
-
-(use-package treemacs-perspective
-  :after treemacs)
 
 
 (provide '05-project-management)
