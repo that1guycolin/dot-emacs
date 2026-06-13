@@ -97,14 +97,6 @@ https://raw.githubusercontent.com/progfolio/elpaca/refs/heads/master/doc/install
 ;; ==================================
 (use-package gcmh
   :demand t
-  :preface
-  (defun user/gcmh-restore-sane-values ()
-    "Set gcmh values back to something reasonable.  Useful after startup."
-    (setopt
-     gcmh-high-cons-threshold (* 100 1024 1024)
-     gc-cons-percentage 0.1))
-
-  :hook (emacs-startup . user/gcmh-restore-sane-values)
   :functions gcmh-mode
   :init (gcmh-mode 1))
 
