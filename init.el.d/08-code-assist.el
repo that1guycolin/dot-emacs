@@ -45,6 +45,7 @@
    (c++-mode          . docstr-mode)
    (csharp-mode       . docstr-mode)
    (go-mode           . docstr-mode)
+   (go-ts-mode        . docstr-mode)
    (groovy-mode       . docstr-mode)
    (java-mode         . docstr-mode)
    (javascript-mode   . docstr-mode)
@@ -52,12 +53,14 @@
    (js2-mode          . docstr-mode)
    (js3-mode          . docstr-mode)
    (lua-mode          . docstr-mode)
+   (lua-ts-mode       . docstr-mode)
    (objc-mode         . docstr-mode)
    (php-mode          . docstr-mode)
-   (python-mode       . docstr-mode)
+   (python-base-mode  . docstr-mode)
    (rjsx-mode         . docstr-mode)
    (ruby-mode         . docstr-mode)
    (rust-mode         . docstr-mode)
+   (rust-ts-mode      . docstr-mode)
    (scala-mode        . docstr-mode)
    (swift-mode        . docstr-mode)
    (typescript-mode   . docstr-mode)
@@ -88,21 +91,22 @@
 
 
 ;; =======  FLYCHECK  =======
-;; bash: 'shellcheck' (pacman -S shellcheck)
-;; emacs-lisp: 'emacs-lisp' (built-in)
-;; json: 'jsonlint' (npm install -g jsonlint)
-;; lua: 'luacheck' (pacman -S luacheck)
-;; markdown: 'rumdl' (pacman -S rumdl)
-;; systemd: 'systemdlint' (uv tool install systemdlint)
-;; toml: 'tombi' (uv tool install tombi)
-;; xml: 'xmllint' (pacman -S libxml2)
-;; yaml: 'yamllint' (pacman -S yamllint)
+;; bash:	 'shellcheck'	 (pacman -S shellcheck)
+;; emacs-lisp:	 'emacs-lisp'	 (built-in)
+;; json:	 'jsonlint'	 (npm install -g jsonlint)
+;; lua:		 'luacheck'	 (pacman -S luacheck)
+;; markdown:	 'rumdl'	 (pacman -S rumdl)
+;; systemd:	 'systemdlint'	 (uv tool install systemdlint)
+;; toml:	 'tombi'	 (uv tool install tombi)
+;; xml:		 'xmllint'	 (pacman -S libxml2)
+;; yaml:	 'yamllint'	 (pacman -S yamllint)
 ;; --------------------------
 ;; Extensions:
 ;; `flyover' (display errors in buffer)
 ;; `flycheck-color-mode-line'
 ;; `flycheck-eask' (Support Eask files)
 ;; `flycheck-package' (Support Emacs' pacakge files)
+;; `consult-flycheck' (Completing-read for flycheck)
 ;; ==========================
 (use-package flycheck
   :defer t
@@ -220,25 +224,10 @@ See URL `https://vale.sh'."
   :defer t
   :hook (emacs-lisp-mode . flycheck-package-setup))
 
+(use-package consult-flycheck
+  :after (consult flycheck))
 
-;; =======  LSP-MODE  =======
-;; cmake: 'neocmakelsp' (cargo install neocmakelsp)
-;; fish: 'fish-lsp' (npm install -g fish-lsp)
-;; lua: 'lua-language-server' (pacman -S lua-language-server)
-;; markdown: 'rumdl' (pacman -S rumdl)
-;; python: 'ty' (uv tool install ty)
-;; python: 'ruff' (uv tool install ruff)
-;; -------  OPTIONAL  -------
-;; [OPTIONAL] bash: 'bash-language-server' (pacman -S bash-language-server)
-;; [OPTIONAL] json: 'json-language-server' (pacman -S json-language-server)
-;; [OPTIONAL] toml: 'tombi' (uv tool install tombi)
-;; [OPTIONAL] xml: 'lemminx'
-;; [OPTIONAL] yaml: 'yaml-language-server' (pacman -S yaml-language-server)
-;; ------  EXTENSIONS  ------
-;; `dap-mode' (debug protocol)
-;; -- Requires 'debugpy': (uv tool install debugpy)
-;; ==========================
-(use-package lsp-mode
+
   :defer t
   :preface
   (defvar minions-prominent-modes)
