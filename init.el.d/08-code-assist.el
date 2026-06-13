@@ -1,10 +1,11 @@
 ;;; 08-code-assist.el --- Linting, formatting, & LSPs -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; adaptive-wrap, apheleia, comment-dwim-2, docstr, flycheck,
-;; flycheck-color-mode-line, flycheck-eask, flycheck-package, flyover,
-;; lsp-mode, lsp-snippet, rainbow-delimiters, smartparens, visual-regexp,
-;; visual-regexp-steroids
+;; adaptive-wrap, apheleia, comment-dwim-2, consult-eglot,
+;; consult-eglot-embark, consult-flycheck, docstr, eglot, flycheck,
+;; flycheck-color-mode-line, flycheck-eask, flycheck-eglot, flycheck-package,
+;; flyover, flyspell, flyspell-correct, flyspell-correct-avy-menu, lsp-snippet,
+;; rainbow-delimiters, smartparens, visual-regexp, visual-regexp-steroids
 
 ;;; Commentary:
 ;; Call packages that support efficient & productive coding at a global scope.
@@ -282,8 +283,19 @@ See URL `https://vale.sh'."
 (use-package flycheck-eglot
   :after (flycheck eglot))
 
+(use-package lsp-snippet
+  :ensure (:id lsp-snippet :type git :host github
+	       :depth treeless :protocol https :autoloads t
+	       :repo "svaante/lsp-snippet" :main "lsp-snippet.el" :build t
+	       :files ("Makefile" "*.el") :autoloads t)
+  :after (:all eglot (:any tempel yasnippet))
   :config
-  (require 'dap-python))
+  (with-eval-after-load 'tempel
+    (require 'lsp-snippet-tempel)
+    (lsp-snippet-tempel-eglot-init))
+  (with-eval-after-load 'yasnippet
+    (require 'lsp-snippet-yasnippet)
+    (lsp-snippet-yasnippet-eglot-init)))
 
 
 ;; =======  FORMATTING  =======
