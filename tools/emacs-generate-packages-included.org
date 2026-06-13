@@ -6,7 +6,7 @@
 #+AUTHOR: Colin Loeffler (that1guycolin)
 #+COMMENT: DO NOT COMMIT THIS FILE WITH EVALUATED RESULTS
 #+CREATED_DATE: [2026-06-13 Sat 05:08:11]
-#+LAST_EDIT: [2026-06-13 SAT 05:59:33]
+#+LAST_EDIT: [2026-06-13 SAT 06:06:56]
 #+ID: tools:dou27p801zk0
 #+FILETAGS: :Emacs:emacsd:
 
@@ -39,7 +39,7 @@ DO NOT COMMIT THIS FILE WITH EVALUATED RESULTS
 :END:
 
 #+begin_src bash
-  list-all-packages
+list-all-packages -e
 #+end_src
 
 * Init.el.d
