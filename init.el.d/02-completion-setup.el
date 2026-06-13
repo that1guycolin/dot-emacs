@@ -1,9 +1,9 @@
 ;;; 02-completion-setup.el --- Completion stack -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; cape, consult, corfu, embark, embark-consult, helpful, marginalia,
-;; orderless, savehist, tempel, tempel-collection, vertico, yasnippet,
-;; yasnippet-capf, yasnippet-snippets
+;; cape, consult, consult-yasnippet, corfu, embark, embark-consult, helpful,
+;; marginalia, orderless, savehist, tempel, tempel-collection, vertico,
+;; yasnippet, yasnippet-capf, yasnippet-snippets
 
 ;;; Commentary:
 ;; This file sets up snippets and completions; this needs to load early because
@@ -20,7 +20,7 @@
 ;; `tempel-collection' (library)
 ;; ==========================
 (use-package yasnippet
-  :defer t
+  :demand t
   :hook ((prog-mode text-mode) . yas-minor-mode)
   :functions yas-reload-all
   :config
@@ -80,6 +80,7 @@
 ;; `marginalia' (rich annotations)
 ;; `corfu' (inline completion)
 ;; `consult' (gather data)
+;; `consult-yasnippet' (integration)
 ;; `embark' (mouse events on keyboard)
 ;; `embark-consult' (integration)
 ;; `helpful' (better help)
@@ -220,6 +221,9 @@
 
   (setq xref-show-xrefs-function #'consult-xref
 	xref-show-definitions-function #'consult-xref))
+
+(use-package consult-yasnippet
+  :after (consult yasnippet))
 
 (use-package embark
   :demand t
