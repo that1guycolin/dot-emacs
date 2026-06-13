@@ -4,8 +4,8 @@
 ;; adjust-parens, auto-rename-tag, checkdoc, csv-mode, eask-mode, eldoc-cmake,
 ;; elisp-def, eros, eros-inspector, fish-mode, glsl-mode, grip-mode, ielm,
 ;; ini-mode, inspector, just-ts-mode, kdl-mode, lisp-semantic-hl, live-py-mode,
-;; macrostep, morlock, python-pytest, python-x, rustic, sly, suggest, systemd,
-;; tree-inspector, yaml-pro
+;; macrostep, morlock, python-pytest, python-x, rustic, shfmt, sly, suggest,
+;; systemd, tree-inspector, yaml-pro
 
 ;;; Commentary:
 ;; Provide packages and settings that enhance Emacs support for specific markup,
@@ -249,6 +249,7 @@
 ;; `auto-rename-tag' (xml tag assistant)
 ;; `eldoc-cmake' (doc support in cmake-ts-mode)
 ;; `grip-mode' (support for gfm)
+;; `shfmt' (format sh based modes)
 ;; `yaml-pro' (enhanced .yaml support)
 ;; ===================================
 (use-package auto-rename-tag
@@ -266,6 +267,15 @@
 	      ("C-c j" . grip-mode))
   :custom
   (grip-command 'auto))
+
+(use-package shfmt
+  :defer t
+  :bind ((:map bash-ts-mode-map
+	       ("C-c C-f" . shfmt-buffer))
+	 (:map sh-mode-map
+	       ("C-c C-f". shfmt-buffer)))
+  :hook ((bash-ts-mode sh-mode) . shfmt-on-save-mode)
+  :custom (shfmt-command "shfmt -i 4 -ci -"))
 
 (use-package yaml-pro
   :defer t
