@@ -6,7 +6,7 @@
 #+AUTHOR: Colin Loeffler (that1guycolin)
 #+COMMENT: DO NOT COMMIT THIS FILE WITH EVALUATED RESULTS
 #+CREATED_DATE: [2026-06-13 Sat 05:08:11]
-#+LAST_EDIT: [2026-06-13 SAT 06:06:56]
+#+LAST_EDIT: [2026-06-14 SUN 10:54:29]
 #+ID: tools:dou27p801zk0
 #+FILETAGS: :Emacs:emacsd:
 
@@ -18,7 +18,7 @@ DO NOT COMMIT THIS FILE WITH EVALUATED RESULTS
 - [[#initel][Init.el]]
 - [[#initeld][Init.el.d]]
   - [[#01-bootstrap-coreel][01-bootstrap-core.el]]
-  - [[#02-completion-setupel][02-completion-setup.el]]
+  - [[#02-init-frameworksel][02-init-frameworks.el]]
   - [[#03-visual-settingsel][03-visual-settings.el]]
   - [[#04-tree-sitter-lang-configel][04-tree-sitter-lang-config.el]]
   - [[#05-project-managementel][05-project-management.el]]
@@ -54,12 +54,12 @@ list-all-packages -e
 list-use-packages "${HOME}/.emacs.d/init.el.d/01-bootstrap-core.el"
 #+end_src
 
-** 02-completion-setup.el
+** 02-init-frameworks.el
 :PROPERTIES:
-:CUSTOM_ID: 02-completion-setupel
+:CUSTOM_ID: 02-init-frameworksel
 :END:
 #+begin_src bash
-list-use-packages "${HOME}/.emacs.d/init.el.d/02-completion-setup.el"
+list-use-packages "${HOME}/.emacs.d/init.el.d/02-init-frameworks.el"
 #+end_src
 
 ** 03-visual-settings.el

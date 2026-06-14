@@ -1,15 +1,17 @@
-;;; 02-completion-setup.el --- Completion stack -*- lexical-binding: t; -*-
+;;; 02-init-frameworks.el --- Initialize global frameworks -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; cape, consult, consult-yasnippet, corfu, embark, embark-consult, helpful,
-;; marginalia, orderless, savehist, tempel, tempel-collection, vertico,
+;; avy, cape, consult, consult-yasnippet, corfu, embark, embark-consult,
+;; helpful, marginalia, orderless, savehist, tempel, tempel-collection, vertico,
 ;; yasnippet, yasnippet-capf, yasnippet-snippets
 
 ;;; Commentary:
-;; This file sets up snippets and completions; this needs to load early because
-;; many other packages depend on these.  (Plus, Emacs UI can get real weird the
-;; first time you call these functions unless loaded early in startup process.)
-;; We need to load snippets before completions because of the way snippets hook into the completion framework.
+;; This file sets up snippets, completions, and other frameworks that need to
+;; load early.  A package may need to load early because it's called by several
+;; other packages, or because Emacs UI can get real weird the first time you
+;; call these functions if they're loaded too late.  For example, snippets are
+;; loaded prior to completions because of the way snippets hook into the
+;; completion framework.
 
 ;;; Code:
 ;; =======  SNIPPETS  =======
@@ -79,11 +81,7 @@
 ;; `vertigo' (minibuffer completions)
 ;; `marginalia' (rich annotations)
 ;; `corfu' (inline completion)
-;; `consult' (gather data)
-;; `consult-yasnippet' (integration)
-;; `embark' (mouse events on keyboard)
-;; `embark-consult' (integration)
-;; `helpful' (better help)
+;; `cape' (completion extensions)
 ;; =============================
 (use-package savehist
   :ensure nil
@@ -158,6 +156,18 @@
   (add-to-list 'completion-at-point-functions #'cape-file)
   (add-to-list 'completion-at-point-functions #'cape-elisp-block)
   (add-to-list 'completion-at-point-functions #'cape-history))
+
+
+;; =======  ADDITIONAL FRAMEWORKS  =======
+;; `avy' (jump to...)
+;; `consult' (gather data)
+;; `consult-yasnippet' (integration)
+;; `embark' (mouse events on keyboard)
+;; `embark-consult' (integration)
+;; `helpful' (better help)
+;; =======================================
+(use-package avy
+  :demand t)
 
 (use-package consult
   :demand t
@@ -259,7 +269,9 @@
 
 (use-package embark-consult
   :after (embark consult)
-  :hook (embark-collect-mode . consult-preview-at-point-mode))
+  :functions consult-preview-at-point-mode
+  :config
+  (add-hook 'embark-collect-mode-hook #'consult-preview-at-point-mode))
 
 (use-package helpful
   :demand t
@@ -275,6 +287,9 @@
    ("C-h F" . helpful-function)
    ("C-h z" . helpful-kill-buffers)))
 
+(use-package avy
+  :demand t)
 
-(provide '02-completion-setup)
-;;; 02-completion-setup.el ends here
+
+(provide '02-init-frameworks)
+;;; 02-init-frameworks.el ends here

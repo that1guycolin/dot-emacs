@@ -80,8 +80,8 @@
 ;; Load startup and core packages
 (require '01-bootstrap-core)
 
-;; Completion stack
-(require '02-completion-setup)
+;; Initialize global frameworks
+(require '02-init-frameworks)
 
 ;; Core UI configuration
 (require '03-visual-settings)
