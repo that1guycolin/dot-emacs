@@ -275,7 +275,9 @@
 	 (:map sh-mode-map
 	       ("C-c C-f". shfmt-buffer)))
   :hook ((bash-ts-mode sh-mode) . shfmt-on-save-mode)
-  :custom (shfmt-command "shfmt -i 4 -ci -"))
+  :custom
+  (shfmt-command "shfmt")
+  (shfmt-arguments '("-i" "4" "-ci")))
 
 (use-package yaml-pro
   :defer t
