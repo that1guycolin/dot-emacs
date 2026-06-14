@@ -291,7 +291,10 @@ See URL `https://vale.sh'."
   :config (consult-eglot-embark-mode 1))
 
 (use-package flycheck-eglot
-  :after (flycheck eglot))
+  :after (flycheck eglot)
+  :functions flycheck-eglot-mode
+  :config
+  (advice-add 'eglot :after #'(lambda () (flycheck-eglot-mode 1))))
 
 (use-package lsp-snippet
   :ensure (:id lsp-snippet :type git :host github
