@@ -16,6 +16,7 @@
 ;; `adaptive-wrap' (smart text wrapping)
 ;; `comment-dwim-2' (easily switch between no-comment, comment, EOL comment)
 ;; `docstr' (composing/formatting DocStrings)
+;; `dumb-jump' (jump-to-def/find-refs)
 ;; `rainbow-delimiters' (colorize "", {}, [], ())
 ;; `smartparens' (auto-close "", {}, [], ())
 ;; `visual-regexp' (hl regexp as you type)
@@ -67,6 +68,15 @@
    (typescript-mode   . docstr-mode)
    (web-mode          . docstr-mode))
   :functions docstr-major-modes)
+
+(use-package dumb-jump
+  :demand t
+  :functions dumb-jump-xref-activate
+  :custom
+  (dumb-jump-prefer-searcher 'ag)
+  (xref-show-definitions-function #'consult-xref)
+  :config
+  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
 
 (use-package rainbow-delimiters
   :defer t
