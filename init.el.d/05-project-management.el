@@ -56,17 +56,18 @@
 	      ("p" . disproject-dispatch)))
 
 (use-package consult-project-extra
-  :after (consult project)
+  :demand t
   :bind
   (("C-c p f" . consult-project-extra-find)
    ("C-c p o" . consult-project-extra-find-other-window))
   :custom
   (consult-project-function #'consult-project-extra-project-fn)
   :config
-  (transient-append-suffix 'disproject-dispatch "&"
-    '("C f" "Consult Project Find" consult-project-extra-find))
-  (transient-append-suffix 'disproject-dispatch "C f"
-    '("C o" "C. P. Find Other Window" consult-project-extra-find-other-window)))
+  (with-eval-after-load 'disproject
+    (transient-append-suffix 'disproject-dispatch "&"
+      '("C f" "Consult Project Find" consult-project-extra-find))
+    (transient-append-suffix 'disproject-dispatch "C f"
+      '("C o" "C. P. Find Other Window" consult-project-extra-find-other-window))))
 
 (use-package activities
   :defer t
