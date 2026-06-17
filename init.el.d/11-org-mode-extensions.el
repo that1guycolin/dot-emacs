@@ -394,6 +394,15 @@ Values are mapped to informative strings."
   (org-tidy-top-property-style 'invisible)
   (org-tidy-properties-style 'invisible))
 
+(defvar-keymap user/org-insert-block-map
+  :prefix t
+  :doc "Keymap of functions for inserting/editing headers, drawers, srcblocks."
+  "h" #'user/org-insert-header-block
+  "d" #'user/org-insert-properties-drawer
+  "s" #'user/org-insert-src-block)
+(with-eval-after-load 'org
+  (keymap-set org-mode-map "C-c b" user/org-insert-block-map))
+
 
 (provide '11-org-mode-extensions)
 ;;; 11-org-mode-extensions.el ends here
