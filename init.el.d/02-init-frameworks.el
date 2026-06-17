@@ -287,9 +287,6 @@
    ("C-h F" . helpful-function)
    ("C-h z" . helpful-kill-buffers)))
 
-(use-package avy
-  :demand t)
-
 
 (provide '02-init-frameworks)
 ;;; 02-init-frameworks.el ends here
