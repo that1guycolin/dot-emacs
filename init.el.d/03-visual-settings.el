@@ -27,24 +27,20 @@
 (use-package ef-themes
   :demand t
   :preface
-  (declare-function user/function-after-emacsclient-frame
-		    "01-bootstrap-core.el")
-  :functions user/theme-functions
+  ;; This keymap is bound in 15-user-functions.el.
+  (defvar-keymap user/theme-functions
+    :prefix t
+    :doc "Functions to change the theme."
+    "s" #'modus-themes-select-dark
+    "r" #'modus-themes-load-random-dark
+    "n" #'modus-themes-rotate)
   :init
   (modus-themes-include-derivatives-mode 1)
   :custom
   (modus-themes-mixed-fonts t)
   (modus-themes-italic-constructs t)
   :config
-  (modus-themes-load-random 'dark)
-  
-  ;; This keymap is bound in a custom transient defined in 15-user-functions.el
-  (defvar-keymap user/theme-functions
-    :prefix t
-    :doc "Functions to change the theme."
-    "s" #'modus-themes-select-dark
-    "r" #'modus-themes-load-random-dark
-    "n" #'modus-themes-rotate))
+  (modus-themes-load-random 'dark))
 
 
 ;; =======  ICONS  =======
