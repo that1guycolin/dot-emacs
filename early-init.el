@@ -58,12 +58,12 @@
  auth-sources '("~/.authinfo.gpg")
  version-control t
  kept-new-versions 4
- kept-old-versions 4
+ kept-old-versions nil
  delete-old-versions t
  
- ;; Reduce startup "noise"
- inhibit-startup-message t
- inhibit-startup-echo-area-message user-login-name
+ initial-buffer-choice t
+ inhibit-startup-screen t
+ inhibit-startup-echo-area-message "colin-l"
  initial-scratch-message nil
  auto-mode-case-fold nil
  frame-inhibit-implied-resize t
@@ -77,12 +77,13 @@
  use-short-answers t)
 
 ;; Variables depending on package load
+(declare-function dashboard-refresh-buffer "dashboard")
 (defvar ffap-machine-p-known)
 (defvar which-func-update-delay)
 (with-eval-after-load 'ffap
   (setq ffap-machine-p-known 'reject))
 (with-eval-after-load 'which-function-mode
-  (setq which-func-update-delay 1.0))
+  (setq which-func-update-delay 0.5))
 
 ;; Configure autosaves and backups.
 (let ((backup-dir (expand-file-name "~/backups/"))
@@ -99,9 +100,6 @@
 (setq-default
  cursor-type 'bar
  fill-column 80)
-(when (fboundp 'global-tab-line-mode)
-  (global-tab-line-mode 1))
-
 (when (fboundp 'tool-bar-mode)
   (tool-bar-mode -1))
 (when (fboundp 'scroll-bar-mode)
