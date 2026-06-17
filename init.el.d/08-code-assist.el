@@ -399,6 +399,13 @@ Designed to be used as advice around `eglot'."
     diff-mode emacs-lisp-mode lisp-interaction-mode lisp-mode markdown-mode) .
     outline-minor-mode))
 
+(use-package outline-indent
+  :defer t
+  :hook
+  ((python-base-mode yaml-ts-mode) . outline-indent-minor-mode)
+  :custom
+  (outline-indent-ellipsis " ▼"))
+
 ;; =======  FLYSPELL  =======
 ;; `flyspell-correct'		 (correct w/ flyspell...)
 ;; `flyspell-correct-avy-menu'	 (... and your favorite interface)
