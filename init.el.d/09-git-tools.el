@@ -43,22 +43,39 @@
   (defvar-keymap user/diff-hl-functions
     :prefix t
     :doc "Functions to use in diff-hl-mode."
-    "*" '(menu-item "Show Hunk"       diff-hl-show-hunk)
-    "=" '(menu-item "Goto Hunk"       diff-hl-diff-goto-hunk)
-    "S" '(menu-item "Stage"           diff-hl-stage-dwim)
-    "n" '(menu-item "Revert"          diff-hl-revert-hunk)
-    "[" '(menu-item "Previous Hunk"   diff-hl-previous-hunk)
-    "]" '(menu-item "Next Hunk"       diff-hl-next-hunk)
-    "{" '(menu-item "Show Prev. Hunk" diff-hl-show-hunk-previous)
-    "}" '(menu-item "Show Next Hunk"  diff-hl-show-hunk-next))
-  :bind
-  (("C-x v o" . diff-hl-mode)
-   ("C-x v ?" . user/diff-hl-functions))
+    "*" #'diff-hl-show-hunk
+    "=" #'diff-hl-diff-goto-hunk
+    "S" #'diff-hl-stage-dwim
+    "n" #'diff-hl-revert-hunk
+    "[" #'diff-hl-previous-hunk
+    "]" #'diff-hl-next-hunk
+    "{" #'diff-hl-show-hunk-previous
+    "}" #'diff-hl-show-hunk-next)
+
+  (with-eval-after-load 'which-key
+    (which-key-add-keymap-based-replacements
+      user/diff-hl-functions
+      "*" "Show Hunk"
+      "=" "Goto Hunk"
+      "S" "Stage"
+      "n" "Revert"
+      "[" "Previous Hunk"
+      "]" "Next Hunk"
+      "{" "Show Prev. Hunk"
+      "}" "Show Next Hunk"))
+  
+  :bind ("C-x v o" . diff-hl-mode)
   :hook
   (((prog-mode text-mode) . diff-hl-mode)
    (magit-post-refresh    . diff-hl-magit-post-refresh))
+  :functions
+  diff-hl-show-hunk diff-hl-diff-goto-hunk diff-hl-stage-dwim
+  diff-hl-revert-hunk diff-hl-previous-hunk diff-hl-next-hunk
+  diff-hl-show-hunk-previous diff-hl-show-hunk-next
   :custom
-  (diff-hl-show-staged-changes nil))
+  (diff-hl-show-staged-changes nil)
+  :config
+  (keymap-global-set "C-x v ?" user/diff-hl-functions))
 
 (use-package git-modes
   :defer t
