@@ -230,6 +230,23 @@ If not in a side window, jump to the first found side window."
   "b D"	 #'elpaca-build-docs-process-sentinel
   "b c"	 #'elpaca-build-compile)
 
+(with-eval-after-load 'which-key
+  (which-key-add-keymap-based-replacements
+    user/elpaca-options-map
+    "g" "Elpaca Manager"
+    "n" "Update Menus"
+    "f" "Fetch"
+    "F" "Fetch All"
+    "m" "Merge"
+    "M" "Merge All"
+    "r" "Rebuild"
+    "u" "Update"
+    "U" "Update All"
+    "b a" "Build Autoloads"
+    "b d" "Build Docs"
+    "b D" "Build Docs (Process Sentinel)"
+    "b c" "Build Compile"))
+
 (keymap-global-set "C-c e" 'user/elpaca-options-map)
 
 
