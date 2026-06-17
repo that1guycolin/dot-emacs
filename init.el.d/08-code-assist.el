@@ -406,6 +406,25 @@ Designed to be used as advice around `eglot'."
   :custom
   (outline-indent-ellipsis " ▼"))
 
+(use-package treesit-fold
+  :defer t
+  :hook
+  ((bash-ts-mode
+    cmake-ts-mode csharp-ts-mode css-ts-mode c++-ts-mode c-ts-mode
+    dockerfile-ts-mode go-mod-ts-mode go-ts-mode java-ts-mode json-ts-mode
+    lua-ts-mode makefile-ts-mode markdown-ts-mode php-ts-mode ruby-ts-mode
+    rust-ts-mode toml-ts-mode typescript-ts-mode xml-ts-mode) .
+    treesit-fold-mode)
+  :custom
+  (treesit-fold-line-count-show t)
+  (treesit-fold-line-count-format " ▼")
+  :config
+  (set-face-attribute
+   'treesit-fold-replacement-face nil
+   :foreground "#808080"
+   :box nil
+   :weight 'bold))
+
 ;; =======  FLYSPELL  =======
 ;; `flyspell-correct'		 (correct w/ flyspell...)
 ;; `flyspell-correct-avy-menu'	 (... and your favorite interface)
