@@ -85,34 +85,13 @@
 ;; =============================
 (use-package editorconfig
   :defer t
-  :preface
-  (defun user/function-for-editorconfig-hook ()
-    "Use this as the function to add to *-mode-hook for editorconfig."
-    (editorconfig-mode 1))
-  :hook ((prog-mode text-mode conf-mode) . user/function-for-editorconfig-hook))
+  :hook ((prog-mode text-mode conf-mode) . editorconfig-mode))
 
 (use-package visual-fill-column
   :defer t
   :hook
-  ((visual-line-mode               . visual-fill-column-for-vline)
+  ((visual-line-mode                . visual-fill-column-for-vline)
    ((prog-mode text-mode conf-mode) . visual-line-mode)))
-
-(use-package hideshow
-  :ensure nil
-  :defer t
-  :preface
-  (defun user/hideshow-toggle-fold ()
-    "Reliably toggle folding on the current block by jumping to EOL first."
-    (interactive)
-    (save-excursion
-      (end-of-line)
-      (hs-toggle-hiding)))
-  :hook (prog-mode . hs-minor-mode)
-  :bind (:map hs-minor-mode-map
-	      ("C-c TAB" . user/hideshow-toggle-fold)
-	      ("C-c M-h" . hs-hide-all)
-	      ("C-c M-s" . hs-show-all)))
-
 
 
 (provide '03-visual-settings)
