@@ -201,7 +201,7 @@ For entire buffer, return the top of the buffer."
           (point-min)
 	location)))
 
-  (defun user/org-create-properties-block ()
+  (defun user/org-insert-properties-drawer ()
     "Create org properties drawer at an interactively-selected heading."
     (interactive)
     (user/org-check)
@@ -253,6 +253,15 @@ underneath it.  The header block will contain the following fields:
 		"\n#+ID: " id
 		"\n#+FILETAGS: \n"))))
   
+  (defun user/org-insert-src-block (lang)
+    "Insert a block structure of the type #+begin_src LANG/#+end_src."
+    (interactive
+     (list
+      (completing-read "Language: "
+		       (mapcar #'car org-src-lang-modes) nil t)))
+    (org-insert-structure-template "src")
+    (insert lang "\n"))
+
   (defun user/org-update-last-edit-dt ()
     "Update value of `LAST_EDIT' header in the active Org buffer.
 The new value is the current date & time in this format:
@@ -289,7 +298,7 @@ YYYY-MM-DD DAY HH:MM:ss (e.g., 2026-03-15 SUN 14:24:06)"
   :functions
   org-before-first-heading-p org-get-heading org-map-entries org-back-to-heading
   org-outline-level org-up-heading-safe org-get-outline-path org-id-get-create
-  org-entry-get org-entry-put org-id-new
+  org-entry-get org-entry-put org-id-new org-insert-structure-template
   :defines
   org-babel-default-header-args:zsh org-babel-lisp-eval-fn
 
@@ -309,7 +318,6 @@ YYYY-MM-DD DAY HH:MM:ss (e.g., 2026-03-15 SUN 14:24:06)"
   (org-insert-mode-line-in-empty-file t)
   (org-startup-folded 'content)
   (org-use-sub-superscripts '{})
-
   :config
   (require 'ox-texinfo)
 
@@ -335,7 +343,6 @@ YYYY-MM-DD DAY HH:MM:ss (e.g., 2026-03-15 SUN 14:24:06)"
     (org-babel-do-load-languages
      'org-babel-load-languages
      org-babel-load-languages)))
-
 
 
 ;; =======  EMACSCLIENT FRAME FUNCTION  =======
