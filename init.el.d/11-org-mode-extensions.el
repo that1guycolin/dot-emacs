@@ -44,18 +44,27 @@ folder."
   (defvar-keymap user/org-capture-options
     :prefix t
     :doc "Keymap containing available org-capture options."
-    "p" '(menu-item "Current Project"
-		    org-project-capture-capture-for-current-project)
-    "n" '(menu-item "Non-active Project"
-		    org-project-capture-project-todo-completing-read)
-    "g" '(menu-item "General Capture" org-capture))
+    "p" #'org-project-capture-capture-for-current-project
+    "n" #'org-project-capture-project-todo-completing-read
+    "g" #'org-capture)
 
   (defvar-keymap user/org-agenda-options
     :prefix t
     :doc "Keymap containing availble org-agenda views."
-    "p" '(menu-item "Current Project"
-		    org-project-capture-agenda-for-current-project)
-    "g" '(menu-item "General Agenda" org-agenda))
+    "p" #'org-project-capture-agenda-for-current-project
+    "g" #'org-agenda)
+
+  (with-eval-after-load 'which-key
+    (which-key-add-keymap-based-replacements
+      user/org-capture-options
+      "p" "Current Project"
+      "n" "Non-Active Project"
+      "g" "General Capture")
+    
+    (which-key-add-keymap-based-replacements
+      user/org-agenda-options
+      "p" "Current Project"
+      "g" "General Agenda"))
 
   :functions
   org-project-capture-capture-for-current-project
