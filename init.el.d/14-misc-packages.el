@@ -245,7 +245,7 @@
    ("B"				 . bookmark-set)))
 
 (use-package casual-avy
-  :defer t
+  :after (casual avy)
   :bind ("M-g" . casual-avy-tmenu))
 
 
