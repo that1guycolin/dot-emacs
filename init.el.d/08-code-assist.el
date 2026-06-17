@@ -425,6 +425,93 @@ Designed to be used as advice around `eglot'."
    :box nil
    :weight 'bold))
 
+(use-package kirigami
+  :defer t
+  :preface
+  (defvar user/mode-folding-backend-alist
+    '((bash-ts-mode		 . treesit-fold-mode)
+      (cmake-ts-mode		 . treesit-fold-mode)
+      (c++-mode			 . hs-minor-mode)
+      (c-mode			 . hs-minor-mode)
+      (conf-mode		 . outline-minor-mode)
+      (csharp-ts-mode		 . treesit-fold-mode)
+      (css-mode			 . hs-minor-mode)
+      (css-ts-mode		 . treesit-fold-mode)
+      (c++-ts-mode		 . treesit-fold-mode)
+      (c-ts-mode		 . treesit-fold-mode)
+      (diff-mode		 . outline-minor-mode)
+      (dockerfile-ts-mode	 . treesit-fold-mode)
+      (emacs-lisp-mode		 . outline-minor-mode)
+      (go-mode			 . hs-minor-mode)
+      (go-mod-ts-mode		 . treesit-fold-mode)
+      (go-ts-mode		 . treesit-fold-mode)
+      (html-mode		 . hs-minor-mode)
+      (java-mode		 . hs-minor-mode)
+      (java-ts-mode		 . treesit-fold-mode)
+      (js-mode			 . hs-minor-mode)
+      (json-mode		 . hs-minor-mode)
+      (json-ts-mode		 . treesit-fold-mode)
+      (lisp-interaction-mode	 . outline-minor-mode)
+      (lisp-mode		 . outline-minor-mode)
+      (lua-mode			 . hs-minor-mode)
+      (lua-ts-mode		 . treesit-fold-mode)
+      (makefile-ts-mode		 . treesit-fold-mode)
+      (markdown-mode		 . outline-minor-mode)
+      (markdown-ts-mode		 . treesit-fold-mode)
+      (nxml-mode		 . hs-minor-mode)
+      (perl-mode		 . hs-minor-mode)
+      (php-mode			 . hs-minor-mode)
+      (php-ts-mode		 . treesit-fold-mode)
+      (python-base-mode		 . outline-indent-minor-mode)
+      (ruby-mode		 . hs-minor-mode)
+      (ruby-ts-mode		 . treesit-fold-mode)
+      (rust-mode		 . hs-minor-mode)
+      (rust-ts-mode		 . treesit-fold-mode)
+      (sh-mode			 . hs-minor-mode)
+      (toml-ts-mode		 . treesit-fold-mode)
+      (typescript-mode		 . hs-minor-mode)
+      (typescript-ts-mode	 . treesit-fold-mode)
+      (xml-ts-mode		 . treesit-fold-mode)
+      (yaml-ts-mode		 . outline-indent-minor-mode))
+    "Alist of cons cells mapping major-modes to preferred folding backend.")
+
+  (defvar-keymap user/kirigami-functions
+    :prefix t
+    :doc "Common code folding functions from `kirigami'."
+    "o" #'kirigami-open-fold
+    "O" #'kirigami-open-fold-rec
+    "r" #'kirigami-open-folds
+    "c" #'kirigami-close-fold
+    "m" #'kirigami-close-folds
+    "a" #'kirigami-toggle-fold)
+
+  (with-eval-after-load 'which-key
+    (which-key-add-keymap-based-replacements
+      user/kirigami-functions
+      "o" "Open Fold"
+      "O" "Recursively Open Fold"
+      "r" "Open Folds"
+      "c" "Close Fold"
+      "m" "Close Folds"
+      "a" "Toggle Folds"))
+
+  :hook
+  ((bash-ts-mode
+    cmake-ts-mode c++-mode c-mode conf-mode csharp-ts-mode css-mode css-ts-mode
+    c++-ts-mode c-ts-mode diff-mode dockerfile-ts-mode emacs-lisp-mode go-mode
+    go-mod-ts-mode go-ts-mode html-mode java-mode java-ts-mode js-mode
+    json-mode json-ts-mode lisp-interaction-mode lisp-mode lua-mode lua-ts-mode
+    makefile-ts-mode markdown-mode markdown-ts-mode nxml-mode perl-mode
+    php-mode php-ts-mode python-base-mode ruby-mode ruby-ts-mode rust-mode
+    rust-ts-mode sh-mode toml-ts-mode typescript-mode typescript-ts-mode
+    xml-ts-mode yaml-ts-mode) . kirigami-mode)
+  :functions
+  kirigami-open-fold kirigami-open-fold-rec kirigami-open-folds
+  kirigami-close-fold kirigami-close-folds kirigami-toggle-fold
+  :config
+  (keymap-global-set "C-c z" user/kirigami-functions))
+
+
 ;; =======  FLYSPELL  =======
 ;; `flyspell-correct'		 (correct w/ flyspell...)
 ;; `flyspell-correct-avy-menu'	 (... and your favorite interface)
