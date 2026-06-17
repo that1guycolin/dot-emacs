@@ -374,6 +374,23 @@ Designed to be used as advice around `eglot'."
   (setf (alist-get 'yaml-ts-mode	apheleia-mode-alist) 'yq-yaml))
 
 
+;; =======  FOLDING  =======
+;; `hideshow' (defines `hs-minor-mode' based on buffer-syntax)
+;; `outline' (defines `outline-minor-mode' based on headings)
+;; `outline-indent' (defines minor-mode for indent-centric languages)
+;; `treesit-fold' (fold based on language syntax)
+;; `kirigami' (consistent settings across backends)
+;; =========================
+(use-package hideshow
+  :ensure nil
+  :defer t
+  :hook
+  ((c-mode-hook
+    c++-mode-hook css-mode-hook go-mode-hook html-mode-hook java-mode-hook
+    js-mode-hook json-mode-hook lua-mode-hook nxml-mode-hook perl-mode-hook
+    php-mode-hook ruby-mode-hook rust-mode-hook sh-mode-hook
+    typescript-mode-hook) . hs-minor-mode))
+
 ;; =======  FLYSPELL  =======
 ;; `flyspell-correct'		 (correct w/ flyspell...)
 ;; `flyspell-correct-avy-menu'	 (... and your favorite interface)
