@@ -253,22 +253,18 @@
 (use-package dashboard
   :demand t
   :preface
-  (declare-function user/function-after-emacsclient-frame
-		    "01-bootstrap-core.el")
+  (defun user/dashboard-setup ()
+    "Correctly start dashboard during Elpaca-managed init."
+    (dashboard-insert-startupify-lists)
+    (dashboard-initialize))
 
-  (defun user/emacs-server-dashboard ()
-    "Refresh dashboard buffer after new emacsclient frame."
-    (user/function-after-emacsclient-frame #'dashboard-refresh-buffer))
-
-  :hook
-  ((elpaca-after-init       . dashboard-insert-startupify-lists)
-   (elpaca-after-init       . dashboard-initialize)
-   (server-after-make-frame . user/emacs-server-dashboard))
   :functions
   dashboard-insert-startupify-lists dashboard-initialize
   dashboard-setup-startup-hook dashboard-refresh-buffer
   dashboard-display-icons-p
-
+  :init
+  (add-hook 'elpaca-after-init-hook #'user/dashboard-setup)
+  (setq initial-buffer-choice #'dashboard-refresh-buffer)
   :custom
   (dashboard-startup-banner 'logo)
   (dashboard-icon-type 'nerd-icons)
