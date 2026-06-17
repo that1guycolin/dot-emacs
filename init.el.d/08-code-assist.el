@@ -513,13 +513,18 @@ Designed to be used as advice around `eglot'."
 
 
 ;; =======  FLYSPELL  =======
+;; `flyspell'                    (spellcheck)
 ;; `flyspell-correct'		 (correct w/ flyspell...)
 ;; `flyspell-correct-avy-menu'	 (... and your favorite interface)
 ;; ==========================
+(declare-function embark-act "embark")
 (use-package flyspell
   :ensure nil
   :defer t
-  :hook ((prog-mode conf-mode text-mode) . flyspell-mode))
+  :hook ((prog-mode conf-mode text-mode) . flyspell-mode)
+  :config
+  (keymap-unset flyspell-mode-map "C-.")
+  (keymap-global-set "C-." #'embark-act))
 
 (use-package flyspell-correct
   :after flyspell
