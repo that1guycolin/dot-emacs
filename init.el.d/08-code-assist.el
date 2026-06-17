@@ -391,6 +391,14 @@ Designed to be used as advice around `eglot'."
     php-mode-hook ruby-mode-hook rust-mode-hook sh-mode-hook
     typescript-mode-hook) . hs-minor-mode))
 
+(use-package outline
+  :ensure nil
+  :defer t
+  :hook
+  ((conf-mode
+    diff-mode emacs-lisp-mode lisp-interaction-mode lisp-mode markdown-mode) .
+    outline-minor-mode))
+
 ;; =======  FLYSPELL  =======
 ;; `flyspell-correct'		 (correct w/ flyspell...)
 ;; `flyspell-correct-avy-menu'	 (... and your favorite interface)
