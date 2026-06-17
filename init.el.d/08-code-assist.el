@@ -291,10 +291,17 @@ See URL `https://vale.sh'."
   :config (consult-eglot-embark-mode 1))
 
 (use-package flycheck-eglot
+  :preface
+  (defun user/flycheck-eglot-autostart (&rest _args)
+    "Automatically start flycheck-eglot when `eglot' starts.
+Designed to be used as advice around `eglot'."
+    (flycheck-eglot-mode 1))
   :after (flycheck eglot)
   :functions flycheck-eglot-mode
+  :init
+  (advice-add 'eglot :after #'user/flycheck-eglot-autostart)
   :config
-  (advice-add 'eglot :after #'(lambda () (flycheck-eglot-mode 1))))
+  (add-to-list 'flycheck-checkers 'eglot-check))
 
 (use-package lsp-snippet
   :ensure (:id lsp-snippet :type git :host github
@@ -337,10 +344,10 @@ See URL `https://vale.sh'."
 	'("jq" "." "-M" "--indent" "2"))
   
   (setf (alist-get 'neocmakelsp apheleia-formatters)
-        '("neocmakelsp" "format" (buffer-file-name)))
+	'("neocmakelsp" "format" (buffer-file-name)))
   
   (setf (alist-get 'ruff	apheleia-formatters)
-        '("ruff" "format" "-"))
+	'("ruff" "format" "-"))
   
   (setf (alist-get 'rumdl	apheleia-formatters)
 	'("rumdl" "fmt" "--stdin" "-"))
@@ -349,10 +356,10 @@ See URL `https://vale.sh'."
 	'("shfmt" "-i" "4" "-ci" "-"))
   
   (setf (alist-get 'tombi	apheleia-formatters)
-        '("tombi" "fmt" "-"))
+	'("tombi" "fmt" "-"))
   
   (setf (alist-get 'xmlstarlet	apheleia-formatters)
-        '("xmlstarlet" "fo" "--indent-spaces" "2" "-"))
+	'("xmlstarlet" "fo" "--indent-spaces" "2" "-"))
 
   (setf (alist-get 'cmake-ts-mode	apheleia-mode-alist) 'neocmakelsp)
   (setf (alist-get 'eask-mode		apheleia-mode-alist) 'lisp-indent)
