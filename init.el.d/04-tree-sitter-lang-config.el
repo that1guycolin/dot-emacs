@@ -46,12 +46,13 @@
 	     "master" "tsx/src"))
      (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript"
 		    "master" "typescript/src"))
+     (xml . ("https://github.com/tree-sitter-grammars/tree-sitter-xml"))
      (yaml . ("https://github.com/ikatyang/tree-sitter-yaml"))
      (zsh . ("https://github.com/georgeharker/tree-sitter-zsh"))))
   :config
   (dolist
       (remaped
-       '((bash-mode		 . bash-ts-mode)
+       '((bash-mode              . bash-ts-mode)
 	 (cmake-mode		 . cmake-ts-mode)
 	 (css-mode		 . css-ts-mode)
 	 (go-mode		 . go-ts-mode)
@@ -62,6 +63,7 @@
 	 (rust-mode		 . rust-ts-mode)
 	 (typescript-mode	 . typescript-ts-mode)
 	 (conf-toml-mode	 . toml-ts-mode)
+	 (xml-mode               . xml-ts-mode)
 	 (yaml-mode		 . yaml-ts-mode)))
     (add-to-list 'major-mode-remap-alist remaped)))
 
