@@ -4,7 +4,7 @@
 
 ;;; Packages included:
 ;; editorconfig, ef-themes, folding-mode, minions, modus-themes, nerd-icons,
-;; nerd-icons-corfu, tab-line-nerd-icons, visual-fill-column, which-key
+;; nerd-icons-corfu, tab-line-nerd-icons, visual-fill-column
 
 ;;; Commentary:
 ;; Core UI elements that provide visual feedback and interaction.
@@ -116,14 +116,6 @@
 	      ("C-c M-h" . hs-hide-all)
 	      ("C-c M-s" . hs-show-all)))
 
-
-;; =======  WHICH-KEY  =======
-;; `which-key' (diplay keymap in minibuf)
-;; ===========================
-(use-package which-key
-  :demand t
-  :config
-  (which-key-mode 1))
 
 
 (provide '03-visual-settings)
