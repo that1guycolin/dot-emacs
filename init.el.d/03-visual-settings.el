@@ -12,6 +12,7 @@
 ;;; Code:
 ;; Start fullscreen.
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
+(setq font-use-system-font t)
 
 ;; =======  THEMES  =======
 ;; `modus-themes' (Collection of readable Emacs' themes)
