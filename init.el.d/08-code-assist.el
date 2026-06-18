@@ -501,8 +501,21 @@ Designed to be used as advice around `eglot'."
       (yaml-ts-mode		 . outline-indent-minor-mode))
     "Alist of cons cells mapping major-modes to preferred folding backend.")
 
+  :hook
+  ((bash-ts-mode
+    cmake-ts-mode c++-mode c-mode conf-mode csharp-ts-mode css-mode css-ts-mode
+    c++-ts-mode c-ts-mode diff-mode dockerfile-ts-mode emacs-lisp-mode go-mode
+    go-mod-ts-mode go-ts-mode html-mode java-mode java-ts-mode js-mode
+    json-mode json-ts-mode lisp-interaction-mode lisp-mode lua-mode lua-ts-mode
+    makefile-ts-mode markdown-mode markdown-ts-mode nxml-mode perl-mode
+    php-mode php-ts-mode python-base-mode ruby-mode ruby-ts-mode rust-mode
+    rust-ts-mode sh-mode toml-ts-mode typescript-mode typescript-ts-mode
+    xml-ts-mode yaml-ts-mode) . kirigami-mode)
+  :functions
+  kirigami-open-fold kirigami-open-fold-rec kirigami-open-folds
+  kirigami-close-fold kirigami-close-folds kirigami-toggle-fold
+  :config
   (defvar-keymap user/kirigami-functions
-    :prefix t
     :doc "Common code folding functions from `kirigami'."
     "o" #'kirigami-open-fold
     "O" #'kirigami-open-fold-rec
@@ -520,21 +533,6 @@ Designed to be used as advice around `eglot'."
       "c" "Close Fold"
       "m" "Close Folds"
       "a" "Toggle Folds"))
-
-  :hook
-  ((bash-ts-mode
-    cmake-ts-mode c++-mode c-mode conf-mode csharp-ts-mode css-mode css-ts-mode
-    c++-ts-mode c-ts-mode diff-mode dockerfile-ts-mode emacs-lisp-mode go-mode
-    go-mod-ts-mode go-ts-mode html-mode java-mode java-ts-mode js-mode
-    json-mode json-ts-mode lisp-interaction-mode lisp-mode lua-mode lua-ts-mode
-    makefile-ts-mode markdown-mode markdown-ts-mode nxml-mode perl-mode
-    php-mode php-ts-mode python-base-mode ruby-mode ruby-ts-mode rust-mode
-    rust-ts-mode sh-mode toml-ts-mode typescript-mode typescript-ts-mode
-    xml-ts-mode yaml-ts-mode) . kirigami-mode)
-  :functions
-  kirigami-open-fold kirigami-open-fold-rec kirigami-open-folds
-  kirigami-close-fold kirigami-close-folds kirigami-toggle-fold
-  :config
   (keymap-global-set "C-c z" user/kirigami-functions))
 
 

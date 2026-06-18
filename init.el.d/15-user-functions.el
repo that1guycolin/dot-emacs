@@ -214,8 +214,7 @@ If not in a side window, jump to the first found side window."
 (declare-function elpaca-build-docs-process-sentinel	"elpaca")
 (declare-function elpaca-build-compile			"elpaca")
 (defvar-keymap user/elpaca-options-map
-  :prefix t
-  :doc "Functions for Elpaca package manager"
+  :doc "Functions for Elpaca package manager."
   "g"	 #'elpaca-manager
   "n"    #'user/elpaca-update-menus
   "f"	 #'elpaca-fetch

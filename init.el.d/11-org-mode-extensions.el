@@ -41,31 +41,6 @@ folder."
 	(when (called-interactively-p 'any)
 	  (message "There is no TODO file in the org directory.")))))
 
-  (defvar-keymap user/org-capture-options
-    :prefix t
-    :doc "Keymap containing available org-capture options."
-    "p" #'org-project-capture-capture-for-current-project
-    "n" #'org-project-capture-project-todo-completing-read
-    "g" #'org-capture)
-
-  (defvar-keymap user/org-agenda-options
-    :prefix t
-    :doc "Keymap containing availble org-agenda views."
-    "p" #'org-project-capture-agenda-for-current-project
-    "g" #'org-agenda)
-
-  (with-eval-after-load 'which-key
-    (which-key-add-keymap-based-replacements
-      user/org-capture-options
-      "p" "Current Project"
-      "n" "Non-Active Project"
-      "g" "General Capture")
-    
-    (which-key-add-keymap-based-replacements
-      user/org-agenda-options
-      "p" "Current Project"
-      "g" "General Agenda"))
-
   :functions
   org-project-capture-capture-for-current-project
   org-project-capture-project-todo-completing-read
@@ -78,6 +53,28 @@ folder."
 				 'org-project-capture-per-project-strategy))
   (org-project-capture-per-project-filepath "TODO.org")
   :config
+  (defvar-keymap user/org-capture-options
+    :doc "Keymap containing available org-capture options."
+    "p" #'org-project-capture-capture-for-current-project
+    "n" #'org-project-capture-project-todo-completing-read
+    "g" #'org-capture)
+
+  (defvar-keymap user/org-agenda-options
+    :doc "Keymap containing availble org-agenda views."
+    "p" #'org-project-capture-agenda-for-current-project
+    "g" #'org-agenda)
+
+  (with-eval-after-load 'which-key
+    (which-key-add-keymap-based-replacements
+      user/org-capture-options
+      "p" "Current Project"
+      "n" "Non-Active Project"
+      "g" "General Capture")
+
+    (which-key-add-keymap-based-replacements
+      user/org-agenda-options
+      "p" "Current Project"
+      "g" "General Agenda"))
   (keymap-global-set "C-c c" user/org-capture-options)
   (keymap-global-set "C-c a" user/org-agenda-options)
   (dolist (project (project-known-project-roots))
@@ -394,13 +391,14 @@ Values are mapped to informative strings."
   (org-tidy-top-property-style 'invisible)
   (org-tidy-properties-style 'invisible))
 
-(defvar-keymap user/org-insert-block-map
-  :prefix t
-  :doc "Keymap of functions for inserting/editing headers, drawers, srcblocks."
-  "h" #'user/org-insert-header-block
-  "d" #'user/org-insert-properties-drawer
-  "s" #'user/org-insert-src-block)
+(declare-function user/org-insert-properties-drawer "01-bootstrap-core")
+(declare-function user/org-insert-src-block         "01-bootstrap-core")
 (with-eval-after-load 'org
+  (defvar-keymap user/org-insert-block-map
+    :doc "Keymap of functions for inserting/editing headers, drawers, srcblocks"
+    "h" #'user/org-insert-header-block
+    "d" #'user/org-insert-properties-drawer
+    "s" #'user/org-insert-src-block)
   (keymap-set org-mode-map "C-c b" user/org-insert-block-map))
 
 

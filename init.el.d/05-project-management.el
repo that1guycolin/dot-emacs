@@ -76,7 +76,6 @@
   (setq edebug-inhibit-emacs-lisp-mode-bindings t)
 
   (defvar-keymap user/activities-map
-    :prefix t
     :doc "Functions from the package activities.el"
     "n" #'activities-new
     "d" #'activities-define

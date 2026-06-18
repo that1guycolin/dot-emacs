@@ -287,13 +287,6 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
      "ffmpeg -hide_banner -v quiet -stats -y -i '<<f>>' -map 0:a -c copy \
 -movflags +faststart '<<fne>>-audio.m4a'"
      :utils "ffmpeg"))
-
-  (defvar-keymap user/ffmpeg-actions-map
-    :prefix t
-    :doc "Keymap with FFmpeg actions to run on marked files in dired/dirvish."
-    "4" #'user/convert-ts-to-mp4
-    "v" #'user/extract-video-only
-    "a" #'user/extract-audio-only)
   
   :bind
   (("M-!" . dwim-shell-command)
@@ -301,6 +294,12 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
    ("F" . user/ffmpeg-actions-map))
   :commands dwim-shell-command-on-marked-files
   :config
+  (defvar-keymap user/ffmpeg-actions-map
+
+    :doc "Keymap with FFmpeg actions to run on marked files in dired/dirvish."
+    "4" #'user/convert-ts-to-mp4
+    "v" #'user/extract-video-only
+        "a" #'user/extract-audio-only)
   (transient-append-suffix 'user/dirvish-dispatch "c d"
     '("F" "FFmpeg Actions" user/ffmpeg-actions-map)))
 

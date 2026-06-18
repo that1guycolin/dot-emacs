@@ -44,15 +44,6 @@
       (progn
 	(emms-player-mpv-pause))))
 
-  (defvar-keymap user/emms-view-options-map
-    :prefix t
-    :doc "Different options for viewing & interacting with EMMS."
-    "b" #'emms-browser
-    "s" #'emms-smart-browse
-    "g" #'emms-playlist-mode-go
-    "p" #'emms-playlist-mode-go-popup)
-
-  :bind-keymap ("C-c m" . user/emms-view-options-map)
   :bind
   (("<f6>"    . emms-browser)
    ("<f7>"    . emms-smart-browse)
@@ -96,7 +87,15 @@
    emms-info-functions '(emms-info-native emms-info-exiftool)
    emms-player-list '(emms-player-mpv)
    emms-player-mpv-command-name "mpv"
-   emms-player-mpv-parameters '("--force-window=yes")))
+   emms-player-mpv-parameters '("--force-window=yes"))
+
+  (defvar-keymap user/emms-view-options-map
+    :doc "Different options for viewing & interacting with EMMS."
+    "b" #'emms-browser
+    "s" #'emms-smart-browse
+    "g" #'emms-playlist-mode-go
+    "p" #'emms-playlist-mode-go-popup)
+  :bind-keymap ("C-c m" . user/emms-view-options-map))
 
 (use-package emms-info-mediainfo
   :ensure (emms-info-mediainfo
