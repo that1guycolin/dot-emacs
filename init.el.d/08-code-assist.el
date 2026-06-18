@@ -144,6 +144,34 @@
   (add-to-list 'minions-prominent-modes 'flycheck-mode)
   (flycheck-add-mode 'org-lint 'org-gtd-clarify-mode)
 
+  (flycheck-define-checker cl-mallet
+    "A Common Lisp linter using Mallet.
+See URL: `https://github.com/fukamachi/mallet'."
+    :command ("mallet" source)
+    :error-patterns
+    ((error line-start (zero-or-more space)
+            line ":" column
+            (one-or-more space) "error" (one-or-more space)
+            (message (minimal-match (one-or-more not-newline)))
+            (one-or-more space) (id (one-or-more not-newline))
+            line-end)
+
+     (warning line-start (zero-or-more space)
+              line ":" column
+              (one-or-more space) "warning" (one-or-more space)
+              (message (minimal-match (one-or-more not-newline)))
+              (one-or-more space) (id (one-or-more not-newline))
+              line-end)
+
+     (info line-start (zero-or-more space)
+           line ":" column
+           (one-or-more space) "info" (one-or-more space)
+           (message (minimal-match (one-or-more not-newline)))
+           (one-or-more space) (id (one-or-more not-newline))
+           line-end))
+    :modes (lisp-mode lisp-data-mode))
+  (add-to-list 'flycheck-checkers 'cl-mallet)
+
   (flycheck-define-checker fish-self
     "The shell for the 90's built-in syntax checker.
 See URL `https://fishshell.com'."
@@ -151,6 +179,7 @@ See URL `https://fishshell.com'."
     :error-patterns
     ((error line-start (file-name) " (line " line "): " (message) line-end))
     :modes (fish-mode))
+  (add-to-list 'flycheck-checkers 'fish-self)
 
   (flycheck-define-checker markdown-rumdl
     "A fast Markdown linter written in Rust.
@@ -161,6 +190,7 @@ See URL `https://github.com/rvben/rumdl'."
 	    ":" line ":" column ": "
 	    (id (one-or-more (not (any " ")))) " " (message) line-end))
     :modes (markdown-ts-mode markdown-mode gfm-mode))
+  (add-to-list 'flycheck-checkers 'markdown-rumdl)
 
   (flycheck-define-checker systemd-systemdlint
     "A Systemd unit file linter.
@@ -169,7 +199,6 @@ See URL `https://github.com/priv-kweihmann/systemdlint'."
     :error-patterns
     ((warning line-start (file-name) ":" line ":" (message) line-end))
     :modes systemd-mode)
-
   (add-to-list 'flycheck-checkers 'systemd-systemdlint)
 
   (flycheck-define-checker text-vale
@@ -184,9 +213,6 @@ See URL `https://vale.sh'."
 	      (id (one-or-more (not (any ":")))) ":" (message) line-end))
     :modes (markdown-mode gfm-mode text-mode org-mode org-gtd-clarify-mode
 			  flycheck-error-message-mode))
-  
-  (dolist (chk '(fish-self markdown-rumdl systemd-systemdlint text-vale))
-    (add-to-list 'flycheck-checkers chk))
 
   (add-hook 'org-mode-hook #'(lambda ()
 			       (flycheck-select-checker 'org-lint))))
