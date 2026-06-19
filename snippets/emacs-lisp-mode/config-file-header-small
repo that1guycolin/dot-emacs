@@ -2,4 +2,4 @@
 # name: config file header small
 # key: smallheader
 # --
-;; =======  ${1:title}  =======
+;;;; =======  ${1:title}  =======

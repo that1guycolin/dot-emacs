@@ -3,8 +3,13 @@ emacs-lisp-mode
 (decf "(declare-function " (p "func") " \"" (p "pkg") "\")")
 (kgbset "(keymap-global-set \"" (p "keys") "\" #'" (p "func") ")")
 (kset "(keymap-set " (p "keymap") " \"" (p "keys") "\" #'" (p "func") ")")
+(hdr-l ";;;; ======  " (p "title") "  ======" n
+       ";; " n
+       ";;  =========" (p "match#=") "========")
+(hdr-s ";;;; ======  " (p "title") "  ======")
 
 sh-mode
+
 (bash-safe "#!/usr/bin/env bash" n "set -euo pipefail" n "IFS=$\'\\n\\t\'")
 (fusage "function usage {" n> "cat <<EOF" n
 	"USAGE: ${funcstack[2]} [OPTIONS] " (p "req arguments") n n
@@ -18,15 +23,19 @@ sh-mode
 	"      " (p "flag description") n n "  -h, --help" n
 	"      Display this message and exit." n n "EOF" n "}")
 
+(zmapfile (p "array") "=(\"${(@f)$(<" (p "file") ")}\")")
 (zshbang "#!/bin/zsh")
 (zrcd "#!/bin/zsh" n "# "
       (p (or (file-name-nondirectory buffer-file-name)
 	     "No file")))
 
 toml-ts-mode
-(bdil (p "name") " = { source = \"" (p "source") "\", target = \"" (p "link_loc") "\", direct = " (p "bool") " }" n)
+
+(bdil (p "name") " = { source = \"" (p "source") "\", target = \"" (p "link_loc") "\",
+direct = " (p "bool") " }" n)
 
 lisp-mode
+
 (s2o "((or (string-equal string \"" (p "name" method) "\")" n>
      "(string-equal string \":" method "\"))" n> ":" method ")")
 
