@@ -41,6 +41,16 @@ folder."
 	(when (called-interactively-p 'any)
 	  (message "There is no TODO file in the org directory.")))))
 
+  (defun user/open-project-todo ()
+    "Open the \"TODO.org\" file for the current project.
+The file is created if it doesn't exist."
+    (interactive)
+    (unless (project-current)
+      (error "No current project"))
+    (let* ((pr (project-root (project-current)))
+	   (todo (expand-file-name "TODO.org" pr)))
+      (find-file todo)))
+
   :functions
   org-project-capture-capture-for-current-project
   org-project-capture-project-todo-completing-read
@@ -77,6 +87,7 @@ folder."
       "g" "General Agenda"))
   (keymap-global-set "C-c c" user/org-capture-options)
   (keymap-global-set "C-c a" user/org-agenda-options)
+
   (dolist (project (project-known-project-roots))
     (let ((project-todo (expand-file-name "TODO.org" project)))
       (when (file-exists-p project-todo)
@@ -85,6 +96,10 @@ folder."
   (unless org-refile-targets
     (setq org-refile-targets '((nil :maxlevel . 9)
                                (org-agenda-files :maxlevel . 9))))
+
+  (with-eval-after-load 'disproject
+    (transient-append-suffix 'disproject-dispatch "C o"
+      '("t" "Project TODO" user/open-project-todo)))
 
   (add-hook 'org-mode-hook #'user/remove-org-todo))
 
