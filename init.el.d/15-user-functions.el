@@ -190,13 +190,6 @@ If not in a side window, jump to the first found side window."
       (select-window side-window)))))
 (bind-keys ("M-0" . user/toggle-side-window))
 
-(defvar user/tools-directory)
-(defun user/load-generate-readme ()
-  "Load generate-readme.el and make its functions available for use."
-  (interactive)
-  (add-to-list 'load-path user/tools-directory)
-  (require 'generate-readme))
-
 
 ;;;; =======  ELPACA  =======
 (declare-function elpaca-update-menus "elpaca")
