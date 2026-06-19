@@ -152,6 +152,25 @@ If nil, the number of frame lines and columns remains fixed.")
   (setq user/keep-frame-size-on-font-switch-p input))
 
 
+;;;; =======  HOOKS  =======
+(defun user/untabify-buffer ()
+  "Run `untabify' over the entire current buffer."
+  (interactive)
+  (push-mark (point-min) t t)
+  (goto-char (point-max))
+  (untabify))
+
+(defvar user/no-tab-modes
+  '(bash-ts-mode emacs-lisp-mode lisp-mode sh-mode)
+  "Major modes indented by spaces and not by tabs.")
+
+(dolist (mode user/no-tab-modes)
+  (let* ((hook-string (concat (symbol-name mode) "-hook"))
+	 (hook (intern hook-string)))
+    (with-eval-after-load mode
+      (add-hook hook #'user/untabify-buffer))))
+
+
 ;;;; =======  SIDE-WINDOW  =======
 (defun user/toggle-side-window ()
   "Switch focus between a side window and the main window area.
