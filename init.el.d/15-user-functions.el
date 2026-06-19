@@ -4,7 +4,7 @@
 ;; Variables, functions, and transient dispatches defined by the user.
 
 ;;; Code:
-;; =======  FONTS  =======
+;;;; =======  FONTS  =======
 (defvar user/font-alist nil
   "Alist mapping human-readable font names to non-directory filenames.")
 
@@ -152,7 +152,7 @@ If nil, the number of frame lines and columns remains fixed.")
   (setq user/keep-frame-size-on-font-switch-p input))
 
 
-;; =======  SIDE-WINDOW  =======
+;;;; =======  SIDE-WINDOW  =======
 (defun user/toggle-side-window ()
   "Switch focus between a side window and the main window area.
 If in a side window, return to the last used window.
@@ -178,7 +178,7 @@ If not in a side window, jump to the first found side window."
   (require 'generate-readme))
 
 
-;; =======  ELPACA  =======
+;;;; =======  ELPACA  =======
 (declare-function elpaca-update-menus "elpaca")
 (defun user/elpaca-update-menus ()
   "Non-interactively run `elpaca-update-menus'."
@@ -227,13 +227,13 @@ If not in a side window, jump to the first found side window."
   (interactive)
   (user/elpaca-update-menus)
   (dolist (pkg (user/get-external-packages))
-    (elpaca-fetch   pkg)
-    (elpaca-merge   pkg)
+    (elpaca-fetch pkg)
+    (elpaca-merge pkg)
     (when (member pkg (mapcar #'car (elpaca--queued)))
       (elpaca-rebuild pkg))))
 
 
-;; =======  TRANSIENT  =======
+;;;; =======  TRANSIENT  =======
 (with-eval-after-load 'transient
   (declare-function transient-define-prefix "transient")
   (defvar user/visual-settings-dispatch nil)
