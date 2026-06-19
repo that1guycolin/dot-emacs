@@ -8,10 +8,10 @@
 ;;; Code:
 (when (eq system-type 'android)
   (setenv "PATH" (format "%s:%s" "/data/data/com.termux/files/usr/bin"
-			 (getenv "PATH")))
+                         (getenv "PATH")))
   (push "/data/data/com.termux/files/usr/bin" exec-path)
   (setenv "PKG_CONFIG_PATH"
-	  "/data/data/com.termux/files/usr/lib/pkgconfig/"))
+          "/data/data/com.termux/files/usr/lib/pkgconfig/"))
 
 (defvar package-quickstart)
 (defvar auth-sources)
@@ -24,11 +24,11 @@
   (profiler-start 'cpu)
   (add-hook 'emacs-startup-hook (lambda () (require 'profiler)))
   (run-with-idle-timer 30 nil #'(lambda ()
-				  (profiler-cpu-stop)
-				  (unless (featurep 'profiler)
-				    (require 'profiler))
-				  (with-eval-after-load 'profiler
-				    (profiler-report)))))
+                                  (profiler-cpu-stop)
+                                  (unless (featurep 'profiler)
+                                    (require 'profiler))
+                                  (with-eval-after-load 'profiler
+                                    (profiler-report)))))
 
 ;; Variables modified for startup then reset once started.
 ;; Ignore `tramp' and `compressed'/`archive' files during start.  Do not
@@ -40,8 +40,8 @@
 (add-hook 'emacs-startup-hook
           (lambda ()
             (setq
-	     file-name-handler-alist user/file-name-handler-alist-backup
-	     inhibit-message nil)))
+             file-name-handler-alist user/file-name-handler-alist-backup
+             inhibit-message nil)))
 
 (setq
  ;; No garbage collection during startup

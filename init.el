@@ -56,7 +56,7 @@
 ;; optimizing load-order and using `Elpaca' as package manager.
 
 ;;; Code:
-;; =======  LOAD PATHS  =======
+;;;; =======  LOAD PATHS  =======
 (defvar user/init-directory
   (expand-file-name "init.el.d" user-emacs-directory)
   "Directory from which init files are loaded.")
@@ -74,7 +74,7 @@
 (if (equal system-type 'android)
     (progn
       (defvar android-home "/data/data/com.termux/files/home"
-	"Termux home directory on Android.")
+        "Termux home directory on Android.")
       (setq
        user/projects-directory (expand-file-name "projects" android-home)
        user/scripts-directory (expand-file-name "scripts" android-home)))
@@ -85,7 +85,7 @@
 (add-to-list 'load-path user/init-directory)
 
 
-;; =======  LOAD PACKAGES  =======
+;;;; =======  LOAD PACKAGES  =======
 ;; Load startup and core packages
 (require '01-bootstrap-core)
 
