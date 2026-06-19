@@ -221,7 +221,8 @@ this function as `org-node-creation-fn'."
 	   :type git :protocol https :inherit t :depth treeless)
   
   :defer t
-  (defvar user/custom-packages nil
+  :preface
+  (defvar user/custom-packages '()
     "List of packages installed via Elpaca not in Elpaca menus.")
   (add-to-list 'user/custom-packages 'pdf-tools)
   :magic ("%PDF" . pdf-view-mode)
