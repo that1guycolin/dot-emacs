@@ -2,7 +2,7 @@
 
 ;;; Packages included:
 ;; adaptive-wrap, apheleia, comment-dwim-2, consult-eglot,
-;; consult-eglot-embark, consult-flycheck, docstr, eglot, flycheck,
+;; consult-eglot-embark, consult-flycheck,  eglot, flycheck,
 ;; flycheck-color-mode-line, flycheck-eask, flycheck-eglot, flycheck-package,
 ;; flyover, flyspell, flyspell-correct, flyspell-correct-avy-menu, lsp-snippet,
 ;; rainbow-delimiters, smartparens, visual-regexp, visual-regexp-steroids
@@ -12,16 +12,15 @@
 ;; The packages called in this file help to make Emacs feel like a typical IDE.
 
 ;;; Code:
-;; =======  TEXT MANIPULATION  =======
+;;;; =======  TEXT MANIPULATION  =======
 ;; `adaptive-wrap' (smart text wrapping)
 ;; `comment-dwim-2' (easily switch between no-comment, comment, EOL comment)
-;; `docstr' (composing/formatting DocStrings)
 ;; `dumb-jump' (jump-to-def/find-refs)
 ;; `rainbow-delimiters' (colorize "", {}, [], ())
 ;; `smartparens' (auto-close "", {}, [], ())
 ;; `visual-regexp' (hl regexp as you type)
 ;; `visual-regexp-steroids' (use python-style regexp instead of Emacs)
-;; ===================================
+;;   ===================================
 (use-package adaptive-wrap
   :defer t
   :hook ((prog-mode text-mode) . adaptive-wrap-prefix-mode))
@@ -29,45 +28,6 @@
 (use-package comment-dwim-2
   :defer t
   :bind ([remap comment-dwim] . comment-dwim-2))
-
-(use-package docstr
-  :defer t
-  :preface
-  (defun user/print-docstr-hooks ()
-    "Print the `use-package' \":key\" values for `docstr'."
-    (interactive)
-    (insert ":hook (")
-    (dolist (mode (docstr-major-modes))
-      (let ((mode-str (symbol-name mode)))
-	(insert "\n(" mode-str " . docstr-mode)")))
-    (insert ")"))
-  :hook
-  ((actionscript-mode . docstr-mode)
-   (c-mode            . docstr-mode)
-   (c++-mode          . docstr-mode)
-   (csharp-mode       . docstr-mode)
-   (go-mode           . docstr-mode)
-   (go-ts-mode        . docstr-mode)
-   (groovy-mode       . docstr-mode)
-   (java-mode         . docstr-mode)
-   (javascript-mode   . docstr-mode)
-   (js-mode           . docstr-mode)
-   (js2-mode          . docstr-mode)
-   (js3-mode          . docstr-mode)
-   (lua-mode          . docstr-mode)
-   (lua-ts-mode       . docstr-mode)
-   (objc-mode         . docstr-mode)
-   (php-mode          . docstr-mode)
-   (python-base-mode  . docstr-mode)
-   (rjsx-mode         . docstr-mode)
-   (ruby-mode         . docstr-mode)
-   (rust-mode         . docstr-mode)
-   (rust-ts-mode      . docstr-mode)
-   (scala-mode        . docstr-mode)
-   (swift-mode        . docstr-mode)
-   (typescript-mode   . docstr-mode)
-   (web-mode          . docstr-mode))
-  :functions docstr-major-modes)
 
 (use-package dumb-jump
   :demand t
@@ -101,16 +61,16 @@
    ([remap isearch-backward-regexp] . vr/isearch-backward)))
 
 
-;; =======  FLYCHECK  =======
-;; bash:	 'shellcheck'	 (pacman -S shellcheck)
-;; emacs-lisp:	 'emacs-lisp'	 (built-in)
-;; json:	 'jsonlint'	 (npm install -g jsonlint)
-;; lua:		 'luacheck'	 (pacman -S luacheck)
-;; markdown:	 'rumdl'	 (pacman -S rumdl)
-;; systemd:	 'systemdlint'	 (uv tool install systemdlint)
-;; toml:	 'tombi'	 (uv tool install tombi)
-;; xml:		 'xmllint'	 (pacman -S libxml2)
-;; yaml:	 'yamllint'	 (pacman -S yamllint)
+;;;; =======  FLYCHECK  =======
+;; bash:         'shellcheck'    (pacman -S shellcheck)
+;; emacs-lisp:   'emacs-lisp'    (built-in)
+;; json:         'jsonlint'      (npm install -g jsonlint)
+;; lua:          'luacheck'      (pacman -S luacheck)
+;; markdown:     'rumdl'         (pacman -S rumdl)
+;; systemd:      'systemdlint'   (uv tool install systemdlint)
+;; toml:         'tombi'         (uv tool install tombi)
+;; xml:          'xmllint'       (pacman -S libxml2)
+;; yaml:         'yamllint'      (pacman -S yamllint)
 ;; --------------------------
 ;; Extensions:
 ;; `flyover' (display errors in buffer)
@@ -118,7 +78,7 @@
 ;; `flycheck-eask' (Support Eask files)
 ;; `flycheck-package' (Support Emacs' pacakge files)
 ;; `consult-flycheck' (Completing-read for flycheck)
-;; ==========================
+;;   ==========================
 (use-package flycheck
   :defer t
   :preface
@@ -127,10 +87,10 @@
     "If not setup, install the vale from the .ini file in dot-Emacs."
     (interactive)
     (let* ((vale-config (expand-file-name ".vale.ini" user-emacs-directory))
-	   (vale-install (expand-file-name ".vale-styles" user-emacs-directory))
-	   (command (format "vale --config %s sync >/dev/null" vale-config)))
+           (vale-install (expand-file-name ".vale-styles" user-emacs-directory))
+           (command (format "vale --config %s sync >/dev/null" vale-config)))
       (unless (file-exists-p vale-install)
-	(shell-command command))))
+        (shell-command command))))
 
   :hook ((prog-mode text-mode) . flycheck-mode)
   :functions flycheck-select-checker flycheck-add-mode
@@ -187,8 +147,8 @@ See URL `https://github.com/rvben/rumdl'."
     :command ("rumdl" "check" "--watch" "--stdin" source)
     :error-patterns
     ((error line-start (file-name)
-	    ":" line ":" column ": "
-	    (id (one-or-more (not (any " ")))) " " (message) line-end))
+            ":" line ":" column ": "
+            (id (one-or-more (not (any " ")))) " " (message) line-end))
     :modes (markdown-ts-mode markdown-mode gfm-mode))
   (add-to-list 'flycheck-checkers 'markdown-rumdl)
 
@@ -206,16 +166,16 @@ See URL `https://github.com/priv-kweihmann/systemdlint'."
 See URL `https://vale.sh'."
     :command
     ("vale" "--config" (eval
-			(expand-file-name ".vale.ini" user-emacs-directory))
+                        (expand-file-name ".vale.ini" user-emacs-directory))
      "--no-global" "--output" "line" source)
     :error-patterns
     ((warning line-start (file-name) ":" line ":" column ":"
-	      (id (one-or-more (not (any ":")))) ":" (message) line-end))
+              (id (one-or-more (not (any ":")))) ":" (message) line-end))
     :modes (markdown-mode gfm-mode text-mode org-mode org-gtd-clarify-mode
-			  flycheck-error-message-mode))
+                          flycheck-error-message-mode))
 
   (add-hook 'org-mode-hook #'(lambda ()
-			       (flycheck-select-checker 'org-lint))))
+                               (flycheck-select-checker 'org-lint))))
 
 (use-package flyover
   :defer t
@@ -265,24 +225,24 @@ See URL `https://vale.sh'."
   :after (consult flycheck))
 
 
-;; ============================  EGLOT  =============================
+;;;; ============================  EGLOT  =============================
 ;; ---------------------------  REQUIRED  ---------------------------
-;; cmake:	 'neocmakelsp'		 (cargo install neocmakelsp)
-;; fish:	 'fish-lsp'		 (npm install -g fish-lsp)
-;; lua:          'lua-language-server'	 (pacman -S lua-language-server)
-;; markdown:	 'rumdl'		 (pacman -S rumdl)
-;; python:	 'ty'			 (uv tool install ty)
-;; python:	 'ruff'			 (uv tool install ruff)
+;; cmake:        'neocmakelsp'           (cargo install neocmakelsp)
+;; fish:         'fish-lsp'              (npm install -g fish-lsp)
+;; lua:          'lua-language-server'   (pacman -S lua-language-server)
+;; markdown:     'rumdl'                 (pacman -S rumdl)
+;; python:       'ty'                    (uv tool install ty)
+;; python:       'ruff'                  (uv tool install ruff)
 ;; toml:         'tombi'                 (pacman -S tombi)
 ;; ---------------------------  OPTIONAL  ---------------------------
-;; bash:	 'bash-language-server'	 (pacman -S bash-language-server)
-;; json:	 'json-language-server'	 (pacman -S json-language-server)
-;; xml:          'lemminx'		 (github.com/eclipse-lemminx/lemminx)
-;; yaml:	 'yaml-language-server'	 (pacman -S yaml-language-server)
+;; bash:         'bash-language-server'  (pacman -S bash-language-server)
+;; json:         'json-language-server'  (pacman -S json-language-server)
+;; xml:          'lemminx'               (github.com/eclipse-lemminx/lemminx)
+;; yaml:         'yaml-language-server'  (pacman -S yaml-language-server)
 ;; --------------------------  EXTENSIONS  --------------------------
 ;; `consult-eglot' `consult-eglot-embark' `flycheck-eglot' (integrations)
 ;; `lsp-snippet' (integrate lsp with templ & yasnippet)
-;; ==================================================================
+;;   ==================================================================
 (use-package eglot
   :ensure nil
   :defer t
@@ -295,16 +255,16 @@ See URL `https://vale.sh'."
   :bind ("C-c l" . user/interactive-eglot)
   :hook
   ((cmake-ts-mode fish-mode lua-ts-mode markdown-mode markdown-ts-mode
-		  python-base-mode toml-ts-mode) . user/interactive-eglot)
+                  python-base-mode toml-ts-mode) . user/interactive-eglot)
   
   :config
   (dolist
       (lsp-cons
        '(((lua-mode lua-ts-mode) .
-	  (expand-file-name "~/.luarocks/bin/lua-language-server"))
-	 ((fish-mode) . ("fish-lsp" "start"))
-	 ((markdown-mode markdown-ts-mode) . ("rumdl" "start"))
-	 (nxml-mode . ("lemminx"))))
+          (expand-file-name "~/.luarocks/bin/lua-language-server"))
+         ((fish-mode) . ("fish-lsp" "start"))
+         ((markdown-mode markdown-ts-mode) . ("rumdl" "start"))
+         (nxml-mode . ("lemminx"))))
     (add-to-list 'eglot-server-programs lsp-cons)))
 
 (use-package consult-eglot
@@ -331,9 +291,9 @@ Designed to be used as advice around `eglot'."
 
 (use-package lsp-snippet
   :ensure (:id lsp-snippet :type git :host github
-	       :depth treeless :protocol https :autoloads t
-	       :repo "svaante/lsp-snippet" :main "lsp-snippet.el" :build t
-	       :files ("Makefile" "*.el") :autoloads t)
+               :depth treeless :protocol https :autoloads t
+               :repo "svaante/lsp-snippet" :main "lsp-snippet.el" :build t
+               :files ("Makefile" "*.el") :autoloads t)
   :after (:all eglot (:any tempel yasnippet))
   :config
   (with-eval-after-load 'tempel
@@ -344,19 +304,19 @@ Designed to be used as advice around `eglot'."
     (lsp-snippet-yasnippet-eglot-init)))
 
 
-;; =======  FORMATTING  =======
-;; bash:	 'shfmt'	 (pacman -S shfmt)
-;; cmake:	 'neocmakelsp'	 (cargo install neocmakelsp)
-;; fish:	 'fish_indent'	 (bundled with fish shell)
-;; emacs-lisp:	 'lisp-indent'	 (built-in)
-;; json:	 'jq'		 (pacman -S jq)
+;;;; =======  FORMATTING  =======
+;; bash:         'shfmt'         (pacman -S shfmt)
+;; cmake:        'neocmakelsp'   (cargo install neocmakelsp)
+;; fish:         'fish_indent'   (bundled with fish shell)
+;; emacs-lisp:   'lisp-indent'   (built-in)
+;; json:         'jq'            (pacman -S jq)
 ;; lua:          'stylua'        (pacman -S stylua)
-;; markdown:	 'rumdl'	 (pacman -S rumdl)
-;; python:	 'ruff'		 (uv tool install ruff)
-;; toml:	 'tombi'	 (pacman -S tombi)
-;; xml:          'xmlstarlet'	 (pacman -S xmlstarlet)
-;; yaml:	 'yq-yqml'	 (pacman -S yq-yaml)
-;; ============================
+;; markdown:     'rumdl'         (pacman -S rumdl)
+;; python:       'ruff'          (uv tool install ruff)
+;; toml:         'tombi'         (pacman -S tombi)
+;; xml:          'xmlstarlet'    (pacman -S xmlstarlet)
+;; yaml:         'yq-yqml'       (pacman -S yq-yaml)
+;;   ============================
 (use-package apheleia
   :defer t
   :bind ("C-c f" . apheleia-format-buffer)
@@ -366,47 +326,47 @@ Designed to be used as advice around `eglot'."
   (when ()
     (apheleia-mode -1))
   
-  (setf (alist-get 'jq		apheleia-formatters)
-	'("jq" "." "-M" "--indent" "2"))
+  (setf (alist-get 'jq          apheleia-formatters)
+        '("jq" "." "-M" "--indent" "2"))
   
   (setf (alist-get 'neocmakelsp apheleia-formatters)
-	'("neocmakelsp" "format" (buffer-file-name)))
+        '("neocmakelsp" "format" (buffer-file-name)))
   
-  (setf (alist-get 'ruff	apheleia-formatters)
-	'("ruff" "format" "-"))
+  (setf (alist-get 'ruff        apheleia-formatters)
+        '("ruff" "format" "-"))
   
-  (setf (alist-get 'rumdl	apheleia-formatters)
-	'("rumdl" "fmt" "--stdin" "-"))
+  (setf (alist-get 'rumdl       apheleia-formatters)
+        '("rumdl" "fmt" "--stdin" "-"))
   
-  (setf (alist-get 'shfmt	apheleia-formatters)
-	'("shfmt" "-i" "4" "-ci" "-"))
+  (setf (alist-get 'shfmt       apheleia-formatters)
+        '("shfmt" "-i" "4" "-ci" "-"))
   
-  (setf (alist-get 'tombi	apheleia-formatters)
-	'("tombi" "fmt" "-"))
+  (setf (alist-get 'tombi       apheleia-formatters)
+        '("tombi" "fmt" "-"))
   
-  (setf (alist-get 'xmlstarlet	apheleia-formatters)
-	'("xmlstarlet" "fo" "--indent-spaces" "2" "-"))
+  (setf (alist-get 'xmlstarlet  apheleia-formatters)
+        '("xmlstarlet" "fo" "--indent-spaces" "2" "-"))
 
-  (setf (alist-get 'cmake-ts-mode	apheleia-mode-alist) 'neocmakelsp)
-  (setf (alist-get 'eask-mode		apheleia-mode-alist) 'lisp-indent)
-  (setf (alist-get 'fish-mode		apheleia-mode-alist) 'fish-indent)
-  (setf (alist-get 'json-ts-mode	apheleia-mode-alist) 'jq)
-  (setf (alist-get 'markdown-mode	apheleia-mode-alist) 'rumdl)
-  (setf (alist-get 'gfm-mode		apheleia-mode-alist) 'rumdl)
-  (setf (alist-get 'python-ts-mode	apheleia-mode-alist) 'ruff)
-  (setf (alist-get 'toml-ts-mode	apheleia-mode-alist) 'tombi)
-  (setf (alist-get 'conf-toml-mode	apheleia-mode-alist) 'tombi)
-  (setf (alist-get 'nxml-mode		apheleia-mode-alist) 'xmlstarlet)
-  (setf (alist-get 'yaml-ts-mode	apheleia-mode-alist) 'yq-yaml))
+  (setf (alist-get 'cmake-ts-mode       apheleia-mode-alist) 'neocmakelsp)
+  (setf (alist-get 'eask-mode           apheleia-mode-alist) 'lisp-indent)
+  (setf (alist-get 'fish-mode           apheleia-mode-alist) 'fish-indent)
+  (setf (alist-get 'json-ts-mode        apheleia-mode-alist) 'jq)
+  (setf (alist-get 'markdown-mode       apheleia-mode-alist) 'rumdl)
+  (setf (alist-get 'gfm-mode            apheleia-mode-alist) 'rumdl)
+  (setf (alist-get 'python-ts-mode      apheleia-mode-alist) 'ruff)
+  (setf (alist-get 'toml-ts-mode        apheleia-mode-alist) 'tombi)
+  (setf (alist-get 'conf-toml-mode      apheleia-mode-alist) 'tombi)
+  (setf (alist-get 'nxml-mode           apheleia-mode-alist) 'xmlstarlet)
+  (setf (alist-get 'yaml-ts-mode        apheleia-mode-alist) 'yq-yaml))
 
 
-;; =======  FOLDING  =======
+;;;; =======  FOLDING  =======
 ;; `hideshow' (defines `hs-minor-mode' based on buffer-syntax)
 ;; `outline' (defines `outline-minor-mode' based on headings)
 ;; `outline-indent' (defines minor-mode for indent-centric languages)
 ;; `treesit-fold' (fold based on language syntax)
 ;; `kirigami' (consistent settings across backends)
-;; =========================
+;;   =========================
 (use-package hideshow
   :ensure nil
   :defer t
@@ -455,50 +415,50 @@ Designed to be used as advice around `eglot'."
   :defer t
   :preface
   (defvar user/mode-folding-backend-alist
-    '((bash-ts-mode		 . treesit-fold-mode)
-      (cmake-ts-mode		 . treesit-fold-mode)
-      (c++-mode			 . hs-minor-mode)
-      (c-mode			 . hs-minor-mode)
-      (conf-mode		 . outline-minor-mode)
-      (csharp-ts-mode		 . treesit-fold-mode)
-      (css-mode			 . hs-minor-mode)
-      (css-ts-mode		 . treesit-fold-mode)
-      (c++-ts-mode		 . treesit-fold-mode)
-      (c-ts-mode		 . treesit-fold-mode)
-      (diff-mode		 . outline-minor-mode)
-      (dockerfile-ts-mode	 . treesit-fold-mode)
-      (emacs-lisp-mode		 . outline-minor-mode)
-      (go-mode			 . hs-minor-mode)
-      (go-mod-ts-mode		 . treesit-fold-mode)
-      (go-ts-mode		 . treesit-fold-mode)
-      (html-mode		 . hs-minor-mode)
-      (java-mode		 . hs-minor-mode)
-      (java-ts-mode		 . treesit-fold-mode)
-      (js-mode			 . hs-minor-mode)
-      (json-mode		 . hs-minor-mode)
-      (json-ts-mode		 . treesit-fold-mode)
-      (lisp-interaction-mode	 . outline-minor-mode)
-      (lisp-mode		 . outline-minor-mode)
-      (lua-mode			 . hs-minor-mode)
-      (lua-ts-mode		 . treesit-fold-mode)
-      (makefile-ts-mode		 . treesit-fold-mode)
-      (markdown-mode		 . outline-minor-mode)
-      (markdown-ts-mode		 . treesit-fold-mode)
-      (nxml-mode		 . hs-minor-mode)
-      (perl-mode		 . hs-minor-mode)
-      (php-mode			 . hs-minor-mode)
-      (php-ts-mode		 . treesit-fold-mode)
-      (python-base-mode		 . outline-indent-minor-mode)
-      (ruby-mode		 . hs-minor-mode)
-      (ruby-ts-mode		 . treesit-fold-mode)
-      (rust-mode		 . hs-minor-mode)
-      (rust-ts-mode		 . treesit-fold-mode)
-      (sh-mode			 . hs-minor-mode)
-      (toml-ts-mode		 . treesit-fold-mode)
-      (typescript-mode		 . hs-minor-mode)
-      (typescript-ts-mode	 . treesit-fold-mode)
-      (xml-ts-mode		 . treesit-fold-mode)
-      (yaml-ts-mode		 . outline-indent-minor-mode))
+    '((bash-ts-mode              . treesit-fold-mode)
+      (cmake-ts-mode             . treesit-fold-mode)
+      (c++-mode                  . hs-minor-mode)
+      (c-mode                    . hs-minor-mode)
+      (conf-mode                 . outline-minor-mode)
+      (csharp-ts-mode            . treesit-fold-mode)
+      (css-mode                  . hs-minor-mode)
+      (css-ts-mode               . treesit-fold-mode)
+      (c++-ts-mode               . treesit-fold-mode)
+      (c-ts-mode                 . treesit-fold-mode)
+      (diff-mode                 . outline-minor-mode)
+      (dockerfile-ts-mode        . treesit-fold-mode)
+      (emacs-lisp-mode           . outline-minor-mode)
+      (go-mode                   . hs-minor-mode)
+      (go-mod-ts-mode            . treesit-fold-mode)
+      (go-ts-mode                . treesit-fold-mode)
+      (html-mode                 . hs-minor-mode)
+      (java-mode                 . hs-minor-mode)
+      (java-ts-mode              . treesit-fold-mode)
+      (js-mode                   . hs-minor-mode)
+      (json-mode                 . hs-minor-mode)
+      (json-ts-mode              . treesit-fold-mode)
+      (lisp-interaction-mode     . outline-minor-mode)
+      (lisp-mode                 . outline-minor-mode)
+      (lua-mode                  . hs-minor-mode)
+      (lua-ts-mode               . treesit-fold-mode)
+      (makefile-ts-mode          . treesit-fold-mode)
+      (markdown-mode             . outline-minor-mode)
+      (markdown-ts-mode          . treesit-fold-mode)
+      (nxml-mode                 . hs-minor-mode)
+      (perl-mode                 . hs-minor-mode)
+      (php-mode                  . hs-minor-mode)
+      (php-ts-mode               . treesit-fold-mode)
+      (python-base-mode          . outline-indent-minor-mode)
+      (ruby-mode                 . hs-minor-mode)
+      (ruby-ts-mode              . treesit-fold-mode)
+      (rust-mode                 . hs-minor-mode)
+      (rust-ts-mode              . treesit-fold-mode)
+      (sh-mode                   . hs-minor-mode)
+      (toml-ts-mode              . treesit-fold-mode)
+      (typescript-mode           . hs-minor-mode)
+      (typescript-ts-mode        . treesit-fold-mode)
+      (xml-ts-mode               . treesit-fold-mode)
+      (yaml-ts-mode              . outline-indent-minor-mode))
     "Alist of cons cells mapping major-modes to preferred folding backend.")
 
   :hook
@@ -536,11 +496,11 @@ Designed to be used as advice around `eglot'."
   (keymap-global-set "C-c z" user/kirigami-functions))
 
 
-;; =======  FLYSPELL  =======
+;;;; =======  FLYSPELL  =======
 ;; `flyspell'                    (spellcheck)
-;; `flyspell-correct'		 (correct w/ flyspell...)
-;; `flyspell-correct-avy-menu'	 (... and your favorite interface)
-;; ==========================
+;; `flyspell-correct'            (correct w/ flyspell...)
+;; `flyspell-correct-avy-menu'   (... and your favorite interface)
+;;   ==========================
 (declare-function embark-act "embark")
 (use-package flyspell
   :ensure nil
@@ -553,7 +513,7 @@ Designed to be used as advice around `eglot'."
 (use-package flyspell-correct
   :after flyspell
   :bind (:map flyspell-mode-map
-	      ("C-&" . flyspell-correct-wrapper)))
+              ("C-&" . flyspell-correct-wrapper)))
 
 (use-package flyspell-correct-avy-menu
   :after (flyspell-correct avy))
