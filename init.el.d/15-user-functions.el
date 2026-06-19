@@ -10,27 +10,27 @@
 
 (if (eq system-type 'android)
     (setq user/font-alist
-	  '(("Anonymice Pro NF"		 . "AnonymiceProNerdFont")
-	    ("Anonymice Pro NFM"	 . "AnonymiceProNerdFontMono")
-	    ("Anonymice Pro NFP"	 . "AnonymiceProNerdFontPropo")
-	    ("Blex NF"			 . "BlexMonoNerdFont")
-	    ("Blex NFM"			 . "BlexMonoNerdFontMono")
-	    ("Blex NFP"			 . "BlexMonoNerdFontPropo")
-	    ("DaddyTime NF"		 . "DaddyTimeMonoNerdFont")
-	    ("DaddyTime NFM"		 . "DaddyTimeMonoNerdFontMono")
-	    ("DaddyTime NFP"		 . "DaddyTimeMonoNerdFontPropo")
-	    ("Droid Sans NF"		 . "DroidSansMNerdFont")
-	    ("Droid Sans NFM"		 . "DroidSansMNerdFontMono")
-	    ("Droid Sans NFP"		 . "DroidSansMNerdFontPropo")
-	    ("Fantasque Sans NF"	 . "FantasqueSansMNerdFont")
-	    ("Fantasque Sans NFM"	 . "FantasqueSansMNerdFontMono")
-	    ("Fantasque Sans NFP"	 . "FantasqueSansMNerdFontPropo")
-	    ("Go NF"			 . "GoMonoNerdFont")
-	    ("Go NFM"			 . "GoMonoNerdFontMono")
-	    ("Go NFP"			 . "GoMonoNerdFontPropo")
-	    ("Space NF"			 . "SpaceMonoNerdFont")
-	    ("Space NFM"		 . "SpaceMonoNerdFontMono")
-	    ("Space NFP"		 . "SpaceMonoNerdFontPropo")))
+	  '(("Anonymice Pro NF"		 . "AnonymicePro Nerd Font")
+	    ("Anonymice Pro NFM"	 . "AnonymicePro Nerd Font Mono")
+	    ("Anonymice Pro NFP"	 . "AnonymicePro Nerd Font Propo")
+	    ("Blex NF"			 . "BlexMono Nerd Font")
+	    ("Blex NFM"			 . "BlexMono Nerd Font Mono")
+	    ("Blex NFP"			 . "BlexMono Nerd Font Propo")
+	    ("DaddyTime NF"		 . "DaddyTimeMono Nerd Font")
+	    ("DaddyTime NFM"		 . "DaddyTimeMono Nerd Font Mono")
+	    ("DaddyTime NFP"		 . "DaddyTimeMono Nerd Font Propo")
+	    ("Droid Sans NF"		 . "DroidSansM Nerd Font")
+	    ("Droid Sans NFM"		 . "DroidSansM Nerd Font Mono")
+	    ("Droid Sans NFP"		 . "DroidSansM Nerd Font Propo")
+	    ("Fantasque Sans NF"	 . "FantasqueSansM Nerd Font")
+	    ("Fantasque Sans NFM"	 . "FantasqueSansM Nerd Font Mono")
+	    ("Fantasque Sans NFP"	 . "FantasqueSansM Nerd Font Propo")
+	    ("Go NF"			 . "GoMono Nerd Font")
+	    ("Go NFM"			 . "GoMono Nerd Font Mono")
+	    ("Go NFP"			 . "GoMono Nerd Font Propo")
+	    ("Space NF"			 . "SpaceMono Nerd Font")
+	    ("Space NFM"		 . "SpaceMono Nerd Font Mono")
+	    ("Space NFP"		 . "SpaceMono Nerd Font Propo")))
   (setq user/font-alist
 	'(("0xProto"                   . "0xProtoNerdFontMono")
 	  ("3270"                      . "3270NerdFontMono")
@@ -176,11 +176,57 @@ If not in a side window, jump to the first found side window."
   (add-to-list 'load-path user/tools-directory)
   (require 'generate-readme))
 
+
+;; =======  ELPACA  =======
 (declare-function elpaca-update-menus "elpaca")
 (defun user/elpaca-update-menus ()
   "Non-interactively run `elpaca-update-menus'."
   (interactive)
   (funcall #'elpaca-update-menus))
+
+(declare-function elpaca--queued "elpaca")
+(defun user/elpaca-rebuild-all ()
+  "Rebuild all external packages installed via `elpaca'."
+  (interactive)
+  (let* ((pkg-list (mapcar #'car (elpaca--queued)))
+	 (pkgs (nreverse pkg-list)))
+    (dolist (pkg pkgs)
+      (elpaca-rebuild pkg)
+      (message "Rebuilt %s" pkg))
+    (message "All packages rebuilt!")))
+
+(defvar user/init-directory)
+(defun user/get-external-packages ()
+  (interactive)
+  (let* ((packages '(elpaca elpaca-use-package))
+	 (init-files
+	  (directory-files user/init-directory t directory-files-no-dot-files-regexp))
+	 (files (nreverse init-files)))
+    (with-temp-buffer
+      (dolist (file files)
+	(insert-file-contents file))
+      (goto-char (point-min))
+      (condition-case nil
+          (while t
+            (let ((form (read (current-buffer))))
+              (when (and (listp form)
+			 (eq (car form) 'use-package))
+		(let ((args (cddr form)))
+		  (unless (and (plist-member args :ensure)
+			       (null (plist-get args :ensure)))
+		    (push (cadr form) packages))))))
+	(end-of-file)))
+    (nreverse packages)))
+
+(defun user/elpaca-complete-update ()
+  "Fetch, merge, and rebuild every package installed via `elpaca'."
+  (interactive)
+  (user/elpaca-update-menus)
+  (dolist (pkg (user/get-external-packages))
+    (elpaca-fetch   pkg)
+    (elpaca-merge   pkg)
+    (when (member pkg (mapcar #'car (elpaca--queued)))
+      (elpaca-rebuild pkg))))
 
 
 ;; =======  TRANSIENT  =======
@@ -215,13 +261,15 @@ If not in a side window, jump to the first found side window."
 (declare-function elpaca-build-compile			"elpaca")
 (defvar-keymap user/elpaca-options-map
   :doc "Functions for Elpaca package manager."
-  "g"	 #'elpaca-manager
+  "m"	 #'elpaca-manager
+  "a"    #'user/elpaca-complete-update
   "n"    #'user/elpaca-update-menus
   "f"	 #'elpaca-fetch
   "F"	 #'elpaca-fetch-all
-  "m"	 #'elpaca-merge
-  "M"	 #'elpaca-merge-all
+  "e"	 #'elpaca-merge
+  "E"	 #'elpaca-merge-all
   "r"	 #'elpaca-rebuild
+  "R"    #'user/elpaca-rebuild-all
   "u"	 #'elpaca-update
   "U"	 #'elpaca-update-all
   "b a"	 #'elpaca-build-autoloads
@@ -232,13 +280,15 @@ If not in a side window, jump to the first found side window."
 (with-eval-after-load 'which-key
   (which-key-add-keymap-based-replacements
     user/elpaca-options-map
-    "g" "Elpaca Manager"
+    "m" "Elpaca Manager"
+    "a" "Complete Update"
     "n" "Update Menus"
     "f" "Fetch"
     "F" "Fetch All"
-    "m" "Merge"
-    "M" "Merge All"
+    "e" "Merge"
+    "E" "Merge All"
     "r" "Rebuild"
+    "R" "Rebuild All"
     "u" "Update"
     "U" "Update All"
     "b a" "Build Autoloads"
@@ -246,7 +296,7 @@ If not in a side window, jump to the first found side window."
     "b D" "Build Docs (Process Sentinel)"
     "b c" "Build Compile"))
 
-(keymap-global-set "C-c e" 'user/elpaca-options-map)
+(keymap-global-set "C-c e" user/elpaca-options-map)
 
 
 (provide '15-user-functions)

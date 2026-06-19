@@ -65,13 +65,22 @@
   (expand-file-name "tools" user-emacs-directory)
   "Directory containing scripts, etc for editing this configuration.")
 
-(defvar user/projects-directory
-  (expand-file-name "~/projects")
+(defvar user/projects-directory nil
   "Directory containing active projects.")
 
-(defvar user/scripts-directory
-  (expand-file-name "~/scripts")
+(defvar user/scripts-directory nil
   "Directory containing custom \='one off' scripts.")
+
+(if (equal system-type 'android)
+    (progn
+      (defvar android-home "/data/data/com.termux/files/home"
+	"Termux home directory on Android.")
+      (setq
+       user/projects-directory (expand-file-name "projects" android-home)
+       user/scripts-directory (expand-file-name "scripts" android-home)))
+  (setq
+   user/projects-directory (expand-file-name "~/projects")
+   user/scripts-directory (expand-file-name "~/scripts")))
 
 (add-to-list 'load-path user/init-directory)
 

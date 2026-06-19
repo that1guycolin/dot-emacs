@@ -37,8 +37,13 @@
     (dolist (dir (list user/projects-directory user/scripts-directory))
       (project-remember-projects-under dir t))
     ;; Scan these directories (but not their subdirectories)
-    (dolist (dir (list user-emacs-directory org-directory "~/dotfiles"))
-      (project-remember-projects-under (expand-file-name dir)))
+    (defvar android-home)
+    (let ((dotfiles-dir
+	   (if (equal system-type 'android)
+	       (expand-file-name "dotfiles" android-home)
+	     "~/dotfiles")))
+      (dolist (dir (list user-emacs-directory org-directory dotfiles-dir))
+	(project-remember-projects-under (expand-file-name dir))))
     (message "Successfully repopulated projects list"))
 
   :functions project-remember-projects-under
