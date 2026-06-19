@@ -2,10 +2,11 @@
 
 ;;; Packages included:
 ;; adaptive-wrap, apheleia, comment-dwim-2, consult-eglot,
-;; consult-eglot-embark, consult-flycheck,  eglot, flycheck,
+;; consult-eglot-embark, consult-flycheck, dumb-jump, eglot, flycheck,
 ;; flycheck-color-mode-line, flycheck-eask, flycheck-eglot, flycheck-package,
-;; flyover, flyspell, flyspell-correct, flyspell-correct-avy-menu, lsp-snippet,
-;; rainbow-delimiters, smartparens, visual-regexp, visual-regexp-steroids
+;; flyover, flyspell, flyspell-correct, flyspell-correct-avy-menu, hideshow,
+;; kirigami, lsp-snippet, outline, outline-indent, rainbow-delimiters, shfmt,
+;; smartparens, treesit-fold, visual-regexp, visual-regexp-steroids
 
 ;;; Commentary:
 ;; Call packages that support efficient & productive coding at a global scope.

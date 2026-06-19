@@ -9,9 +9,9 @@
 
 ;;; Code:
 ;;;; =======  FILE EXPLORER  =======
-;; `dirvish'		 (Dired w `batteries included')
-;; `dwim-shell-command'	 (execute shell commands on marked files)
-;; `ready-player'	 (launch media directly from dirvish)
+;; `dirvish'             (Dired w `batteries included')
+;; `dwim-shell-command'  (execute shell commands on marked files)
+;; `ready-player'        (launch media directly from dirvish)
 ;;   ===============================
 (use-package dirvish
   :defer t

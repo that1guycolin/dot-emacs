@@ -1,8 +1,7 @@
 ;;; 06-terminal-modes.el --- Support for terminal and Emacs' shells -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; eat, eshell, eshell-git-prompt, eshell-syntax-highlighting,
-;; esh-help, ghostel, mistty, native-complete, vterm, with-editor
+;; eat, ghostel, mistty, native-complete, vterm, with-editor
 
 ;;; Commentary:
 ;; Support in Emacs for various shell buffers.  The packages in this file

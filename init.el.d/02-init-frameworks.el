@@ -3,7 +3,7 @@
 ;;; Packages included:
 ;; avy, cape, consult, consult-yasnippet, corfu, embark, embark-consult,
 ;; helpful, marginalia, orderless, savehist, tempel, tempel-collection,
-;; which-key, yasnippet, yasnippet-capf, yasnippet-snippets
+;; vertico, which-key, yasnippet, yasnippet-capf, yasnippet-snippets
 
 ;;; Commentary:
 ;; This file sets up snippets, completions, and other frameworks that need to
