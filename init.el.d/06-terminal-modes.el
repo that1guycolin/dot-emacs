@@ -91,44 +91,6 @@
    ("C-c S V" . vterm-other-window)))
 
 
-;; =======  ESHELL  =======
-;; `eshell-syntax-highlighting' (syntax-hl)
-;; `eshell-git-prompt' (themed prompt)
-;; `esh-help' (display help like in .el buffer)
-;; ========================
-(use-package eshell
-  :ensure nil
-  :defer t
-  :preface (advice-add 'eshell :around #'user/call-in-other-window-advice)
-  :bind ("C-c S E" . eshell))
-
-(use-package eshell-syntax-highlighting
-  :defer t
-  :hook (eshell-mode . eshell-syntax-highlighting-global-mode))
-
-(use-package eshell-git-prompt
-  :after eshell
-  :functions eshell-git-prompt-use-theme
-  :config
-  (eshell-git-prompt-use-theme 'multiline2))
-
-(use-package esh-help
-  :after eshell
-  :preface
-  (declare-function helpful-callable "helpful")
-  (defun user/esh-help-run-help-advice (orig-fn cmd)
-    "Use `helpful-callable' instead of `describe-function' in ORIG-FN."
-    (cl-letf (((symbol-function #'describe-function) #'helpful-callable))
-      (funcall orig-fn cmd)))
-  (advice-add #'esh-help-run-help :around #'user/esh-help-run-help-advice)
-  :bind
-  (:map eshell-mode-map
-	("C-c C-h" . esh-help-run-help))
-  :functions setup-esh-help-eldoc
-  :init
-  (setup-esh-help-eldoc))
-
-
 ;;;; =======  HELPERS  =======
 ;; `with-editor' (set envar EDITOR to current Emacs session)
 ;;   =========================
