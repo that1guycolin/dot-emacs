@@ -197,7 +197,9 @@ If not in a side window, jump to the first found side window."
     (message "All packages rebuilt!")))
 
 (defvar user/init-directory)
+(defvar user/custom-packages)
 (defun user/get-external-packages ()
+  "Return a list of all external packages installed via `elpaca'."
   (interactive)
   (let* ((packages '(elpaca elpaca-use-package))
 	 (init-files
@@ -213,8 +215,9 @@ If not in a side window, jump to the first found side window."
               (when (and (listp form)
 			 (eq (car form) 'use-package))
 		(let ((args (cddr form)))
-		  (unless (and (plist-member args :ensure)
-			       (null (plist-get args :ensure)))
+		  (unless (or (and (plist-member args :ensure)
+				   (null (plist-get args :ensure)))
+			      (member (cadr form) user/custom-packages))
 		    (push (cadr form) packages))))))
 	(end-of-file)))
     (nreverse packages)))
