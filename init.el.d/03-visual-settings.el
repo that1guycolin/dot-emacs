@@ -1,8 +1,6 @@
 ;;; 03-visual-settings.el --- Core UI configuration -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-
-;;; Packages included:
 ;; editorconfig, ef-themes, folding-mode, minions, modus-themes, nerd-icons,
 ;; nerd-icons-corfu, tab-line-nerd-icons, visual-fill-column
 
@@ -14,10 +12,10 @@
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 (setq font-use-system-font t)
 
-;; =======  THEMES  =======
-;; `modus-themes' (Collection of readable Emacs' themes)
-;; `ef-themes' (Additional & enhanced Emacs' themes)
-;; ========================
+;;;; =======  THEMES  =======
+;; `modus-themes'        (Collection of readable Emacs' themes)
+;; `ef-themes'           (Additional & enhanced Emacs' themes)
+;;   ========================
 (use-package modus-themes
   :demand t
   :functions
@@ -41,17 +39,17 @@
     "n" #'modus-themes-rotate))
 
 
-;; =======  ICONS  =======
-;; `nerd-icons' (icons)
-;; `tab-line-nerd-icons' (nerd-icons in tab-line)
-;; `nerd-icons-corfu' (nerd-icons in corfu)
-;; =======================
+;;;; =======  ICONS  =======
+;; `nerd-icons'                  (icons)
+;; `tab-line-nerd-icons'         (nerd-icons in tab-line)
+;; `nerd-icons-corfu'            (nerd-icons in corfu)
+;;   =======================
 (use-package nerd-icons
   :demand t
   :functions nerd-icons-install-fonts
   :config
   (when (and (not (member "Symbols Nerd Font Mono" (font-family-list)))
-	     (window-system))
+             (window-system))
     (nerd-icons-install-fonts t)))
 
 (use-package tab-line-nerd-icons
@@ -67,9 +65,9 @@
   (add-to-list 'corfu-margin-formatters 'nerd-icons-corfu-formatter))
 
 
-;; =======  MODELINE  =======
+;;;; =======  MODELINE  =======
 ;; `minons' (declutter modeline w/ menu for minor-modes)
-;; ==========================
+;;   ==========================
 (use-package minions
   :demand t
   :functions minions-mode
@@ -77,10 +75,10 @@
   (minions-mode 1))
 
 
-;; =======  VISUAL LINE  =======
-;; `editorconfig' (support .editorconfig)
-;; `visual-fill-column' (fill-column for visual-line-mode)
-;; =============================
+;;;; =======  VISUAL LINE  =======
+;; `editorconfig'        (support .editorconfig)
+;; `visual-fill-column'  (fill-column for visual-line-mode)
+;;   =============================
 (use-package editorconfig
   :defer t
   :hook ((prog-mode text-mode conf-mode) . editorconfig-mode))

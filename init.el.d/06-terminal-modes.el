@@ -9,42 +9,41 @@
 ;; support either linux native terminal shells or the Emacs native eshell.
 
 ;;; Code:
-;; =======  HELPFUL FUNCTIONS  =======
+;;;; =======  HELPFUL FUNCTIONS  =======
 (defun user/normal-window-p (win)
   "Return non-nil if WIN is a normal, non-side, non-minibuffer window."
   (and (window-live-p win)
        (not (window-minibuffer-p win))
        (not (window-parameter win 'window-side))))
 
-(defun user/get-normal-window ()
-  "Return a normal, non-side, non-minibuffer window."
-  (get-window-with-predicate #'user/normal-window-p nil t))
-
-(defun user/only-one-non-side-window-p ()
-  "Return non-nil if there is only one non-side, non-minibuffer window."
-  (= 1 (length (seq-filter #'user/normal-window-p
-			   (window-list nil 'no-minibuf)))))
+(defun user/normal-windows ()
+  "Return all normal, non-side, non-minibuffer windows."
+  (seq-filter #'user/normal-window-p
+              (window-list nil 'no-minibuf)))
 
 (defun user/call-in-other-window-advice (orig-fn &rest args)
-  "Call ORIG-FN (with ARGS) in another normal window, splitting if needed."
-  (let ((normal-window (user/get-normal-window)))
-    (unless normal-window
-      (error "No normal window available"))
-    (select-window normal-window)
-    (if (user/only-one-non-side-window-p)
-	(progn
-	  (split-window-right)
-	  (other-window 1))
-      (other-window 1))
+  "Call ORIG-FN with ARGS in another normal window, splitting if needed."
+  (let* ((normal-windows (user/normal-windows))
+         (target-window
+          (cond
+           ((null normal-windows)
+            (error "No normal window available"))
+           ((= 1 (length normal-windows))
+            (split-window (car normal-windows) nil 'right))
+           (t
+            (seq-find (lambda (win)
+                        (not (eq win (selected-window))))
+                      normal-windows)))))
+    (select-window target-window)
     (apply orig-fn args)))
 
 
-;; =======  TERMINAL SHELLS  =======
-;; `eat' (Emulate A Terminal)
-;; `ghostel' (terminal shell based on libghostty)
-;; `mistty' (commit shell layer)
-;; `vterm' (fully functional terminal shell)
-;; =================================
+;;;; =======  TERMINAL SHELLS  =======
+;; `eat'         (Emulate A Terminal)
+;; `ghostel'     (terminal shell based on libghostty)
+;; `mistty'      (commit shell layer)
+;; `vterm'       (fully functional terminal shell)
+;;   =================================
 (use-package eat
   :defer t
   :bind ("C-c S e"   . eat)
@@ -52,12 +51,12 @@
 
 (use-package ghostel
   :ensure (ghostel
-	   :source nil :package "ghostel" :id ghostel :fetcher github
-	   :repo "dakra/ghostel"
-	   :files (:defaults
-		   "README.md" "etc" "src" "vendor" "build.zig" "build.zig.zon"
-		   "symbols.map" ("build" "Makefile"))
-	   :type git :protocol https :inherit t :depth treeless)
+           :source nil :package "ghostel" :id ghostel :fetcher github
+           :repo "dakra/ghostel"
+           :files (:defaults
+                   "README.md" "etc" "src" "vendor" "build.zig" "build.zig.zon"
+                   "symbols.map" ("build" "Makefile"))
+           :type git :protocol https :inherit t :depth treeless)
   :defer t
   :preface (advice-add 'ghostty :around #'user/call-in-other-window-advice)
   :bind ("C-c S g" . ghostel)
@@ -130,9 +129,9 @@
   (setup-esh-help-eldoc))
 
 
-;; =======  HELPER  =======
+;;;; =======  HELPERS  =======
 ;; `with-editor' (set envar EDITOR to current Emacs session)
-;; ========================
+;;   =========================
 (use-package with-editor
   :defer t
   :hook ((eshell-mode shell-mode vterm-mode) . with-editor-export-editor))

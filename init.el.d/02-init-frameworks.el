@@ -14,20 +14,20 @@
 ;; completion framework.
 
 ;;; Code:
-;; =======  SNIPPETS  =======
-;; 'yasnippet' (functions)
-;; 'yasnippet-snippets' (library)
-;; 'yasnippet-capf' (completions)
-;; `tempel' (modern snippet framework w ancient roots)
-;; `tempel-collection' (library)
-;; ==========================
+;;;; =======  SNIPPETS  =======
+;; 'yasnippet'           (functions)
+;; 'yasnippet-snippets'  (library)
+;; 'yasnippet-capf'      (completions)
+;; `tempel'              (modern snippet framework w ancient roots)
+;; `tempel-collection'   (library)
+;;   ==========================
 (use-package yasnippet
   :demand t
   :hook ((prog-mode text-mode) . yas-minor-mode)
   :functions yas-reload-all
   :config
   (add-to-list 'yas-snippet-dirs
-	       (expand-file-name "snippets" user-emacs-directory))
+               (expand-file-name "snippets" user-emacs-directory))
   (yas-reload-all))
 
 (use-package yasnippet-snippets
@@ -49,14 +49,14 @@
   (defun user/tempel-setup-capf ()
     "Locally add relevant tempel items to `completion-at-point-functions'."
     (setq-local completion-at-point-functions
-		(cons #'tempel-complete completion-at-point-functions)))
+                (cons #'tempel-complete completion-at-point-functions)))
 
   (defun user/tempel-edit-custom-templates ()
     "Open tempel template file(s) in another window."
     (interactive)
     (if (listp tempel-path)
-	(dolist (file tempel-path)
-	  (find-file-other-window file))
+        (dolist (file tempel-path)
+          (find-file-other-window file))
       (find-file-other-window tempel-path)))
   
   :bind
@@ -75,14 +75,14 @@
   :after tempel)
 
 
-;; =======  COMPLETIONS  =======
-;; `savehist' (history across sessions)
-;; `orderless' (fuzzy matching)
-;; `vertigo' (minibuffer completions)
-;; `marginalia' (rich annotations)
-;; `corfu' (inline completion)
-;; `cape' (completion extensions)
-;; =============================
+;;;; =======  COMPLETIONS  =======
+;; `savehist'    (history across sessions)
+;; `orderless'   (fuzzy matching)
+;; `vertigo'     (minibuffer completions)
+;; `marginalia'  (rich annotations)
+;; `corfu'       (inline completion)
+;; `cape'        (completion extensions)
+;;   =============================
 (use-package savehist
   :ensure nil
   :demand t
@@ -109,9 +109,9 @@
 (use-package marginalia
   :demand t
   :bind (:map minibuffer-local-map
-	      ("M-A" . marginalia-cycle)
-	      :map completion-list-mode-map
-	      ("M-A" . marginalia-cycle))
+              ("M-A" . marginalia-cycle)
+              :map completion-list-mode-map
+              ("M-A" . marginalia-cycle))
   :functions marginalia-mode
   :config
   (marginalia-mode 1))
@@ -119,14 +119,14 @@
 (use-package corfu
   :demand t
   :bind (:map corfu-map
-	      ("C-n"   . corfu-next)
-	      ("C-p"   . corfu-previous)
-	      ("TAB"   . corfu-complete)
-	      ("RET"   . corfu-complete)
-	      ("C-RET" . corfu-reset)
-	      ("M-d"   . corfu-popupinfo-toggle)
-	      ("M-n"   . corfu-popupinfo-scroll-down)
-	      ("M-p"   . corfu-popupinfo-scroll-up))
+              ("C-n"   . corfu-next)
+              ("C-p"   . corfu-previous)
+              ("TAB"   . corfu-complete)
+              ("RET"   . corfu-complete)
+              ("C-RET" . corfu-reset)
+              ("M-d"   . corfu-popupinfo-toggle)
+              ("M-n"   . corfu-popupinfo-scroll-down)
+              ("M-p"   . corfu-popupinfo-scroll-up))
   :functions
   global-corfu-mode corfu-history-mode corfu-popupinfo-mode
   
@@ -158,15 +158,15 @@
   (add-to-list 'completion-at-point-functions #'cape-history))
 
 
-;; =======  ADDITIONAL FRAMEWORKS  =======
-;; `which-key' (display keymap in minibuffer)
-;; `avy' (jump to...)
-;; `consult' (gather data)
-;; `consult-yasnippet' (integration)
-;; `embark' (mouse events on keyboard)
-;; `embark-consult' (integration)
-;; `helpful' (better help)
-;; =======================================
+;;;; =======  ADDITIONAL FRAMEWORKS  =======
+;; `which-key'           (display keymap in minibuffer)
+;; `avy'                 (jump to...)
+;; `consult'             (gather data)
+;; `consult-yasnippet'   (integration)
+;; `embark'              (mouse events on keyboard)
+;; `embark-consult'      (integration)
+;; `helpful'             (better help)
+;;   =======================================
 (use-package which-key
   :demand t
   :config
@@ -184,37 +184,37 @@
   (defvar xref-show-definitions-function)
 
   :bind
-  (("C-c M-x"		 . consult-mode-command)
-   ("C-c h"		 . consult-history)
-   ("C-c k"		 . consult-kmacro)
-   ("C-c M-m"		 . consult-man)
-   ("C-c i"		 . consult-info)
-   ([remap Info-search]	 . consult-info)
+  (("C-c M-x"            . consult-mode-command)
+   ("C-c h"              . consult-history)
+   ("C-c k"              . consult-kmacro)
+   ("C-c M-m"            . consult-man)
+   ("C-c i"              . consult-info)
+   ([remap Info-search]  . consult-info)
 
-   ("C-x M-:"		 . consult-complex-command)
-   ("C-x b"		 . consult-buffer)
-   ("C-x 4 b"		 . consult-buffer-other-window)
-   ("C-x 5 b"		 . consult-buffer-other-frame)
-   ("C-x t b"		 . consult-buffer-other-tab)
-   ("C-x r b"		 . consult-bookmark)
+   ("C-x M-:"            . consult-complex-command)
+   ("C-x b"              . consult-buffer)
+   ("C-x 4 b"            . consult-buffer-other-window)
+   ("C-x 5 b"            . consult-buffer-other-frame)
+   ("C-x t b"            . consult-buffer-other-tab)
+   ("C-x r b"            . consult-bookmark)
 
-   ("C-x r j"		 . consult-register-load)
-   ("C-x r s"		 . consult-register-store)
-   ("C-x r M-r"		 . consult-register)
+   ("C-x r j"            . consult-register-load)
+   ("C-x r s"            . consult-register-store)
+   ("C-x r M-r"          . consult-register)
 
-   ("M-y"		 . consult-yank-pop)
+   ("M-y"                . consult-yank-pop)
 
-   ("M-s d"		 . consult-find)
-   ("M-s g"		 . consult-grep)
-   ("M-s G"		 . consult-git-grep)
-   ("M-s r"		 . consult-ripgrep)
-   ("M-s l"		 . consult-line)
-   ("M-s L"		 . consult-line-multi)
-   ("M-s k"		 . consult-keep-lines)
-   ("M-s u"		 . consult-focus-lines)
+   ("M-s d"              . consult-find)
+   ("M-s g"              . consult-grep)
+   ("M-s G"              . consult-git-grep)
+   ("M-s r"              . consult-ripgrep)
+   ("M-s l"              . consult-line)
+   ("M-s L"              . consult-line-multi)
+   ("M-s k"              . consult-keep-lines)
+   ("M-s u"              . consult-focus-lines)
 
-   ([remap goto-line]	 . consult-goto-line)
-   ([remap imenu]	 . consult-imenu))
+   ([remap goto-line]    . consult-goto-line)
+   ([remap imenu]        . consult-imenu))
   :functions
   consult--customize-put consult-xref
 
@@ -236,7 +236,7 @@
    :preview-key '(:debounce 0.4 any))
 
   (setq xref-show-xrefs-function #'consult-xref
-	xref-show-definitions-function #'consult-xref))
+        xref-show-definitions-function #'consult-xref))
 
 (use-package consult-yasnippet
   :after (consult yasnippet))

@@ -12,11 +12,11 @@
 ;; only because org-mode loads with a `wait' directive in the first init file.
 
 ;;; Code:
-;; =======  TASKS  =======
-;; `org-edna' (cond. task completion)
-;; `org-project-capture' (integrate org-mode & projectile)
-;; `magit-org-todos' (display TODO items in magit buffer)
-;; =======================
+;;;; =======  TASKS  =======
+;; `org-edna'                    (cond. task completion)
+;; `org-project-capture'         (integrate org-mode & projectile)
+;; `magit-org-todos'             (display TODO items in magit buffer)
+;;   =======================
 (use-package org-edna
   :defer t
   :hook (org-mode . org-edna-mode))
@@ -35,11 +35,11 @@ folder."
     (interactive)
     (let ((org-dir-todo (expand-file-name "TODO.org" org-directory)))
       (if (file-exists-p org-dir-todo)
-	  (progn
-	    (delete-file org-dir-todo)
-	    (message "Removed org-directory TODO file."))
-	(when (called-interactively-p 'any)
-	  (message "There is no TODO file in the org directory.")))))
+          (progn
+            (delete-file org-dir-todo)
+            (message "Removed org-directory TODO file."))
+        (when (called-interactively-p 'any)
+          (message "There is no TODO file in the org directory.")))))
 
   (defun user/open-project-todo ()
     "Open the \"TODO.org\" file for the current project.
@@ -48,7 +48,7 @@ The file is created if it doesn't exist."
     (unless (project-current)
       (error "No current project"))
     (let* ((pr (project-root (project-current)))
-	   (todo (expand-file-name "TODO.org" pr)))
+           (todo (expand-file-name "TODO.org" pr)))
       (find-file todo)))
 
   :functions
@@ -58,9 +58,9 @@ The file is created if it doesn't exist."
 
   :custom
   (org-project-capture-default-backend (make-instance
-					'org-project-capture-project-backend))
+                                        'org-project-capture-project-backend))
   (org-project-capture-strategy (make-instance
-				 'org-project-capture-per-project-strategy))
+                                 'org-project-capture-per-project-strategy))
   (org-project-capture-per-project-filepath "TODO.org")
   :config
   (defvar-keymap user/org-capture-options
@@ -91,7 +91,7 @@ The file is created if it doesn't exist."
   (dolist (project (project-known-project-roots))
     (let ((project-todo (expand-file-name "TODO.org" project)))
       (when (file-exists-p project-todo)
-	(add-to-list 'org-agenda-files project-todo))))
+        (add-to-list 'org-agenda-files project-todo))))
   
   (unless org-refile-targets
     (setq org-refile-targets '((nil :maxlevel . 9)
@@ -110,14 +110,14 @@ The file is created if it doesn't exist."
   (magit-org-todos-filename "TODO.org"))
 
 
-;; =======  KNOWLEDGE  =======
-;; `org-mem' (org metadata index)
-;; `org-node' (fast & simple note management)
-;; `pdf-tools' (view pdf in Emacs)
-;; `org-noter' (annotate documents)
-;; `org-pdftools' (integrate org & `pdf-tools')
-;; `org-noter-pdftools' (annotate pdf files)
-;; ===========================
+;;;; =======  KNOWLEDGE  =======
+;; `org-mem'             (org metadata index)
+;; `org-node'            (fast & simple note management)
+;; `pdf-tools'           (view pdf in Emacs)
+;; `org-noter'           (annotate documents)
+;; `org-pdftools'        (integrate org & `pdf-tools')
+;; `org-noter-pdftools'  (annotate pdf files)
+;;   ===========================
 (use-package org-mem
   :after org
   :preface
@@ -163,26 +163,26 @@ original `org-node-new-fn' with a custom \=':PROPERTIES:' block.  Set
 this function as `org-node-creation-fn'."
 
     (let ((title (or title (or org-node-proposed-title
-			       (error "Proposed title was nil")))))
+                               (error "Proposed title was nil")))))
       (org-node-pop-to-fresh-file-buffer title)
       (goto-char (point-min))
       (if cust-id
-	  (insert
-	   ":PROPERTIES:"
-	   "\n:ID:       " cust-id
-	   "\n:END:"
-	   "\n#+TITLE: " title
-	   "\n#+AUTHOR: "
-	   "\n#+CREATED_DATE: "
-	   (format-time-string "[%Y-%m-%d %a %H:%M:%S]")
-	   "\n#+LAST_EDIT: "
-	   "\n#+ID:      " cust-id
-  	   "\n#+FILETAGS:"
-	   "\n")
-	(progn
-	  (org-id-get-create)
-	  (user/org-insert-header-block
-	   title "Colin Loeffler (that1guycolin)"))))
+          (insert
+           ":PROPERTIES:"
+           "\n:ID:       " cust-id
+           "\n:END:"
+           "\n#+TITLE: " title
+           "\n#+AUTHOR: "
+           "\n#+CREATED_DATE: "
+           (format-time-string "[%Y-%m-%d %a %H:%M:%S]")
+           "\n#+LAST_EDIT: "
+           "\n#+ID:      " cust-id
+           "\n#+FILETAGS:"
+           "\n")
+        (progn
+          (org-id-get-create)
+          (user/org-insert-header-block
+           title "Colin Loeffler (that1guycolin)"))))
 
     (push (current-buffer) org-node--new-unsaved-buffers)
     (run-hooks 'org-node-creation-hook))
@@ -215,10 +215,10 @@ this function as `org-node-creation-fn'."
 
 (use-package pdf-tools
   :ensure (pdf-tools
-	   :source nil :package "pdf-tools" :id pdf-tools :fetcher github
-	   :repo "that1guycolin/pdf-tools"
-	   :files (:defaults "README" ("build" "Makefile") ("build" "server"))
-	   :type git :protocol https :inherit t :depth treeless)
+           :source nil :package "pdf-tools" :id pdf-tools :fetcher github
+           :repo "that1guycolin/pdf-tools"
+           :files (:defaults "README" ("build" "Makefile") ("build" "server"))
+           :type git :protocol https :inherit t :depth treeless)
   
   :defer t
   :preface
@@ -258,10 +258,10 @@ this function as `org-node-creation-fn'."
 
 (use-package org-pdftools
   :ensure (org-pdftools
-	   :source nil :package "org-pdftools" :id org-pdftools
-	   :fetcher github :repo "that1guycolin/org-pdftools"
-	   :files ("org-pdftools.el") :old-names (org-pdfview)
-	   :type git :protocol https :inherit t :depth treeless)
+           :source nil :package "org-pdftools" :id org-pdftools
+           :fetcher github :repo "that1guycolin/org-pdftools"
+           :files ("org-pdftools.el") :old-names (org-pdfview)
+           :type git :protocol https :inherit t :depth treeless)
   :defer t
   :preface
   (add-to-list 'user/custom-packages 'org-pdftools)
@@ -269,10 +269,10 @@ this function as `org-node-creation-fn'."
 
 (use-package org-noter-pdftools
   :ensure (org-noter-pdftools
-	   :source nil :package "org-noter-pdftools" :id org-noter-pdftools
-	   :repo "that1guycolin/org-pdftools" :fetcher github
-	   :files ("org-noter-pdftools.el")
-	   :type git :protocol https :inherit t :depth treeless)
+           :source nil :package "org-noter-pdftools" :id org-noter-pdftools
+           :repo "that1guycolin/org-pdftools" :fetcher github
+           :files ("org-noter-pdftools.el")
+           :type git :protocol https :inherit t :depth treeless)
   :after (org-noter org-pdftools)
   :preface
   (add-to-list 'user/custom-packages 'org-noter-pdftools)
@@ -280,9 +280,9 @@ this function as `org-node-creation-fn'."
     (interactive "P")
     (org-noter--with-valid-session
      (let ((org-noter-insert-note-no-questions
-	    (if toggle-no-questions
+            (if toggle-no-questions
                 (not org-noter-insert-note-no-questions)
-	      org-noter-insert-note-no-questions))
+              org-noter-insert-note-no-questions))
            (org-pdftools-use-isearch-link t)
            (org-pdftools-use-freepointer-annot t))
        (org-noter-insert-note (org-noter--get-precise-info)))))
@@ -295,12 +295,12 @@ With a prefix ARG, remove start location."
      (let ((inhibit-read-only t)
            (ast (org-noter--parse-root))
            (location (org-noter--doc-approx-location
-		      (when (called-interactively-p 'any) 'interactive))))
+                      (when (called-interactively-p 'any) 'interactive))))
        (with-current-buffer (org-noter--session-notes-buffer session)
          (org-with-wide-buffer
           (goto-char (org-element-property :begin ast))
           (if arg
-	      (org-entry-delete nil org-noter-property-note-location)
+              (org-entry-delete nil org-noter-property-note-location)
             (org-entry-put nil org-noter-property-note-location
                            (org-noter--pretty-print-location location))))))))
   
@@ -312,11 +312,11 @@ With a prefix ARG, remove start location."
   :config
   (with-eval-after-load 'pdf-annot
     (add-hook 'pdf-annot-activate-handler-functions
-	      #'org-noter-pdftools-jump-to-note)))
+              #'org-noter-pdftools-jump-to-note)))
 
-;; =======  BABEL  =======
+;;;; =======  BABEL  =======
 ;; `ob-rust'
-;; =======================
+;;   =======================
 (use-package ob-rust
   :after org
   :custom
@@ -325,13 +325,13 @@ With a prefix ARG, remove start location."
   (add-to-list 'org-babel-load-languages '(rust . t)))
 
 
-;; =======  MISC  =======
-;; `el2org' (make .org from .el)
-;; `org-make-toc' (table-of-contents)
-;; `org-modern' `org-modern-indent' (improve org l&f)
-;; `org-pomodoro' (manage time)
-;; `org-tidy' (invisible drawers)
-;; ======================
+;;;; =======  MISC  =======
+;; `el2org'                              (make .org from .el)
+;; `org-make-toc'                        (table-of-contents)
+;; `org-modern' `org-modern-indent'      (improve org l&f)
+;; `org-pomodoro'                        (manage time)
+;; `org-tidy'                            (invisible drawers)
+;;   ======================
 (use-package el2org
   :defer t
   :bind
@@ -343,8 +343,8 @@ With a prefix ARG, remove start location."
 (use-package org-make-toc
   :defer t
   :bind (:map org-mode-map
-	      ("C-^" . org-make-toc-insert)
-	      ("C-&" . org-make-toc-set))
+              ("C-^" . org-make-toc-insert)
+              ("C-&" . org-make-toc-set))
   :hook (org-mode . org-make-toc-mode)
   :custom
   (org-make-toc-insert-custom-ids t))
@@ -365,15 +365,15 @@ With a prefix ARG, remove start location."
 
 (use-package org-modern-indent
   :ensure (org-modern-indent
-	   :host github :repo "jdtsmith/org-modern-indent" :files (:defaults)
-	   :method https)
+           :host github :repo "jdtsmith/org-modern-indent" :files (:defaults)
+           :method https)
   :defer t
   :hook (org-modern-mode . org-modern-indent-mode))
 
 (use-package org-pomodoro
   :defer t
   :bind (:map org-mode-map
-	      ("M-P" . org-pomodoro))
+              ("M-P" . org-pomodoro))
   :custom
   (org-pomodoro-manual-break t))
 
@@ -388,25 +388,26 @@ Values are mapped to informative strings."
     (cond
      ((eq 'invisible org-tidy-properties-style)
       '(("Invisible (current)" . invisible)
-	("Fringe" . fringe) ("Inline" . inline)))
+        ("Fringe" . fringe) ("Inline" . inline)))
      ((eq 'fringe org-tidy-properties-style)
       '(("Fringe (current)" . fringe)
-	("Inline" . inline) ("Invisible" . invisible)))
+        ("Inline" . inline) ("Invisible" . invisible)))
      ((eq 'inline org-tidy-properties-style)
       '(("Inline (current)" . inline)
-	("Invisible" . invisible) ("Fringe" . fringe)))))
+        ("Invisible" . invisible) ("Fringe" . fringe)))))
   
   (defun user/org-tidy-switch-style ()
     "Interactively change the value of `org-tidy-properties-style'."
     (interactive)
     (user/org-check)
     (let* ((cons-list (user/org-tidy-get-styles-cons))
-	   (new-style-cons-string
-	    (completing-read "Select new `org-tidy-properties-style': "
-			     (mapcar #'car cons-list) nil t))
-	   (new-style (cdr (assoc new-style-cons-string cons-list))))
+           (new-style-cons-string
+            (completing-read "Select new `org-tidy-properties-style': "
+                             (mapcar #'car cons-list) nil t))
+           (new-style (cdr (assoc new-style-cons-string cons-list))))
       (unless (eq org-tidy-properties-style new-style)
-	(setq org-tidy-properties-style new-style))))
+        (setq org-tidy-properties-style new-style))))
+  
   :bind ("C-:" . org-tidy-toggle)
   :hook (org-mode . org-tidy-mode)
   :custom

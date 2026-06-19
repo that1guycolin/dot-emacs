@@ -8,11 +8,11 @@
 ;; functional file explorer inside Emacs.
 
 ;;; Code:
-;; =======  FILE EXPLORER  =======
-;; `dirvish' (Dired w `batteries included')
-;; `dwim-shell-command' (execute shell commands on marked files)
-;; `ready-player' (launch media directly from dirvish)
-;; ===============================
+;;;; =======  FILE EXPLORER  =======
+;; `dirvish'		 (Dired w `batteries included')
+;; `dwim-shell-command'	 (execute shell commands on marked files)
+;; `ready-player'	 (launch media directly from dirvish)
+;;   ===============================
 (use-package dirvish
   :defer t
   :preface
@@ -235,26 +235,26 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
   
   (let ((map dirvish-mode-map)
         (create-map (make-sparse-keymap)))
-    (keymap-set map "C-p"	 #'dired-previous-line)
-    (keymap-set map "C-n"	 #'dired-next-line)
-    (keymap-set map "R"		 #'user/dirvish-rename-file)
-    (keymap-set map "m"		 #'dired-do-rename)
+    (keymap-set map "C-p"        #'dired-previous-line)
+    (keymap-set map "C-n"        #'dired-next-line)
+    (keymap-set map "R"          #'user/dirvish-rename-file)
+    (keymap-set map "m"          #'dired-do-rename)
     (keymap-set map "c"            create-map)
-    (keymap-set map "C-w"	 #'user/dirvish-cut)
-    (keymap-set map "M-w"	 #'user/dirvish-copy)
-    (keymap-set map "C-y"	 #'user/dirvish-paste)
-    (keymap-set map "^"		 #'dired-up-directory)
-    (keymap-set map "C-M-p"	 #'dired-up-directory)
-    (keymap-set map "C-M-n"	 #'user/dirvish-down-directory)
-    (keymap-set map "TAB"	 #'user/dirvish-tab-dwim)
-    (keymap-set map "RET"	 #'user/dirvish-return-dwim)
-    (keymap-set map "?"		 #'user/dirvish-dispatch)
-    (keymap-set create-map "f"	 #'dired-create-empty-file)
-    (keymap-set create-map "d"	 #'dired-create-directory))
+    (keymap-set map "C-w"        #'user/dirvish-cut)
+    (keymap-set map "M-w"        #'user/dirvish-copy)
+    (keymap-set map "C-y"        #'user/dirvish-paste)
+    (keymap-set map "^"          #'dired-up-directory)
+    (keymap-set map "C-M-p"      #'dired-up-directory)
+    (keymap-set map "C-M-n"      #'user/dirvish-down-directory)
+    (keymap-set map "TAB"        #'user/dirvish-tab-dwim)
+    (keymap-set map "RET"        #'user/dirvish-return-dwim)
+    (keymap-set map "?"          #'user/dirvish-dispatch)
+    (keymap-set create-map "f"   #'dired-create-empty-file)
+    (keymap-set create-map "d"   #'dired-create-directory))
 
   (transient-append-suffix 'user/project-treemacs-anywhere-dispatch "r"
     '("c" "Dirvish" (lambda () (interactive)
-		      (call-interactively #'dirvish)))))
+                      (call-interactively #'dirvish)))))
 
 (use-package dwim-shell-command
   :defer t
@@ -299,7 +299,7 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
     :doc "Keymap with FFmpeg actions to run on marked files in dired/dirvish."
     "4" #'user/convert-ts-to-mp4
     "v" #'user/extract-video-only
-        "a" #'user/extract-audio-only)
+    "a" #'user/extract-audio-only)
   (transient-append-suffix 'user/dirvish-dispatch "c d"
     '("F" "FFmpeg Actions" user/ffmpeg-actions-map)))
 

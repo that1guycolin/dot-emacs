@@ -9,15 +9,15 @@
 ;; occurs in "09-git-tools.el".
 
 ;;; Code:
-;; =======  PROJECTS  =======
-;; `project.el' (management)
-;; `disproject' (transient dispatch for project.el)
-;; `consult-project-extra' (integration)
-;; `deadgrep' (global ripgrep search)
-;; `rg' (project ripgrep search & more)
-;; `activities' (save frame-state)
-;; `docker' (Docker support)
-;; ==========================
+;;;; =======  PROJECTS  =======
+;; `project.el'                  (management)
+;; `disproject'                  (transient dispatch for project.el)
+;; `consult-project-extra'       (integration)
+;; `deadgrep'                    (global ripgrep search)
+;; `rg'                          (project ripgrep search & more)
+;; `activities'                  (save frame-state)
+;; `docker'                      (Docker support)
+;;   ==========================
 (use-package project
   :ensure nil
   :demand t
@@ -39,18 +39,18 @@
     ;; Scan these directories (but not their subdirectories)
     (defvar android-home)
     (let ((dotfiles-dir
-	   (if (equal system-type 'android)
-	       (expand-file-name "dotfiles" android-home)
-	     "~/dotfiles")))
+           (if (equal system-type 'android)
+               (expand-file-name "dotfiles" android-home)
+             "~/dotfiles")))
       (dolist (dir (list user-emacs-directory org-directory dotfiles-dir))
-	(project-remember-projects-under (expand-file-name dir))))
+        (project-remember-projects-under (expand-file-name dir))))
     (message "Successfully repopulated projects list"))
 
   :functions project-remember-projects-under
   :custom
   (project-list-exclude
    (list (regexp-quote (expand-file-name elpaca-directory))
-	 (regexp-quote (expand-file-name "~/dotfiles/terminals/alacritty"))))
+         (regexp-quote (expand-file-name "~/dotfiles/terminals/alacritty"))))
   (project-vc-ignores '("^node_modules$" "^\\.venv$" "^\\.uv$")))
 
 (use-package disproject
@@ -58,7 +58,7 @@
   :preface
   (keymap-global-unset "C-x p")
   :bind (:map ctl-x-map
-	      ("p" . disproject-dispatch)))
+              ("p" . disproject-dispatch)))
 
 (use-package consult-project-extra
   :demand t
@@ -116,17 +116,17 @@
 (use-package rg
   :defer t
   :bind (("C-c g" . rg-menu)
-	 :map isearch-mode-map
-	 ("M-s r" . rg-isearch-menu))
+         :map isearch-mode-map
+         ("M-s r" . rg-isearch-menu))
   :config
   (require 'rg-isearch))
 
 
-;; =======  TREEMACS  =======
-;; `treemacs' (functional side panel)
-;; `project-treemacs' (project.el + treemacs integration)
-;; `treemacs-nerd-icons' (nerd-icons + treemacs integration)
-;; ==========================
+;;;; =======  TREEMACS  =======
+;; `treemacs'                    (functional side panel)
+;; `project-treemacs'            (project.el + treemacs integration)
+;; `treemacs-nerd-icons'         (nerd-icons + treemacs integration)
+;;   ==========================
 (use-package treemacs
   :defer t
   :preface
@@ -138,10 +138,10 @@ selected again,"
     (call-interactively #'treemacs-switch-workspace)
     (let ((treemacs-win (treemacs-get-local-window)))
       (when (and treemacs-win (not (eq treemacs-win (selected-window))))
-	(select-window treemacs-win)
-	(when (fboundp 'treemacs-project-follow-mode)
-	  (other-window 1))
-	(select-window treemacs-win))))
+        (select-window treemacs-win)
+        (when (fboundp 'treemacs-project-follow-mode)
+          (other-window 1))
+        (select-window treemacs-win))))
 
   (defun user/toggle-gitignored-wait-2 (&rest _args)
     "Toggle `treemacs-hide-gitignored-files-mode' if treemacs window.
@@ -149,12 +149,12 @@ Wait two seconds before activating the mode."
     (pcase (treemacs-current-visibility)
       ('visible
        (run-at-time 2 nil
-		    #'(lambda ()
-			(treemacs-hide-gitignored-files-mode 1))))
+                    #'(lambda ()
+                        (treemacs-hide-gitignored-files-mode 1))))
       ('exists
        (run-at-time 2 nil
-		    #'(lambda ()
-			(treemacs-hide-gitignored-files-mode 1))))
+                    #'(lambda ()
+                        (treemacs-hide-gitignored-files-mode 1))))
       ('none (ignore))))
   (advice-add 'treemacs :after #'user/toggle-gitignored-wait-2)
 
@@ -195,8 +195,8 @@ Wait two seconds before activating the mode."
       ("f" "Project Find File"         project-find-file)
       ("s" "Project Search"            project-search)
       ("a" "Add Project"               (lambda () (interactive)
-				         (call-interactively
-				          #'project-remember-project)))]
+                                         (call-interactively
+                                          #'project-remember-project)))]
      
      ["Shell"
       ("S" "Project Shell"             project-shell)

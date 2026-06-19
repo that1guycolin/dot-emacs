@@ -9,7 +9,7 @@
 ;; Activates and configures Emacs' built-in tree-sitter supported languages.
 
 ;;; Code:
-;; =======  GLOBAL TREESIT PACKAGES  =======
+;;;; =======  GLOBAL TREESIT PACKAGES  =======
 (use-package treesit
   :ensure nil
   :demand t
@@ -29,23 +29,23 @@
      (go . ("https://github.com/tree-sitter/tree-sitter-go"))
      (html . ("https://github.com/tree-sitter/tree-sitter-html"))
      (javascript . ("https://github.com/tree-sitter/tree-sitter-javascript"
-		    "master" "src"))
+                    "master" "src"))
      (json . ("https://github.com/tree-sitter/tree-sitter-json"))
      (kdl . ("https://github.com/tree-sitter-grammars/tree-sitter-kdl"))
      (lua . ("https://github.com/MunifTanjim/tree-sitter-lua"))
      (make . ("https://github.com/alemuller/tree-sitter-make"))
      (markdown . ("https://github.com/tree-sitter-grammars/tree-sitter-markdown"
-		  "split_parser" "tree-sitter-markdown/src"))
+                  "split_parser" "tree-sitter-markdown/src"))
      (markdown-inline . ("https://github.com/tree-sitter-grammars/tree-sitter-markdown"
-			 "split_parser" "tree-sitter-markdown-inline/src"))
+                         "split_parser" "tree-sitter-markdown-inline/src"))
      (powershell . ("https://github.com/airbus-cert/tree-sitter-powershell"))
      (python . ("https://github.com/tree-sitter/tree-sitter-python"))
      (rust . ("https://github.com/tree-sitter/tree-sitter-rust"))
      (toml . ("https://github.com/ikatyang/tree-sitter-toml"))
      (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript"
-	     "master" "tsx/src"))
+             "master" "tsx/src"))
      (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript"
-		    "master" "typescript/src"))
+                    "master" "typescript/src"))
      (xml . ("https://github.com/tree-sitter-grammars/tree-sitter-xml"))
      (yaml . ("https://github.com/ikatyang/tree-sitter-yaml"))
      (zsh . ("https://github.com/georgeharker/tree-sitter-zsh"))))
@@ -53,22 +53,22 @@
   (dolist
       (remaped
        '((bash-mode              . bash-ts-mode)
-	 (cmake-mode		 . cmake-ts-mode)
-	 (css-mode		 . css-ts-mode)
-	 (go-mode		 . go-ts-mode)
-	 (json-mode		 . json-ts-mode)
-	 (js-json-mode		 . json-ts-mode)
-	 (js2-mode		 . json-ts-mode)
-	 (lua-mode		 . lua-ts-mode)
-	 (rust-mode		 . rust-ts-mode)
-	 (typescript-mode	 . typescript-ts-mode)
-	 (conf-toml-mode	 . toml-ts-mode)
-	 (xml-mode               . xml-ts-mode)
-	 (yaml-mode		 . yaml-ts-mode)))
+         (cmake-mode             . cmake-ts-mode)
+         (css-mode               . css-ts-mode)
+         (go-mode                . go-ts-mode)
+         (json-mode              . json-ts-mode)
+         (js-json-mode           . json-ts-mode)
+         (js2-mode               . json-ts-mode)
+         (lua-mode               . lua-ts-mode)
+         (rust-mode              . rust-ts-mode)
+         (typescript-mode        . typescript-ts-mode)
+         (conf-toml-mode         . toml-ts-mode)
+         (xml-mode               . xml-ts-mode)
+         (yaml-mode              . yaml-ts-mode)))
     (add-to-list 'major-mode-remap-alist remaped)))
 
 
-;; =======  MODE CONFIGURATIONS  =======
+;;;; =======  MODE CONFIGURATIONS  =======
 (use-package bash-ts-mode
   :ensure nil
   :defer t
@@ -121,13 +121,13 @@
   
   :bind
   (:map python-base-mode-map
-	("C-c C-k c" . python-skeleton-class)
-	("C-c C-k d" . python-skeleton-def)
-	("C-c C-k f" . python-skeleton-for)
-	("C-c C-k i" . python-skeleton-if)
-	("C-c C-k m" . python-skeleton-import)
-	("C-c C-k t" . python-skeleton-try)
-	("C-c C-k w" . python-skeleton-while))
+        ("C-c C-k c" . python-skeleton-class)
+        ("C-c C-k d" . python-skeleton-def)
+        ("C-c C-k f" . python-skeleton-for)
+        ("C-c C-k i" . python-skeleton-if)
+        ("C-c C-k m" . python-skeleton-import)
+        ("C-c C-k t" . python-skeleton-try)
+        ("C-c C-k w" . python-skeleton-while))
   :interpreter ("python3" "uv")
   :mode "\\.py\\'"
   
@@ -149,8 +149,8 @@
     "Redirect ERROR echo calls to stderr in zsh buffers."
     (when (derived-mode-p 'sh-mode)
       (save-excursion
-	(goto-char (point-min))
-	(while (search-forward "echo \"ERROR:" nil t)
+        (goto-char (point-min))
+        (while (search-forward "echo \"ERROR:" nil t)
           (replace-match "echo >&2 \"ERROR:" t t)))))
 
   (defun user/enable-zsh-error-echo-fix ()
@@ -165,9 +165,9 @@
     (interactive "DDirectory: ")
     (dolist (file (directory-files-recursively dir "\\.zsh\\'"))
       (with-temp-buffer
-	(insert-file-contents file)
-	(goto-char (point-min))
-	(let ((modified nil))
+        (insert-file-contents file)
+        (goto-char (point-min))
+        (let ((modified nil))
           (while (search-forward "echo \"ERROR:" nil t)
             (replace-match "echo >&2 \"ERROR:" t t)
             (setq modified t))
@@ -188,7 +188,7 @@
   :ensure nil
   :defer t
   :mode ("\\.xml\\'" "\\.xsd\\'" "\\.xslt\\'" "\\.svg\\'" "\\.rss\\'"
-	 "\\.pom\\'")
+         "\\.pom\\'")
   :custom
   (nxml-child-indent 2)
   (nxml-attribute-indent 2)

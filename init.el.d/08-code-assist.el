@@ -13,13 +13,13 @@
 
 ;;; Code:
 ;;;; =======  TEXT MANIPULATION  =======
-;; `adaptive-wrap' (smart text wrapping)
-;; `comment-dwim-2' (easily switch between no-comment, comment, EOL comment)
-;; `dumb-jump' (jump-to-def/find-refs)
-;; `rainbow-delimiters' (colorize "", {}, [], ())
-;; `smartparens' (auto-close "", {}, [], ())
-;; `visual-regexp' (hl regexp as you type)
-;; `visual-regexp-steroids' (use python-style regexp instead of Emacs)
+;; `adaptive-wrap'               (smart text wrapping)
+;; `comment-dwim-2'              (easily switch between comment-types)
+;; `dumb-jump'                   (jump-to-def/find-refs)
+;; `rainbow-delimiters'          (colorize "", {}, [], ())
+;; `smartparens'                 (auto-close "", {}, [], ())
+;; `visual-regexp'               (hl regexp as you type)
+;; `visual-regexp-steroids'      (use python-style regexp instead of Emacs)
 ;;   ===================================
 (use-package adaptive-wrap
   :defer t
@@ -226,7 +226,7 @@ See URL `https://vale.sh'."
 
 
 ;;;; ============================  EGLOT  =============================
-;; ---------------------------  REQUIRED  ---------------------------
+;;   ---------------------------  REQUIRED  ---------------------------
 ;; cmake:        'neocmakelsp'           (cargo install neocmakelsp)
 ;; fish:         'fish-lsp'              (npm install -g fish-lsp)
 ;; lua:          'lua-language-server'   (pacman -S lua-language-server)
@@ -234,12 +234,12 @@ See URL `https://vale.sh'."
 ;; python:       'ty'                    (uv tool install ty)
 ;; python:       'ruff'                  (uv tool install ruff)
 ;; toml:         'tombi'                 (pacman -S tombi)
-;; ---------------------------  OPTIONAL  ---------------------------
+;;   ---------------------------  OPTIONAL  ---------------------------
 ;; bash:         'bash-language-server'  (pacman -S bash-language-server)
 ;; json:         'json-language-server'  (pacman -S json-language-server)
 ;; xml:          'lemminx'               (github.com/eclipse-lemminx/lemminx)
 ;; yaml:         'yaml-language-server'  (pacman -S yaml-language-server)
-;; --------------------------  EXTENSIONS  --------------------------
+;;   --------------------------  EXTENSIONS  --------------------------
 ;; `consult-eglot' `consult-eglot-embark' `flycheck-eglot' (integrations)
 ;; `lsp-snippet' (integrate lsp with templ & yasnippet)
 ;;   ==================================================================
@@ -361,11 +361,11 @@ Designed to be used as advice around `eglot'."
 
 
 ;;;; =======  FOLDING  =======
-;; `hideshow' (defines `hs-minor-mode' based on buffer-syntax)
-;; `outline' (defines `outline-minor-mode' based on headings)
-;; `outline-indent' (defines minor-mode for indent-centric languages)
-;; `treesit-fold' (fold based on language syntax)
-;; `kirigami' (consistent settings across backends)
+;; `hideshow'            (defines `hs-minor-mode' based on buffer-syntax)
+;; `outline'             (defines `outline-minor-mode' based on headings)
+;; `outline-indent'      (defines minor-mode for indent-centric languages)
+;; `treesit-fold'        (fold based on language syntax)
+;; `kirigami'            (consistent settings across backends)
 ;;   =========================
 (use-package hideshow
   :ensure nil

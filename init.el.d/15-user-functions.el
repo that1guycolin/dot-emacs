@@ -10,28 +10,27 @@
 
 (if (eq system-type 'android)
     (setq user/font-alist
-
-	  '(("Anonymice Pro NF"		 . "AnonymicePro Nerd Font")
-	    ("Anonymice Pro NFM"	 . "AnonymicePro Nerd Font Mono")
-	    ("Anonymice Pro NFP"	 . "AnonymicePro Nerd Font Propo")
-	    ("Blex NF"			 . "BlexMono Nerd Font")
-	    ("Blex NFM"			 . "BlexMono Nerd Font Mono")
-	    ("Blex NFP"			 . "BlexMono Nerd Font Propo")
-	    ("DaddyTime NF"		 . "DaddyTimeMono Nerd Font")
-	    ("DaddyTime NFM"		 . "DaddyTimeMono Nerd Font Mono")
-	    ("DaddyTime NFP"		 . "DaddyTimeMono Nerd Font Propo")
-	    ("Droid Sans NF"		 . "DroidSansM Nerd Font")
-	    ("Droid Sans NFM"		 . "DroidSansM Nerd Font Mono")
-	    ("Droid Sans NFP"		 . "DroidSansM Nerd Font Propo")
-	    ("Fantasque Sans NF"	 . "FantasqueSansM Nerd Font")
-	    ("Fantasque Sans NFM"	 . "FantasqueSansM Nerd Font Mono")
-	    ("Fantasque Sans NFP"	 . "FantasqueSansM Nerd Font Propo")
-	    ("Go NF"			 . "GoMono Nerd Font")
-	    ("Go NFM"			 . "GoMono Nerd Font Mono")
-	    ("Go NFP"			 . "GoMono Nerd Font Propo")
-	    ("Space NF"			 . "SpaceMono Nerd Font")
-	    ("Space NFM"		 . "SpaceMono Nerd Font Mono")
-	    ("Space NFP"		 . "SpaceMono Nerd Font Propo")))
+          '(("Anonymice Pro NF"          . "AnonymicePro Nerd Font")
+            ("Anonymice Pro NFM"         . "AnonymicePro Nerd Font Mono")
+            ("Anonymice Pro NFP"         . "AnonymicePro Nerd Font Propo")
+            ("Blex NF"                   . "BlexMono Nerd Font")
+            ("Blex NFM"                  . "BlexMono Nerd Font Mono")
+            ("Blex NFP"                  . "BlexMono Nerd Font Propo")
+            ("DaddyTime NF"              . "DaddyTimeMono Nerd Font")
+            ("DaddyTime NFM"             . "DaddyTimeMono Nerd Font Mono")
+            ("DaddyTime NFP"             . "DaddyTimeMono Nerd Font Propo")
+            ("Droid Sans NF"             . "DroidSansM Nerd Font")
+            ("Droid Sans NFM"            . "DroidSansM Nerd Font Mono")
+            ("Droid Sans NFP"            . "DroidSansM Nerd Font Propo")
+            ("Fantasque Sans NF"         . "FantasqueSansM Nerd Font")
+            ("Fantasque Sans NFM"        . "FantasqueSansM Nerd Font Mono")
+            ("Fantasque Sans NFP"        . "FantasqueSansM Nerd Font Propo")
+            ("Go NF"                     . "GoMono Nerd Font")
+            ("Go NFM"                    . "GoMono Nerd Font Mono")
+            ("Go NFP"                    . "GoMono Nerd Font Propo")
+            ("Space NF"                  . "SpaceMono Nerd Font")
+            ("Space NFM"                 . "SpaceMono Nerd Font Mono")
+            ("Space NFP"                 . "SpaceMono Nerd Font Propo")))
   (setq user/font-alist
         '(("0xProto"                   . "0xProtoNerdFontMono")
           ("3270"                      . "3270NerdFontMono")
@@ -119,17 +118,17 @@ If nil, the number of frame lines and columns remains fixed.")
   "Switch to a FONT contained in `user/font-alist'."
   (interactive
    (list (completing-read
-	  "Font: " (mapcar #'car user/font-alist)
-	  nil t)))
+          "Font: " (mapcar #'car user/font-alist)
+          nil t)))
   (set-frame-font (cdr (assoc font user/font-alist))
-		  user/keep-frame-size-on-font-switch-p t t)
+                  user/keep-frame-size-on-font-switch-p t t)
   (message "Font set to %s" font))
 
 (defun user/random-font ()
   "Activate a random font from `user/font-alist'."
   (interactive)
   (let* ((font-cons (nth (random (length user/font-alist)) user/font-alist))
-	 (font (cdr font-cons)))
+         (font (cdr font-cons)))
     (set-frame-font font user/keep-frame-size-on-font-switch-p t t)
     (message "Font set to %s" (car font-cons))))
 
@@ -138,37 +137,37 @@ If nil, the number of frame lines and columns remains fixed.")
   (declare (interactive-only t))
   (interactive
    (let ((frame-resizing-cons
-	  (if user/keep-frame-size-on-font-switch-p
-	      '(("Attempt to keep frame size fixed (current)" . t)
-		("Keep # of frame lines and columns fixed"    . nil))
-	    '(("Attempt to keep frame size fixed"                  . t)
-	      ("Keep # of frame lines and columns fixed (current)" . nil )))))
+          (if user/keep-frame-size-on-font-switch-p
+              '(("Attempt to keep frame size fixed (current)" . t)
+                ("Keep # of frame lines and columns fixed"    . nil))
+            '(("Attempt to keep frame size fixed"                  . t)
+              ("Keep # of frame lines and columns fixed (current)" . nil )))))
      (list
       (cdr
        (assoc
-	(completing-read "How to handle frame-size when switching fonts: "
-			 frame-resizing-cons nil t)
-	frame-resizing-cons)))))
+        (completing-read "How to handle frame-size when switching fonts: "
+                         frame-resizing-cons nil t)
+        frame-resizing-cons)))))
   (setq user/keep-frame-size-on-font-switch-p input))
 
 
 ;;;; =======  HOOKS  =======
 (defun user/untabify-buffer ()
-  "Run `untabify' over the entire current buffer."
+  "Run `untabify' over current buffer."
   (interactive)
-  (push-mark (point-min) t t)
-  (goto-char (point-max))
-  (untabify))
+  (untabify (point-min) (point-max)))
 
 (defvar user/no-tab-modes
-  '(bash-ts-mode emacs-lisp-mode lisp-mode sh-mode)
+  '(bash-ts-mode
+    emacs-lisp-mode lisp-mode python-mode python-ts-mode sh-mode)
   "Major modes indented by spaces and not by tabs.")
 
-(dolist (mode user/no-tab-modes)
-  (let* ((hook-string (concat (symbol-name mode) "-hook"))
-	 (hook (intern hook-string)))
-    (with-eval-after-load mode
-      (add-hook hook #'user/untabify-buffer))))
+(defun user/untabify-when-no-tab-mode ()
+  "Run `user/untabify-buffer' if `major-mode' member `user/no-tab-modes'."
+  (when (member major-mode user/no-tab-modes)
+    (user/untabify-buffer)))
+
+(add-hook 'after-save-hook #'user/untabify-when-no-tab-mode)
 
 
 ;;;; =======  SIDE-WINDOW  =======
@@ -177,9 +176,11 @@ If nil, the number of frame lines and columns remains fixed.")
 If in a side window, return to the last used window.
 If not in a side window, jump to the first found side window."
   (interactive)
-  (let* ((side-window (cl-find-if (lambda (w)
-				    (window-parameter w 'window-side))
-                                  (window-list))))
+  (let* ((side-window
+          (cl-find-if
+           (lambda (w)
+             (window-parameter w 'window-side))
+           (window-list))))
     (cond
      ((not side-window)
       (message "No side window found in this frame."))
@@ -209,7 +210,7 @@ If not in a side window, jump to the first found side window."
   "Rebuild all external packages installed via `elpaca'."
   (interactive)
   (let* ((pkg-list (mapcar #'car (elpaca--queued)))
-	 (pkgs (nreverse pkg-list)))
+         (pkgs (nreverse pkg-list)))
     (dolist (pkg pkgs)
       (elpaca-rebuild pkg)
       (message "Rebuilt %s" pkg))
@@ -221,24 +222,25 @@ If not in a side window, jump to the first found side window."
   "Return a list of all external packages installed via `elpaca'."
   (interactive)
   (let* ((packages '(elpaca elpaca-use-package))
-	 (init-files
-	  (directory-files user/init-directory t directory-files-no-dot-files-regexp))
-	 (files (nreverse init-files)))
+         (init-files
+          (directory-files user/init-directory t
+                           directory-files-no-dot-files-regexp))
+         (files (nreverse init-files)))
     (with-temp-buffer
       (dolist (file files)
-	(insert-file-contents file))
+        (insert-file-contents file))
       (goto-char (point-min))
       (condition-case nil
           (while t
             (let ((form (read (current-buffer))))
               (when (and (listp form)
-			 (eq (car form) 'use-package))
-		(let ((args (cddr form)))
-		  (unless (or (and (plist-member args :ensure)
-				   (null (plist-get args :ensure)))
-			      (member (cadr form) user/custom-packages))
-		    (push (cadr form) packages))))))
-	(end-of-file)))
+                         (eq (car form) 'use-package))
+                (let ((args (cddr form)))
+                  (unless (or (and (plist-member args :ensure)
+                                   (null (plist-get args :ensure)))
+                              (member (cadr form) user/custom-packages))
+                    (push (cadr form) packages))))))
+        (end-of-file)))
     (nreverse packages)))
 
 (defun user/elpaca-complete-update ()
@@ -270,35 +272,35 @@ If not in a side window, jump to the first found side window."
       ("t n" "Rotate theme"        modus-themes-rotate)]])
   (keymap-global-set "C-c u" 'user/visual-settings-dispatch))
 
-(declare-function elpaca-manager			"elpaca")
-(declare-function elpaca-fetch				"elpaca")
-(declare-function elpaca-fetch-all			"elpaca")
-(declare-function elpaca-merge				"elpaca")
-(declare-function elpaca-merge-all			"elpaca")
-(declare-function elpaca-rebuild			"elpaca")
+(declare-function elpaca-manager                        "elpaca")
+(declare-function elpaca-fetch                          "elpaca")
+(declare-function elpaca-fetch-all                      "elpaca")
+(declare-function elpaca-merge                          "elpaca")
+(declare-function elpaca-merge-all                      "elpaca")
+(declare-function elpaca-rebuild                        "elpaca")
 (declare-function elpaca-update                         "elpaca")
 (declare-function elpaca-update-all                     "elpaca")
-(declare-function elpaca-build-autoloads		"elpaca")
+(declare-function elpaca-build-autoloads                "elpaca")
 (declare-function elpaca-build-docs                     "elpaca")
-(declare-function elpaca-build-docs-process-sentinel	"elpaca")
-(declare-function elpaca-build-compile			"elpaca")
+(declare-function elpaca-build-docs-process-sentinel    "elpaca")
+(declare-function elpaca-build-compile                  "elpaca")
 (defvar-keymap user/elpaca-options-map
   :doc "Functions for Elpaca package manager."
-  "m"	 #'elpaca-manager
+  "m"    #'elpaca-manager
   "a"    #'user/elpaca-complete-update
   "n"    #'user/elpaca-update-menus
-  "f"	 #'elpaca-fetch
-  "F"	 #'elpaca-fetch-all
-  "e"	 #'elpaca-merge
-  "E"	 #'elpaca-merge-all
-  "r"	 #'elpaca-rebuild
+  "f"    #'elpaca-fetch
+  "F"    #'elpaca-fetch-all
+  "e"    #'elpaca-merge
+  "E"    #'elpaca-merge-all
+  "r"    #'elpaca-rebuild
   "R"    #'user/elpaca-rebuild-all
-  "u"	 #'elpaca-update
-  "U"	 #'elpaca-update-all
-  "b a"	 #'elpaca-build-autoloads
-  "b d"	 #'elpaca-build-docs
-  "b D"	 #'elpaca-build-docs-process-sentinel
-  "b c"	 #'elpaca-build-compile)
+  "u"    #'elpaca-update
+  "U"    #'elpaca-update-all
+  "b a"  #'elpaca-build-autoloads
+  "b d"  #'elpaca-build-docs
+  "b D"  #'elpaca-build-docs-process-sentinel
+  "b c"  #'elpaca-build-compile)
 
 (with-eval-after-load 'which-key
   (which-key-add-keymap-based-replacements

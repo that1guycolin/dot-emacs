@@ -12,26 +12,26 @@
 ;; scripting, & coding languages.
 
 ;;; Code:
-;; =======  (E)LISP  =======
+;;;; =======  (E)LISP  =======
 ;; ALL:
-;; `adjust-parens' (smart '()')
-;; `lisp-semantic-hl'
+;; `adjust-parens'       (smart '()')
+;; `lisp-semantic-hl'    (cl & elisp syntax hl)
 ;; -------------------------
 ;; EMACS LISP
-;; `checkdoc' (style checker)
-;; `elisp-def' (go directly to symbol def)
-;; `eros' (see function results in buffer)
-;; `ielm' (interactive elisp shell)
-;; `inspector' (inspection tool for emacs-lisp objects)
-;; `eros-inspector' (combine functionality of eros & inspector)
-;; `macrostep' (interactive macro stepper)
-;; `morlock' (additional font hl)
-;; `suggest' (find function to accomplish X)
-;; `tree-inspector' (tree-style view for inspector)
+;; `checkdoc'            (style checker)
+;; `elisp-def'           (go directly to symbol def)
+;; `eros'                (see function results in buffer)
+;; `ielm'                (interactive elisp shell)
+;; `inspector'           (inspection tool for emacs-lisp objects)
+;; `eros-inspector'      (combine functionality of eros & inspector)
+;; `macrostep'           (interactive macro stepper)
+;; `morlock'             (additional font hl)
+;; `suggest'             (find function to accomplish X)
+;; `tree-inspector'      (tree-style view for inspector)
 ;; -------------------------
 ;; COMMON
-;; `sly' (modern slime)
-;; =========================
+;; `sly'                 (modern slime)
+;;   =========================
 (use-package adjust-parens
   :defer t
   :hook ((emacs-lisp-mode lisp-mode) . adjust-parens-mode))
@@ -61,15 +61,15 @@
 (use-package inspector
   :defer t
   :bind (:map emacs-lisp-mode-map
-	      ("M-I e" . inspector-inspect-expression))
+              ("M-I e" . inspector-inspect-expression))
   :custom
   (inspector-switch-to-buffer nil))
 
 (use-package eros-inspector
   :after eros inspector
   :bind (:map emacs-lisp-mode-map
-	      ([remap eros-eval-last-sexp] . eros-inspector-eval-last-sexp)
-	      ([remap eros-eval-defun]     . eros-inspector-eval-defun)))
+              ([remap eros-eval-last-sexp] . eros-inspector-eval-last-sexp)
+              ([remap eros-eval-defun]     . eros-inspector-eval-defun)))
 
 (use-package macrostep
   :defer t
@@ -83,13 +83,13 @@
 (use-package suggest
   :defer t
   :bind (:map emacs-lisp-mode-map
-	      ("C-c C-S" . suggest)))
+              ("C-c C-S" . suggest)))
 
 (use-package tree-inspector
   :defer t
   :bind (:map emacs-lisp-mode-map
-	      ("M-I t" . tree-inspector-inspect-expression)
-	      ("M-I s" . tree-inspector-inspect-last-sexp)))
+              ("M-I t" . tree-inspector-inspect-expression)
+              ("M-I s" . tree-inspector-inspect-last-sexp)))
 
 (use-package sly
   :defer t
@@ -107,25 +107,25 @@
     (when (file-exists-p ql-setup)
       (setq sly-lisp-implementations
             (mapcar
-	     (lambda (impl)
+             (lambda (impl)
                (append impl
                        (list
-			:init
-			(lambda (port-filename coding-system)
+                        :init
+                        (lambda (port-filename coding-system)
                           (format "(progn (load \"%s\") %s)\n"
                                   (expand-file-name ql-setup)
                                   (sly-init-string
-				   port-filename
-				   coding-system))))))
+                                   port-filename
+                                   coding-system))))))
              sly-lisp-implementations))))
   (add-to-list 'sly-contribs 'sly-mrepl))
 
 
-;; =======  PYTHON  =======
-;; `live-py-mode' (live coding)
-;; `python-pytest' (integrate testing)
-;; `python-x' (enhance built-in python(-ts)-mode)
-;; ========================
+;;;; =======  PYTHON  =======
+;; `live-py-mode'        (live coding)
+;; `python-pytest'       (integrate testing)
+;; `python-x'            (enhance built-in python(-ts)-mode)
+;;   ========================
 (defvar python-base-mode-map)
 ;; FUNCTIONS
 (defun user/python-uv-script-p ()
@@ -163,7 +163,7 @@
 (use-package python-pytest
   :defer t
   :bind (:map python-base-mode-map
-	      ("C-c C-t" . python-pytest-dispatch)))
+              ("C-c C-t" . python-pytest-dispatch)))
 
 
 (use-package python-x
@@ -171,10 +171,10 @@
   :hook ((python-mode python-ts-mode) . python-x-setup))
 
 
-;; =======  ADDITIONAL LANGUAGE SUPPORT  =======
-;; `fish-mode' (fish shell support)
-;; `rustic' (rust/cargo support)
-;; =============================================
+;;;; =======  ADDITIONAL LANGUAGE SUPPORT  =======
+;; `fish-mode'   (fish shell support)
+;; `rustic'      (rust/cargo support)
+;;   =============================================
 (use-package fish-mode
   :defer t
   :interpreter "fish"
@@ -194,16 +194,16 @@
   (rustic-lsp-client 'lsp-mode))
 
 
-;; =======  CONFIG FILE MODES  =======
-;; `csv-mode' (support csv files)
-;; `eask-mode' (support Eask files)
-;; `glsl-mode' (support OpenGL Shading Language)
-;; `just-ts-mode' (justfile-support)
-;; `ini-mode' (config file support)
-;; `just-ts-mode' (justfile support)
-;; `kdl-mode' (support .kdl)
-;; `systemd' (support services & sockets)
-;; ===================================
+;;;; =======  CONFIG FILE MODES  =======
+;; `csv-mode'            (support csv files)
+;; `eask-mode'           (support Eask files)
+;; `glsl-mode'           (support OpenGL Shading Language)
+;; `just-ts-mode'        (justfile-support)
+;; `ini-mode'            (config file support)
+;; `just-ts-mode'        (justfile support)
+;; `kdl-mode'            (support .kdl)
+;; `systemd'             (support services & sockets)
+;;   ===================================
 (use-package csv-mode
   :defer t
   :preface
@@ -245,13 +245,12 @@
    ("\\.socket\\'"  . systemd-mode)))
 
 
-;; =======  ENHANCE BUILT-INS  =======
-;; `auto-rename-tag' (xml tag assistant)
-;; `eldoc-cmake' (doc support in cmake-ts-mode)
-;; `grip-mode' (support for gfm)
-;; `shfmt' (format sh based modes)
-;; `yaml-pro' (enhanced .yaml support)
-;; ===================================
+;;;; =======  ENHANCE BUILT-INS  =======
+;; `auto-rename-tag'     (xml tag assistant)
+;; `eldoc-cmake'         (doc support in cmake-ts-mode)
+;; `grip-mode'           (support for gfm)
+;; `yaml-pro'            (enhanced .yaml support)
+;;   ===================================
 (use-package auto-rename-tag
   :defer t
   :hook (nxml-mode . auto-rename-tag-mode))
@@ -264,7 +263,7 @@
   :defer t
   :preface (defvar markdown-ts-mode-map)
   :bind (:map markdown-ts-mode-map
-	      ("C-c j" . grip-mode))
+              ("C-c j" . grip-mode))
   :custom
   (grip-command 'auto))
 

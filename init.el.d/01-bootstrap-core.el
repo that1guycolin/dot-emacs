@@ -8,10 +8,10 @@
 ;; they have a major inpact on startup.
 
 ;;; Code:
-;; =======  ELPACA  =======
-;; `elpaca' (asyncronous package manager)
-;; `elpaca-use-package' (integration with existing macro)
-;; ========================
+;;;; =======  ELPACA  =======
+;; `elpaca'              (asyncronous package manager)
+;; `elpaca-use-package'  (integration with existing macro)
+;;   ========================
 (declare-function elpaca                  "elpaca")
 (declare-function elpaca-manager          "elpaca")
 (declare-function elpaca-use-package-mode "elpaca-use-package")
@@ -26,15 +26,15 @@
 
 (let ((elpaca-bootstrap
        (expand-file-name "elpaca/sources/elpaca/doc/installer.el"
-			 user-emacs-directory)))
+                         user-emacs-directory)))
   (if (file-exists-p elpaca-bootstrap)
       (load-file elpaca-bootstrap)
     (let ((online-bootstrap
-	   (expand-file-name "bootstrap.el" user-emacs-directory)))
+           (expand-file-name "bootstrap.el" user-emacs-directory)))
       (shell-command
        (format "wget -O %s \
 https://raw.githubusercontent.com/progfolio/elpaca/refs/heads/master/doc/installer.el"
-	       online-bootstrap))
+               online-bootstrap))
       (load-file online-bootstrap)
       (delete-file online-bootstrap))))
 
@@ -44,7 +44,7 @@ https://raw.githubusercontent.com/progfolio/elpaca/refs/heads/master/doc/install
 (elpaca-wait)
 
 
-;; =======  EMACS DUMMY PACKAGE (for global settings)  =======
+;;;; =======  GLOBAL SETTINGS  =======
 (use-package emacs
   :ensure nil
   :demand t
@@ -90,11 +90,11 @@ https://raw.githubusercontent.com/progfolio/elpaca/refs/heads/master/doc/install
   (add-hook 'ibuffer-mode-hook #'user/ibuffer-hook-functions))
 
 
-;; =======  OTHER BOOTSTRAPS  =======
-;; `gcmh' (smart garbage collection)
-;; `exec-path-from-shell' `envrc' (environment)
-;; `transient' `org' (load latest version early to override built-in pkg)
-;; ==================================
+;;;; =======  OTHER BOOTSTRAPS  =======
+;; `gcmh'                                (smart garbage collection)
+;; `exec-path-from-shell' `envrc'        (environment)
+;; `transient' `org'                     (override built-in ver w/ latest ver)
+;;   ==================================
 (use-package gcmh
   :demand t
   :functions gcmh-mode
@@ -141,15 +141,15 @@ https://raw.githubusercontent.com/progfolio/elpaca/refs/heads/master/doc/install
       (replace-regexp-in-string
        "-+" "-"
        (replace-regexp-in-string
-	"[^[:alnum:]_]+" "-"
-	(downcase s)))))
+        "[^[:alnum:]_]+" "-"
+        (downcase s)))))
 
   (defun user/get-parent-directory ()
     "Return parent directory name for current buffer."
     (when buffer-file-name
       (file-name-nondirectory
        (directory-file-name
-	(file-name-directory buffer-file-name)))))
+        (file-name-directory buffer-file-name)))))
 
   (defun user/org-id-context-prefix ()
     "Return `org-id-prefix' based on node level."
@@ -157,15 +157,15 @@ https://raw.githubusercontent.com/progfolio/elpaca/refs/heads/master/doc/install
      ((org-before-first-heading-p)
       (user/get-parent-directory))
      ((save-excursion
-	(org-back-to-heading t)
-	(= (org-outline-level) 1))
+        (org-back-to-heading t)
+        (= (org-outline-level) 1))
       (when buffer-file-name
-	(file-name-base buffer-file-name)))
+        (file-name-base buffer-file-name)))
      (t
       (save-excursion
-	(org-back-to-heading t)
-	(when (org-up-heading-safe)
-	  (org-get-heading t t t t))))))
+        (org-back-to-heading t)
+        (when (org-up-heading-safe)
+          (org-get-heading t t t t))))))
 
   (defun user/org-id-dynamic-prefix (orig-fn &rest args)
     "Dynamically compute org-id-prefix' each time an ID is created.
@@ -173,10 +173,10 @@ Designed to wrap around ORIG-FN `org-id-new' (accepting the same ARGS) when
 creating org nodes."
     (defvar org-id-prefix)
     (let ((org-id-prefix
-	   (if (derived-mode-p 'org-mode)
-	       (or (user/org-id-prefix-slug (user/org-id-context-prefix))
-		   org-id-prefix)
-	     (user/get-parent-directory))))
+           (if (derived-mode-p 'org-mode)
+               (or (user/org-id-prefix-slug (user/org-id-context-prefix))
+                   org-id-prefix)
+             (user/get-parent-directory))))
       (apply orig-fn args)))
   (advice-add 'org-id-new :around #'user/org-id-dynamic-prefix)
 
@@ -188,18 +188,18 @@ For entire buffer, return the top of the buffer."
            (heading-options
             (org-map-entries
              (lambda ()
-	       (let* ((path (org-get-outline-path t t))
-		      (heading (org-get-heading t t t t))
-		      (display (string-join
-				(append path (list heading)) " / ")))
-		 (cons display (point))))
+               (let* ((path (org-get-outline-path t t))
+                      (heading (org-get-heading t t t t))
+                      (display (string-join
+                                (append path (list heading)) " / ")))
+                 (cons display (point))))
              nil 'file))
            (options (cons doc-option heading-options))
            (choice (completing-read "Location: " options nil t))
            (location (cdr (assoc choice options))))
       (if (eq location 'document)
           (point-min)
-	location)))
+        location)))
 
   (defun user/org-insert-properties-drawer ()
     "Create org properties drawer at an interactively-selected heading."
@@ -209,18 +209,18 @@ For entire buffer, return the top of the buffer."
     (org-id-get-create)
     (unless (org-entry-get nil "CREATED")
       (org-entry-put nil "CREATED"
-		     (format-time-string "[%Y-%m-%d %a %H:%M:%S]"))))
+                     (format-time-string "[%Y-%m-%d %a %H:%M:%S]"))))
 
   (defun user/org-top-property-drawer-id ()
     "Return ID from a top-of-file-property-drawer, or nil."
     (save-excursion
       (goto-char (point-min))
       (when (looking-at org-property-drawer-re)
-	(save-restriction
-	  (narrow-to-region (match-beginning 0) (match-end 0))
-	  (goto-char (point-min))
-	  (when (re-search-forward "^:ID:[ \t]+\\(.+\\)$" nil t)
-	    (string-trim (match-string 1)))))))
+        (save-restriction
+          (narrow-to-region (match-beginning 0) (match-end 0))
+          (goto-char (point-min))
+          (when (re-search-forward "^:ID:[ \t]+\\(.+\\)$" nil t)
+            (string-trim (match-string 1)))))))
 
   (defun user/org-insert-header-block (title author)
     "Insert a header block at the top of the current document.
@@ -229,36 +229,36 @@ underneath it.  The header block will contain the following fields:
 \='TITLE:, AUTHOR: CREATED_DATE:, LAST_EDITED:, ID:, FILETAGS:'."
     (interactive
      (list (read-string "Title: " (file-name-base (buffer-name)))
-	   (let ((default "Colin Loeffler (that1guycolin)"))
-	     (read-string (format "Author [DEFAULT: \"%s\"]: " default)
-			  nil nil default))))
+           (let ((default "Colin Loeffler (that1guycolin)"))
+             (read-string (format "Author [DEFAULT: \"%s\"]: " default)
+                          nil nil default))))
     (user/org-check)
     (save-excursion
       (goto-char (point-min))
       (let ((id (or (user/org-top-property-drawer-id)
-		    (org-id-new))))
-	(if (looking-at org-property-drawer-re)
-	    (progn
-	      (goto-char (match-end 0))
-	      (unless (bolp)
-		(insert "\n")))
-	  (insert ":PROPERTIES:\n"
-		  ":ID:       " id "\n"
-		  ":END:\n"))
-	(insert "#+TITLE: " title
-		"\n#+AUTHOR: " author
-		"\n#+CREATED_DATE: "
-		(format-time-string "[%Y-%m-%d %a %H:%M:%S]")
-		"\n#+LAST_EDIT: "
-		"\n#+ID: " id
-		"\n#+FILETAGS: \n"))))
+                    (org-id-new))))
+        (if (looking-at org-property-drawer-re)
+            (progn
+              (goto-char (match-end 0))
+              (unless (bolp)
+                (insert "\n")))
+          (insert ":PROPERTIES:\n"
+                  ":ID:       " id "\n"
+                  ":END:\n"))
+        (insert "#+TITLE: " title
+                "\n#+AUTHOR: " author
+                "\n#+CREATED_DATE: "
+                (format-time-string "[%Y-%m-%d %a %H:%M:%S]")
+                "\n#+LAST_EDIT: "
+                "\n#+ID: " id
+                "\n#+FILETAGS: \n"))))
   
   (defun user/org-insert-src-block (lang)
     "Insert a block structure of the type #+begin_src LANG/#+end_src."
     (interactive
      (list
       (completing-read "Language: "
-		       (mapcar #'car org-src-lang-modes) nil t)))
+                       (mapcar #'car org-src-lang-modes) nil t)))
     (org-insert-structure-template "src")
     (insert lang "\n"))
 
@@ -268,10 +268,10 @@ The new value is the current date & time in this format:
 YYYY-MM-DD DAY HH:MM:ss (e.g., 2026-03-15 SUN 14:24:06)"
     (when (derived-mode-p 'org-mode)
       (save-excursion
-	(goto-char (point-min))
-	(when (re-search-forward
-	       "^#\\+LAST_EDIT:[ \t]*.*$"
-	       nil t)
+        (goto-char (point-min))
+        (when (re-search-forward
+               "^#\\+LAST_EDIT:[ \t]*.*$"
+               nil t)
           (replace-match
            (format-time-string
             "#+LAST_EDIT: [%Y-%m-%d %a %H:%M:%S]"))))))
@@ -284,7 +284,7 @@ YYYY-MM-DD DAY HH:MM:ss (e.g., 2026-03-15 SUN 14:24:06)"
     (save-excursion
       (goto-char (point-min))
       (while (re-search-forward "\\[\\([^]]+\\)\\](\\([^)]+\\))" nil t)
-	(replace-match "[[\\2][\\1]]" nil nil))))
+        (replace-match "[[\\2][\\1]]" nil nil))))
 
   :bind
   (("C-c o o" . org-mode)
@@ -311,7 +311,7 @@ YYYY-MM-DD DAY HH:MM:ss (e.g., 2026-03-15 SUN 14:24:06)"
   (org-default-notes-file (expand-file-name ".notes" org-directory))
   (org-edit-src-content-indentation 0)
   (org-id-extra-files (if (file-directory-p org-directory)
-			  (directory-files-recursively org-directory "\\.org$")))
+                          (directory-files-recursively org-directory "\\.org$")))
   (org-id-locations-file (expand-file-name ".id-locations" org-directory))
   (org-id-method 'org)
   (org-id-prefix "unk")
@@ -323,21 +323,21 @@ YYYY-MM-DD DAY HH:MM:ss (e.g., 2026-03-15 SUN 14:24:06)"
 
   (setq org-src-lang-modes (assoc-delete-all "bash" org-src-lang-modes))
   (dolist (lang-mode-cons '(("bash"   . bash-ts) ("cmake" . cmake-ts)
-  			    ("json"   . json-ts) ("lua"   . lua-ts)
-  			    ("python" . python-ts) ("sh"  . sh)
-			    ("toml"   . toml-ts) ("yaml"  . yaml-ts)
-			    ("zsh"    . shell)))
+                            ("json"   . json-ts) ("lua"   . lua-ts)
+                            ("python" . python-ts) ("sh"  . sh)
+                            ("toml"   . toml-ts) ("yaml"  . yaml-ts)
+                            ("zsh"    . shell)))
     (add-to-list 'org-src-lang-modes lang-mode-cons))
 
   (with-eval-after-load 'ob
     (setq org-babel-default-header-args
-	  (cons '(:results . "value verbatim replace")
-		(assq-delete-all :results org-babel-default-header-args)))
+          (cons '(:results . "value verbatim replace")
+                (assq-delete-all :results org-babel-default-header-args)))
     (setq org-babel-default-header-args:zsh '((:results . "output")))
     (with-eval-after-load 'sly
       (if org-babel-lisp-eval-fn
-	  (setq org-babel-lisp-eval-fn #'sly-eval)
-	(defvar org-babel-lisp-eval-fun #'sly-eval)))
+          (setq org-babel-lisp-eval-fn #'sly-eval)
+        (defvar org-babel-lisp-eval-fun #'sly-eval)))
     (dolist (lang '(lisp lua makefile org python shell))
       (add-to-list 'org-babel-load-languages `(,lang . t)))
     (org-babel-do-load-languages
