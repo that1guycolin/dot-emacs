@@ -345,15 +345,5 @@ YYYY-MM-DD DAY HH:MM:ss (e.g., 2026-03-15 SUN 14:24:06)"
      org-babel-load-languages)))
 
 
-;; =======  EMACSCLIENT FRAME FUNCTION  =======
-(defun user/function-after-emacsclient-frame (func &optional args)
-  "Run FUNC and any ARGS only after a real emacsclient frame is created."
-  (let ((frame (selected-frame)))
-    (when (and (display-graphic-p frame)
-	       (frame-parameter frame 'client)
-	       (string-prefix-p "*scratch*" (buffer-name)))
-      (funcall func args))))
-
-
 (provide '01-bootstrap-core)
 ;;; 01-bootstrap-core.el ends here
