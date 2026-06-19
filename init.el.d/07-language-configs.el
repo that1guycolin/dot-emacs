@@ -267,17 +267,6 @@
   :custom
   (grip-command 'auto))
 
-(use-package shfmt
-  :defer t
-  :bind ((:map bash-ts-mode-map
-	       ("C-c C-f" . shfmt-buffer))
-	 (:map sh-mode-map
-	       ("C-c C-f". shfmt-buffer)))
-  :hook ((bash-ts-mode sh-mode) . shfmt-on-save-mode)
-  :custom
-  (shfmt-command "shfmt")
-  (shfmt-arguments '("-i" "4" "-ci")))
-
 (use-package yaml-pro
   :defer t
   :hook (yaml-ts-mode . yaml-pro-mode))

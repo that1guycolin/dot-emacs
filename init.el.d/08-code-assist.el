@@ -317,6 +317,20 @@ Designed to be used as advice around `eglot'."
 ;; xml:          'xmlstarlet'    (pacman -S xmlstarlet)
 ;; yaml:         'yq-yqml'       (pacman -S yq-yaml)
 ;;   ============================
+(use-package shfmt
+  :defer t
+  :preface
+  (defvar bash-ts-mode-map)
+  (defvar sh-mode-map)
+  :bind ((:map bash-ts-mode-map
+               ("C-c C-f" . shfmt-buffer))
+         (:map sh-mode-map
+               ("C-c C-f". shfmt-buffer)))
+  :hook ((bash-ts-mode sh-mode) . shfmt-on-save-mode)
+  :custom
+  (shfmt-command "shfmt")
+  (shfmt-arguments '("-i" "4" "-ci")))
+
 (use-package apheleia
   :defer t
   :bind ("C-c f" . apheleia-format-buffer)
