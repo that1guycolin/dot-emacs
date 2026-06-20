@@ -116,7 +116,7 @@ https://raw.githubusercontent.com/progfolio/elpaca/refs/heads/master/doc/install
   (exec-path-from-shell-initialize))
 
 (use-package envrc
-  :defer t
+  :demand t
   :functions envrc-global-mode
   :config
   (envrc-global-mode 1))
