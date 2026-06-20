@@ -218,6 +218,10 @@
   :functions
   csv-guess-set-separator csv-align-mode)
 
+(use-package docker-compose-mode
+  :defer t
+  :mode ("^docker-compose\\.yml\\'" "^compose\\.yml\\'"))
+
 (use-package eask-mode
   :defer t
   :mode "^Eask\\'")
