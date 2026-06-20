@@ -316,7 +316,7 @@ YYYY-MM-DD DAY HH:MM:ss (e.g., 2026-03-15 SUN 14:24:06)"
   (org-id-method 'org)
   (org-id-prefix "unk")
   (org-insert-mode-line-in-empty-file t)
-  (org-startup-folded 'content)
+  (org-startup-folded 'fold)
   (org-use-sub-superscripts '{})
   :config
   (require 'ox-texinfo)
