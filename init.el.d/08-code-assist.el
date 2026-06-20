@@ -232,8 +232,7 @@ See URL `https://vale.sh'."
 ;; fish:         'fish-lsp'              (npm install -g fish-lsp)
 ;; lua:          'lua-language-server'   (pacman -S lua-language-server)
 ;; markdown:     'rumdl'                 (pacman -S rumdl)
-;; python:       'ty'                    (uv tool install ty)
-;; python:       'ruff'                  (uv tool install ruff)
+;; python:       'rass' [`ty'/`ruff']    (uv tool install rass ty ruff)
 ;; toml:         'tombi'                 (pacman -S tombi)
 ;;   ---------------------------  OPTIONAL  ---------------------------
 ;; bash:         'bash-language-server'  (pacman -S bash-language-server)
@@ -247,25 +246,20 @@ See URL `https://vale.sh'."
 (use-package eglot
   :ensure nil
   :defer t
-  :preface
-  (defun user/interactive-eglot ()
-    "Call `eglot' interactively."
-    (interactive)
-    (call-interactively #'eglot))
-  
-  :bind ("C-c l" . user/interactive-eglot)
-  :hook
-  ((cmake-ts-mode fish-mode lua-ts-mode markdown-mode markdown-ts-mode
-                  python-base-mode toml-ts-mode) . user/interactive-eglot)
+  :bind (:map ctl-x-map ("e" . eglot))
   
   :config
+  (setq eglot-server-programs (assoc-delete-all
+                               '(python-mode python-ts-mode)
+                               eglot-server-programs))
   (dolist
       (lsp-cons
-       '(((lua-mode lua-ts-mode) .
-          (expand-file-name "~/.luarocks/bin/lua-language-server"))
-         ((fish-mode) . ("fish-lsp" "start"))
+       '(((fish-mode) . ("fish-lsp" "start"))
+         ((lua-mode lua-ts-mode) . (expand-file-name
+                                    "~/.luarocks/bin/lua-language-server"))
          ((markdown-mode markdown-ts-mode) . ("rumdl" "start"))
-         (nxml-mode . ("lemminx"))))
+         (nxml-mode . ("lemminx"))
+         ((python-mode python-ts-mode) . ("uv" "run" "rass" "python"))))
     (add-to-list 'eglot-server-programs lsp-cons)))
 
 (use-package consult-eglot
@@ -278,15 +272,8 @@ See URL `https://vale.sh'."
   :config (consult-eglot-embark-mode 1))
 
 (use-package flycheck-eglot
-  :preface
-  (defun user/flycheck-eglot-autostart (&rest _args)
-    "Automatically start flycheck-eglot when `eglot' starts.
-Designed to be used as advice around `eglot'."
-    (flycheck-eglot-mode 1))
   :after (flycheck eglot)
-  :functions flycheck-eglot-mode
-  :init
-  (advice-add 'eglot :after #'user/flycheck-eglot-autostart)
+  :hook (eglot-connect . flycheck-eglot-mode)
   :config
   (add-to-list 'flycheck-checkers 'eglot-check))
 
