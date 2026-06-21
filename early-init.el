@@ -99,7 +99,8 @@
 ;; Early UI optimizations
 (setq-default
  cursor-type 'bar
- fill-column 80)
+ fill-column 80
+ search-invisible nil)
 (when (fboundp 'tool-bar-mode)
   (tool-bar-mode -1))
 (when (fboundp 'scroll-bar-mode)

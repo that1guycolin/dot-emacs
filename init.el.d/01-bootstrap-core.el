@@ -286,6 +286,13 @@ YYYY-MM-DD DAY HH:MM:ss (e.g., 2026-03-15 SUN 14:24:06)"
       (while (re-search-forward "\\[\\([^]]+\\)\\](\\([^)]+\\))" nil t)
         (replace-match "[[\\2][\\1]]" nil nil))))
 
+  (defun user/org-search-folded ()
+    "Set value of `search-invisible' to t in `org-mode' buffers.
+Add this function to `org-mode-hook'."
+    (if (derived-mode-p 'org-mode)
+        (setq search-invisible t)
+      (setq search-invisible nil)))
+
   :bind
   (("C-c o o" . org-mode)
    ("C-c o l" . org-store-link)
@@ -320,6 +327,8 @@ YYYY-MM-DD DAY HH:MM:ss (e.g., 2026-03-15 SUN 14:24:06)"
   (org-use-sub-superscripts '{})
   :config
   (require 'ox-texinfo)
+
+  (add-hook 'org-mode-hook #'user/org-search-folded)
 
   (setq org-src-lang-modes (assoc-delete-all "bash" org-src-lang-modes))
   (dolist (lang-mode-cons '(("bash"   . bash-ts) ("cmake" . cmake-ts)
