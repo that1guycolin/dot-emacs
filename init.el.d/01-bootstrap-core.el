@@ -153,6 +153,7 @@ https://raw.githubusercontent.com/progfolio/elpaca/refs/heads/master/doc/install
 
   (defun user/org-id-context-prefix ()
     "Return `org-id-prefix' based on node level."
+    (user/org-check)
     (cond
      ((org-before-first-heading-p)
       (user/get-parent-directory))
@@ -184,6 +185,7 @@ creating org nodes."
     "In an org-mode buffer, prompt user to pick a scope.
 The scope could be the entire buffer or a heading within that buffer.
 For entire buffer, return the top of the buffer."
+    (user/org-check)
     (let* ((doc-option `(,(buffer-name) . document))
            (heading-options
             (org-map-entries
@@ -213,6 +215,7 @@ For entire buffer, return the top of the buffer."
 
   (defun user/org-top-property-drawer-id ()
     "Return ID from a top-of-file-property-drawer, or nil."
+    (user/org-check)
     (save-excursion
       (goto-char (point-min))
       (when (looking-at org-property-drawer-re)
