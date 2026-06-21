@@ -78,12 +78,12 @@
 (use-package cmake-ts-mode
   :ensure nil
   :defer t
-  :mode ("\\.cmake\\'" "^CMakeLists\\.txt\\'"))
+  :mode ("\\.cmake\\'" "CMakeLists\\.txt\\'"))
 
 (use-package dockerfile-ts-mode
   :ensure nil
   :defer t
-  :mode "^Dockerfile\\'")
+  :mode ("Dockerfile\\'" "Containerfile\\'"))
 
 (use-package emacs-lisp-mode
   :ensure nil
@@ -111,7 +111,7 @@
 (use-package markdown-ts-mode
   :ensure nil
   :defer t
-  :mode ("\\.md\\'" "^README\\'" "^INSTALL\\'"))
+  :mode ("\\.md\\'" "README\\'" "INSTALL\\'"))
 
 (use-package python-ts-mode
   :ensure nil

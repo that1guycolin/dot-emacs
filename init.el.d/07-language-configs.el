@@ -220,11 +220,11 @@
 
 (use-package docker-compose-mode
   :defer t
-  :mode ("^docker-compose\\.yml\\'" "^compose\\.yml\\'"))
+  :mode ("docker-copmpose\\.ya?ml\\'" "compose\\.ya?ml\\'"))
 
 (use-package eask-mode
   :defer t
-  :mode "^Eask\\'")
+  :mode "Eask\\'")
 
 (use-package glsl-mode
   :defer t
@@ -236,7 +236,7 @@
 
 (use-package just-ts-mode
   :defer t
-  :mode "^justfile\\'")
+  :mode "justfile\\'")
 
 (use-package kdl-mode
   :defer t
