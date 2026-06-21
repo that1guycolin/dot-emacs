@@ -45,7 +45,7 @@
 ;;   =================================
 (use-package eat
   :defer t
-  :bind ("C-c S e"   . eat)
+  :bind ("C-c C-s e"   . eat)
   :hook (eshell-mode . eat-eshell-visual-command-mode))
 
 (use-package ghostel
@@ -58,7 +58,7 @@
            :type git :protocol https :inherit t :depth treeless)
   :defer t
   :preface (advice-add 'ghostty :around #'user/call-in-other-window-advice)
-  :bind ("C-c S g" . ghostel)
+  :bind ("C-c C-s g" . ghostel)
   :custom
   (ghostel-module-auto-install 'compile)
   :config
@@ -71,7 +71,7 @@
   :defer t
   :preface (advice-add 'mistty :around #'user/call-in-other-window-advice)
   :bind
-  (("C-c S m" . mistty)
+  (("C-c C-s m" . mistty)
    :map mistty-prompt-map
    ("M-<up>"    . mistty-send-key)
    ("M-<down>"  . mistty-send-key)
@@ -86,8 +86,8 @@
 (use-package vterm
   :defer t
   :bind
-  (("C-c S v" . vterm)
-   ("C-c S V" . vterm-other-window)))
+  (("C-c C-s v" . vterm)
+   ("C-c C-s V" . vterm-other-window)))
 
 
 ;;;; =======  HELPERS  =======

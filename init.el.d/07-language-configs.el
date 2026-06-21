@@ -83,7 +83,7 @@
 (use-package suggest
   :defer t
   :bind (:map emacs-lisp-mode-map
-              ("C-c C-S" . suggest)))
+              ("C-c S" . suggest)))
 
 (use-package tree-inspector
   :defer t
