@@ -94,6 +94,7 @@
 
   (with-eval-after-load 'which-key
     (which-key-add-keymap-based-replacements
+      user/activities-map
       "n" "New Activity"
       "d" "Define Activity"
       "r" "Resume Activity"
