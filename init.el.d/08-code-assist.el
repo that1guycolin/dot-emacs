@@ -202,7 +202,7 @@ See URL `https://vale.sh'."
   (flyover-show-error-id t)
   (flyover-show-virtual-line t)
   (flyover-virtual-line-type 'curved-arrow)
-  (flyover-line-position-offset 1)
+  (flyover-line-position-offset 0)
   (flyover-wrap-messages t)
   (flyover-max-line-length 120)
   (flyover-debounce-interval 0.1)

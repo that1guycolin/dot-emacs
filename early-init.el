@@ -6,6 +6,7 @@
 ;; and applies early UI optimizations before the main config loads.
 
 ;;; Code:
+;;;; Set PATH so Emacs Android GUI can access Termux files
 (when (eq system-type 'android)
   (setenv "PATH" (format "%s:%s" "/data/data/com.termux/files/usr/bin"
                          (getenv "PATH")))
@@ -13,29 +14,36 @@
   (setenv "PKG_CONFIG_PATH"
           "/data/data/com.termux/files/usr/lib/pkgconfig/"))
 
-(defvar package-quickstart)
-(defvar auth-sources)
-
-(declare-function profiler-report "profiler")
+;;;; Optionally Profile Startup
 (defvar user/profile-startup nil
   "When non-nil, enable CPU profiling during startup.")
+
 (when user/profile-startup
+  (declare-function profiler-stop "profiler")
+  (declare-function profiler-report "profiler")
   (setq debug-on-error t)
   (profiler-start 'cpu)
-  (add-hook 'emacs-startup-hook (lambda () (require 'profiler)))
-  (run-with-idle-timer 30 nil #'(lambda ()
-                                  (profiler-cpu-stop)
-                                  (unless (featurep 'profiler)
-                                    (require 'profiler))
-                                  (with-eval-after-load 'profiler
-                                    (profiler-report)))))
+  (defvar user/profiler-report-active-p nil
+    "Non-nil if if user/profiler-startup-report has been triggered.")
+  (defun user/profiler-startup-report ()
+    "Stop the cpu profiler and generate its report."
+    (unless user/profiler-report-active-p
+      (require 'profiler)
+      (profiler-stop)
+      (with-eval-after-load 'profiler
+        (profiler-report))))
+  (declare-function user/profiler-startup-report "early-init.el")
+  (add-hook 'emacs-startup-hook
+            #'(lambda ()
+                (run-with-idle-timer 10 nil #'user/profiler-startup-report)))
+  (run-with-idle-timer 30 nil #'user/profiler-startup-report))
 
-;; Variables modified for startup then reset once started.
-;; Ignore `tramp' and `compressed'/`archive' files during start.  Do not
-;; display messages during startup.
+;;;; Modify variables for startup, then reset
 (defvar user/file-name-handler-alist-backup file-name-handler-alist)
 (setq
+ ;; Ignore `tramp' & `compressed'/`archive'
  file-name-handler-alist nil
+ ;; Do not display messages
  inhibit-message t)
 (add-hook 'emacs-startup-hook
           (lambda ()
@@ -43,6 +51,9 @@
              file-name-handler-alist user/file-name-handler-alist-backup
              inhibit-message nil)))
 
+;;;; Other Variable Mods
+(defvar package-quickstart)
+(defvar auth-sources)
 (setq
  ;; No garbage collection during startup
  gc-cons-threshold most-positive-fixnum
@@ -60,24 +71,40 @@
  kept-new-versions 4
  kept-old-versions nil
  delete-old-versions t
- 
+
+ ;; Display scratch as initial buffer (changed when dashboard is loaded)
  initial-buffer-choice t
- inhibit-startup-screen t
- inhibit-startup-echo-area-message "colin-l"
+ ;; Don't display anything in the initial scratch buffer
  initial-scratch-message nil
+ ;; Don't display the Emacs' startup-screen
+ inhibit-startup-screen t
+ ;; Disable GNU startup message (to disable, value must be your username)
+ inhibit-startup-echo-area-message "colin-l"
+ ;; Disable the second non-case-match pass that typically occurs if Emacs cannot
+ ;; find a major-mode when opening a file
  auto-mode-case-fold nil
- frame-inhibit-implied-resize t
+ ;; Let tiling window manager handle frame size.
+ ;; NOTE: This has little/no effect in fullscreen-mode or on Android GUI
+ frame-inhibit-implied-resize 'force
+ ;; Don't compact font caches during GC
  inhibit-compacting-font-caches t
+ ;; Max # of bytes to read from subprocess in single chunk
+ ;; (= /proc/sys/fs/pipe-max-size)
  read-process-output-max (* 1024 1024)
+ ;; Can make scrolling smoother by avoiding unncessary fontifiation
  redisplay-skip-fontification-on-input t
+ ;; Alist of x windows options (see help)
  command-line-x-option-alist nil
+ ;; Explicitly set active region w/ mouse or shift-select
  select-active-regions 'only
+ ;; Don't create lockfiles
  create-lockfiles nil
+ ;; Follow symlinks and visit the real file (which avoids vc collisions)
  vc-follow-symlinks t
+ ;; Use y/n instead of yes/no
  use-short-answers t)
 
-;; Variables depending on package load
-(declare-function dashboard-refresh-buffer "dashboard")
+;;;; Variables depending on package load
 (defvar ffap-machine-p-known)
 (defvar which-func-update-delay)
 (with-eval-after-load 'ffap
@@ -85,7 +112,7 @@
 (with-eval-after-load 'which-function-mode
   (setq which-func-update-delay 0.5))
 
-;; Configure autosaves and backups.
+;;;; Configure autosaves and backups.
 (let ((backup-dir (expand-file-name "~/backups/"))
       (autosave-dir (expand-file-name "~/auto-saves/")))
   (unless (file-exists-p backup-dir)
@@ -96,13 +123,15 @@
    backup-directory-alist `(("." . ,backup-dir))
    auto-save-file-name-transforms `((".*" ,autosave-dir t))))
 
-;; Early UI optimizations
+;;;; Early UI optimizations
 (setq-default
  cursor-type 'bar
  fill-column 80
  search-invisible nil)
 (when (fboundp 'tool-bar-mode)
-  (tool-bar-mode -1))
+  (if (equal system-type 'android)
+      (tool-bar-mode 1)
+    (tool-bar-mode -1)))
 (when (fboundp 'scroll-bar-mode)
   (scroll-bar-mode -1))
 (when (fboundp 'tooltip-mode)
