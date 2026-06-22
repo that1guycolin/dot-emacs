@@ -138,7 +138,9 @@ See URL: `https://github.com/fukamachi/mallet'."
 See URL `https://fishshell.com'."
     :command ("fish" "-n" source)
     :error-patterns
-    ((error line-start (file-name) " (line " line "): " (message) line-end))
+    ((error   line-start (file-name) " (line " line "): " (message) line-end)
+     (warning line-start (file-name) " (line " line "): " (message) line-end)
+     (info    line-start (file-name) " (line " line "): " (message) line-end))
     :modes (fish-mode))
   (add-to-list 'flycheck-checkers 'fish-self)
 
@@ -149,7 +151,13 @@ See URL `https://github.com/rvben/rumdl'."
     :error-patterns
     ((error line-start (file-name)
             ":" line ":" column ": "
-            (id (one-or-more (not (any " ")))) " " (message) line-end))
+            (id (one-or-more (not (any " ")))) " " (message) line-end)
+     (warning line-start (file-name)
+              ":" line ":" column ": "
+              (id (one-or-more (not (any " ")))) " " (message) line-end)
+     (info line-start (file-name)
+           ":" line ":" column ": "
+           (id (one-or-more (not (any " ")))) " " (message) line-end))
     :modes (markdown-ts-mode markdown-mode gfm-mode))
   (add-to-list 'flycheck-checkers 'markdown-rumdl)
 
@@ -158,7 +166,9 @@ See URL `https://github.com/rvben/rumdl'."
 See URL `https://github.com/priv-kweihmann/systemdlint'."
     :command ("systemdlint" source)
     :error-patterns
-    ((warning line-start (file-name) ":" line ":" (message) line-end))
+    ((error line-start (file-name) ":" line ":" (message) line-end)
+     (warning line-start (file-name) ":" line ":" (message) line-end)
+     (info line-start (file-name) ":" line ":" (message) line-end))
     :modes systemd-mode)
   (add-to-list 'flycheck-checkers 'systemd-systemdlint)
 
