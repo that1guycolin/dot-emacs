@@ -278,13 +278,17 @@
   (dashboard-vertically-center-content t)
   (dashboard-banner-logo-title "Welcome back")
   (dashboard-projects-backend 'project-el)
-  (dashboard-items
-   `((agenda   . 5)
-     (projects . ,(length (project-known-project-roots)))
-     (recents  . 5)))
 
   :config
-  (dashboard-setup-startup-hook))
+  (dashboard-setup-startup-hook)
+  (if (featurep 'org)
+      (setq dashboard-items
+            `((agenda   . 5)
+              (projects . ,(length (project-known-project-roots)))
+              (recents  . 5)))
+    (setq dashboard-items
+          `((projects . ,(length (project-known-project-roots)))
+            (recents . 5)))))
 
 
 (provide '14-misc-packages)
