@@ -1,5 +1,14 @@
 emacs-lisp-mode
 (decf "(declare-function " (p "func") " \"" (p "pkg") "\")")
+(defkeym "(defvar-keymap " (p "keymap-name" kname) n>
+	 ":doc \"" (p "docstring") "\"" n>
+	 "\"" (p "key") "\" #'" (p "function") n>
+	 "\"" (p "key") "\" #'" (p "function") ")" n n>
+	 "(with-eval-after-load 'which-key)" n>
+	 "(which-key-add-keymap-based-replacements" n>
+	 kname n>
+	 "\"" (p "key") "\" \"" (p "displaytext") "\"" n>
+	 "\"" (p "key") "\" \"" (p "displaytext") "\")")
 (kgbset "(keymap-global-set \"" (p "keys") "\" #'" (p "func") ")")
 (kset "(keymap-set " (p "keymap") " \"" (p "keys") "\" #'" (p "func") ")")
 (hdr-l ";;;; ======  " (p "title") "  ======" n
@@ -13,6 +22,7 @@ lisp-mode
 
 sh-mode
 (bash-safe "#!/usr/bin/env bash" n "set -euo pipefail" n "IFS=$\'\\n\\t\'")
+(envfbk "[ -n \"${" (p "variable" VAR) ":-}\" ] || { " VAR "=" (p "value") "; export " VAR "; }")
 (fusage "function usage {" n> "cat <<EOF" n
 	"USAGE: ${funcstack[2]} [OPTIONS] " (p "req arguments") n n
 	(p "description") n n "OPTIONS:" n "  " (p "flag") n
