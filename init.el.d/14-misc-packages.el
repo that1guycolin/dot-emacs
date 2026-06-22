@@ -28,6 +28,11 @@
   :defer t
   :bind ("C-c C-=" . free-keys))
 
+(use-package htmlize
+  :defer t
+  :commands (htmlize-buffer htmlize-region htmlize-file htmlize-many-files
+                            htmlize-many-files-dired))
+
 (use-package popper
   :demand t
   :preface (keymap-global-unset "M-'")
