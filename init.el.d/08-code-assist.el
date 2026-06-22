@@ -10,17 +10,17 @@
 
 ;;; Commentary:
 ;; Call packages that support efficient & productive coding at a global scope.
-;; The packages called in this file help to make Emacs feel like a typical IDE.
+;; The packages called in this file set up an Emacs IDE.
 
 ;;; Code:
 ;;;; =======  TEXT MANIPULATION  =======
-;; `adaptive-wrap'               (smart text wrapping)
-;; `comment-dwim-2'              (easily switch between comment-types)
-;; `dumb-jump'                   (jump-to-def/find-refs)
-;; `rainbow-delimiters'          (colorize "", {}, [], ())
-;; `smartparens'                 (auto-close "", {}, [], ())
-;; `visual-regexp'               (hl regexp as you type)
-;; `visual-regexp-steroids'      (use python-style regexp instead of Emacs)
+;; `adaptive-wrap'           (smart text wrapping)
+;; `comment-dwim-2'          (easily switch between comment-types)
+;; `dumb-jump'               (jump-to-def/find-refs)
+;; `rainbow-delimiters'      (colorize "", {}, [], ())
+;; `smartparens'             (auto-close "", {}, [], ())
+;; `visual-regexp'           (hl regexp as you type)
+;; `visual-regexp-steroids'  (use python-style regexp instead of Emacs)
 ;;   ===================================
 (use-package adaptive-wrap
   :defer t
@@ -63,22 +63,22 @@
 
 
 ;;;; =======  FLYCHECK  =======
-;; bash:         'shellcheck'    (pacman -S shellcheck)
-;; emacs-lisp:   'emacs-lisp'    (built-in)
-;; json:         'jsonlint'      (npm install -g jsonlint)
-;; lua:          'luacheck'      (pacman -S luacheck)
-;; markdown:     'rumdl'         (pacman -S rumdl)
-;; systemd:      'systemdlint'   (uv tool install systemdlint)
-;; toml:         'tombi'         (uv tool install tombi)
-;; xml:          'xmllint'       (pacman -S libxml2)
-;; yaml:         'yamllint'      (pacman -S yamllint)
+;; bash:        'shellcheck'    (pacman -S shellcheck)
+;; emacs-lisp:  'emacs-lisp'    (built-in)
+;; json:        'jsonlint'      (pnpm install -g jsonlint)
+;; lua:         'luacheck'      (pacman -S luacheck)
+;; markdown:    'rumdl'         (pacman -S rumdl)
+;; systemd:     'systemdlint'   (uv tool install systemdlint)
+;; toml:        'tombi'         (uv tool install tombi)
+;; xml:         'xmllint'       (pacman -S libxml2)
+;; yaml:        'yamllint'      (pacman -S yamllint)
 ;; --------------------------
 ;; Extensions:
-;; `flyover' (display errors in buffer)
-;; `flycheck-color-mode-line'
-;; `flycheck-eask' (Support Eask files)
-;; `flycheck-package' (Support Emacs' pacakge files)
-;; `consult-flycheck' (Completing-read for flycheck)
+;; `flyover'                     (display errors in buffer)
+;; `flycheck-color-mode-line'    (display buffer status)
+;; `flycheck-eask'               (Support Eask files)
+;; `flycheck-package'            (Support Emacs' pacakge files)
+;; `consult-flycheck'            (Completing-read for flycheck)
 ;;   ==========================
 (use-package flycheck
   :defer t
@@ -228,39 +228,49 @@ See URL `https://vale.sh'."
 
 ;;;; ============================  EGLOT  =============================
 ;;   ---------------------------  REQUIRED  ---------------------------
-;; cmake:        'neocmakelsp'           (cargo install neocmakelsp)
-;; fish:         'fish-lsp'              (npm install -g fish-lsp)
-;; lua:          'lua-language-server'   (pacman -S lua-language-server)
-;; markdown:     'rumdl'                 (pacman -S rumdl)
-;; python:       'rass' [`ty'/`ruff']    (uv tool install rass ty ruff)
-;; toml:         'tombi'                 (pacman -S tombi)
+;; cmake:    'neocmakelsp'               (cargo install neocmakelsp)
+;; fish:     'fish-lsp'                  (pnpm install -g fish-lsp)
+;; lua:      'lua-language-server'       (pacman -S lua-language-server)
+;; markdown: 'rumdl'                     (pacman -S rumdl)
+;; python:   'rass' [`ty'/`ruff']        (uv tool install rass ty ruff)
+;; toml:     'tombi'                     (pacman -S tombi)
 ;;   ---------------------------  OPTIONAL  ---------------------------
-;; bash:         'bash-language-server'  (pacman -S bash-language-server)
-;; json:         'json-language-server'  (pacman -S json-language-server)
-;; xml:          'lemminx'               (github.com/eclipse-lemminx/lemminx)
-;; yaml:         'yaml-language-server'  (pacman -S yaml-language-server)
-;;   --------------------------  EXTENSIONS  --------------------------
-;; `consult-eglot' `consult-eglot-embark' `flycheck-eglot' (integrations)
-;; `lsp-snippet' (integrate lsp with templ & yasnippet)
-;;   ==================================================================
+;; bash:    'bash-language-server'
+;;          (pnpm i -g bash-language-server)
+;; compose: 'docker-compose-langserver'
+;;          (pnpm i -g @microsoft/container-language-service)
+;; json:    'json-language-server'
+;;          (pnpm i -g vscode-json-languageserver)
+;; xml:     'lemminx'
+;;          ((aur sync -c lemminx) OR (SEE github.com/eclipse-lemminx/lemminx))
+;; yaml:    'yaml-language-server'
+;;          (pnpm i -g yaml-language-server)
+;;   -------------------------  INTEGRATIONS  --------------------------
+;; `consult-eglot' `consult-eglot-embark' `flycheck-eglot' `lsp-snippet'
+;;   ===================================================================
 (use-package eglot
   :ensure nil
   :defer t
   :bind (:map ctl-x-map ("e" . eglot))
   
   :config
-  (setq eglot-server-programs (assoc-delete-all
-                               '(python-mode python-ts-mode)
-                               eglot-server-programs))
-  (dolist
-      (lsp-cons
-       '(((fish-mode) . ("fish-lsp" "start"))
-         ((lua-mode lua-ts-mode) . (expand-file-name
-                                    "~/.luarocks/bin/lua-language-server"))
-         ((markdown-mode markdown-ts-mode) . ("rumdl" "start"))
-         (nxml-mode . ("lemminx"))
-         ((python-mode python-ts-mode) . ("uv" "run" "rass" "python"))))
-    (add-to-list 'eglot-server-programs lsp-cons)))
+  (setq eglot-server-programs
+        (assoc-delete-all '(python-mode python-ts-mode) eglot-server-programs))
+  (let ((lsp-cons-cells
+         '(((docker-compose-mode) .
+            ("docker-compose-langserver" "--stdio"))
+           ((fish-mode) .
+            ("fish-lsp" "start"))
+           ((lua-mode lua-ts-mode) .
+            (expand-file-name "~/.luarocks/bin/lua-language-server"))
+           ((markdown-mode markdown-ts-mode) .
+            ("rumdl" "start"))
+           ((nxml-mode) .
+            ("lemminx"))
+           ((python-mode python-ts-mode) .
+            ("uv" "run" "rass" "python")))))
+    (dolist (con lsp-cons-cells)
+      (add-to-list 'eglot-server-programs con))))
 
 (use-package consult-eglot
   :after (consult eglot)
@@ -325,7 +335,8 @@ See URL `https://vale.sh'."
   :hook ((prog-mode text-mode) . apheleia-mode)
 
   :config
-  (when ()
+  (when (or (equal major-mode 'bash-ts-mode)
+            (equal major-mode 'sh-mode))
     (apheleia-mode -1))
   
   (setf (alist-get 'jq          apheleia-formatters)
@@ -339,9 +350,6 @@ See URL `https://vale.sh'."
   
   (setf (alist-get 'rumdl       apheleia-formatters)
         '("rumdl" "fmt" "--stdin" "-"))
-  
-  (setf (alist-get 'shfmt       apheleia-formatters)
-        '("shfmt" "-i" "4" "-ci" "-"))
   
   (setf (alist-get 'tombi       apheleia-formatters)
         '("tombi" "fmt" "-"))
@@ -363,21 +371,19 @@ See URL `https://vale.sh'."
 
 
 ;;;; =======  FOLDING  =======
-;; `hideshow'            (defines `hs-minor-mode' based on buffer-syntax)
-;; `outline'             (defines `outline-minor-mode' based on headings)
-;; `outline-indent'      (defines minor-mode for indent-centric languages)
-;; `treesit-fold'        (fold based on language syntax)
+;; `hideshow'            (fold based on buffer-syntax)
+;; `outline'             (fold based on headings)
+;; `outline-indent'      (fold based on indentation)
+;; `treesit-fold'        (fold based on treesit-language syntax)
 ;; `kirigami'            (consistent settings across backends)
 ;;   =========================
 (use-package hideshow
   :ensure nil
   :defer t
   :hook
-  ((c-mode-hook
-    c++-mode-hook css-mode-hook go-mode-hook html-mode-hook java-mode-hook
-    js-mode-hook json-mode-hook lua-mode-hook nxml-mode-hook perl-mode-hook
-    php-mode-hook ruby-mode-hook rust-mode-hook sh-mode-hook
-    typescript-mode-hook) . hs-minor-mode))
+  ((c-mode
+    c++-mode css-mode go-mode html-mode java-mode js-mode json-mode lua-mode
+    nxml-mode perl-mode php-mode ruby-mode rust-mode sh-mode typescript-mode) . hs-minor-mode))
 
 (use-package outline
   :ensure nil
@@ -390,7 +396,7 @@ See URL `https://vale.sh'."
 (use-package outline-indent
   :defer t
   :hook
-  ((python-base-mode yaml-ts-mode) . outline-indent-minor-mode)
+  ((python-mode python-ts-mode yaml-ts-mode) . outline-indent-minor-mode)
   :custom
   (outline-indent-ellipsis " ▼"))
 
@@ -523,3 +529,5 @@ See URL `https://vale.sh'."
 
 (provide '08-code-assist)
 ;;; 08-code-assist.el ends here
+
+                                        ; LocalWords:  hs
