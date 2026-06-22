@@ -190,10 +190,11 @@ See URL `https://vale.sh'."
 
 (use-package flyover
   :defer t
-  :bind ("C-c y"       . flyover-mode)
   :hook (flycheck-mode . flyover-mode)
+
+  :functions flyover-toggle flyover-flash-error-at-point
   :defines flyover-checkers
-  
+
   :init (setq flyover-checkers '(flycheck))
   
   :custom
@@ -215,10 +216,26 @@ See URL `https://vale.sh'."
   (flyover-line-position-offset 0)
   (flyover-wrap-messages t)
   (flyover-max-line-length 120)
-  (flyover-debounce-interval 0.1)
-  (flyover-cursor-debounce-interval 0.2)
-  (flyover-display-mode 'hide-on-same-line)
-  (flyover-hide-during-completion t))
+  (flyover-debounce-interval 0.5)
+  (flyover-cursor-debounce-interval 0.5)
+  (flyover-display-mode 'always)
+  (flyover-hide-during-completion t)
+  :config
+  (defvar-keymap user/flyover-functions-map
+    :doc "Useful functions for `flyover'."
+    "m" #'flyover-mode
+    "t" #'flyover-toggle
+    "P" #'flyover-flash-error-at-point)
+
+  (with-eval-after-load 'which-key)
+  (which-key-add-keymap-based-replacements
+    user/flyover-functions-map
+    "m" "(De)Activate Flyover-Mode"
+    "t" "Flyover Toggle"
+    "p" "Flash Error @ Point")
+  (keymap-global-set "C-c y" user/flyover-functions-map)
+
+  (with-eval-after-load 'which))
 
 (use-package flycheck-color-mode-line
   :defer t
@@ -236,7 +253,7 @@ See URL `https://vale.sh'."
   :after (consult flycheck))
 
 
-;;;; ============================  EGLOT  =============================
+;;;; =======  EGLOT  =======
 ;;   ---------------------------  REQUIRED  ---------------------------
 ;; cmake:    'neocmakelsp'               (cargo install neocmakelsp)
 ;; fish:     'fish-lsp'                  (pnpm install -g fish-lsp)
