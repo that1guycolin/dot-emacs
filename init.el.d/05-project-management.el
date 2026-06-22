@@ -91,6 +91,18 @@
     "b" #'activities-switch-buffer
     "v" #'activities-revert
     "l" #'activities-list)
+
+  (with-eval-after-load 'which-key
+    (which-key-add-keymap-based-replacements
+      "n" "New Activity"
+      "d" "Define Activity"
+      "r" "Resume Activity"
+      "p" "Suspend Activity"
+      "k" "Kill Activity"
+      "s" "Switch Activity"
+      "b" "Switch Buffer (in current activity)"
+      "v" "Revert Activity"
+      "l" "List Activities"))
   :bind-keymap ("C-x C-a" . user/activities-map)
   :functions
   activities-new activities-define activities-resume activities-suspend
