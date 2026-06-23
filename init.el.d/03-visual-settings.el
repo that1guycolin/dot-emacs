@@ -1,7 +1,7 @@
 ;;; 03-visual-settings.el --- Core UI configuration -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; editorconfig, ef-themes, minions, modus-themes, nerd-icons,
+;; editorconfig, ef-themes, inhibit-mouse, minions, modus-themes, nerd-icons,
 ;; nerd-icons-corfu, tab-line-nerd-icons, visual-fill-column
 
 ;;; Commentary:
@@ -88,6 +88,23 @@
   :hook
   ((visual-line-mode                . visual-fill-column-for-vline)
    ((prog-mode text-mode conf-mode) . visual-line-mode)))
+
+;;;; =======  INHIBIT MOUSE  =======
+;; `inhibit-mouse' (DON'T MOVE THE MOUSE!)
+;;   ===============================
+(use-package inhibit-mouse
+  :demand t
+  :if (not (eq system-type 'android))
+  :functions inhibit-mouse-mode
+  :custom
+  (inhibit-mouse-adjust-mouse-highlight t)
+  (inhibit-mouse-adjust-show-help-function t)
+
+  :config
+  (if (daemonp)
+      (add-hook
+       'server-after-make-frame-hook #'inhibit-mouse-mode)
+    (inhibit-mouse-mode 1)))
 
 
 (provide '03-visual-settings)
