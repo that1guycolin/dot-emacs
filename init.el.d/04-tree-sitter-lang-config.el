@@ -118,9 +118,22 @@
   :defer t
   :preface
   (defvar python-base-mode-map)
-  
+  (defun user/python-docstrings()
+    "Toggle `fill-column' between 88 (code) & 72 (docstrings).
+
+Black recommends a line length of 88 for the actual document/code, but a
+line length of 72 for docstrings; this helps make sure python docstrings
+follow this convention."
+    (interactive)
+    (cond ((= fill-column 88)
+           (setq-local fill-column 72))
+          ((= fill-column 72)
+           (setq-local fill-column 88))
+          (t
+           (error "Value of fill-column (%d) is neither 88 or 72" fill-column))))
   :bind
   (:map python-base-mode-map
+        ("C-\""      . user/python-docstrings)
         ("C-c C-k c" . python-skeleton-class)
         ("C-c C-k d" . python-skeleton-def)
         ("C-c C-k f" . python-skeleton-for)
@@ -174,8 +187,8 @@
           (when modified
             (write-region nil nil file nil 'silent)
             (message "Updated: %s" file))))))
-  :interpreter ("sh" "zsh")
-  :mode "\\.zsh\\'"
+  :interpreter ("sh" "zsh" "dash")
+  :mode ("\\.zsh\\'" "\\.dash\\'")
   :config
   (add-hook 'sh-mode-hook #'user/enable-zsh-error-echo-fix))
 
