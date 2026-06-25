@@ -84,6 +84,7 @@
   :defer t
   :preface
   (defvar minions-prominent-modes)
+  (defvar sh-shell)
   (defun user/setup-vale ()
     "If not setup, install the vale from the .ini file in dot-Emacs."
     (interactive)
@@ -93,17 +94,24 @@
       (unless (file-exists-p vale-install)
         (shell-command command))))
 
+  (defun user/flycheck-shellcheck-setup-dash ()
+    "Update `flycheck-shell-check-args' when `sh-shell' is dash."
+    (when (and (eq major-mode 'sh) (eq sh-shell 'dash))
+      (setq-local flycheck-shellcheck-args '("--shell=dash"))))
+
   :hook ((prog-mode text-mode) . flycheck-mode)
   :functions flycheck-select-checker flycheck-add-mode
 
   :custom
   (flycheck-emacs-lisp-load-path 'inherit)
   (flycheck-disabled-checkers
-   '(emacs-lisp-elsa sh-bash yaml-jsyaml yaml-ruby))
+   '(emacs-lisp-elsa rpm-rpmlint yaml-jsyaml yaml-ruby))
 
   :config
   (add-to-list 'minions-prominent-modes 'flycheck-mode)
+  (add-to-list 'flycheck-shellcheck-supported-shells 'dash)
   (flycheck-add-mode 'org-lint 'org-gtd-clarify-mode)
+  (add-hook 'sh-mode-hook #'user/flycheck-shellcheck-setup-dash)
 
   (flycheck-define-checker cl-mallet
     "A Common Lisp linter using Mallet.
