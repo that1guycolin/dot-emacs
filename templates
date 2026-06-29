@@ -22,7 +22,7 @@ lisp-mode
 
 sh-mode
 (fargparse "PARSED=$(getopt -o " (p "shortflags") " -l "
-	   (p "long-flags") " -- \"@\") || { usage; exit 1; }" n>
+	   (p "long-flags") " -- \"$@\") || { usage; exit 1; }" n>
 	   "eval set -- \"$PARSED\"" n> "while true; do" n
 	   "case \"$1\" in" n n> "-h | --help) usage; exit ;;" n>
 	   "--) shift; break ;;" n>
