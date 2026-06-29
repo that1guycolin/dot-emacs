@@ -82,8 +82,17 @@
 
 (use-package dockerfile-ts-mode
   :ensure nil
+  :preface
+  (defun user/dockerfile-fill-column ()
+    "Set `fill-column' to 1000 in dockerfile-ts-mode.
+Setting the `fill-column' value to 1000 effectively disables
+`fill-column-mode'. Use this function as a hook for
+`dockerfile-ts-mode'."
+    (setq-local fill-column 1000))
   :defer t
-  :mode ("Dockerfile\\'" "Containerfile\\'"))
+  :mode ("Dockerfile\\'" "Containerfile\\'")
+  :config
+  (add-hook 'dockerfile-ts-mode-hook #'user/dockerfile-fill-column))
 
 (use-package emacs-lisp-mode
   :ensure nil
