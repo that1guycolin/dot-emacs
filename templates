@@ -21,13 +21,28 @@ lisp-mode
      "(string-equal string \":" method "\"))" n> ":" method ")")
 
 sh-mode
+(fargparse "PARSED=$(getopt -o " (p "shortflags") " -l "
+	   (p "long-flags") " -- \"@\") || { usage; exit 1; }" n>
+	   "eval set -- \"$PARSED\"" n> "while true; do" n
+	   "case \"$1\" in" n n> "-h | --help) usage; exit ;;" n>
+	   "--) shift; break ;;" n>
+	   "*) echo \"Invalid option: $1\"; usage; exit 2 ;;" n>
+	   "esac" n> "done" n>)
 (bash-safe "#!/usr/bin/env bash" n "set -euo pipefail" n "IFS=$\'\\n\\t\'")
-(envfbk "[ -n \"${" (p "variable" VAR) ":-}\" ] || { " VAR "=" (p "value") "; export " VAR "; }")
+(flag "-" (p "s") " | --" (p "long") ")" n>
+      (p "FLAG") "=" (p "VALUE") n> "shift" (p "shiftn") n> ";;")
 (fusage "function usage {" n> "cat <<EOF" n
 	"USAGE: ${funcstack[2]} [OPTIONS] " (p "req arguments") n n
 	(p "description") n n "OPTIONS:" n "  " (p "flag") n
 	"      " (p "flag description") n n "  -h, --help" n
 	"      Display this message and exit." n n "EOF" n "}")
+(fargparse "PARSED=$(getopt -o " (p "shortflags") " -l "
+	   (p "long-flags") " -- \"@\") || { usage; return 1; }" n>
+	   "eval set -- \"$PARSED\"" n> "while true; do" n
+	   "case \"$1\" in" n n> "-h | --help) usage; return ;;" n>
+	   "--) shift; break ;;" n>
+	   "*) echo \"Invalid option: $1\"; usage; return 2 ;;" n>
+	   "esac" n> "done" n>)
 (shbang "#!/bin/sh")
 (usage "function usage {" n> "cat <<EOF" n
 	"USAGE: ${0##*/} [OPTIONS] " (p "req arguments") n n
