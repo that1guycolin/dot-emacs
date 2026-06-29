@@ -111,6 +111,7 @@
   (add-to-list 'minions-prominent-modes 'flycheck-mode)
   (add-to-list 'flycheck-shellcheck-supported-shells 'dash)
   (flycheck-add-mode 'org-lint 'org-gtd-clarify-mode)
+  (flycheck-add-mode 'docker-compose-mode 'yaml-yamllint)
   (add-hook 'sh-mode-hook #'user/flycheck-shellcheck-setup-dash)
 
   (flycheck-define-checker cl-mallet
@@ -140,6 +141,23 @@ See URL: `https://github.com/fukamachi/mallet'."
            line-end))
     :modes (lisp-mode lisp-data-mode))
   (add-to-list 'flycheck-checkers 'cl-mallet)
+
+  (flycheck-define-checker dc-dclint
+    "A Docker Compose linter using dclint.
+See URL: https://github.com/zavoloklom/docker-compose-linter"
+    :command ("dclint" source)
+    :error-patterns
+    ((error line-start (zero-or-more space) (line) ":" (column)
+            (one-or-more space) "error" (one-or-more space) (message)
+            (one-or-more space) (id (one-or-more (any alnum "-"))) line-end)
+     (warning line-start (zero-or-more space) (line) ":" (column)
+              (one-or-more space) "warning" (one-or-more space) (message)
+              (one-or-more space) (id (one-or-more (any alnum "-"))) line-end)
+     (info line-start (zero-or-more space) (line) ":" (column)
+           (one-or-more space) "info" (one-or-more space) (message)
+           (one-or-more space) (id (one-or-more (any alnum "-"))) line-end))
+    :modes (docker-compose-mode))
+  (add-to-list 'flycheck-checkers 'dc-dclint)
 
   (flycheck-define-checker fish-self
     "The shell for the 90's built-in syntax checker.
