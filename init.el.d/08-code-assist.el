@@ -409,6 +409,9 @@ See URL `https://vale.sh'."
   (setf (alist-get 'xmlstarlet  apheleia-formatters)
         '("xmlstarlet" "fo" "--indent-spaces" "2" "-"))
 
+  (setf (alist-get 'yq-yaml     apheleia-formatters)
+        '("yq" "-y" "." "-"))
+
   (setf (alist-get 'cmake-ts-mode       apheleia-mode-alist) 'neocmakelsp)
   (setf (alist-get 'eask-mode           apheleia-mode-alist) 'lisp-indent)
   (setf (alist-get 'fish-mode           apheleia-mode-alist) 'fish-indent)
