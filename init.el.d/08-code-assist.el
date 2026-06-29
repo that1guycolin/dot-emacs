@@ -111,7 +111,7 @@
   (add-to-list 'minions-prominent-modes 'flycheck-mode)
   (add-to-list 'flycheck-shellcheck-supported-shells 'dash)
   (flycheck-add-mode 'org-lint 'org-gtd-clarify-mode)
-  (flycheck-add-mode 'docker-compose-mode 'yaml-yamllint)
+  (flycheck-add-mode 'yaml-yamllint 'docker-compose-mode)
   (add-hook 'sh-mode-hook #'user/flycheck-shellcheck-setup-dash)
 
   (flycheck-define-checker cl-mallet
@@ -147,13 +147,13 @@ See URL: `https://github.com/fukamachi/mallet'."
 See URL: https://github.com/zavoloklom/docker-compose-linter"
     :command ("dclint" source)
     :error-patterns
-    ((error line-start (zero-or-more space) (line) ":" (column)
+    ((error line-start (zero-or-more space) line ":" column
             (one-or-more space) "error" (one-or-more space) (message)
             (one-or-more space) (id (one-or-more (any alnum "-"))) line-end)
-     (warning line-start (zero-or-more space) (line) ":" (column)
+     (warning line-start (zero-or-more space) line ":" column
               (one-or-more space) "warning" (one-or-more space) (message)
               (one-or-more space) (id (one-or-more (any alnum "-"))) line-end)
-     (info line-start (zero-or-more space) (line) ":" (column)
+     (info line-start (zero-or-more space) line ":" column
            (one-or-more space) "info" (one-or-more space) (message)
            (one-or-more space) (id (one-or-more (any alnum "-"))) line-end))
     :modes (docker-compose-mode))
@@ -215,12 +215,9 @@ See URL `https://vale.sh'."
                                (flycheck-select-checker 'org-lint))))
 
 (use-package flyover
-  :defer t
-  :hook (flycheck-mode . flyover-mode)
-
-  :functions flyover-toggle flyover-flash-error-at-point
+  :after (flycheck)
+  :functions flyover-mode flyover-toggle flyover-flash-error-at-point
   :defines flyover-checkers
-
   :init (setq flyover-checkers '(flycheck))
   
   :custom
@@ -247,21 +244,20 @@ See URL `https://vale.sh'."
   (flyover-display-mode 'always)
   (flyover-hide-during-completion t)
   :config
+  (flyover-mode 1)
+  
   (defvar-keymap user/flyover-functions-map
     :doc "Useful functions for `flyover'."
     "m" #'flyover-mode
     "t" #'flyover-toggle
     "P" #'flyover-flash-error-at-point)
-
   (with-eval-after-load 'which-key)
   (which-key-add-keymap-based-replacements
     user/flyover-functions-map
     "m" "(De)Activate Flyover-Mode"
     "t" "Flyover Toggle"
     "p" "Flash Error @ Point")
-  (keymap-global-set "C-c y" user/flyover-functions-map)
-
-  (with-eval-after-load 'which))
+  (keymap-global-set "C-c y" user/flyover-functions-map))
 
 (use-package flycheck-color-mode-line
   :defer t
@@ -400,17 +396,11 @@ See URL `https://vale.sh'."
   (setf (alist-get 'ruff        apheleia-formatters)
         '("ruff" "format" "-"))
   
-  (setf (alist-get 'rumdl       apheleia-formatters)
-        '("rumdl" "fmt" "--stdin" "-"))
-  
   (setf (alist-get 'tombi       apheleia-formatters)
         '("tombi" "fmt" "-"))
   
   (setf (alist-get 'xmlstarlet  apheleia-formatters)
         '("xmlstarlet" "fo" "--indent-spaces" "2" "-"))
-
-  (setf (alist-get 'yq-yaml     apheleia-formatters)
-        '("yq" "-y" "." "-"))
 
   (setf (alist-get 'cmake-ts-mode       apheleia-mode-alist) 'neocmakelsp)
   (setf (alist-get 'eask-mode           apheleia-mode-alist) 'lisp-indent)
@@ -422,7 +412,7 @@ See URL `https://vale.sh'."
   (setf (alist-get 'toml-ts-mode        apheleia-mode-alist) 'tombi)
   (setf (alist-get 'conf-toml-mode      apheleia-mode-alist) 'tombi)
   (setf (alist-get 'nxml-mode           apheleia-mode-alist) 'xmlstarlet)
-  (setf (alist-get 'yaml-ts-mode        apheleia-mode-alist) 'yq-yaml))
+  (setf (alist-get 'yaml-ts-mode        apheleia-mode-alist) 'prettier-yaml))
 
 
 ;;;; =======  FOLDING  =======

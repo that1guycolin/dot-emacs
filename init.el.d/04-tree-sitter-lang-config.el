@@ -219,7 +219,13 @@ follow this convention."
 (use-package yaml-ts-mode
   :ensure nil
   :defer t
-  :mode ("\\.yml\\'" "\\.yaml\\'"))
+  :preface
+  (defun user/yaml-fill-column ()
+    "Set local `fill-column' value to 1000."
+    (setq-local fill-column 1000))
+  :mode ("\\.yml\\'" "\\.yaml\\'")
+  :config
+  (add-hook 'yaml-ts-mode-hook #'user/yaml-fill-column))
 
 
 (provide '04-tree-sitter-lang-config)
