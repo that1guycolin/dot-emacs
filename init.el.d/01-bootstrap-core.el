@@ -104,8 +104,9 @@ https://raw.githubusercontent.com/progfolio/elpaca/refs/heads/master/doc/install
   :demand t
   :preface
   (defvar user/exec-path-from-shell-vars
-    '("CC" "CXX" "PKG_CONFIG_PATH" "SSH_AGENT_PID" "SSH_AUTH_SOCK"
-      "LSP_USE_PLISTS")
+    '("CC"
+      "CXX" "LSP_USE_PLISTS" "PKG_CONFIG_PATH" "SSH_AGENT_PID" "SSH_AUTH_SOCK"
+      "WAYLAND_DISPLAY")
     "List of environment variables to load at Emacs start.")
   :functions exec-path-from-shell-initialize
   :custom

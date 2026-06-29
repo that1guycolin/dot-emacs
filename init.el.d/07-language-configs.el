@@ -245,8 +245,9 @@
 (use-package systemd
   :defer t
   :mode
-  (("\\.service\\'" . systemd-mode)
-   ("\\.socket\\'"  . systemd-mode)))
+  (("\\.container\\'" . systemd-mode)
+   ("\\.service\\'"   . systemd-mode)
+   ("\\.socket\\'"    . systemd-mode)))
 
 
 ;;;; =======  ENHANCE BUILT-INS  =======
