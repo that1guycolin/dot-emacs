@@ -284,7 +284,6 @@ See URL `https://vale.sh'."
 ;; `consult-eglot' `consult-eglot-embark' `flycheck-eglot' `lsp-snippet'
 ;;   ===================================================================
 (use-package eglot
-  :ensure nil
   :defer t
   :bind (:map ctl-x-map ("e" . eglot))
   
