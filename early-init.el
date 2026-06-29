@@ -69,7 +69,7 @@
  auth-sources '("~/.authinfo.gpg")
  version-control t
  kept-new-versions 4
- kept-old-versions nil
+ kept-old-versions 1
  delete-old-versions t
 
  ;; Display scratch as initial buffer (changed when dashboard is loaded)
@@ -102,7 +102,9 @@
  ;; Follow symlinks and visit the real file (which avoids vc collisions)
  vc-follow-symlinks t
  ;; Use y/n instead of yes/no
- use-short-answers t)
+ use-short-answers t
+ ;; Save modifications made in Emacs UI to alternate file
+ custom-file (expand-file-name "init.el.d/00-auto-custom.el"))
 
 ;;;; Variables depending on package load
 (defvar ffap-machine-p-known)
