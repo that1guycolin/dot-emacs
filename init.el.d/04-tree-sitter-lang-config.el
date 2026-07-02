@@ -55,6 +55,7 @@
        '((bash-mode              . bash-ts-mode)
          (cmake-mode             . cmake-ts-mode)
          (css-mode               . css-ts-mode)
+         (dockerfile-mode        . dockerfile-ts-mode)
          (go-mode                . go-ts-mode)
          (json-mode              . json-ts-mode)
          (js-json-mode           . json-ts-mode)
