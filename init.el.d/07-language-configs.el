@@ -267,8 +267,11 @@
 (use-package grip-mode
   :defer t
   :preface (defvar markdown-ts-mode-map)
-  :bind (:map markdown-ts-mode-map
-              ("C-c j" . grip-mode))
+  :bind
+  (:map markdown-ts-mode-map
+        ("C-c j" . grip-mode)
+        :map markdown-mode-map
+        ("C-c j" . grip-mode))
   :custom
   (grip-command 'auto))
 
