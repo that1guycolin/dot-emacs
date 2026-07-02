@@ -59,7 +59,6 @@
          (go-mode                . go-ts-mode)
          (json-mode              . json-ts-mode)
          (js-json-mode           . json-ts-mode)
-         (js2-mode               . json-ts-mode)
          (lua-mode               . lua-ts-mode)
          (rust-mode              . rust-ts-mode)
          (typescript-mode        . typescript-ts-mode)
