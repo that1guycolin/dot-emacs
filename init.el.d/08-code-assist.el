@@ -303,7 +303,16 @@ See URL `https://vale.sh'."
   
   :config
   (setq eglot-server-programs
-        (assoc-delete-all '(python-mode python-ts-mode) eglot-server-programs))
+        (cl-remove-if
+         (lambda (cell)
+           (cl-some
+            (lambda (mode)
+              (memq mode '(python-mode
+                           python-ts-mode
+                           markdown-mode
+                           markdown-ts-mode)))
+            (ensure-list (car cell))))
+         eglot-server-programs))
   (let ((lsp-cons-cells
          '(((docker-compose-mode) .
             ("docker-compose-langserver" "--stdio"))
@@ -312,7 +321,7 @@ See URL `https://vale.sh'."
            ((lua-mode lua-ts-mode) .
             (expand-file-name "~/.luarocks/bin/lua-language-server"))
            ((markdown-mode markdown-ts-mode) .
-            ("rumdl" "start"))
+            ("rumdl" "server"))
            ((nxml-mode) .
             ("lemminx"))
            ((python-mode python-ts-mode) .
