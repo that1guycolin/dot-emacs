@@ -33,10 +33,6 @@
   :custom
   (forge-pull-notifications t))
 
-(use-package git-commit-ts-mode
-  :defer t
-  :mode "\\COMMIT_EDITMSG\\'")
-
 (use-package diff-hl
   :defer t
   :bind ("C-x v o" . diff-hl-mode)
@@ -73,6 +69,28 @@
       "{" "Show Prev. Hunk"
       "}" "Show Next Hunk"))
   (keymap-global-set "C-x v ?" user/diff-hl-functions))
+
+(use-package git-commit-ts-mode
+  :defer t
+  :mode "\\COMMIT_EDITMSG\\'")
+
+(use-package git-link
+  :defer t
+  :preface
+  (defvar-keymap user/git-link-functions-map
+    :doc "Useful functions from the package `git-link'."
+    "l" #'git-link
+    "c" #'git-link-commit
+    "h" #'git-link-homepage)
+
+  (with-eval-after-load 'which-key
+    (which-key-add-keymap-based-replacements
+      user/git-link-functions-map
+      "l" "Link to current buffer"
+      "c" "Link to specified commit"
+      "h" "Link to repo homepage"))
+  :bind-keymap ("C-c C-y" . user/git-link-functions-map)
+  :functions git-link git-link-commit git-link-homepage)
 
 (use-package git-modes
   :defer t
