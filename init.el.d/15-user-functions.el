@@ -246,25 +246,6 @@ If not in a side window, jump to the first found side window."
     (when (member pkg (mapcar #'car (elpaca--queued)))
       (elpaca-rebuild pkg))))
 
-
-;;;; =======  TRANSIENT  =======
-(with-eval-after-load 'transient
-  (declare-function transient-define-prefix "transient")
-  (defvar user/visual-settings-dispatch nil)
-  (transient-define-prefix
-    user/visual-settings-dispatch ()
-    "Display functions that change how the user-interface looks."
-    ["Modify UI"
-     ["Fonts"
-      ("f s" "Switch font"         user/switch-font)
-      ("f r" "Random font"         user/random-font)
-      ("f b" "Font size behaviour" user/set-font-size-behaviour :transient t)]
-     ["Theme"
-      ("t s" "Switch theme"        modus-themes-select-dark)
-      ("t r" "Random theme"        modus-themes-load-random-dark)
-      ("t n" "Rotate theme"        modus-themes-rotate)]])
-  (keymap-global-set "C-c u" 'user/visual-settings-dispatch))
-
 (declare-function elpaca-manager                        "elpaca")
 (declare-function elpaca-fetch                          "elpaca")
 (declare-function elpaca-fetch-all                      "elpaca")
@@ -313,8 +294,38 @@ If not in a side window, jump to the first found side window."
     "b d" "Build Docs"
     "b D" "Build Docs (Process Sentinel)"
     "b c" "Build Compile"))
-
 (keymap-global-set "C-c e" user/elpaca-options-map)
+
+
+;;;; =======  TRANSIENT  =======
+(with-eval-after-load 'transient
+  (declare-function transient-define-prefix "transient")
+  (defvar user/visual-settings-dispatch nil)
+  (transient-define-prefix
+    user/visual-settings-dispatch ()
+    "Display functions that change how the user-interface looks."
+    ["Modify UI"
+     ["Fonts"
+      ("f s" "Switch font"         user/switch-font)
+      ("f r" "Random font"         user/random-font)
+      ("f b" "Font size behaviour" user/set-font-size-behaviour :transient t)]
+     ["Theme"
+      ("t s" "Switch theme"        modus-themes-select-dark)
+      ("t r" "Random theme"        modus-themes-load-random-dark)
+      ("t n" "Rotate theme"        modus-themes-rotate)]])
+  (keymap-global-set "C-c u" 'user/visual-settings-dispatch))
+
+
+;;;; =======  EXERCISM  =======
+(declare-function ert-delete-all-tests "ert.el.gz")
+(defun user/eval-and-run-all-tests-in-buffer ()
+  "Run tests for the `exercism' learning tool.
+Delete all loaded tests from the runtime, evaluate the current buffer,
+and run all loaded tests with ert."
+  (interactive)
+  (ert-delete-all-tests)
+  (eval-buffer)
+  (ert 't))
 
 
 (provide '15-user-functions)
