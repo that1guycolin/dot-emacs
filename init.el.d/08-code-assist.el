@@ -401,6 +401,9 @@ See URL `https://vale.sh'."
   
   (setf (alist-get 'neocmakelsp apheleia-formatters)
         '("neocmakelsp" "format" (buffer-file-name)))
+
+  (setf (alist-get 'prettier    apheleia-formatters)
+        '("prettier" "--stdin-filepath" filepath))
   
   (setf (alist-get 'ruff        apheleia-formatters)
         '("ruff" "format" "-"))
@@ -411,17 +414,26 @@ See URL `https://vale.sh'."
   (setf (alist-get 'xmlstarlet  apheleia-formatters)
         '("xmlstarlet" "fo" "--indent-spaces" "2" "-"))
 
+  (setf (alist-get 'yamlfmt     apheleia-formatters)
+        '("yamlfmt" "--in"  "-"))
+
+  (setf (alist-get 'cmake-mode          apheleia-mode-alist) 'neocmakelsp)
   (setf (alist-get 'cmake-ts-mode       apheleia-mode-alist) 'neocmakelsp)
   (setf (alist-get 'eask-mode           apheleia-mode-alist) 'lisp-indent)
   (setf (alist-get 'fish-mode           apheleia-mode-alist) 'fish-indent)
+  (setf (alist-get 'json-mode           apheleia-mode-alist) 'jq)
+  (setf (alist-get 'js-json-mode        apheleia-mode-alist) 'jq)
   (setf (alist-get 'json-ts-mode        apheleia-mode-alist) 'jq)
   (setf (alist-get 'markdown-mode       apheleia-mode-alist) 'rumdl)
+  (setf (alist-get 'markdown-ts-mode    apheleia-mode-alist) 'rumdl)
   (setf (alist-get 'gfm-mode            apheleia-mode-alist) 'rumdl)
+  (setf (alist-get 'python-mode         apheleia-mode-alist) 'ruff)
   (setf (alist-get 'python-ts-mode      apheleia-mode-alist) 'ruff)
   (setf (alist-get 'toml-ts-mode        apheleia-mode-alist) 'tombi)
   (setf (alist-get 'conf-toml-mode      apheleia-mode-alist) 'tombi)
   (setf (alist-get 'nxml-mode           apheleia-mode-alist) 'xmlstarlet)
-  (setf (alist-get 'yaml-ts-mode        apheleia-mode-alist) 'prettier-yaml))
+  (setf (alist-get 'yaml-mode           apheleia-mode-alist) 'yamlfmt)
+  (setf (alist-get 'yaml-ts-mode        apheleia-mode-alist) 'yamlfmt))
 
 
 ;;;; =======  FOLDING  =======
@@ -475,54 +487,6 @@ See URL `https://vale.sh'."
 
 (use-package kirigami
   :defer t
-  :preface
-  (defvar user/mode-folding-backend-alist
-    '((bash-ts-mode              . treesit-fold-mode)
-      (cmake-ts-mode             . treesit-fold-mode)
-      (c++-mode                  . hs-minor-mode)
-      (c-mode                    . hs-minor-mode)
-      (conf-mode                 . outline-minor-mode)
-      (csharp-ts-mode            . treesit-fold-mode)
-      (css-mode                  . hs-minor-mode)
-      (css-ts-mode               . treesit-fold-mode)
-      (c++-ts-mode               . treesit-fold-mode)
-      (c-ts-mode                 . treesit-fold-mode)
-      (diff-mode                 . outline-minor-mode)
-      (dockerfile-ts-mode        . treesit-fold-mode)
-      (emacs-lisp-mode           . outline-minor-mode)
-      (go-mode                   . hs-minor-mode)
-      (go-mod-ts-mode            . treesit-fold-mode)
-      (go-ts-mode                . treesit-fold-mode)
-      (html-mode                 . hs-minor-mode)
-      (java-mode                 . hs-minor-mode)
-      (java-ts-mode              . treesit-fold-mode)
-      (js-mode                   . hs-minor-mode)
-      (json-mode                 . hs-minor-mode)
-      (json-ts-mode              . treesit-fold-mode)
-      (lisp-interaction-mode     . outline-minor-mode)
-      (lisp-mode                 . outline-minor-mode)
-      (lua-mode                  . hs-minor-mode)
-      (lua-ts-mode               . treesit-fold-mode)
-      (makefile-ts-mode          . treesit-fold-mode)
-      (markdown-mode             . outline-minor-mode)
-      (markdown-ts-mode          . treesit-fold-mode)
-      (nxml-mode                 . hs-minor-mode)
-      (perl-mode                 . hs-minor-mode)
-      (php-mode                  . hs-minor-mode)
-      (php-ts-mode               . treesit-fold-mode)
-      (python-base-mode          . outline-indent-minor-mode)
-      (ruby-mode                 . hs-minor-mode)
-      (ruby-ts-mode              . treesit-fold-mode)
-      (rust-mode                 . hs-minor-mode)
-      (rust-ts-mode              . treesit-fold-mode)
-      (sh-mode                   . hs-minor-mode)
-      (toml-ts-mode              . treesit-fold-mode)
-      (typescript-mode           . hs-minor-mode)
-      (typescript-ts-mode        . treesit-fold-mode)
-      (xml-ts-mode               . treesit-fold-mode)
-      (yaml-ts-mode              . outline-indent-minor-mode))
-    "Alist of cons cells mapping major-modes to preferred folding backend.")
-
   :hook
   ((bash-ts-mode
     cmake-ts-mode c++-mode c-mode conf-mode csharp-ts-mode css-mode css-ts-mode
