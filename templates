@@ -1,4 +1,7 @@
 emacs-lisp-mode
+(conf-head-s ";;;; =======  " (p "header_text") "  =======")
+(conf-head ";;;; =======  " (p "header_text") "  =======" n> ";;" n>
+	   ";;   =========" (p "==") "===========")
 (decf "(declare-function " (p "func") " \"" (p "pkg") "\")")
 (defkeym "(defvar-keymap " (p "keymap-name" kname) n>
 	 ":doc \"" (p "docstring") "\"" n>
