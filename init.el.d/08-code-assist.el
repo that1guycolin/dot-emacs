@@ -501,25 +501,25 @@ See URL `https://vale.sh'."
   kirigami-open-fold kirigami-open-fold-rec kirigami-open-folds
   kirigami-close-fold kirigami-close-folds kirigami-toggle-fold
   :config
-  (defvar-keymap user/kirigami-functions
+  (defvar-keymap user/kirigami-functions-map
     :doc "Common code folding functions from `kirigami'."
     "o" #'kirigami-open-fold
-    "O" #'kirigami-open-fold-rec
-    "r" #'kirigami-open-folds
+    "r" #'kirigami-open-fold-rec
+    "u" #'kirigami-open-folds
     "c" #'kirigami-close-fold
-    "m" #'kirigami-close-folds
+    "f" #'kirigami-close-folds
     "a" #'kirigami-toggle-fold)
 
   (with-eval-after-load 'which-key
     (which-key-add-keymap-based-replacements
-      user/kirigami-functions
+      user/kirigami-functions-map
       "o" "Open Fold"
-      "O" "Recursively Open Fold"
-      "r" "Open Folds"
+      "r" "Recursively Open Fold"
+      "u" "Open Folds"
       "c" "Close Fold"
-      "m" "Close Folds"
+      "f" "Close Folds"
       "a" "Toggle Folds"))
-  (keymap-global-set "C-c z" user/kirigami-functions))
+  (keymap-global-set "C-c z" user/kirigami-functions-map))
 
 
 ;;;; =======  FLYSPELL  =======
