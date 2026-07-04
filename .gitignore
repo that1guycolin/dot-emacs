@@ -6,6 +6,7 @@ bookmarks
 .cache/
 CLAUDE.md
 .codex
+.cz.toml
 .dap-breakpoints
 dirvish/
 *.eask/
@@ -28,6 +29,7 @@ mason
 .org-generic-id-locations
 .org-id-locations
 persist/
+.pre-commit-config.yaml
 projectile-bookmarks.eld
 .projectile-cache.eld
 *projects*
