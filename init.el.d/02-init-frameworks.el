@@ -3,7 +3,7 @@
 ;;; Packages included:
 ;; avy, cape, consult, consult-yasnippet, corfu, embark, embark-consult,
 ;; helpful, marginalia, orderless, savehist, tempel, tempel-collection,
-;; vertico, which-key, yasnippet, yasnippet-capf, yasnippet-snippets
+;; vertico, yasnippet, yasnippet-capf, yasnippet-snippets
 
 ;;; Commentary:
 ;; This file sets up snippets, completions, and other frameworks that need to
@@ -159,7 +159,6 @@
 
 
 ;;;; =======  ADDITIONAL FRAMEWORKS  =======
-;; `which-key'           (display keymap in minibuffer)
 ;; `avy'                 (jump to...)
 ;; `consult'             (gather data)
 ;; `consult-yasnippet'   (integration)
@@ -167,11 +166,6 @@
 ;; `embark-consult'      (integration)
 ;; `helpful'             (better help)
 ;;   =======================================
-(use-package which-key
-  :demand t
-  :config
-  (which-key-mode 1))
-
 (use-package avy
   :demand t)
 

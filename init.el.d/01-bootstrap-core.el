@@ -86,6 +86,7 @@ https://raw.githubusercontent.com/progfolio/elpaca/refs/heads/master/doc/install
   (auto-save-visited-mode 1)
   (context-menu-mode 1)
   (global-display-fill-column-indicator-mode 1)
+  (which-key-mode 1)
   
   (add-hook 'ibuffer-mode-hook #'user/ibuffer-hook-functions))
 
