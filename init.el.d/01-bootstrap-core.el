@@ -64,7 +64,8 @@ https://raw.githubusercontent.com/progfolio/elpaca/refs/heads/master/doc/install
     "List of optional Emacs libraries to load at Emacs start.")
 
   :bind
-  (("C-c x"   . toggle-frame-maximized)
+  (("C-TAB"   . completion-at-point)
+   ("C-c x"   . toggle-frame-maximized)
    ("C-c ("   . user/check-parens-with-message)
    ("C-c #"   . display-line-numbers-mode)
    ("C-c C-#" . global-display-line-numbers-mode)
