@@ -104,10 +104,10 @@ The file is created if it doesn't exist."
   (add-hook 'org-mode-hook #'user/remove-org-todo))
 
 (use-package magit-org-todos
-  :defer t
-  :hook (magit-mode . magit-org-todos-autoinsert)
-  :custom
-  (magit-org-todos-filename "TODO.org"))
+  :after (magit)
+  :functions magit-org-todos-autoinsert
+  :config
+  (magit-org-todos-autoinsert))
 
 
 ;;;; =======  KNOWLEDGE  =======
