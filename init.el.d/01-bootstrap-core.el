@@ -114,6 +114,7 @@ https://raw.githubusercontent.com/progfolio/elpaca/refs/heads/master/doc/install
   :custom
   (exec-path-from-shell-shell-name "zsh")
   :config
+  (setenv "PNPM_HOME" "/home/colin-l/.local/share/pnpm")
   (dolist (var user/exec-path-from-shell-vars)
     (add-to-list 'exec-path-from-shell-variables var))
   (exec-path-from-shell-initialize))
