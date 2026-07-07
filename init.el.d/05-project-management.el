@@ -75,40 +75,45 @@
       '("C o" "C. P. Find Other Window" consult-project-extra-find-other-window))))
 
 (use-package activities
-  :defer t
+  :demand t
   :preface
   (defvar edebug-inhibit-emacs-lisp-mode-bindings t)
   (setq edebug-inhibit-emacs-lisp-mode-bindings t)
 
   (defvar-keymap user/activities-map
     :doc "Functions from the package activities.el"
-    "n" #'activities-new
-    "d" #'activities-define
-    "r" #'activities-resume
-    "p" #'activities-suspend
-    "k" #'activities-kill
-    "s" #'activities-switch
-    "b" #'activities-switch-buffer
-    "v" #'activities-revert
-    "l" #'activities-list)
+    "n"          #'activities-new
+    "d"          #'activities-define
+    "r"          #'activities-resume
+    "p"          #'activities-suspend
+    "k"          #'activities-kill
+    "s"          #'activities-switch
+    "b"          #'activities-switch-buffer
+    "v"          #'activities-revert
+    "l"          #'activities-list
+    "C-r"        #'activities-rename
+    "C-d"        #'activities-discard)
 
   (with-eval-after-load 'which-key
     (which-key-add-keymap-based-replacements
       user/activities-map
-      "n" "New Activity"
-      "d" "Define Activity"
-      "r" "Resume Activity"
-      "p" "Suspend Activity"
-      "k" "Kill Activity"
-      "s" "Switch Activity"
-      "b" "Switch Buffer (in current activity)"
-      "v" "Revert Activity"
-      "l" "List Activities"))
+      "n"        "New Activity"
+      "d"        "Define Activity"
+      "r"        "Resume Activity"
+      "p"        "Suspend Activity"
+      "k"        "Kill Activity"
+      "s"        "Switch Activity"
+      "b"        "Switch Buffer (in current activity)"
+      "v"        "Revert Activity"
+      "l"        "List Activities"
+      "C-r"      "Rename Activity"
+      "C-d"      "Discard Activity"))
   :bind-keymap ("C-x C-a" . user/activities-map)
   :functions
   activities-new activities-define activities-resume activities-suspend
   activities-kill activities-switch activities-switch-buffer activities-revert
-  activities-list activities-mode activities-tabs-mode
+  activities-list activities-rename activities-discard activities-mode
+  activities-tabs-mode
 
   :init
   (activities-mode 1)
