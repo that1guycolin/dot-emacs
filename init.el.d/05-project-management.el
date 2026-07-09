@@ -22,6 +22,7 @@
   :ensure nil
   :demand t
   :preface
+  (defvar android-home)
   (defvar user/projects-directory)
   (defvar user/scripts-directory)
   (defvar org-directory)
@@ -37,7 +38,6 @@
     (dolist (dir (list user/projects-directory user/scripts-directory))
       (project-remember-projects-under dir t))
     ;; Scan these directories (but not their subdirectories)
-    (defvar android-home)
     (let ((dotfiles-dir
            (if (equal system-type 'android)
                (expand-file-name "dotfiles" android-home)
