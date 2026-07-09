@@ -68,8 +68,8 @@
  ;; auth/vc
  auth-sources '("~/.authinfo.gpg")
  version-control t
- kept-new-versions 4
- kept-old-versions 1
+ kept-new-versions 2
+ kept-old-versions 0
  delete-old-versions t
 
  ;; Display scratch as initial buffer (changed when dashboard is loaded)
@@ -115,8 +115,8 @@
   (setq which-func-update-delay 0.5))
 
 ;;;; Configure autosaves and backups.
-(let ((backup-dir (expand-file-name "~/backups/"))
-      (autosave-dir (expand-file-name "~/auto-saves/")))
+(let ((backup-dir (expand-file-name "~/.backups/"))
+      (autosave-dir (expand-file-name "~/.auto-saves/")))
   (unless (file-exists-p backup-dir)
     (make-directory backup-dir t))
   (unless (file-exists-p autosave-dir)
