@@ -79,6 +79,7 @@ https://raw.githubusercontent.com/progfolio/elpaca/refs/heads/master/doc/install
   (read-extended-command-predicate #'command-completion-default-include-p)
   (tab-always-indent 'complete)
   (text-mode-ispell-word-completion nil)
+  (warning-suppress-types '(bytecomp comp))
   :config
   (dolist (lib user/emacs-load-libs)
     (require lib))
