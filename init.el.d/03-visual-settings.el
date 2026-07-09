@@ -2,7 +2,7 @@
 
 ;;; Packages included:
 ;; editorconfig, ef-themes, inhibit-mouse, minions, modus-themes, nerd-icons,
-;; nerd-icons-corfu, tab-line-nerd-icons, visual-fill-column
+;; nerd-icons-corfu, show-font, tab-line-nerd-icons, visual-fill-column
 
 ;;; Commentary:
 ;; Core UI elements that provide visual feedback and interaction.
@@ -58,6 +58,8 @@
   (add-to-list 'corfu-margin-formatters 'nerd-icons-corfu-formatter))
 
 ;;;; =======  FONTS  =======
+;; `show-fonts' (preview fonts prior to selection)
+;;   =======================
 (defvar user/font-alist nil
   "Alist mapping human-readable font names to non-directory filenames.")
 (if (eq system-type 'android)
@@ -202,6 +204,10 @@ If nil, the number of frame lines and columns remains fixed.")
         frame-resizing-cons)))))
   (setq user/keep-frame-size-on-font-switch-p input))
 
+(use-package show-font
+  :defer t
+  :commands (show-font-select-preview show-font-tabulated))
+
 (with-eval-after-load 'transient
   (declare-function transient-define-prefix "transient")
   (defvar user/visual-settings-dispatch nil)
@@ -213,6 +219,8 @@ If nil, the number of frame lines and columns remains fixed.")
       ("f s" "Switch font"         user/switch-font)
       ("f r" "Random font"         user/random-font)
       ("f b" "Font size behaviour" user/set-font-size-behaviour :transient t)
+      ("f f" "Show Font Family"    show-font-select-preview)
+      ("f a" "Show Fonts (All)"    show-font-tabulated)]
      ["Theme"
       ("t s" "Switch theme"        modus-themes-select-dark)
       ("t r" "Random theme"        modus-themes-load-random-dark)
@@ -243,6 +251,7 @@ If nil, the number of frame lines and columns remains fixed.")
   :hook
   ((visual-line-mode                . visual-fill-column-for-vline)
    ((prog-mode text-mode conf-mode) . visual-line-mode)))
+
 
 ;;;; =======  INHIBIT MOUSE  =======
 ;; `inhibit-mouse' (DON'T MOVE THE MOUSE!)

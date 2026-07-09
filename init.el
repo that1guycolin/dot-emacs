@@ -43,12 +43,13 @@
 ;; org-noter, org-noter-pdftools, org-pdftools, org-pomodoro,
 ;; org-project-capture, org-tidy, outline, outline-indent, pdf-tools, popper,
 ;; project, python-pytest, python-ts-mode, python-x, rainbow-delimiters,
-;; ready-player, rg, rustic, savehist, shfmt, sh-mode, sly, smartparens,
-;; suggest, systemd, tab-line-nerd-icons, tempel, tempel-collection,
-;; toml-ts-mode, transient, tree-inspector, treemacs, treemacs-magit,
-;; treemacs-nerd-icons, treesit, treesit-fold, vertico, visual-fill-column,
-;; visual-regexp, visual-regexp-steroids, vterm, which-key, with-editor,
-;; yaml-pro, yaml-ts-mode, yasnippet, yasnippet-capf, yasnippet-snippets
+;; ready-player, rg, rustic, savehist, shfmt, show-font, sh-mode, sly,
+;; smartparens, suggest, systemd, tab-line-nerd-icons, tempel,
+;; tempel-collection, toml-ts-mode, transient, tree-inspector, treemacs,
+;; treemacs-magit, treemacs-nerd-icons, treesit, treesit-fold, vertico,
+;; visual-fill-column, visual-regexp, visual-regexp-steroids, vterm, which-key,
+;; with-editor, yaml-pro, yaml-ts-mode, yasnippet, yasnippet-capf,
+;; yasnippet-snippets
 
 ;;; Commentary:
 ;; that1guycolin's personal Emacs configuration.  Reduces startup time by
