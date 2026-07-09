@@ -318,8 +318,6 @@ See URL `https://vale.sh'."
             ("docker-compose-langserver" "--stdio"))
            ((fish-mode) .
             ("fish-lsp" "start"))
-           ((lua-mode lua-ts-mode) .
-            (expand-file-name "~/.luarocks/bin/lua-language-server"))
            ((markdown-mode markdown-ts-mode) .
             ("rumdl" "server"))
            ((nxml-mode) .
