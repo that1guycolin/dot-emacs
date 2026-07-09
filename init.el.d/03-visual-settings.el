@@ -19,8 +19,7 @@
 (use-package modus-themes
   :demand t
   :functions
-  modus-themes-include-derivatives-mode modus-themes-load-random-dark
-  modus-themes-select-dark modus-themes-load-random modus-themes-rotate)
+  modus-themes-include-derivatives-mode modus-themes-load-random-dark)
 
 (use-package ef-themes
   :demand t
@@ -30,13 +29,7 @@
   (modus-themes-mixed-fonts t)
   (modus-themes-italic-constructs t)
   :config
-  (modus-themes-load-random 'dark)
-  ;; This keymap is bound in 15-user-functions.el.
-  (defvar-keymap user/theme-functions
-    :doc "Functions to change the theme."
-    "s" #'modus-themes-select-dark
-    "r" #'modus-themes-load-random-dark
-    "n" #'modus-themes-rotate))
+  (modus-themes-load-random 'dark))
 
 
 ;;;; =======  ICONS  =======
