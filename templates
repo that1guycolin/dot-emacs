@@ -62,6 +62,8 @@ sh-mode
 toml-ts-mode
 (bdil (p "name") " = { source = \"" (p "source") "\", target = \"" (p "link_loc") "\", direct = "
       (p "bool") " }" n)
+(tb-mpvs "mpv-scripts-" (p "fn" fn) " = { source = \"media/mpv/scripts/" fn ".lua\", \
+target = \".config/mpv/scripts/" fn ".lua\", direct = true }")
 (pyoptdeps "[project.optional-dependencies]" n "dev = [\"rassumfrassum\", \"ruff\", \"ty\"]" n
 	   "doc = [\"sphinx\", \"furo\"]")
 
