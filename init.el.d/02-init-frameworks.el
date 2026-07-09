@@ -148,8 +148,9 @@
 
 (use-package corfu-candidate-overlay
   :demand t
+  :functions corfu-candidate-overlay-mode
   :config
-  (corfu-candidate-overlay-mode +1))
+  (corfu-candidate-overlay-mode 1))
 
 (use-package cape
   :demand t
