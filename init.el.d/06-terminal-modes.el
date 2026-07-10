@@ -76,12 +76,7 @@
    ("M-<up>"    . mistty-send-key)
    ("M-<down>"  . mistty-send-key)
    ("M-<left>"  . mistty-send-key)
-   ("M-<right>" . mistty-send-key))
-  :config
-  (with-eval-after-load 'treemacs
-    (transient-append-suffix 'user/project-treemacs-anywhere-dispatch
-      "C"
-      '("M" "MisTTY @ Project root" mistty-in-project))))
+   ("M-<right>" . mistty-send-key)))
 
 (use-package vterm
   :defer t

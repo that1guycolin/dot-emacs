@@ -58,7 +58,10 @@
   :preface
   (keymap-global-unset "C-x p")
   :bind (:map ctl-x-map
-              ("p" . disproject-dispatch)))
+              ("p" . disproject-dispatch))
+  :config
+  (transient-append-suffix 'disproject-dispatch "M-x"
+    '("R" "Reset Projects" user/project-reset-projects)))
 
 (use-package consult-project-extra
   :demand t
@@ -181,56 +184,8 @@ Wait two seconds before activating the mode."
     (when (eq 'visible (treemacs-current-visibility))
       (treemacs)))
 
-  (defvar user/project-treemacs-anywhere-dispatch)
-  (transient-define-prefix
-    user/project-treemacs-anywhere-dispatch ()
-    "Globally available commands for Treemacs & Project.el."
-    ["Treemacs" :pad-keys t
-     ["Project"
-      ("t" "Toggle"                    treemacs)
-      ("T" "Refresh"                   treemacs-refresh)
-      ("d" "Disproject"                disproject-dispatch)
-      ("r" "Rename Project"            treemacs-rename-project)]
-
-     ["View"
-      ("v f" "Focus to active file"    treemacs-find-file)
-      ("v p" "Add Project"             treemacs-add-project-to-workspace)
-      ("v c" "Collapse Other Projects" treemacs-collapse-other-projects)
-      ("v C" "Collapse"                treemacs-collapse-all-projects)
-      ("v r" "Current Project Only"    treemacs-create-workspace-from-project)]
-     
-     ["Workspace" :pad-keys t
-      ("w e" "Edit"                    treemacs-edit-workspaces)
-      ("w s" "Switch"                  user/treemacs-switch-workspace-focus)
-      ("w n" "New"                     treemacs-create-workspace)
-      ("w r" "Rename"                  treemacs-rename-workspace)
-      ("w d" "Delete"                  treemacs-remove-workspace)]]
-
-    ["Project.el" :pad-keys t
-     ["Search"
-      ("x" "Project Find Regexp"       project-find-regexp)
-      ("q" "Project Replace Regexp"    project-query-replace-regexp)
-      ("f" "Project Find File"         project-find-file)
-      ("s" "Project Search"            project-search)
-      ("a" "Add Project"               (lambda () (interactive)
-                                         (call-interactively
-                                          #'project-remember-project)))]
-     
-     ["Shell"
-      ("S" "Project Shell"             project-shell)
-      ("E" "Project EShell"            project-eshell)
-      ("A" "Project Async Shell Cmd"   project-async-shell-command)
-      ("C" "Project Shell Cmd"         project-shell-command)]
-     
-     ["Other"
-      ("D" "Set Project Dir-Locals"    project-customize-dirlocals)
-      ("R" "Ripgrep Project"           rg-project)
-      ("G" "DWIM Ripgrep Project"      rg-dwim-project-dir)
-      ("Z" "Forget Zombie Projects"    project-forget-zombie-projects)
-      ("p r" "Reset Known Projects"    user/project-reset-projects)]])
-
   :bind
-  (("C-c t"       . user/project-treemacs-anywhere-dispatch)
+  (("C-c t"       . treemacs)
    :map treemacs-mode-map
    ("C-x j"       . treemacs-project-follow-mode)
    ("<backspace>" . treemacs-root-up))
