@@ -1,0 +1,188 @@
+:PROPERTIES:
+:ID:       tools:dou27p801zk0
+:header-args: :results output
+:END:
+#+TITLE: Generate Packages Included
+#+AUTHOR: Colin Loeffler (that1guycolin)
+#+COMMENT: DO NOT COMMIT THIS FILE WITH EVALUATED RESULTS
+#+CREATED_DATE: [2026-06-13 Sat 05:08:11]
+#+LAST_EDIT: [2026-06-19 FRI 09:36:55]
+#+ID: tools:dou27p801zk0
+#+FILETAGS: :Emacs:emacsd:
+
+* DO NOT COMMIT THIS FILE WITH EVALUATED RESULTS
+:PROPERTIES:
+:TOC:      :include all :depth 3 :force (nothing) :ignore (this) :local (nothing)
+:END:
+DO NOT COMMIT THIS FILE WITH EVALUATED RESULTS
+:CONTENTS:
+- [[#initel][Init.el]]
+- [[#initeld][Init.el.d]]
+  - [[#01-bootstrap-coreel][01-bootstrap-core.el]]
+  - [[#02-init-frameworksel][02-init-frameworks.el]]
+  - [[#03-visual-settingsel][03-visual-settings.el]]
+  - [[#04-tree-sitter-lang-configel][04-tree-sitter-lang-config.el]]
+  - [[#05-project-managementel][05-project-management.el]]
+  - [[#06-terminal-modesel][06-terminal-modes.el]]
+  - [[#07-language-configsel][07-language-configs.el]]
+  - [[#08-code-assistel][08-code-assist.el]]
+  - [[#09-git-toolsel][09-git-tools.el]]
+  - [[#10-file-managementel][10-file-management.el]]
+  - [[#11-org-mode-extensionsel][11-org-mode-extensions.el]]
+  - [[#12-llm-integrationel][12-llm-integration.el]]
+  - [[#13-media-playerel][13-media-player.el]]
+  - [[#14-misc-packagesel][14-misc-packages.el]]
+  - [[#15-user-functionsel][15-user-functions.el]]
+:END:
+
+* Init.el
+:PROPERTIES:
+:CUSTOM_ID: initel
+:END:
+
+#+begin_src bash
+list-all-packages -e
+#+end_src
+ 
+* Init.el.d
+:PROPERTIES:
+:CUSTOM_ID: initeld
+:END:
+
+** [[file:~/.emacs.d/init.el.d/01-bootstrap-core.el][01-bootstrap-core.el]]
+:PROPERTIES:
+:CUSTOM_ID: 01-bootstrap-coreel
+:END:
+#+begin_src bash
+list-use-packages "${HOME}/.emacs.d/init.el.d/01-bootstrap-core.el"
+#+end_src
+
+** [[file:~/.emacs.d/init.el.d/02-init-frameworks.el][02-init-frameworks.el]]
+:PROPERTIES:
+:CUSTOM_ID: 02-init-frameworksel
+:END:
+#+begin_src bash
+list-use-packages "${HOME}/.emacs.d/init.el.d/02-init-frameworks.el"
+#+end_src
+
+
+** [[file:~/.emacs.d/init.el.d/03-visual-settings.el][03-visual-settings.el]]
+:PROPERTIES:
+:CUSTOM_ID: 03-visual-settingsel
+:END:
+
+#+begin_src bash
+list-use-packages "${HOME}/.emacs.d/init.el.d/03-visual-settings.el"
+#+end_src
+
+** [[file:~/.emacs.d/init.el.d/04-tree-sitter-lang-config.el][04-tree-sitter-lang-config.el]]
+:PROPERTIES:
+:CUSTOM_ID: 04-tree-sitter-lang-configel
+:END:
+
+#+begin_src bash
+ list-use-packages \
+      "${HOME}/.emacs.d/init.el.d/04-tree-sitter-lang-config.el"
+#+end_src
+
+** [[file:~/.emacs.d/init.el.d/05-project-management.el][05-project-management.el]]
+:PROPERTIES:
+:CUSTOM_ID: 05-project-managementel
+:END:
+
+#+begin_src bash
+list-use-packages "${HOME}/.emacs.d/init.el.d/05-project-management.el"
+#+end_src
+
+** [[file:~/.emacs.d/init.el.d/06-terminal-modes.el][06-terminal-modes.el]]
+:PROPERTIES:
+:CUSTOM_ID: 06-terminal-modesel
+:END:
+
+#+begin_src bash
+list-use-packages "${HOME}/.emacs.d/init.el.d/06-terminal-modes.el"
+#+end_src
+
+** [[file:~/.emacs.d/init.el.d/07-language-configs.el][07-language-configs.el]]
+:PROPERTIES:
+:CUSTOM_ID: 07-language-configsel
+:END:
+
+#+begin_src bash
+list-use-packages "${HOME}/.emacs.d/init.el.d/07-language-configs.el"
+#+end_src
+
+** [[file:~/.emacs.d/init.el.d/08-code-assist.el][08-code-assist.el]]
+:PROPERTIES:
+:CUSTOM_ID: 08-code-assistel
+:END:
+
+#+begin_src bash
+list-use-packages "${HOME}/.emacs.d/init.el.d/08-code-assist.el"
+#+end_src 
+
+** [[file:~/.emacs.d/init.el.d/09-git-tools.el][09-git-tools.el]]
+:PROPERTIES:
+:CUSTOM_ID: 09-git-toolsel
+:END:
+
+#+begin_src bash
+list-use-packages "${HOME}/.emacs.d/init.el.d/09-git-tools.el"
+#+end_src
+
+** [[file:~/.emacs.d/init.el.d/10-file-management.el][10-file-management.el]]
+:PROPERTIES:
+:CUSTOM_ID: 10-file-managementel
+:END:
+
+#+begin_src bash
+list-use-packages "${HOME}/.emacs.d/init.el.d/10-file-management.el"
+#+end_src
+
+** [[file:~/.emacs.d/init.el.d/11-org-mode-extensions.el][11-org-mode-extensions.el]]
+:PROPERTIES:
+:CUSTOM_ID: 11-org-mode-extensionsel
+:END:
+
+#+begin_src bash
+list-use-packages "${HOME}/.emacs.d/init.el.d/11-org-mode-extensions.el"
+#+end_src
+
+** [[file:~/.emacs.d/init.el.d/12-llm-integration.el][12-llm-integration.el]]
+:PROPERTIES:
+:CUSTOM_ID: 12-llm-integrationel
+:END:
+
+#+begin_src bash
+list-use-packages "${HOME}/.emacs.d/init.el.d/12-llm-integration.el"
+#+end_src
+
+** [[file:~/.emacs.d/init.el.d/13-media-player.el][13-media-player.el]]
+:PROPERTIES:
+:CUSTOM_ID: 13-media-playerel
+:END:
+
+#+begin_src bash
+list-use-packages "${HOME}/.emacs.d/init.el.d/13-media-player.el"
+#+end_src
+
+** [[file:~/.emacs.d/init.el.d/14-misc-packages.el][14-misc-packages.el]]
+:PROPERTIES:
+:CUSTOM_ID: 14-misc-packagesel
+:END:
+
+#+begin_src bash
+list-use-packages "${HOME}/.emacs.d/init.el.d/14-misc-packages.el"
+#+end_src
+
+** [[file:~/.emacs.d/init.el.d/15-user-functions.el][15-user-functions.el]]
+:PROPERTIES:
+:CUSTOM_ID: 15-user-functionsel
+:END:
+
+#+begin_src bash
+list-use-packages "${HOME}/.emacs.d/init.el.d/15-user-functions.el"
+#+end_src
+
+
+
