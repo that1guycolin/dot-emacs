@@ -12,6 +12,8 @@ emacs-lisp-mode
 	 kname n>
 	 "\"" (p "key") "\" \"" (p "displaytext") "\"" n>
 	 "\"" (p "key") "\" \"" (p "displaytext") "\")")
+(egt-nt "((" (p "major-modes") ") .
+	(\"podman\" \"exec\" \"-i\" \"nodejs-tools\" \"" (p "addit. cmds") "\"))")
 (kgbset "(keymap-global-set \"" (p "keys") "\" #'" (p "func") ")")
 (kset "(keymap-set " (p "keymap") " \"" (p "keys") "\" #'" (p "func") ")")
 (hdr-l ";;;; ======  " (p "title") "  ======" n
