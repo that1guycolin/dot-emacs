@@ -96,13 +96,15 @@
   :hook (lisp-mode . sly-editing-mode)
   :commands sly
   :functions sly-init-string
-  :custom
-  (inferior-lisp-program "sbcl")
-  (sly-lisp-implementations
-   '((sbcl ("sbcl" "--dynamic-space-size" "2048")
-           :coding-system utf-8-unix)))
-
   :config
+  (let ((local-sbcl
+         (if (eq system-type 'android)
+             "/data/data/com.termux/files/usr/bin/sbcl" "sbcl")))
+    (setq
+     inferior-lisp-program local-sbcl
+     sly-lisp-implementations
+     '((sbcl ("sbcl" "--dynamic-space-size" "2048")
+             :coding-system utf-8-unix))))
   (let ((ql-setup "~/quicklisp/setup.lisp"))
     (when (file-exists-p ql-setup)
       (setq sly-lisp-implementations
