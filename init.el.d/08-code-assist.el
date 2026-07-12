@@ -301,30 +301,34 @@ See URL `https://vale.sh'."
   :ensure nil
   :defer t
   :bind (:map ctl-x-map ("e" . eglot))
-  
   :config
   (setq eglot-server-programs
         (cl-remove-if
          (lambda (cell)
            (cl-some
             (lambda (mode)
-              (memq mode '(python-mode
-                           python-ts-mode
-                           markdown-mode
-                           markdown-ts-mode)))
+              (memq mode '(css-mode
+                           css-ts-mode
+                           dockerfile-mode dockerfile-ts-mode
+                           json-mode json-ts-mode
+                           markdown-mode markdown-ts-mode
+                           python-mode python-ts-mode)))
             (ensure-list (car cell))))
          eglot-server-programs))
+
   (let ((lsp-cons-cells
-         '(((docker-compose-mode) .
+         '(((css-mode css-ts-mode) .
+            ("vscode-css-language-server" "--stdio"))
+           ((dockerfile-mode dockerfile-ts-mode) .
+            ("docker-language-server" "start" "--stdio"))
+           ((docker-compose-mode) .
             ("docker-compose-langserver" "--stdio"))
-           ((fish-mode) .
-            ("fish-lsp" "start"))
-           ((markdown-mode markdown-ts-mode) .
-            ("rumdl" "server"))
-           ((nxml-mode) .
-            ("lemminx"))
-           ((python-mode python-ts-mode) .
-            ("uv" "run" "rass" "python")))))
+           ((fish-mode) . ("fish-lsp" "start"))
+           ((json-mode json-ts-mode) .
+            ("vscode-json-language-server" "--stdio"))
+           ((markdown-mode markdown-ts-mode) . ("rumdl" "server"))
+           ((nxml-mode) . ("lemminx"))
+           ((python-mode python-ts-mode) . ("uv" "run" "rass" "python")))))
     (dolist (con lsp-cons-cells)
       (add-to-list 'eglot-server-programs con))))
 
