@@ -185,7 +185,7 @@ Wait two seconds before activating the mode."
       (treemacs)))
 
   :bind
-  (("C-c t"       . treemacs)
+  (("C-c t t"     . treemacs)
    :map treemacs-mode-map
    ("C-x j"       . treemacs-project-follow-mode)
    ("<backspace>" . treemacs-root-up))

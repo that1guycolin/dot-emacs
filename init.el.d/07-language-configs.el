@@ -93,34 +93,16 @@
 
 (use-package sly
   :defer t
+  :bind ("C-c s" . sly)
   :hook (lisp-mode . sly-editing-mode)
-  :commands sly
-  :functions sly-init-string
+  :init
+  (if (eq system-type 'android)
+      (setq inferior-lisp-program
+            "/data/data/com.termux/files/usr/bin/sbcl")
+    (setq inferior-lisp-program "sbcl"))
+  :custom (sly-contribs '(sly-fancy))
   :config
-  (let ((local-sbcl
-         (if (eq system-type 'android)
-             "/data/data/com.termux/files/usr/bin/sbcl" "sbcl")))
-    (setq
-     inferior-lisp-program local-sbcl
-     sly-lisp-implementations
-     '((sbcl ("sbcl" "--dynamic-space-size" "2048")
-             :coding-system utf-8-unix))))
-  (let ((ql-setup "~/quicklisp/setup.lisp"))
-    (when (file-exists-p ql-setup)
-      (setq sly-lisp-implementations
-            (mapcar
-             (lambda (impl)
-               (append impl
-                       (list
-                        :init
-                        (lambda (port-filename coding-system)
-                          (format "(progn (load \"%s\") %s)\n"
-                                  (expand-file-name ql-setup)
-                                  (sly-init-string
-                                   port-filename
-                                   coding-system))))))
-             sly-lisp-implementations))))
-  (add-to-list 'sly-contribs 'sly-mrepl))
+  (add-hook 'sly-mrepl-mode-hook #'corfu-mode))
 
 
 ;;;; =======  PYTHON  =======
