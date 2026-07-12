@@ -275,7 +275,7 @@ See URL `https://vale.sh'."
   :after (consult flycheck))
 
 
-;;;; =======  EGLOT  =======
+;;;; ============================  EGLOT  =============================
 ;;   ---------------------------  REQUIRED  ---------------------------
 ;; cmake:    'neocmakelsp'               (cargo install neocmakelsp)
 ;; fish:     'fish-lsp'                  (pnpm install -g fish-lsp)
