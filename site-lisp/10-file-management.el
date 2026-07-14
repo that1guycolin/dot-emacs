@@ -14,7 +14,7 @@
 ;; `ready-player'        (launch media directly from dirvish)
 ;;   ===============================
 (use-package recentf
-  :ensure t
+  :ensure nil
   :demand t
   :preface
   (defvar no-littering-var-directory)
