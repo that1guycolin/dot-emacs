@@ -8,7 +8,7 @@
 ;; they have a major inpact on startup.
 
 ;;; Code:
-;;;; =======  GLOBAL SETTINGS  =======
+;;; Global Settings:
 (use-package emacs
   :ensure nil
   :demand t

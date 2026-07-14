@@ -164,50 +164,51 @@
 
 
 ;;;; =======  LOAD PACKAGES  =======
-;; Load startup and core packages
-(require '01-bootstrap-core)
+(with-eval-after-load 'no-littering
+  ;; Load startup and core packages
+  (require '01-bootstrap-core)
 
-;; Initialize global frameworks
-(require '02-init-frameworks)
+  ;; Initialize global frameworks
+  (require '02-init-frameworks)
 
-;; Core UI configuration
-(require '03-visual-settings)
+  ;; Core UI configuration
+  (require '03-visual-settings)
 
-;; Enable tree-sitter support
-(require '04-tree-sitter-lang-config)
+  ;; Enable tree-sitter support
+  (require '04-tree-sitter-lang-config)
 
-;; Project management and file navigation
-(require '05-project-management)
+  ;; Project management and file navigation
+  (require '05-project-management)
 
-;; Support for terminal and Emacs' shells
-(require '06-terminal-modes)
+  ;; Support for terminal and Emacs' shells
+  (require '06-terminal-modes)
 
-;; Packages & settings for select languages
-(require '07-language-configs)
+  ;; Packages & settings for select languages
+  (require '07-language-configs)
 
-;; Linting, formatting, & LSPs
-(require '08-code-assist)
+  ;; Linting, formatting, & LSPs
+  (require '08-code-assist)
 
-;; Git(hub) integration & tooling
-(require '09-git-tools)
+  ;; Git(hub) integration & tooling
+  (require '09-git-tools)
 
-;; File explorer functions
-(require '10-file-management)
+  ;; File explorer functions
+  (require '10-file-management)
 
-;; Extensions for Org-mode
-(require '11-org-mode-extensions)
+  ;; Extensions for Org-mode
+  (require '11-org-mode-extensions)
 
-(unless (eq system-type 'android)
-  ;; Configure Emacs to work with LLMs
-  (require '12-llm-integration)
-  ;; Listen to music & watch videos
-  (require '13-media-player))
+  (unless (eq system-type 'android)
+    ;; Configure Emacs to work with LLMs
+    (require '12-llm-integration)
+    ;; Listen to music & watch videos
+    (require '13-media-player))
 
-;; Misc & Dashboard
-(require '14-misc-packages)
+  ;; Misc & Dashboard
+  (require '14-misc-packages)
 
-;; Custom variables & functions
-(require '15-user-functions)
+  ;; Custom variables & functions
+  (require '15-user-functions))
 
 
 (provide 'init)
