@@ -1,49 +1,13 @@
 ;;; 01-bootstrap-core.el --- Load startup and core packages -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; elpaca, elpaca-use-package, envrc, exec-path-from-shell, gcmh, org, transient
+;; emacs, envrc, exec-path-from-shell, gcmh, org, transient
 
 ;;; Commentary:
 ;; Elpaca package manager bootstrap and packages that must load first because
 ;; they have a major inpact on startup.
 
 ;;; Code:
-;;;; =======  ELPACA  =======
-;; `elpaca'              (asyncronous package manager)
-;; `elpaca-use-package'  (integration with existing macro)
-;;   ========================
-(declare-function elpaca                  "elpaca")
-(declare-function elpaca-manager          "elpaca")
-(declare-function elpaca-use-package-mode "elpaca-use-package")
-(declare-function elpaca-wait             "elpaca")
-(defvar           elpaca-queue-limit)
-(defvar           elpaca-use-package)
-(defvar           use-package-always-ensure)
-
-(if (eq system-type 'android)
-    (setq elpaca-queue-limit 4)
-  (setq elpaca-queue-limit 8))
-
-(let ((elpaca-bootstrap
-       (expand-file-name "elpaca/sources/elpaca/doc/installer.el"
-                         user-emacs-directory)))
-  (if (file-exists-p elpaca-bootstrap)
-      (load-file elpaca-bootstrap)
-    (let ((online-bootstrap
-           (expand-file-name "bootstrap.el" user-emacs-directory)))
-      (shell-command
-       (format "wget -O %s \
-https://raw.githubusercontent.com/progfolio/elpaca/refs/heads/master/doc/installer.el"
-               online-bootstrap))
-      (load-file online-bootstrap)
-      (delete-file online-bootstrap))))
-
-(elpaca elpaca-use-package
-  (elpaca-use-package-mode 1))
-(setq use-package-always-ensure t)
-(elpaca-wait)
-
-
 ;;;; =======  GLOBAL SETTINGS  =======
 (use-package emacs
   :ensure nil

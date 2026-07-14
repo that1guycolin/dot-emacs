@@ -56,9 +56,86 @@
 ;; optimizing load-order and using `Elpaca' as package manager.
 
 ;;; Code:
-;;;; =======  LOAD PATHS  =======
-(defvar user/init-directory
-  (expand-file-name "init.el.d" user-emacs-directory)
+;;; Elpaca:
+;; Define redirected package paths to prevent directory clutter
+(defvar elpaca-directory (expand-file-name "var/elpaca/" user-emacs-directory))
+(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
+(defvar elpaca-sources-directory (expand-file-name "sources/" elpaca-directory))
+
+;; Avoid flycheck warnings
+(declare-function   elpaca-generate-autoloads	 "elpaca")
+(declare-function   elpaca-process-queues	 "elpaca")
+(declare-function   elpaca			 "elpaca")
+(declare-function   elpaca-wait			 "elpaca")
+(declare-function   elpaca-use-package-mode	 "elpaca-use-package")
+
+(defvar             elpaca-queue-limit)
+(defvar             no-littering)
+(defvar             elpaca-use-package)
+(defvar             use-package-always-ensure)
+
+;; Slightly modified version of {gh}/progfolio/elpaca/doc/installer.el
+(defvar elpaca-installer-version 0.12)
+
+(defvar elpaca-order
+  '(elpaca :repo "https://github.com/progfolio/elpaca.git"
+	   :ref nil :depth 1 :inherit ignore
+	   :files (:defaults "elpaca-test.el" (:exclude "extensions"))
+	   :build (:not elpaca-activate)))
+(let* ((repo (expand-file-name "elpaca/" elpaca-sources-directory))
+       (build (expand-file-name "elpaca/" elpaca-builds-directory))
+       (order (cdr elpaca-order))
+       (default-directory repo))
+  (add-to-list 'load-path (if (file-exists-p build) build repo))
+  (unless (file-exists-p repo)
+    (make-directory repo t)
+    (when (<= emacs-major-version 28) (require 'subr-x))
+    (condition-case-unless-debug err
+	(if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+		  ((zerop
+		    (apply #'call-process
+			   `("git" nil ,buffer t "clone"
+			     ,@(when-let* ((depth (plist-get order :depth)))
+				 (list (format "--depth=%d" depth)
+				       "--no-single-branch"))
+			     ,(plist-get order :repo)
+			     ,repo))))
+		  ((zerop
+		    (call-process "git" nil buffer t "checkout"
+				  (or (plist-get order :ref) "--"))))
+		  (emacs (concat invocation-directory invocation-name))
+		  ((zerop
+		    (call-process emacs nil buffer nil
+				  "-Q" "-L" "." "--batch" "--eval"
+				  "(byte-recompile-directory \".\" 0 'force)")))
+		  ((require 'elpaca))
+		  ((elpaca-generate-autoloads "elpaca" repo)))
+	    (progn (message "%s" (buffer-string)) (kill-buffer buffer))
+	  (error "%s" (with-current-buffer buffer (buffer-string))))
+      ((error) (warn "%s" err) (delete-directory repo 'recursive))))
+  (unless (require 'elpaca-autoloads nil t)
+    (require 'elpaca)
+    (elpaca-generate-autoloads "elpaca" repo)
+    (let ((load-source-file-function nil)) (load "./elpaca-autoloads"))))
+(add-hook 'after-init-hook #'elpaca-process-queues)
+(elpaca `(,@elpaca-order))
+
+;; No-littering
+(elpaca no-littering)
+
+;; Enable use-package integration with Elpaca
+(elpaca elpaca-use-package
+  (elpaca-use-package-mode 1))
+(setq use-package-always-ensure t)
+
+;; Automatically load customization variables if they exist
+(when (file-exists-p custom-file)
+  (add-hook 'elpaca-after-init-hook (lambda () (load custom-file 'noerror))))
+
+;; Hold until `elpaca', `no-littering', & `elpaca-use-package' have loaded
+(elpaca-wait)
+
+
   "Directory from which init files are loaded.")
 
 (defvar user/tools-directory
