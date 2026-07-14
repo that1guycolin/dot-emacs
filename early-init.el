@@ -6,7 +6,7 @@
 ;; and applies early UI optimizations before the main config loads.
 
 ;;; Code:
-;;;; Set PATH so Emacs Android GUI can access Termux files
+;;; Set PATH so Emacs Android GUI can access Termux files
 (when (eq system-type 'android)
   (setenv "PATH" (format "%s:%s" "/data/data/com.termux/files/usr/bin"
                          (getenv "PATH")))
@@ -14,7 +14,7 @@
   (setenv "PKG_CONFIG_PATH"
           "/data/data/com.termux/files/usr/lib/pkgconfig/"))
 
-;;;; Optionally Profile Startup
+;;; Optionally Profile Startup
 (defvar user/profile-startup nil
   "When non-nil, enable CPU profiling during startup.")
 
@@ -38,7 +38,7 @@
                 (run-with-idle-timer 10 nil #'user/profiler-startup-report)))
   (run-with-idle-timer 30 nil #'user/profiler-startup-report))
 
-;;;; Modify variables for startup, then reset
+;;; Modify variables for startup, then reset
 (defvar user/file-name-handler-alist-backup file-name-handler-alist)
 (setq
  ;; Ignore `tramp' & `compressed'/`archive'
@@ -51,7 +51,7 @@
              file-name-handler-alist user/file-name-handler-alist-backup
              inhibit-message nil)))
 
-;;;; Other Variable Mods
+;;; Other Variable Mods
 (defvar package-quickstart)
 (defvar auth-sources)
 (setq
@@ -107,7 +107,7 @@
  custom-file (expand-file-name "init.el.d/00-auto-custom.el"
                                user-emacs-directory))
 
-;;;; Variables depending on package load
+;;; Variables depending on package load
 (defvar ffap-machine-p-known)
 (defvar which-func-update-delay)
 (with-eval-after-load 'ffap
@@ -115,7 +115,7 @@
 (with-eval-after-load 'which-function-mode
   (setq which-func-update-delay 0.5))
 
-;;;; Configure autosaves and backups.
+;;; Configure autosaves and backups.
 (let ((backup-dir (expand-file-name "~/.backups/"))
       (autosave-dir (expand-file-name "~/.auto-saves/")))
   (unless (file-exists-p backup-dir)
@@ -126,7 +126,7 @@
    backup-directory-alist `(("." . ,backup-dir))
    auto-save-file-name-transforms `((".*" ,autosave-dir t))))
 
-;;;; Early UI optimizations
+;;; Early UI optimizations
 (setq-default
  cursor-type 'bar
  fill-column 80
@@ -140,7 +140,7 @@
 (when (fboundp 'tooltip-mode)
   (tooltip-mode -1))
 
-;;;; no-littering
+;;; no-littering
 (when (and (fboundp 'startup-redirect-eln-cache)
            (fboundp 'native-comp-available-p)
            (native-comp-available-p))
