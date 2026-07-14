@@ -16,7 +16,9 @@
   :mode (("\\.tsx\\'" . tsx-ts-mode))
   :custom
   (treesit-font-lock-level 4)
-  (treesit-language-source-alist
+  :config
+  (setq
+   treesit-language-source-alist
    '((bash . ("https://github.com/tree-sitter/tree-sitter-bash"))
      (common-lisp . ("https://github.com/tree-sitter-grammars/tree-sitter-commonlisp"))
      (cmake . ("https://github.com/uyha/tree-sitter-cmake"))
@@ -49,7 +51,6 @@
      (xml . ("https://github.com/tree-sitter-grammars/tree-sitter-xml"))
      (yaml . ("https://github.com/ikatyang/tree-sitter-yaml"))
      (zsh . ("https://github.com/georgeharker/tree-sitter-zsh"))))
-  :config
   (dolist
       (remaped
        '((bash-mode              . bash-ts-mode)
