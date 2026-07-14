@@ -103,7 +103,7 @@
     "User-error if buffer is not in `org-mode'."
     (unless (derived-mode-p 'org-mode)
       (user-error "This buffer is not in org mode")))
-  
+
   (defun user/org-id-prefix-slug (s)
     "Turn S into a safe(-ish) `org-id-prefix'."
     (when s

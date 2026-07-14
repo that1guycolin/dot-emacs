@@ -136,10 +136,12 @@
 (elpaca-wait)
 
 
+(defvar user/lisp-directory
+  (expand-file-name "site-lisp" user-emacs-directory)
   "Directory from which init files are loaded.")
 
 (defvar user/tools-directory
-  (expand-file-name "tools" user-emacs-directory)
+  (expand-file-name "etc/tools" user-emacs-directory)
   "Directory containing scripts, etc for editing this configuration.")
 
 (defvar user/projects-directory nil
@@ -159,7 +161,7 @@
    user/projects-directory (expand-file-name "~/projects")
    user/scripts-directory (expand-file-name "~/scripts")))
 
-(add-to-list 'load-path user/init-directory)
+(add-to-list 'load-path user/lisp-directory)
 
 
 ;;;; =======  LOAD PACKAGES  =======
@@ -211,3 +213,5 @@
 
 (provide 'init)
 ;;; init.el ends here.
+
+; LocalWords:  nomessage

@@ -27,7 +27,7 @@
   :functions yas-reload-all
   :config
   (add-to-list 'yas-snippet-dirs
-               (expand-file-name "snippets" user-emacs-directory))
+               (expand-file-name "snippets" no-littering-etc-directory))
   (yas-reload-all))
 
 (use-package yasnippet-snippets
