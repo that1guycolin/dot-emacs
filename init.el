@@ -120,6 +120,9 @@
 (add-hook 'after-init-hook #'elpaca-process-queues)
 (elpaca `(,@elpaca-order))
 
+;; No-littering
+(elpaca no-littering)
+
 ;; Enable use-package integration with Elpaca
 (elpaca elpaca-use-package
   (elpaca-use-package-mode 1))
