@@ -83,13 +83,14 @@
 (use-package flycheck
   :defer t
   :preface
+  (defvar user/lisp-directory)
   (defvar minions-prominent-modes)
   (defvar sh-shell)
   (defun user/setup-vale ()
     "If not setup, install the vale from the .ini file in dot-Emacs."
     (interactive)
-    (let* ((vale-config (expand-file-name ".vale.ini" user-emacs-directory))
-           (vale-install (expand-file-name ".vale-styles" user-emacs-directory))
+    (let* ((vale-config (expand-file-name ".vale.ini" user/lisp-directory))
+           (vale-install (expand-file-name ".vale-styles" user/lisp-directory))
            (command (format "vale --config %s sync >/dev/null" vale-config)))
       (unless (file-exists-p vale-install)
         (shell-command command))))

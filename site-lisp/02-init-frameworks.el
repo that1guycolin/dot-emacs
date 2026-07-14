@@ -1,9 +1,9 @@
 ;;; 02-init-frameworks.el --- Initialize global frameworks -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; avy, cape, consult, consult-yasnippet, corfu, corfu-candidate-overlay-mode,
-;; embark, embark-consult, helpful, marginalia, orderless, savehist, tempel,
-;; tempel-collection, vertico, yasnippet, yasnippet-capf, yasnippet-snippets
+;; avy, cape, consult, consult-yasnippet, corfu, embark, embark-consult,
+;; helpful, marginalia, orderless, savehist, tempel, tempel-collection,
+;; vertico, yasnippet, yasnippet-capf, yasnippet-snippets
 
 ;;; Commentary:
 ;; This file sets up snippets, completions, and other frameworks that need to
@@ -27,7 +27,7 @@
   :functions yas-reload-all
   :config
   (add-to-list 'yas-snippet-dirs
-               (expand-file-name "snippets" user-emacs-directory))
+               (expand-file-name "snippets" no-littering-etc-directory))
   (yas-reload-all))
 
 (use-package yasnippet-snippets
@@ -131,9 +131,9 @@
   global-corfu-mode corfu-history-mode corfu-popupinfo-mode
   
   :custom
-  (corfu-auto nil)
-  ;; (corfu-auto-prefix 4)
-  ;; (corfu-auto-delay 1.6)
+  (corfu-auto t)
+  (corfu-auto-prefix 4)
+  (corfu-auto-delay 1.6)
   (corfu-cycle t)
   (corfu-quit-at-boundary t)
   (corfu-quit-no-match t)
@@ -145,12 +145,6 @@
   (corfu-history-mode 1)
   (add-to-list 'savehist-additional-variables 'corfu-history)
   (corfu-popupinfo-mode 1))
-
-(use-package corfu-candidate-overlay
-  :demand t
-  :functions corfu-candidate-overlay-mode
-  :config
-  (corfu-candidate-overlay-mode 1))
 
 (use-package cape
   :demand t
