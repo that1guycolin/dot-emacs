@@ -120,21 +120,19 @@
 (add-hook 'after-init-hook #'elpaca-process-queues)
 (elpaca `(,@elpaca-order))
 
-;; No-littering
-(elpaca no-littering
-  (require 'no-littering))
-
-;; Enable use-package integration with Elpaca
-(elpaca elpaca-use-package
-  (elpaca-use-package-mode 1))
-(setq use-package-always-ensure t)
-
 ;; Automatically load customization variables if they exist
 (when (file-exists-p custom-file)
   (add-hook 'elpaca-after-init-hook (lambda () (load custom-file 'noerror))))
 
-;; Hold until `elpaca', `no-littering', & `elpaca-use-package' have loaded
-(elpaca-wait)
+;; Enable use-package integration with Elpaca
+(elpaca (elpaca-use-package :wait t))
+(elpaca-use-package-mode 1)
+(setq use-package-always-ensure t)
+
+;; Neat & tidy `user-emacs-directory'
+(use-package no-littering
+  :ensure (:wait t)
+  :demand t)
 
 
 (defvar user/lisp-directory
