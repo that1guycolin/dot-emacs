@@ -20,10 +20,9 @@
   (defvar no-littering-var-directory)
   (defvar no-littering-etc-directory)
   :bind ("C-x C-r" . recentf-open)
-  :init
+  :config
   (add-to-list 'recentf-exclude no-littering-var-directory)
   (add-to-list 'recentf-exclude no-littering-etc-directory)
-  :config
   (recentf-mode 1))
 
 (use-package dirvish
