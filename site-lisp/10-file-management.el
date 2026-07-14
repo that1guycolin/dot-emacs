@@ -1,7 +1,7 @@
 ;;; 10-file-management.el --- File explorer functions -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; dirvish, dwim-shell-command, ready-player
+;; dirvish, dwim-shell-command, ready-player, recentf
 
 ;;; Commentary:
 ;; Leverage dirvish (layer on top of Dired) settings & extensions to provide a
@@ -13,6 +13,19 @@
 ;; `dwim-shell-command'  (execute shell commands on marked files)
 ;; `ready-player'        (launch media directly from dirvish)
 ;;   ===============================
+(use-package recentf
+  :ensure t
+  :demand t
+  :preface
+  (defvar no-littering-var-directory)
+  (defvar no-littering-etc-directory)
+  :bind ("C-x C-r" . recentf-open)
+  :init
+  (add-to-list 'recentf-exclude no-littering-var-directory)
+  (add-to-list 'recentf-exclude no-littering-etc-directory)
+  :config
+  (recentf-mode 1))
+
 (use-package dirvish
   :defer t
   :preface
