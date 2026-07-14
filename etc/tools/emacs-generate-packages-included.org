@@ -1,0 +1,176 @@
+:PROPERTIES:
+:ID:       tools:dou27p801zk0
+:header-args: :results output code
+:END:
+#+TITLE: Generate Packages Included
+#+AUTHOR: Colin Loeffler (that1guycolin)
+#+COMMENT: DO NOT COMMIT THIS FILE WITH EVALUATED RESULTS
+#+CREATED_DATE: [2026-06-13 Sat 05:08:11]
+#+LAST_EDIT: [2026-07-14 TUE 06:20:16]
+#+ID: tools:dou27p801zk0
+#+FILETAGS: :Emacs:emacsd:
+
+* DO NOT COMMIT THIS FILE WITH EVALUATED RESULTS
+:PROPERTIES:
+:TOC:      :include all :depth 3 :force (nothing) :ignore (this) :local (nothing)
+:END:
+DO NOT COMMIT THIS FILE WITH EVALUATED RESULTS
+
+* Init.el
+:PROPERTIES:
+:CUSTOM_ID: initel
+:END:
+
+#+NAME: all-packages
+#+begin_src bash 
+IFS=$'\n\t'
+
+TEMP="$(mktemp)"
+ESCRIPT="${HOME}/.config/emacs/etc/tools/list-use-packages.el"
+
+{
+    echo "elpaca"
+    echo "elpaca-use-package"
+    echo "no-littering"
+} >$"$TEMP"
+
+for elfile in ${HOME}/.config/emacs/site-lisp/*; do 
+    emacs --script "$ESCRIPT" "$elfile" >>"$TEMP"
+done
+
+mapfile -t PACKAGES < <(
+    sort "$TEMP" | uniq
+)
+
+printf ';;; Packages included:\n'
+printf ';; '
+
+for i in "${!PACKAGES[@]}"; do
+    if ((i > 0)); then
+        printf ', '
+    fi
+    printf '%s' "${PACKAGES[i]}"
+done
+
+printf '\n'
+#+end_src
+
+* site-lisp
+:PROPERTIES:
+:CUSTOM_ID: site-lisp
+:HEADER_ARGS: :session list-packages
+:END:
+
+#+NAME: list-packages
+#+begin_src bash :session list-pkgs
+function list-packages {
+    escript="${HOME}/.config/emacs/etc/tools/list-use-packages.el"
+    local temp="$(mktemp)"
+    local elfile="$1"
+    shift
+    local packages
+
+    if [[ $# -ge 1 ]]; then
+	local xtra_pkgs=("$@")
+	for pkg in "${xtra_pkgs[@]}"; do
+	    echo "$pkg" >>"$temp"
+	done
+    fi
+    
+    emacs --script "$escript" "$elfile" >>"$temp"
+
+    mapfile -t packages < <(sort "$temp" | uniq)
+
+    printf ';;; Packages included:\n'
+    printf ';; '
+
+    for i in "${!packages[@]}"; do
+	if ((i > 0)); then
+	    printf ', '
+	fi
+	printf '%s' "${packages[i]}"
+    done
+    
+    printf '\n'
+}
+#+end_src
+
+#+RESULTS: list-packages
+#+begin_src bash
+#+end_src
+
+#+NAME: 01-bootstrap-core.el
+#+begin_src bash :session list-pkgs
+list-packages "${HOME}/.config/emacs/site-lisp/01-bootstrap-core.el"
+#+end_src
+
+#+NAME: 02-init-frameworks.el
+#+begin_src bash :session list-pkgs
+list-packages "${HOME}/.config/emacs/site-lisp/02-init-frameworks.el"
+#+end_src
+
+#+NAME: 03-visual-settings.el
+#+begin_src bash :session list-pkgs
+list-packages "${HOME}/.config/emacs/site-lisp/03-visual-settings.el" \
+    inhibit-mouse
+#+end_src
+
+#+NAME: 04-tree-sitter-lang-config.el
+#+begin_src bash :session list-pkgs
+list-packages "${HOME}/.config/emacs/site-lisp/04-tree-sitter-lang-config.el"
+#+end_src
+
+#+NAME: 05-project-management.el
+#+begin_src bash :session list-pkgs
+list-packages "${HOME}/.config/emacs/site-lisp/05-project-management.el"
+#+end_src
+
+#+NAME: 06-terminal-modes.el
+#+begin_src bash :session list-pkgs
+list-packages "${HOME}/.config/emacs/site-lisp/06-terminal-modes.el"
+#+end_src
+
+#+NAME: 07-language-configs.el
+#+begin_src bash :session list-pkgs
+list-packages "${HOME}/.config/emacs/site-lisp/07-language-configs.el"
+#+end_src
+
+#+NAME: 08-code-assist.el
+#+begin_src bash :session list-pkgs
+list-packages "${HOME}/.config/emacs/site-lisp/08-code-assist.el"
+#+end_src 
+
+#+NAME: 09-git-tools.el
+#+begin_src bash :session list-pkgs
+list-packages "${HOME}/.config/emacs/site-lisp/09-git-tools.el"
+#+end_src
+
+#+NAME: 10-file-management.el
+#+begin_src bash :session list-pkgs
+list-packages "${HOME}/.config/emacs/site-lisp/10-file-management.el"
+#+end_src
+
+#+NAME: 11-org-mode-extensions.el
+#+begin_src bash :session list-pkgs
+list-packages "${HOME}/.config/emacs/site-lisp/11-org-mode-extensions.el"
+#+end_src
+
+#+NAME: 12-llm-integration.el
+#+begin_src bash :session list-pkgs
+list-packages "${HOME}/.config/emacs/site-lisp/12-llm-integration.el"
+#+end_src
+
+#+NAME: 13-media-player.el
+#+begin_src bash :session list-pkgs
+list-packages "${HOME}/.config/emacs/site-lisp/13-media-player.el"
+#+end_src
+
+#+NAME: 14-misc-packages.el
+#+begin_src bash :session list-pkgs
+list-packages "${HOME}/.config/emacs/site-lisp/14-misc-packages.el" \
+    emacs-everywhere \
+    telega
+#+end_src
+
+
+

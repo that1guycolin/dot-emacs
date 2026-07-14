@@ -159,7 +159,7 @@ define it with ~defconst~ instead of ~defvar~.
 #+NAME: key-order-variable
 #+begin_src elisp
 (defconst style-use-package-key-order
-  '(:ensure :load-path :defer :demand :after :preface :bind :hook
+  '(:ensure :load-path :if :unless :defer :demand :after :preface :bind :hook
 	    :interpreter :magic :mode :commands :functions :defines :init
 	    :custom :config)
   "Style guide key order for `use-package' blocks.")

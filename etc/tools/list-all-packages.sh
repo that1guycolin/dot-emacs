@@ -6,7 +6,7 @@ usage() {
     cat <<EOF
 USAGE: ${0##*/} [OPTIONS] 
 
-List all pacakges invoked via use-package in '~/.emacs.d/init.el.d'.
+List all pacakges invoked via use-package in '~/.config/emacs/site-lisp'.
 
 OPTIONS:
   -a, --additional-package PACKAGE
@@ -58,10 +58,10 @@ while true; do
     esac
 done
 
-ESCRIPT="${HOME}/.emacs.d/tools/list-use-packages.el"
+ESCRIPT="${HOME}/.config/emacs/tools/list-use-packages.el"
 
-for ELFILE in ${HOME}/.emacs.d/init.el.d/*.el; do
-    emacs --script "$ESCRIPT" "$ELFILE" >>"$TEMP"
+for elfile in ${HOME}/.config/emacs/site-lisp/*; do
+    emacs --script "$ESCRIPT" "$elfile" >>"$TEMP"
 done
 
 mapfile -t PACKAGES < <(sort "$TEMP" | uniq)

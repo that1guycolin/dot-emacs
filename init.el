@@ -1,4 +1,4 @@
-;;; init.el --- that1guycolin's dot-Emacs  -*- lexical-binding: t; -*-
+;;; init.el --- that1guycolin's Emacs Config -*- lexical-binding: t; -*-
 ;; Copyright (C) 2026  Loeffler, Colin (that1guycolin)
 
 ;; Author: Loeffler, Colin <that1guycolin@gmail.com>
@@ -119,9 +119,6 @@
     (let ((load-source-file-function nil)) (load "./elpaca-autoloads"))))
 (add-hook 'after-init-hook #'elpaca-process-queues)
 (elpaca `(,@elpaca-order))
-
-;; No-littering
-(elpaca no-littering)
 
 ;; Enable use-package integration with Elpaca
 (elpaca elpaca-use-package
