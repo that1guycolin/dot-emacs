@@ -104,7 +104,7 @@
  ;; Use y/n instead of yes/no
  use-short-answers t
  ;; Save modifications made in Emacs UI to alternate file
- custom-file (expand-file-name "init.el.d/00-auto-custom.el"
+ custom-file (expand-file-name "etc/auto-custom.el"
                                user-emacs-directory))
 
 ;;; Variables depending on package load
