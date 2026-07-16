@@ -10,7 +10,11 @@
 ;;; Code:
 ;;; Base package:
 (use-package llm
-  :demand t
+  :demand t)
+
+(use-package llm-ollama
+  :ensure nil
+  :after (llm)
   :preface
   (defvar user/ollama-alist
     `((codegemma:2b              . ,(* 1  4096))
