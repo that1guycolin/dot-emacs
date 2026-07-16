@@ -308,6 +308,7 @@ Add this function to `org-mode-hook'."
 
   :bind
   (("C-c o o" . org-mode)
+   ("C-c c"   . org-capture)
    ("C-c o l" . org-store-link)
    :map org-mode-map
    ("C-c l"   . org-toggle-link-display)
