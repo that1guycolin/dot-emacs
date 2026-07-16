@@ -29,8 +29,9 @@
 ;; Convert to html
 (use-package htmlize
   :defer t
-  :commands (htmlize-buffer htmlize-region htmlize-file htmlize-many-files
-                            htmlize-many-files-dired))
+  :commands (htmlize-buffer
+             htmlize-region htmlize-file htmlize-many-files
+             htmlize-many-files-dired))
 
 ;; Hide (but easily unhide) certain buffers
 (use-package popper
@@ -40,8 +41,7 @@
   (("C-'"   . popper-toggle)
    ("M-'"   . popper-cycle)
    ("C-M-'" . popper-toggle-type))
-  :functions
-  popper-mode popper-echo-mode
+  :functions (popper-mode popper-echo-mode)
   :custom
   (popper-reference-buffers
    '("\\*Messages\\*" "Output\\*$" "\\*Async Shell Command\\*" help-mode
@@ -57,11 +57,11 @@
     :defer t
     :bind ("C-M-g" . telega)
     :functions
-    telega-mode-line-mode telega-appindicator-mode
-    telega-auto-download-mode telega-autoplay-mode
-    telega-chat-auto-fill-mode telega-highlight-text-mode
-    telega-notifications-mode telega-root-auto-fill-mode
-    telega-transient-keymaps-mode
+    (telega-mode-line-mode
+     telega-appindicator-mode telega-auto-download-mode telega-autoplay-mode
+     telega-chat-auto-fill-mode telega-highlight-text-mode
+     telega-notifications-mode telega-root-auto-fill-mode
+     telega-transient-keymaps-mode)
     :init
     (setq
      telega-use-docker "podman"
@@ -170,14 +170,16 @@
    :map org-table-fedit-map      ("M-m"  . casual-org-table-fedit-tmenu)
    :map reb-mode-map             ("C-o"  . casual-re-builder-tmenu)
    :map reb-lisp-mode-map        ("C-o"  . casual-re-builder-tmenu))
+
   :functions
-  casual-ediff-install casual-ediff-tmenu casual-editkit-windows-tmenu
-  casual-editkit-rectangle-tmenu casual-editkit-registers-tmenu
-  casual-editkit-project-tmenu casual-lib-browse-forward-paragraph
-  casual-lib-browse-backward-paragraph casual-eww-backward-paragraph-link
-  casual-eww-forward-paragraph-link casual-info-browse-backward-paragraph
-  casual-info-browse-forward-paragraph
-  :defines ediff-mode-map
+  (casual-ediff-install
+   casual-ediff-tmenu casual-editkit-windows-tmenu
+   casual-editkit-rectangle-tmenu casual-editkit-registers-tmenu
+   casual-editkit-project-tmenu casual-lib-browse-forward-paragraph
+   casual-lib-browse-backward-paragraph casual-eww-backward-paragraph-link
+   casual-eww-forward-paragraph-link casual-info-browse-backward-paragraph
+   casual-info-browse-forward-paragraph)
+  :defines (ediff-mode-map)
   :config
   (casual-ediff-install)
   (add-hook 'ediff-keymap-setup-hook
@@ -263,9 +265,9 @@
     (dashboard-initialize))
 
   :functions
-  dashboard-insert-startupify-lists dashboard-initialize
-  dashboard-setup-startup-hook dashboard-refresh-buffer
-  dashboard-display-icons-p
+  (dashboard-insert-startupify-lists
+   dashboard-initialize dashboard-setup-startup-hook dashboard-refresh-buffer
+   dashboard-display-icons-p)
   :init
   (add-hook 'elpaca-after-init-hook #'user/dashboard-setup)
   (setq initial-buffer-choice #'dashboard-refresh-buffer)

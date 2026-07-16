@@ -16,7 +16,7 @@
   (("C-x g"   . magit-status)
    ("C-x M-g" . magit-dispatch)
    ("C-c M-g" . magit-file-dispatch))
-  :defines magit-mode-map
+  :defines (magit-mode-map)
   :custom
   (magit-refresh-status-buffer t)
   (magit-define-global-key-bindings 'default)
@@ -30,7 +30,7 @@
     (interactive)
     (call-interactively #'forge-pull))
   :hook (magit-status-mode . user/interactive-forge-pull)
-  :functions forge-pull
+  :functions (forge-pull)
   :custom
   (forge-pull-notifications t))
 
@@ -41,9 +41,10 @@
   (((prog-mode text-mode) . diff-hl-mode)
    (magit-post-refresh    . diff-hl-magit-post-refresh))
   :functions
-  diff-hl-show-hunk diff-hl-diff-goto-hunk diff-hl-stage-dwim
-  diff-hl-revert-hunk diff-hl-previous-hunk diff-hl-next-hunk
-  diff-hl-show-hunk-previous diff-hl-show-hunk-next
+  (diff-hl-show-hunk
+   diff-hl-diff-goto-hunk diff-hl-stage-dwim diff-hl-revert-hunk
+   diff-hl-previous-hunk diff-hl-next-hunk diff-hl-show-hunk-previous
+   diff-hl-show-hunk-next)
   :custom
   (diff-hl-show-staged-changes nil)
   :config
@@ -91,7 +92,7 @@
       "c" "Link to specified commit"
       "h" "Link to repo homepage"))
   :bind-keymap ("C-c C-y" . user/git-link-functions-map)
-  :functions git-link git-link-commit git-link-homepage)
+  :functions (git-link git-link-commit git-link-homepage))
 
 (use-package git-modes
   :defer t

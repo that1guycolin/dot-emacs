@@ -39,14 +39,14 @@
    ("TAB"   . tempel-next)
    ("C-TAB" . tempel-previous))
   :hook ((text-mode prog-mode conf-mode) . user/tempel-setup-capf)
-  :functions tempel-complete tempel-abbrev-mode
+  :functions (tempel-complete tempel-abbrev-mode)
   :init
   (setq tempel-path (expand-file-name "templates" no-littering-etc-directory))
   (tempel-abbrev-mode 1))
 
 ;; tempel library
 (use-package tempel-collection
-  :after tempel)
+  :after (tempel))
 
 
 ;;; Completions:
@@ -69,7 +69,7 @@
 ;; Minibuffer completions
 (use-package vertico
   :demand t
-  :functions vertico-mode
+  :functions (vertico-mode)
   :custom
   (vertico-resize t)
   (vertico-cycle t)
@@ -83,7 +83,7 @@
               ("M-A" . marginalia-cycle)
               :map completion-list-mode-map
               ("M-A" . marginalia-cycle))
-  :functions marginalia-mode
+  :functions (marginalia-mode)
   :config
   (marginalia-mode 1))
 
@@ -99,8 +99,7 @@
               ("M-d"   . corfu-popupinfo-toggle)
               ("M-n"   . corfu-popupinfo-scroll-down)
               ("M-p"   . corfu-popupinfo-scroll-up))
-  :functions
-  global-corfu-mode corfu-history-mode corfu-popupinfo-mode
+  :functions (global-corfu-mode corfu-history-mode corfu-popupinfo-mode)
   
   :custom
   (corfu-auto t)
@@ -122,8 +121,7 @@
 (use-package cape
   :demand t
   :bind ("C-c TAB" . cape-prefix-map)
-  :functions
-  cape-dabbrev cape-file cape-elisp-block cape-history
+  :functions (cape-dabbrev cape-file cape-elisp-block cape-history)
   :init
   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
   (add-to-list 'completion-at-point-functions #'cape-file)
@@ -177,8 +175,7 @@
 
    ([remap goto-line]    . consult-goto-line)
    ([remap imenu]        . consult-imenu))
-  :functions
-  consult--customize-put consult-xref
+  :functions (consult--customize-put consult-xref)
 
   :init
   (setq register-preview-delay 0.5)
@@ -213,8 +210,7 @@
   (("C-."   . embark-act)
    ("C-;"   . embark-dwim)
    ("C-h B" . embark-bindings))
-  :functions
-  embark-prefix-help-command embark-eldoc-first-target
+  :functions (embark-prefix-help-command embark-eldoc-first-target)
 
   :init
   (setq prefix-help-command #'embark-prefix-help-command)
@@ -236,7 +232,7 @@
 ;; Integrations
 (use-package embark-consult
   :after (embark consult)
-  :functions consult-preview-at-point-mode
+  :functions (consult-preview-at-point-mode)
   :config
   (add-hook 'embark-collect-mode-hook #'consult-preview-at-point-mode))
 

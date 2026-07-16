@@ -17,8 +17,8 @@
 (use-package modus-themes
   :demand t
   :functions
-  modus-themes-include-derivatives-mode modus-themes-load-random-dark
-  modus-themes-load-random)
+  (modus-themes-include-derivatives-mode
+   modus-themes-load-random-dark modus-themes-load-random))
 
 ;; Enhanced themes
 (use-package ef-themes
@@ -35,20 +35,20 @@
 ;;; Icons:
 (use-package nerd-icons
   :demand t
-  :functions nerd-icons-install-fonts
+  :functions (nerd-icons-install-fonts)
   :config
   (when (and (not (member "Symbols Nerd Font Mono" (font-family-list)))
              (window-system))
     (nerd-icons-install-fonts t)))
 
 (use-package tab-line-nerd-icons
-  :after nerd-icons
-  :functions tab-line-nerd-icons-global-mode
+  :after (nerd-icons)
+  :functions (tab-line-nerd-icons-global-mode)
   :config
   (tab-line-nerd-icons-global-mode 1))
 
 (use-package nerd-icons-corfu
-  :after nerd-icons
+  :after (nerd-icons)
   :preface (defvar corfu-margin-formatters)
   :config
   (add-to-list 'corfu-margin-formatters 'nerd-icons-corfu-formatter))
@@ -230,7 +230,7 @@ If nil, the number of frame lines and columns remains fixed.")
 ;; de-clutter modeline w/ menu for minor-modes
 (use-package minions
   :demand t
-  :functions minions-mode
+  :functions (minions-mode)
   :config
   (minions-mode 1))
 
@@ -248,7 +248,7 @@ If nil, the number of frame lines and columns remains fixed.")
 (use-package inhibit-mouse
   :demand t
   :unless (eq system-type 'android)
-  :functions inhibit-mouse-mode
+  :functions (inhibit-mouse-mode)
   :custom
   
   (inhibit-mouse-adjust-mouse-highlight t)

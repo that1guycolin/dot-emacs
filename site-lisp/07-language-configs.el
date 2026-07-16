@@ -55,7 +55,7 @@
 
 ;; Integration (elisp)
 (use-package eros-inspector
-  :after eros inspector
+  :after (eros inspector)
   :bind (:map emacs-lisp-mode-map
               ([remap eros-eval-last-sexp] . eros-inspector-eval-last-sexp)
               ([remap eros-eval-defun]     . eros-inspector-eval-defun)))
@@ -181,7 +181,7 @@
   :hook (csv-mode . user/function-for-csv-mode-hook)
   :mode "\\.csv\\'"
   :functions
-  csv-guess-set-separator csv-align-mode)
+  (csv-guess-set-separator csv-align-mode))
 
 (use-package docker-compose-mode
   :defer t

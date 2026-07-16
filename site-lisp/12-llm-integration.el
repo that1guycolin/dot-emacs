@@ -81,7 +81,7 @@ to the user's device.")
      :embedding-model "nomic-embed-text"
      :default-chat-max-tokens (cdr (assoc model user/ollama-alist))))
 
-  :functions make-llm-ollama)
+  :functions (make-llm-ollama))
 
 
 ;;; MCP:
@@ -135,9 +135,9 @@ doubles as a model-switcher."
       (message "[gptel] Backend → %s | Model → %s"
                backend-name gptel-model)))
   
-  :commands gptel gptel-send
-  :functions gptel-get-backend gptel-make-ollama gptel-make-openai
-  :defines gptel-backend
+  :commands (gptel gptel-send)
+  :functions (gptel-get-backend gptel-make-ollama gptel-make-openai)
+  :defines (gptel-backend)
 
   :config
   (user/ensure-ollama-system-service)
@@ -167,9 +167,8 @@ doubles as a model-switcher."
 ;;; Ellama:
 (use-package ellama
   :defer t
-  :commands ellama-transient-main-menu
-  :functions
-  ellama-disable-scroll ellama-enable-scroll
+  :commands (ellama-transient-main-menu)
+  :functions (ellama-disable-scroll ellama-enable-scroll)
   :init
   (setopt ellama-language "English")
   :config
@@ -271,7 +270,7 @@ doubles as a model-switcher."
       ("e"   "Ellama Menu"       ellama-transient-main-menu)
       ("m s" "Server Start"      mcp-server-lib-start)
       ("m e" "Server Stop"       mcp-server-lib-stop)]])
-  (keymap-global-set "C-c a" #'user/llm-dispatch))
+  (keymap-global-set "C-c a" 'user/llm-dispatch))
 
 
 (provide '12-llm-integration)

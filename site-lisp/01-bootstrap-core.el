@@ -34,7 +34,7 @@
    ("C-c #"   . display-line-numbers-mode)
    ("C-c C-#" . global-display-line-numbers-mode)
    ("C-c C-$" . restart-emacs))
-  :functions ibuffer-auto-mode
+  :functions (ibuffer-auto-mode)
   :custom
   (auto-save-visited-interval 60)
   (enable-recursive-minibuffers t)
@@ -61,7 +61,7 @@
 ;; Smart garbage collection
 (use-package gcmh
   :demand t
-  :functions gcmh-mode
+  :functions (gcmh-mode)
   :init (gcmh-mode 1))
 
 ;; Environment
@@ -73,7 +73,7 @@
       "CXX" "LSP_USE_PLISTS" "PKG_CONFIG_PATH" "SSH_AGENT_PID" "SSH_AUTH_SOCK"
       "WAYLAND_DISPLAY")
     "List of environment variables to load at Emacs start.")
-  :functions exec-path-from-shell-initialize
+  :functions (exec-path-from-shell-initialize)
   :custom
   (exec-path-from-shell-shell-name "zsh")
   :config
@@ -84,7 +84,7 @@
 
 (use-package envrc
   :demand t
-  :functions envrc-global-mode
+  :functions (envrc-global-mode)
   :config
   (envrc-global-mode 1))
 
@@ -328,11 +328,12 @@ Add this function to `org-mode-hook'."
   (("\\.org\\'"   . org-mode)
    ("\\.notes\\'" . org-mode))
   :functions
-  org-before-first-heading-p org-get-heading org-map-entries org-back-to-heading
-  org-outline-level org-up-heading-safe org-get-outline-path org-id-get-create
-  org-entry-get org-entry-put org-id-new org-insert-structure-template
+  (org-before-first-heading-p
+   org-get-heading org-map-entries org-back-to-heading org-outline-level
+   org-up-heading-safe org-get-outline-path org-id-get-create org-entry-get
+   org-entry-put org-id-new org-insert-structure-template)
   :defines
-  org-babel-default-header-args:zsh org-babel-lisp-eval-fn
+  (org-babel-default-header-args:zsh org-babel-lisp-eval-fn)
 
   :init
   (if (eq system-type 'android)

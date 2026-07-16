@@ -162,9 +162,9 @@ follow this convention."
   :mode "\\.py\\'"
   
   :functions
-  python-skeleton-class python-skeleton-def python-skeleton-for
-  python-skeleton-if python-skeleton-import python-skeleton-try
-  python-skeleton-while
+  (python-skeleton-class
+   python-skeleton-def python-skeleton-for python-skeleton-if
+   python-skeleton-import python-skeleton-try python-skeleton-while)
   :custom
   (python-indent-offset 4)
   (python-shell-interpreter "python3")

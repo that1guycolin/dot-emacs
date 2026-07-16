@@ -179,11 +179,12 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
   :commands dirvish-dwim
 
   :functions
-  dired-create-directory dired-create-empty-file dired-current-directory
-  dired-do-rename dired-find-file dired-get-filename dired-get-marked-files
-  dired-goto-file dired-next-line dired-previous-line dired-up-directory
-  dirvish-override-dired-mode dirvish-subtree-toggle user/dirvish-dispatch
-  :defines dirvish-mode-map
+  (dired-create-director
+   dired-create-empty-file dired-current-directory dired-do-rename
+   dired-find-file dired-get-filename dired-get-marked-files dired-goto-file
+   dired-next-line dired-previous-line dired-up-directory
+   dirvish-override-dired-mode dirvish-subtree-toggle user/dirvish-dispatch)
+  :defines (dirvish-mode-map)
 
   :init
   (dirvish-override-dired-mode 1)

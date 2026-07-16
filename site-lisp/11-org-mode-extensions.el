@@ -33,8 +33,7 @@
    :map org-snitch-link-mode-map
    ("C-c C-o" . org-open-at-point-global)
    ("C-c C-d" . org-snitch-mark-done))
-  :functions
-  (org-snitch-setup org-snitch-mode org-snitch-magit-insert-task)
+  :functions (org-snitch-setup org-snitch-mode org-snitch-magit-insert-task)
   :custom
   (org-snitch-target-file (user/smart-project-file))
   (org-snitch-capture-key "p")
@@ -82,8 +81,8 @@
 
   :hook (emacs-startup . user/org-mem-setup-wait)
   :functions
-  org-mem-roamy-db-mode org-mem-updater-mode org-mem-reset org-mem-await
-  org-mem-tip-if-empty
+  (org-mem-roamy-db-mode
+   org-mem-updater-mode org-mem-reset org-mem-await org-mem-tip-if-empty)
   :defines (org-mem-roamy-do-overwrite-real-db)
   :custom
   (org-mem-watch-dirs
@@ -130,9 +129,9 @@ this function as `org-node-creation-fn'."
   :bind-keymap ("M-o" . org-node-global-prefix-map)
   :commands org-node-org-prefix-map
   :functions
-  org-node-pop-to-fresh-file-buffer org-node-cache-mode
-  org-node-complete-at-point-mode org-node-backlink-mode
-  :defines org-node-backlink-do-drawers
+  (org-node-pop-to-fresh-file-buffer
+   org-node-cache-mode org-node-complete-at-point-mode org-node-backlink-mode)
+  :defines (org-node-backlink-do-drawers)
   
   :init
   (keymap-set org-mode-map "M-o" org-node-org-prefix-map)
@@ -168,7 +167,7 @@ this function as `org-node-creation-fn'."
   (add-to-list 'user/custom-packages 'pdf-tools)
   :magic ("%PDF" . pdf-view-mode)
   :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)
-  :functions pdf-tools-install
+  :functions (pdf-tools-install)
   :custom
   (pdf-view-display-size 'fit-page)
   (pdf-info-asynchronous t)
@@ -177,10 +176,10 @@ this function as `org-node-creation-fn'."
 
 ;; PDF Tools ext
 (use-package nov
-  :after org-noter)
+  :after (org-noter))
 
 (use-package djvu
-  :after org-noter)
+  :after (org-noter))
 
 ;; Annotate
 (use-package org-noter
@@ -249,9 +248,10 @@ With a prefix ARG, remove start location."
                            (org-noter--pretty-print-location location))))))))
   
   :functions
-  org-noter-insert-note org-noter--get-precise-info org-noter--parse-root
-  org-noter--doc-approx-location org-entry-delete org-entry-put
-  org-noter--pretty-print-location org-noter-pdftools-jump-to-note
+  (org-noter-insert-note
+   org-noter--get-precise-info org-noter--parse-root
+   org-noter--doc-approx-location org-entry-delete org-entry-put
+   org-noter--pretty-print-location org-noter-pdftools-jump-to-note)
   
   :config
   (with-eval-after-load 'pdf-annot

@@ -43,7 +43,7 @@
         (project-remember-projects-under (expand-file-name dir))))
     (message "Successfully repopulated projects list"))
 
-  :functions project-remember-projects-under
+  :functions (project-remember-projects-under)
   :init
   (setq
    project-list-file (no-littering-expand-etc-file-name "project-list.eld"))
@@ -116,10 +116,10 @@
       "C-d"      "Discard Activity"))
   :bind-keymap ("C-x C-a" . user/activities-map)
   :functions
-  activities-new activities-define activities-resume activities-suspend
-  activities-kill activities-switch activities-switch-buffer activities-revert
-  activities-list activities-rename activities-discard activities-mode
-  activities-tabs-mode
+  (activities-new
+   activities-define activities-resume activities-suspend activities-kill
+   activities-switch activities-switch-buffer activities-revert activities-list
+   activities-rename activities-discard activities-mode activities-tabs-mode)
 
   :init
   (activities-mode 1)
@@ -193,11 +193,12 @@ Wait two seconds before activating the mode."
    ("<backspace>" . treemacs-root-up))
   :commands treemacs treemacs-refresh
   :functions
-  treemacs-filewatch-mode treemacs-git-mode treemacs-git-commit-diff-mode
-  treemacs-select-window treemacs-project-follow-mode treemacs-root-up
-  treemacs-get-local-window treemacs-hide-gitignored-files-mode
-  treemacs--select-workspace-by-name treemacs-switch-workspace
-  :defines treemacs-mode-map
+  (treemacs-filewatch-mode
+   treemacs-git-mode treemacs-git-commit-diff-mode treemacs-select-window
+   treemacs-project-follow-mode treemacs-root-up treemacs-get-local-window
+   treemacs-hide-gitignored-files-mode treemacs--select-workspace-by-name
+   treemacs-switch-workspace)
+  :defines (treemacs-mode-map)
 
   :custom
   (treemacs-width 35)
@@ -211,13 +212,13 @@ Wait two seconds before activating the mode."
   (advice-add 'disproject-dispatch :before #'user/close-treemacs))
 
 (use-package project-treemacs
-  :after treemacs)
+  :after (treemacs)
   :functions (project-treemacs-mode)
   :config (project-treemacs-mode 1))
 
 (use-package treemacs-nerd-icons
-  :after treemacs
-  :functions treemacs-nerd-icons-config
+  :after (treemacs)
+  :functions (treemacs-nerd-icons-config)
   :config
   (treemacs-nerd-icons-config))
 

@@ -27,7 +27,7 @@
 ;; Jump-to-def/find-refs
 (use-package dumb-jump
   :demand t
-  :functions dumb-jump-xref-activate
+  :functions (dumb-jump-xref-activate)
   :custom
   (dumb-jump-prefer-searcher 'ag)
   (xref-show-definitions-function #'consult-xref)
@@ -92,7 +92,7 @@
       (setq-local flycheck-shellcheck-args '("--shell=dash"))))
 
   :hook ((prog-mode text-mode) . flycheck-mode)
-  :functions flycheck-select-checker flycheck-add-mode
+  :functions (flycheck-select-checker flycheck-add-mode)
 
   :custom
   (flycheck-emacs-lisp-load-path 'inherit)
@@ -211,8 +211,8 @@ See URL `https://vale.sh'."
 ;; Display flycheck errors in buffer
 (use-package flyover
   :after (flycheck)
-  :functions flyover-mode flyover-toggle flyover-flash-error-at-point
-  :defines flyover-checkers
+  :functions (flyover-mode flyover-toggle flyover-flash-error-at-point)
+  :defines (flyover-checkers)
   
   :init (setq flyover-checkers '(flycheck))
   :custom
@@ -333,12 +333,12 @@ See URL `https://vale.sh'."
 
 (use-package consult-eglot-embark
   :after (consult-eglot embark)
-  :functions consult-eglot-embark-mode
+  :functions (consult-eglot-embark-mode)
   :config (consult-eglot-embark-mode 1))
 
 (use-package flycheck-eglot
   :after (flycheck)
-  :functions global-flycheck-eglot-mode
+  :functions (global-flycheck-eglot-mode)
   :config
   (global-flycheck-eglot-mode 1))
 
@@ -497,8 +497,10 @@ See URL `https://vale.sh'."
     rust-ts-mode sh-mode toml-ts-mode typescript-mode typescript-ts-mode
     xml-ts-mode yaml-ts-mode) . kirigami-mode)
   :functions
-  kirigami-open-fold kirigami-open-fold-rec kirigami-open-folds
-  kirigami-close-fold kirigami-close-folds kirigami-toggle-fold
+  (kirigami-open-fold
+   kirigami-open-fold-rec kirigami-open-folds kirigami-close-fold
+   kirigami-close-folds kirigami-toggle-fold)
+
   :config
   (defvar-keymap user/kirigami-functions-map
     :doc "Common code folding functions from `kirigami'."
@@ -534,7 +536,7 @@ See URL `https://vale.sh'."
 
 ;; Correct with flyspell...
 (use-package flyspell-correct
-  :after flyspell
+  :after (flyspell)
   :bind (:map flyspell-mode-map
               ("C-&" . flyspell-correct-wrapper)))
 
