@@ -22,11 +22,11 @@
   :ensure nil
   :demand t
   :preface
+  (declare-function no-littering-expand-etc-file-name "no-littering")
   (defvar android-home)
   (defvar user/projects-directory)
   (defvar user/scripts-directory)
   (defvar org-directory)
-  (defvar user-emacs-directory)
 
   (defun user/project-reset-projects ()
     "Clear the project list and repopulate it."
@@ -47,6 +47,9 @@
     (message "Successfully repopulated projects list"))
 
   :functions project-remember-projects-under
+  :init
+  (setq
+   project-list-file (no-littering-expand-etc-file-name "project-list.eld"))
   :custom
   (project-list-exclude
    (list (regexp-quote (expand-file-name elpaca-directory))
@@ -75,7 +78,8 @@
     (transient-append-suffix 'disproject-dispatch "&"
       '("C f" "Consult Project Find" consult-project-extra-find))
     (transient-append-suffix 'disproject-dispatch "C f"
-      '("C o" "C. P. Find Other Window" consult-project-extra-find-other-window))))
+      '("C o" "C. P. Find Other Window"
+        consult-project-extra-find-other-window))))
 
 (use-package activities
   :demand t
