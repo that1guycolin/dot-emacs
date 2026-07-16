@@ -57,16 +57,15 @@
   (add-hook 'ibuffer-mode-hook #'user/ibuffer-hook-functions))
 
 
-;;;; =======  OTHER BOOTSTRAPS  =======
-;; `gcmh'                                (smart garbage collection)
-;; `exec-path-from-shell' `envrc'        (environment)
-;; `transient' `org'                     (override built-in ver w/ latest ver)
-;;   ==================================
+;;; Other bootstraps:
+
+;; Smart garbage collection
 (use-package gcmh
   :demand t
   :functions gcmh-mode
   :init (gcmh-mode 1))
 
+;; Environment
 (use-package exec-path-from-shell
   :demand t
   :preface
@@ -90,6 +89,7 @@
   :config
   (envrc-global-mode 1))
 
+;; Override-built-in version w/ package's latest version
 (use-package transient
   :ensure (:wait t)
   :demand t)
@@ -98,7 +98,7 @@
   :demand t
   :preface
   (declare-function sly-eval "sly")
-  
+
   (defun user/org-check ()
     "User-error if buffer is not in `org-mode'."
     (unless (derived-mode-p 'org-mode)
@@ -224,7 +224,7 @@ underneath it.  The header block will contain the following fields:
                 "\n#+LAST_EDIT: "
                 "\n#+ID: " id
                 "\n#+FILETAGS: \n"))))
-  
+
   (defun user/org-insert-src-block (lang)
     "Insert a block structure of the type #+begin_src LANG/#+end_src."
     (interactive
@@ -248,7 +248,7 @@ YYYY-MM-DD DAY HH:MM:ss (e.g., 2026-03-15 SUN 14:24:06)"
            (format-time-string
             "#+LAST_EDIT: [%Y-%m-%d %a %H:%M:%S]"))))))
   (add-hook 'before-save-hook #'user/org-update-last-edit-dt)
-  
+
   (defun user/org-convert-md-links ()
     "Convert all md-style links in the current buffer to org-style."
     (interactive)

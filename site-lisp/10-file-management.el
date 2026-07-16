@@ -8,11 +8,7 @@
 ;; functional file explorer inside Emacs.
 
 ;;; Code:
-;;;; =======  FILE EXPLORER  =======
-;; `dirvish'             (Dired w `batteries included')
-;; `dwim-shell-command'  (execute shell commands on marked files)
-;; `ready-player'        (launch media directly from dirvish)
-;;   ===============================
+;; Recent files history
 (use-package recentf
   :ensure nil
   :demand t
@@ -25,6 +21,7 @@
   (add-to-list 'recentf-exclude no-littering-etc-directory)
   (recentf-mode 1))
 
+;; `Dired' with "batteries included"
 (use-package dirvish
   :defer t
   :preface
@@ -264,6 +261,7 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
     (keymap-set create-map "f"   #'dired-create-empty-file)
     (keymap-set create-map "d"   #'dired-create-directory)))
 
+;; execute shell commands on marked files
 (use-package dwim-shell-command
   :defer t
   :preface
@@ -311,6 +309,7 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
   (transient-append-suffix 'user/dirvish-dispatch "c d"
     '("F" "FFmpeg Actions" user/ffmpeg-actions-map)))
 
+;; Launch media directly from `dirvish'
 (use-package ready-player
   :defer t
   :hook (dired-mode . ready-player-mode))

@@ -30,10 +30,12 @@
                (expand-file-name "snippets" no-littering-etc-directory))
   (yas-reload-all))
 
+;; yasnippet library
 (use-package yasnippet-snippets
   :defer t
   :hook (yas-minor-mode . yasnippet-snippets-initialize))
 
+;; yasnippet completions
 (use-package yasnippet-capf
   :defer t
   :preface
@@ -43,6 +45,7 @@
   :hook (yas-minor-mode . user/setup-yasnippet-capf)
   :functions yasnippet-capf)
 
+;; modern snippet framework with ancient roots
 (use-package tempel
   :demand t
   :preface
@@ -69,26 +72,23 @@
   :hook ((text-mode prog-mode conf-mode) . user/tempel-setup-capf)
   :functions tempel-complete tempel-abbrev-mode
   :init
+  (setq tempel-path (expand-file-name "templates" no-littering-etc-directory))
   (tempel-abbrev-mode 1))
 
+;; tempel library
 (use-package tempel-collection
   :after tempel)
 
 
-;;;; =======  COMPLETIONS  =======
-;; `savehist'    (history across sessions)
-;; `orderless'   (fuzzy matching)
-;; `vertigo'     (minibuffer completions)
-;; `marginalia'  (rich annotations)
-;; `corfu'       (inline completion)
-;; `cape'        (completion extensions)
-;;   =============================
+;;; Completions:
+;; Maintain history across sessions
 (use-package savehist
   :ensure nil
   :demand t
   :config
   (savehist-mode 1))
 
+;; Fuzzy matching
 (use-package orderless
   :demand t
   :init
@@ -97,6 +97,7 @@
    completion-category-overrides '((file (styles basic partial-completion)))
    completion-category-defaults nil))
 
+;; Minibuffer completions
 (use-package vertico
   :demand t
   :functions vertico-mode
@@ -106,6 +107,7 @@
   :config
   (vertico-mode 1))
 
+;; Rich annotations
 (use-package marginalia
   :demand t
   :bind (:map minibuffer-local-map
@@ -116,6 +118,7 @@
   :config
   (marginalia-mode 1))
 
+;; Inline completions
 (use-package corfu
   :demand t
   :bind (:map corfu-map
@@ -146,6 +149,7 @@
   (add-to-list 'savehist-additional-variables 'corfu-history)
   (corfu-popupinfo-mode 1))
 
+;; Extend completion framework
 (use-package cape
   :demand t
   :bind ("C-c TAB" . cape-prefix-map)
@@ -158,17 +162,12 @@
   (add-to-list 'completion-at-point-functions #'cape-history))
 
 
-;;;; =======  ADDITIONAL FRAMEWORKS  =======
-;; `avy'                 (jump to...)
-;; `consult'             (gather data)
-;; `consult-yasnippet'   (integration)
-;; `embark'              (mouse events on keyboard)
-;; `embark-consult'      (integration)
-;; `helpful'             (better help)
-;;   =======================================
+;;; Additional frameworks:
+;; Jump to...
 (use-package avy
   :demand t)
 
+;; Gather data
 (use-package consult
   :demand t
   :preface
@@ -232,9 +231,11 @@
   (setq xref-show-xrefs-function #'consult-xref
         xref-show-definitions-function #'consult-xref))
 
+;; Integration
 (use-package consult-yasnippet
   :after (consult yasnippet))
 
+;; Mouse events on keyboard
 (use-package embark
   :demand t
   :preface
@@ -267,12 +268,14 @@
   (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
   (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly))
 
+;; Integrations
 (use-package embark-consult
   :after (embark consult)
   :functions consult-preview-at-point-mode
   :config
   (add-hook 'embark-collect-mode-hook #'consult-preview-at-point-mode))
 
+;; Even better help
 (use-package helpful
   :demand t
   :preface
