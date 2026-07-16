@@ -13,7 +13,13 @@
 (use-package treesit
   :ensure nil
   :demand t
-  :mode (("\\.tsx\\'" . tsx-ts-mode))
+  :preface
+  (declare-function no-littering-expand-var-file-name "no-littering")
+  
+  :mode ("\\.tsx\\'" . tsx-ts-mode)
+  :init
+  (setq treesit-extra-load-path
+        (list (no-littering-expand-var-file-name "tree-sitter")))
   :custom
   (treesit-font-lock-level 4)
   :config
