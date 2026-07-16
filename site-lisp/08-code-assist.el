@@ -347,11 +347,15 @@ See URL `https://vale.sh'."
                :depth treeless :protocol https :autoloads t
                :repo "svaante/lsp-snippet" :main "lsp-snippet.el" :build t
                :files ("Makefile" "*.el") :autoloads t)
-  :after (:all eglot (:any tempel yasnippet))
+  :after (eglot tempel)
   :config
   (require 'lsp-snippet-tempel)
   (lsp-snippet-tempel-eglot-init))
 
+(use-package eglot-tempel
+  :after (eglot tempel)
+  :functions (eglot-tempel-mode)
+  :config (eglot-tempel-mode 1))
 
 ;;; Formatting:
 ;; bash:         'shfmt'         (pacman -S shfmt)
