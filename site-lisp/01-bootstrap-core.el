@@ -4,8 +4,8 @@
 ;; emacs, envrc, exec-path-from-shell, gcmh, org, transient
 
 ;;; Commentary:
-;; Elpaca package manager bootstrap and packages that must load first because
-;; they have a major inpact on startup.
+;; Packages that must load first because they impact startup or because their
+;; latest version is preferred over their built-in version.
 
 ;;; Code:
 ;;; Global Settings:
