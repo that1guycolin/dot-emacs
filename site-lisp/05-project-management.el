@@ -212,6 +212,8 @@ Wait two seconds before activating the mode."
 
 (use-package project-treemacs
   :after treemacs)
+  :functions (project-treemacs-mode)
+  :config (project-treemacs-mode 1))
 
 (use-package treemacs-nerd-icons
   :after treemacs
