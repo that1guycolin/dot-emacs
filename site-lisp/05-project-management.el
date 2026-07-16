@@ -20,6 +20,11 @@
   (defvar user/scripts-directory)
   (defvar org-directory)
 
+  (defun user/current-project-root ()
+    "Return the current project's root directory or nil if not in project."
+    (when-let* ((project (project-current nil)))
+      (project-root project)))
+  
   (defun user/project-reset-projects ()
     "Clear the project list and repopulate it."
     (interactive)
