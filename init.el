@@ -53,7 +53,8 @@
 
 ;;; Commentary:
 ;; that1guycolin's personal Emacs configuration.  Reduces startup time by
-;; optimizing load-order and using `Elpaca' as package manager.
+;; optimizing load-order and using `Elpaca' as package manager.  Organization
+;; clutter-free environment thanks to `no-littering'.
 
 ;;; Code:
 ;;; Elpaca:
@@ -63,11 +64,12 @@
 (defvar elpaca-sources-directory (expand-file-name "sources/" elpaca-directory))
 
 ;; Avoid flycheck warnings
-(declare-function   elpaca-generate-autoloads	 "elpaca")
-(declare-function   elpaca-process-queues	 "elpaca")
-(declare-function   elpaca			 "elpaca")
-(declare-function   elpaca-wait			 "elpaca")
-(declare-function   elpaca-use-package-mode	 "elpaca-use-package")
+(declare-function   elpaca-generate-autoloads    "elpaca")
+(declare-function   elpaca-process-queues        "elpaca")
+(declare-function   elpaca                       "elpaca")
+(declare-function   elpaca-wait                  "elpaca")
+(declare-function   elpaca-use-package           "elpaca-use-package")
+(declare-function   elpaca-use-package-mode      "elpaca-use-package")
 
 (defvar             elpaca-queue-limit)
 (defvar             no-littering)
