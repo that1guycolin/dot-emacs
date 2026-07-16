@@ -349,12 +349,8 @@ See URL `https://vale.sh'."
                :files ("Makefile" "*.el") :autoloads t)
   :after (:all eglot (:any tempel yasnippet))
   :config
-  (with-eval-after-load 'tempel
-    (require 'lsp-snippet-tempel)
-    (lsp-snippet-tempel-eglot-init))
-  (with-eval-after-load 'yasnippet
-    (require 'lsp-snippet-yasnippet)
-    (lsp-snippet-yasnippet-eglot-init)))
+  (require 'lsp-snippet-tempel)
+  (lsp-snippet-tempel-eglot-init))
 
 
 ;;; Formatting:

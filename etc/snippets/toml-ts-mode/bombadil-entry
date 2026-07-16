@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: bombadil-entry
-# key: bombadil
-# --
-
-${1:config-name} = \{ source = \"${2:source}\", target = \"${3:destination}\" \}

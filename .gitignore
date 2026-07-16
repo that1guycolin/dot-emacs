@@ -21,7 +21,6 @@ emms
 .envrc
 eshell
 etc/*
-!etc/snippets/
 !etc/tools/
 !etc/templates
 forge-database.sqlite

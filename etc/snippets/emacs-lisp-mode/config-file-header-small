@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: config file header small
-# key: smallheader
-# --
-;;;; =======  ${1:title}  =======

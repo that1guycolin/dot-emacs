@@ -23,33 +23,33 @@
 ;; activities, adaptive-wrap, adjust-parens, apheleia, auto-rename-tag, avy,
 ;; bash-ts-mode, cape, casual, casual-avy, checkdoc, cmake-ts-mode,
 ;; comment-dwim-2, consult, consult-eglot, consult-eglot-embark,
-;; consult-flycheck, consult-project-extra, consult-yasnippet, corfu, csv-mode,
-;; dashboard, deadgrep, diff-hl, dirvish, disproject, djvu, docker,
+;; consult-flycheck, consult-project-extra, corfu, csv-mode, dashboard,
+;; deadgrep, diff-hl, dirvish, disproject, djvu, docker, docker-compose-mode,
 ;; dockerfile-ts-mode, dumb-jump, dwim-shell-command, eask-mode, eat,
-;; editorconfig, ef-themes, eglot, el2org, eldoc-cmake, elisp-def,
-;; elisp-dev-mcp, ellama, elpaca, elpaca-use-package, emacs, emacs-lisp-mode,
-;; embark, embark-consult, emms, emms-info-mediainfo, envrc, eros,
-;; eros-inspector, exec-path-from-shell, fish-mode, flycheck,
+;; editorconfig, ef-themes, eglot, eglot-tempel, el2org, eldoc-cmake,
+;; elisp-def, elisp-dev-mcp, ellama, elpaca, elpaca-use-package, emacs,
+;; emacs-lisp-mode, embark, embark-consult, emms, emms-info-mediainfo, envrc,
+;; eros, eros-inspector, exec-path-from-shell, fish-mode, flycheck,
 ;; flycheck-color-mode-line, flycheck-eask, flycheck-eglot, flycheck-package,
 ;; flyover, flyspell, flyspell-correct, flyspell-correct-avy-menu, forge,
-;; free-keys, gcmh, ghostel, git-commit-ts-mode, git-modes, glsl-mode, gptel,
-;; gptel-forge-prs, grip-mode, helpful, hideshow, ielm, ini-mode, inspector,
-;; json-ts-mode, just-ts-mode, kdl-mode, kirigami, lisp-mode, lisp-semantic-hl,
-;; live-py-mode, llm, lsp-snippet, lua-ts-mode, macrostep, magit,
-;; magit-org-todos, marginalia, markdown-ts-mode, mcp-server-lib, minions,
-;; mistty, modus-themes, morlock, native-complete, nerd-icons,
-;; nerd-icons-corfu, nov, nxml-mode, ob-rust, orderless, org, org-edna,
-;; org-make-toc, org-mcp, org-mem, org-modern, org-modern-indent, org-node,
-;; org-noter, org-noter-pdftools, org-pdftools, org-pomodoro,
-;; org-project-capture, org-tidy, outline, outline-indent, pdf-tools, popper,
-;; project, python-pytest, python-ts-mode, python-x, rainbow-delimiters,
-;; ready-player, rg, rustic, savehist, shfmt, show-font, sh-mode, sly,
-;; smartparens, suggest, systemd, tab-line-nerd-icons, tempel,
-;; tempel-collection, toml-ts-mode, transient, tree-inspector, treemacs,
-;; treemacs-magit, treemacs-nerd-icons, treesit, treesit-fold, vertico,
-;; visual-fill-column, visual-regexp, visual-regexp-steroids, vterm, which-key,
-;; with-editor, yaml-pro, yaml-ts-mode, yasnippet, yasnippet-capf,
-;; yasnippet-snippets
+;; free-keys, gcmh, ghostel, git-commit-ts-mode, git-link, git-modes,
+;; glsl-mode, gptel, gptel-forge-prs, grip-mode, helpful, hideshow, htmlize,
+;; ielm, inhibit-mouse, ini-mode, inspector, json-ts-mode, just-ts-mode,
+;; kdl-mode, kirigami, lisp-mode, lisp-semantic-hl, live-py-mode, llm,
+;; llm-ollama, lsp-snippet, lua-ts-mode, macrostep, magit, marginalia,
+;; markdown-ts-mode, mcp-server-lib, minions, mistty, modus-themes, morlock,
+;; native-complete, nerd-icons, nerd-icons-corfu, no-littering, nov, nxml-mode,
+;; ob-rust, orderless, org, org-edna, org-make-toc, org-mcp, org-mem,
+;; org-modern, org-modern-indent, org-node, org-noter, org-noter-pdftools,
+;; org-pdftools, org-pomodoro, org-snitch, org-tidy, outline, outline-indent,
+;; pdf-tools, popper, project, project-treemacs, python-pytest, python-ts-mode,
+;; python-x, rainbow-delimiters, ready-player, recentf, rg, rustic,
+;; rustic-ts-mode, savehist, shfmt, sh-mode, show-font, sly, smartparens,
+;; suggest, systemd, tab-line-nerd-icons, tempel, tempel-collection,
+;; toml-ts-mode, transient, tree-inspector, treemacs, treemacs-magit,
+;; treemacs-nerd-icons, treesit, treesit-fold, vertico, visual-fill-column,
+;; visual-regexp, visual-regexp-steroids, vterm, with-editor, yaml-pro,
+;; yaml-ts-mode
 
 ;;; Commentary:
 ;; that1guycolin's personal Emacs configuration.  Reduces startup time by
@@ -137,6 +137,7 @@
   :demand t)
 
 
+;;; Load Paths:
 (defvar user/lisp-directory
   (expand-file-name "site-lisp" user-emacs-directory)
   "Directory from which init files are loaded.")
@@ -165,7 +166,7 @@
 (add-to-list 'load-path user/lisp-directory)
 
 
-;;;; =======  LOAD PACKAGES  =======
+;;; Modular Init:
 (with-eval-after-load 'no-littering
   ;; Load startup and core packages
   (require '01-bootstrap-core)
@@ -216,4 +217,4 @@
 (provide 'init)
 ;;; init.el ends here.
 
-; LocalWords:  nomessage
+                                        ; LocalWords:  nomessage

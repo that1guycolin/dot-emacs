@@ -1,9 +1,8 @@
 ;;; 02-init-frameworks.el --- Initialize global frameworks -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; avy, cape, consult, consult-yasnippet, corfu, embark, embark-consult,
-;; helpful, marginalia, orderless, savehist, tempel, tempel-collection,
-;; vertico, yasnippet, yasnippet-capf, yasnippet-snippets
+;; avy, cape, consult, corfu, embark, embark-consult, helpful, marginalia,
+;; orderless, savehist, tempel, tempel-collection, vertico
 
 ;;; Commentary:
 ;; This file sets up snippets, completions, and other frameworks that need to
@@ -15,31 +14,6 @@
 
 ;;; Code:
 ;;; Snippets:
-;; Functions
-(use-package yasnippet
-  :demand t
-  :hook ((prog-mode text-mode) . yas-minor-mode)
-  :functions yas-reload-all
-  :config
-  (add-to-list 'yas-snippet-dirs
-               (expand-file-name "snippets" no-littering-etc-directory))
-  (yas-reload-all))
-
-;; yasnippet library
-(use-package yasnippet-snippets
-  :defer t
-  :hook (yas-minor-mode . yasnippet-snippets-initialize))
-
-;; yasnippet completions
-(use-package yasnippet-capf
-  :defer t
-  :preface
-  (defun user/setup-yasnippet-capf ()
-    "Add yasnippet-capf to `completion-at-point-functions'."
-    (add-to-list 'completion-at-point-functions #'yasnippet-capf))
-  :hook (yas-minor-mode . user/setup-yasnippet-capf)
-  :functions yasnippet-capf)
-
 ;; modern snippet framework with ancient roots
 (use-package tempel
   :demand t
@@ -225,10 +199,6 @@
 
   (setq xref-show-xrefs-function #'consult-xref
         xref-show-definitions-function #'consult-xref))
-
-;; Integration
-(use-package consult-yasnippet
-  :after (consult yasnippet))
 
 ;; Mouse events on keyboard
 (use-package embark
