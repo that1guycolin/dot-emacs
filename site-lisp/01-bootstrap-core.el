@@ -43,7 +43,6 @@
   (read-extended-command-predicate #'command-completion-default-include-p)
   (tab-always-indent 'complete)
   (text-mode-ispell-word-completion nil)
-  (warning-suppress-types '(bytecomp comp))
   :config
   (dolist (lib user/emacs-load-libs)
     (require lib))
@@ -97,6 +96,45 @@
 (use-package org
   :demand t
   :preface
+  (defvar user/org-loaded-p nil
+    "Non-nil if org-mode has been actively loaded.")
+
+  (defun user/org-config ()
+    "Set up org-mode with customizations for personal use."
+    (require 'ox-texinfo)
+
+    (add-hook 'org-mode-hook #'user/org-search-folded)
+
+    (setq org-src-lang-modes (assoc-delete-all "bash" org-src-lang-modes))
+    (dolist (lang-mode-cons '(("bash"   . bash-ts) ("cmake" . cmake-ts)
+                              ("json"   . json-ts) ("lua"   . lua-ts)
+                              ("python" . python-ts) ("sh"  . sh)
+                              ("toml"   . toml-ts) ("yaml"  . yaml-ts)
+                              ("zsh"    . shell)))
+      (add-to-list 'org-src-lang-modes lang-mode-cons))
+
+    (with-eval-after-load 'ob
+      (setq org-babel-default-header-args
+            (cons '(:results . "value verbatim replace")
+                  (assq-delete-all :results org-babel-default-header-args)))
+      (setq org-babel-default-header-args:zsh '((:results . "output")))
+      (with-eval-after-load 'sly
+        (if org-babel-lisp-eval-fn
+            (setq org-babel-lisp-eval-fn #'sly-eval)
+          (defvar org-babel-lisp-eval-fun #'sly-eval)))
+      (dolist (lang '(lisp lua makefile org python shell))
+        (add-to-list 'org-babel-load-languages `(,lang . t)))
+      (org-babel-do-load-languages
+       'org-babel-load-languages
+       org-babel-load-languages))
+
+    (setq user/org-loaded-p t))
+
+  (defun user/start-org ()
+    "Start org-mode if not already started."
+    (unless user/org-loaded-p
+      (user/org-config)))
+
   (declare-function sly-eval "sly")
 
   (defun user/org-check ()
@@ -298,32 +336,7 @@ Add this function to `org-mode-hook'."
   (org-startup-folded 'fold)
   (org-use-sub-superscripts '{})
   :config
-  (require 'ox-texinfo)
-
-  (add-hook 'org-mode-hook #'user/org-search-folded)
-
-  (setq org-src-lang-modes (assoc-delete-all "bash" org-src-lang-modes))
-  (dolist (lang-mode-cons '(("bash"   . bash-ts) ("cmake" . cmake-ts)
-                            ("json"   . json-ts) ("lua"   . lua-ts)
-                            ("python" . python-ts) ("sh"  . sh)
-                            ("toml"   . toml-ts) ("yaml"  . yaml-ts)
-                            ("zsh"    . shell)))
-    (add-to-list 'org-src-lang-modes lang-mode-cons))
-
-  (with-eval-after-load 'ob
-    (setq org-babel-default-header-args
-          (cons '(:results . "value verbatim replace")
-                (assq-delete-all :results org-babel-default-header-args)))
-    (setq org-babel-default-header-args:zsh '((:results . "output")))
-    (with-eval-after-load 'sly
-      (if org-babel-lisp-eval-fn
-          (setq org-babel-lisp-eval-fn #'sly-eval)
-        (defvar org-babel-lisp-eval-fun #'sly-eval)))
-    (dolist (lang '(lisp lua makefile org python shell))
-      (add-to-list 'org-babel-load-languages `(,lang . t)))
-    (org-babel-do-load-languages
-     'org-babel-load-languages
-     org-babel-load-languages)))
+  (add-hook 'org-mode-hook #'user/start-org))
 
 
 (provide '01-bootstrap-core)
