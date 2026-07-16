@@ -209,6 +209,11 @@ follow this convention."
   :config
   (add-hook 'sh-mode-hook #'user/enable-zsh-error-echo-fix))
 
+(use-package rustic-ts-mode
+  :ensure nil
+  :defer t
+  :mode "\\.rs\\'")
+
 (use-package toml-ts-mode
   :ensure nil
   :defer t
