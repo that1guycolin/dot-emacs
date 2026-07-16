@@ -14,13 +14,8 @@
 ;; completion framework.
 
 ;;; Code:
-;;;; =======  SNIPPETS  =======
-;; 'yasnippet'           (functions)
-;; 'yasnippet-snippets'  (library)
-;; 'yasnippet-capf'      (completions)
-;; `tempel'              (modern snippet framework w ancient roots)
-;; `tempel-collection'   (library)
-;;   ==========================
+;;; Snippets:
+;; Functions
 (use-package yasnippet
   :demand t
   :hook ((prog-mode text-mode) . yas-minor-mode)

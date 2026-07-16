@@ -12,52 +12,40 @@
 ;; scripting, & coding languages.
 
 ;;; Code:
-;;;; =======  (E)LISP  =======
-;; ALL:
-;; `adjust-parens'       (smart '()')
-;; `lisp-semantic-hl'    (cl & elisp syntax hl)
-;; -------------------------
-;; EMACS LISP
-;; `checkdoc'            (style checker)
-;; `elisp-def'           (go directly to symbol def)
-;; `eros'                (see function results in buffer)
-;; `ielm'                (interactive elisp shell)
-;; `inspector'           (inspection tool for emacs-lisp objects)
-;; `eros-inspector'      (combine functionality of eros & inspector)
-;; `macrostep'           (interactive macro stepper)
-;; `morlock'             (additional font hl)
-;; `suggest'             (find function to accomplish X)
-;; `tree-inspector'      (tree-style view for inspector)
-;; -------------------------
-;; COMMON
-;; `sly'                 (modern slime)
-;;   =========================
+;;; (E)Lisp:
+;; Smart '()' (all)
 (use-package adjust-parens
   :defer t
   :hook ((emacs-lisp-mode lisp-mode) . adjust-parens-mode))
 
+;; Syntax highlighting (all)
 (use-package lisp-semantic-hl
   :defer t
   :hook ((emacs-lisp-mode lisp-mode) . lisp-semantic-hl-mode))
 
+;; Style checker (elisp)
 (use-package checkdoc
   :ensure nil
   :defer t
   :commands checkdoc-defun checkdoc-current-buffer)
 
+;; Go directly to symbol definition (elisp)
 (use-package elisp-def
   :defer t
   :hook (emacs-lisp-mode . elisp-def-mode))
 
+;; Display function results in buffer (elisp)
 (use-package eros
   :defer t
   :hook (emacs-lisp-mode . eros-mode))
 
+;; Elisp REPL
 (use-package ielm
   :ensure nil
   :defer t
   :bind ("C-c I" . ielm))
 
+;; Inspection tool (elisp)
 (use-package inspector
   :defer t
   :bind (:map emacs-lisp-mode-map
@@ -65,32 +53,38 @@
   :custom
   (inspector-switch-to-buffer nil))
 
+;; Integration (elisp)
 (use-package eros-inspector
   :after eros inspector
   :bind (:map emacs-lisp-mode-map
               ([remap eros-eval-last-sexp] . eros-inspector-eval-last-sexp)
               ([remap eros-eval-defun]     . eros-inspector-eval-defun)))
 
+;; Interactively parse macros (elisp)
 (use-package macrostep
   :defer t
   :bind (:map emacs-lisp-mode-map
               ("C-c C-m" . macrostep-expand)))
 
+;; Additional font hl (elisp)
 (use-package morlock
   :defer t
   :hook (emacs-lisp-mode . morlock-mode))
 
+;; Provide tool to accomplish X
 (use-package suggest
   :defer t
   :bind (:map emacs-lisp-mode-map
               ("C-c S" . suggest)))
 
+;; Tree-style viewer for inspector
 (use-package tree-inspector
   :defer t
   :bind (:map emacs-lisp-mode-map
               ("M-I t" . tree-inspector-inspect-expression)
               ("M-I s" . tree-inspector-inspect-last-sexp)))
 
+;; Modern SLIME (cl)
 (use-package sly
   :defer t
   :bind ("C-c s" . sly)
@@ -105,11 +99,7 @@
   (add-hook 'sly-mrepl-mode-hook #'corfu-mode))
 
 
-;;;; =======  PYTHON  =======
-;; `live-py-mode'        (live coding)
-;; `python-pytest'       (integrate testing)
-;; `python-x'            (enhance built-in python(-ts)-mode)
-;;   ========================
+;;; Python:
 (defvar python-base-mode-map)
 ;; FUNCTIONS
 (defun user/python-uv-script-p ()
@@ -138,27 +128,26 @@
 (with-eval-after-load 'python
   (define-key python-base-mode-map (kbd "C-c C-r") #'user/python-run-smart))
 
-;; PACKAGES
+;; Live coding
 (use-package live-py-mode
   :defer t
   :bind (:map python-base-mode-map
               ("C-c L" . live-py-mode)))
 
+;; Support testing frameworks
 (use-package python-pytest
   :defer t
   :bind (:map python-base-mode-map
               ("C-c C-t" . python-pytest-dispatch)))
 
-
+;; Enhance built-in python(-ts)-mode
 (use-package python-x
   :defer t
   :hook ((python-mode python-ts-mode) . python-x-setup))
 
 
-;;;; =======  ADDITIONAL LANGUAGE SUPPORT  =======
-;; `fish-mode'   (fish shell support)
-;; `rustic'      (rust/cargo support)
-;;   =============================================
+;;; Additional languages:
+;; Fish shell
 (use-package fish-mode
   :defer t
   :interpreter "fish"
@@ -166,9 +155,10 @@
   :custom
   (fish-enable-auto-indent t))
 
+;; Rust/cargo
 (use-package rustic
   :defer t
-  :mode ("\\.rs\\'" . rustic-mode)
+  :hook ((rust-mode rust-ts-mode) . rustic-mode)
   :custom
   (compilation-ask-about-save t)
   (rustic-analyzer-command '("/usr/lib/rustup/bin/rust-analyzer"))
@@ -178,16 +168,7 @@
   (rustic-lsp-client 'lsp-mode))
 
 
-;;;; =======  CONFIG FILE MODES  =======
-;; `csv-mode'            (support csv files)
-;; `eask-mode'           (support Eask files)
-;; `glsl-mode'           (support OpenGL Shading Language)
-;; `just-ts-mode'        (justfile-support)
-;; `ini-mode'            (config file support)
-;; `just-ts-mode'        (justfile support)
-;; `kdl-mode'            (support .kdl)
-;; `systemd'             (support services & sockets)
-;;   ===================================
+;;; Configuration file modes:
 (use-package csv-mode
   :defer t
   :preface
@@ -234,20 +215,18 @@
    ("\\.socket\\'"    . systemd-mode)))
 
 
-;;;; =======  ENHANCE BUILT-INS  =======
-;; `auto-rename-tag'     (xml tag assistant)
-;; `eldoc-cmake'         (doc support in cmake-ts-mode)
-;; `grip-mode'           (support for gfm)
-;; `yaml-pro'            (enhanced .yaml support)
-;;   ===================================
+;;; Enhance built-in modes:
+;; XML tag assistant
 (use-package auto-rename-tag
   :defer t
   :hook (nxml-mode . auto-rename-tag-mode))
 
+;; Doc support in cmake(-ts)-mode
 (use-package eldoc-cmake
   :defer t
-  :hook (cmake-ts-mode . eldoc-cmake-enable))
+  :hook ((cmake-mode cmake-ts-mode) . eldoc-cmake-enable))
 
+;; Support for gfm in markdown(-ts)-mode
 (use-package grip-mode
   :defer t
   :preface (defvar markdown-ts-mode-map)
@@ -259,9 +238,10 @@
   :custom
   (grip-command 'auto))
 
+;; YAML like a pro
 (use-package yaml-pro
   :defer t
-  :hook (yaml-ts-mode . yaml-pro-mode))
+  :hook ((yaml-mode yaml-ts-mode) . yaml-pro-mode))
 
 
 (provide '07-language-configs)

@@ -11,13 +11,14 @@
 ;; only because org-mode loads with a `wait' directive in the first init file.
 
 ;;; Code:
-;;;; =======  TASKS  =======
-;; `org-edna'                    (cond. task completion)
-;;   =======================
+;;; Tasks:
+;; Conditional task completion
 (use-package org-edna
   :defer t
   :hook (org-mode . org-edna-mode))
 
+;; Project management via Org
+(use-package org-snitch
   :demand t
   :preface
   (declare-function user/current-project-root "05-project-management.el")
@@ -52,14 +53,8 @@
                 "C-c C-t" #'org-snitch-magit-insert-task)))
 
 
-;;;; =======  KNOWLEDGE  =======
-;; `org-mem'             (org metadata index)
-;; `org-node'            (fast & simple note management)
-;; `pdf-tools'           (view pdf in Emacs)
-;; `org-noter'           (annotate documents)
-;; `org-pdftools'        (integrate org & `pdf-tools')
-;; `org-noter-pdftools'  (annotate pdf files)
-;;   ===========================
+;;; Knowledge
+;; Org metadata index
 (use-package org-mem
   :demand t
   :preface
@@ -94,10 +89,11 @@
   (org-mem-watch-dirs
    (list (expand-file-name org-directory))))
 
+;; Fast & simple note management
 (use-package org-node
   :defer t
   :preface
-  (declare-function org-id-new                   "org-id")
+  (declare-function org-id-new "org-id")
   (declare-function user/org-insert-header-block "01-bootstrap-core")
   
   (defun user/org-node-new-file (&optional title cust-id)
@@ -157,6 +153,7 @@ this function as `org-node-creation-fn'."
   (setq org-node-backlink-do-drawers nil)
   (org-node-backlink-mode 1))
 
+;; View PDFs in Emacs
 (use-package pdf-tools
   :ensure (pdf-tools
            :source nil :package "pdf-tools" :id pdf-tools :fetcher github
@@ -178,12 +175,14 @@ this function as `org-node-creation-fn'."
   :config
   (pdf-tools-install))
 
+;; PDF Tools ext
 (use-package nov
   :after org-noter)
 
 (use-package djvu
   :after org-noter)
 
+;; Annotate
 (use-package org-noter
   :defer t
   :bind
@@ -200,6 +199,7 @@ this function as `org-node-creation-fn'."
   (org-noter-notes-search-path (expand-file-name "notes" org-directory))
   (org-noter-default-notes-file-names '("notes.org")))
 
+;; Annotate PDFs
 (use-package org-pdftools
   :ensure (org-pdftools
            :source nil :package "org-pdftools" :id org-pdftools
@@ -258,24 +258,18 @@ With a prefix ARG, remove start location."
     (add-hook 'pdf-annot-activate-handler-functions
               #'org-noter-pdftools-jump-to-note)))
 
-;;;; =======  BABEL  =======
-;; `ob-rust'
-;;   =======================
+
+;;; Babel
 (use-package ob-rust
-  :after org
+  :after (org)
   :custom
   (org-babel-rust-command "rust-script")
   :config
   (add-to-list 'org-babel-load-languages '(rust . t)))
 
 
-;;;; =======  MISC  =======
-;; `el2org'                              (make .org from .el)
-;; `org-make-toc'                        (table-of-contents)
-;; `org-modern' `org-modern-indent'      (improve org l&f)
-;; `org-pomodoro'                        (manage time)
-;; `org-tidy'                            (invisible drawers)
-;;   ======================
+;;; Miscellaneous
+;; .org from .el
 (use-package el2org
   :defer t
   :bind
@@ -284,6 +278,7 @@ With a prefix ARG, remove start location."
    ("C-c 2 h" . el2org-generate-html)
    ("C-c 2 o" . el2org-generate-org)))
 
+;; Table-of-contents
 (use-package org-make-toc
   :defer t
   :bind (:map org-mode-map
@@ -293,6 +288,7 @@ With a prefix ARG, remove start location."
   :custom
   (org-make-toc-insert-custom-ids t))
 
+;; Improve Org appearance
 (use-package org-modern
   :defer t
   :hook (org-mode . org-modern-mode)
@@ -314,6 +310,7 @@ With a prefix ARG, remove start location."
   :defer t
   :hook (org-modern-mode . org-modern-indent-mode))
 
+;; Manage time
 (use-package org-pomodoro
   :defer t
   :bind (:map org-mode-map
@@ -321,6 +318,7 @@ With a prefix ARG, remove start location."
   :custom
   (org-pomodoro-manual-break t))
 
+;; Invisible drawers
 (use-package org-tidy
   :defer t
   :preface

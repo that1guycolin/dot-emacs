@@ -9,15 +9,7 @@
 ;; occurs in "09-git-tools.el".
 
 ;;; Code:
-;;;; =======  PROJECTS  =======
-;; `project.el'                  (management)
-;; `disproject'                  (transient dispatch for project.el)
-;; `consult-project-extra'       (integration)
-;; `deadgrep'                    (global ripgrep search)
-;; `rg'                          (project ripgrep search & more)
-;; `activities'                  (save frame-state)
-;; `docker'                      (Docker support)
-;;   ==========================
+;;; Projects:
 (use-package project
   :ensure nil
   :demand t
@@ -56,6 +48,7 @@
          (regexp-quote (expand-file-name "~/dotfiles/terminals/alacritty"))))
   (project-vc-ignores '("^node_modules$" "^\\.venv$" "^\\.uv$")))
 
+;; transient dispatch for project.el
 (use-package disproject
   :defer t
   :preface
@@ -81,6 +74,7 @@
       '("C o" "C. P. Find Other Window"
         consult-project-extra-find-other-window))))
 
+;; Save frame-state & tab-state
 (use-package activities
   :demand t
   :preface
@@ -126,18 +120,21 @@
   (activities-mode 1)
   (activities-tabs-mode 1))
 
+;; Podman/container integration
 (use-package docker
   :defer t
   :bind ("C-c D" . docker)
   :custom
   (docker-command "podman"))
 
+;; Global rg integration
 (use-package deadgrep
   :defer t
   :bind
   (("<f5>"    . deadgrep)
    ("C-c C-r" . deadgrep)))
 
+;; Project rg integration & more
 (use-package rg
   :defer t
   :bind (("C-c g" . rg-menu)
@@ -147,11 +144,7 @@
   (require 'rg-isearch))
 
 
-;;;; =======  TREEMACS  =======
-;; `treemacs'                    (functional side panel)
-;; `project-treemacs'            (project.el + treemacs integration)
-;; `treemacs-nerd-icons'         (nerd-icons + treemacs integration)
-;;   ==========================
+;;; Treemacs:
 (use-package treemacs
   :defer t
   :preface
@@ -224,3 +217,4 @@ Wait two seconds before activating the mode."
 
 (provide '05-project-management)
 ;;; 05-project-management.el ends here
+

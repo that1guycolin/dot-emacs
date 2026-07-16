@@ -8,7 +8,7 @@
 ;; support either linux native terminal shells or the Emacs native eshell.
 
 ;;; Code:
-;;;; =======  HELPFUL FUNCTIONS  =======
+;;; Helpful functions
 (defun user/normal-window-p (win)
   "Return non-nil if WIN is a normal, non-side, non-minibuffer window."
   (and (window-live-p win)
@@ -37,17 +37,15 @@
     (apply orig-fn args)))
 
 
-;;;; =======  TERMINAL SHELLS  =======
-;; `eat'         (Emulate A Terminal)
-;; `ghostel'     (terminal shell based on libghostty)
-;; `mistty'      (commit shell layer)
-;; `vterm'       (fully functional terminal shell)
-;;   =================================
+;;; Terminal buffers
+;; Emulate A Terminal
 (use-package eat
   :defer t
   :bind ("C-c t e"   . eat)
   :hook (eshell-mode . eat-eshell-visual-command-mode))
 
+;; Excellent terminal shell buffer
+;; (based on libghostty)
 (use-package ghostel
   :ensure (ghostel
            :source nil :package "ghostel" :id ghostel :fetcher github
@@ -67,6 +65,7 @@
       "s"
       '("o" "Ghostel" ghostel-project))))
 
+;; Commit shell layer
 (use-package mistty
   :defer t
   :preface (advice-add 'mistty :around #'user/call-in-other-window-advice)
@@ -78,6 +77,7 @@
    ("M-<left>"  . mistty-send-key)
    ("M-<right>" . mistty-send-key)))
 
+;; The old workhorse
 (use-package vterm
   :defer t
   :bind
@@ -85,13 +85,13 @@
    ("C-c t V" . vterm-other-window)))
 
 
-;;;; =======  HELPERS  =======
-;; `with-editor' (set envar EDITOR to current Emacs session)
-;;   =========================
+;;; Helpers:
+;; Set EDITOR to current Emacs session
 (use-package with-editor
   :defer t
   :hook ((eshell-mode shell-mode vterm-mode) . with-editor-export-editor))
 
+;; Shell completion in shell buffers
 (use-package native-complete
   :defer t
   :preface

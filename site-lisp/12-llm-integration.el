@@ -8,7 +8,7 @@
 ;; media playback, or chatting with an LLM right in your coding buffer.
 
 ;;; Code:
-;;;; =======  VARIABLES & FUNCTIONS  =======
+;;; Base package:
 (use-package llm
   :demand t
   :preface
@@ -76,28 +76,28 @@ to the user's device.")
      :chat-model (symbol-name model)
      :embedding-model "nomic-embed-text"
      :default-chat-max-tokens (cdr (assoc model user/ollama-alist))))
-  
+
   :functions make-llm-ollama)
 
 
-;;;; =======  MCP  =======
+;;; MCP:
 (use-package mcp-server-lib
   :defer t
   :commands (mcp-server-lib-start mcp-server-lib-stop))
 
 (use-package org-mcp
   :defer t
-  :commands org-mcp-enable
+  :commands (org-mcp-enable)
   :custom
   (org-mcp-allowed-files
    (directory-files-recursively org-directory "\\.org\\'")))
 
 (use-package elisp-dev-mcp
   :defer t
-  :commands elisp-dev-mcp-enable)
+  :commands (elisp-dev-mcp-enable))
 
 
-;;;; =======  GPTEL  =======
+;;; GPTel
 (use-package gptel
   :defer t
   :preface
@@ -159,7 +159,7 @@ doubles as a model-switcher."
   :hook (forge-pullreq-mode . gptel-forge-prs-install))
 
 
-;;;; =======  ELLAMA  =======
+;;; Ellama:
 (use-package ellama
   :defer t
   :commands ellama-transient-main-menu
@@ -168,7 +168,7 @@ doubles as a model-switcher."
   :init
   (setopt ellama-language "English")
   :config
-  ;; ----------- MODEL TYPES -----------
+  ;; -- Model Types --
   ;; Fast:
   (defvar user/ellama-model-fast-chat
     (user/llm-ollama-model-setup 'lfm2.5-thinking:1.2b))
@@ -203,7 +203,7 @@ doubles as a model-switcher."
   (defvar user/ellama-model-cloud-code
     (user/llm-ollama-model-setup 'qwen3-coder-next:cloud))
 
-  ;; ----------- FUNCTIONS -----------
+  ;; -- Functions --
   (defun user/ellama-set-tier (tier)
     "Activate default models for TIER."
     (interactive
@@ -238,24 +238,24 @@ doubles as a model-switcher."
         ellama-summarization-provider user/ellama-model-cloud-summary)
        (message "Ellama tier → CLOUD"))))
   
-  ;; Defaults:
+  ;; -- Defaults --
   (setopt
    ellama-provider user/ellama-model-fast-chat
    ellama-coding-provider user/ellama-model-fast-code
    ellama-summarization-provider user/ellama-model-balanced-summary
-   ;; ----------- DISPLAY -----------
+   ;; Display
    ellama-chat-display-action-function #'display-buffer-full-frame
    ellama-instant-display-action-function #'display-buffer-at-bottom)
 
   (advice-add 'pixel-scroll-precision :before #'ellama-disable-scroll)
   (advice-add 'end-of-buffer :after #'ellama-enable-scroll))
 
-;;;; =======  TRANSIENT  =======
+
+;;; Transient:
 (with-eval-after-load 'transient
   (declare-function transient-define-prefix "transient")
   (defvar user/llm-dispatch nil)
-  (transient-define-prefix
-    user/llm-dispatch ()
+  (transient-define-prefix user/llm-dispatch ()
     "Commands to interact with LLMs in Emacs."
     ["LLM Integrations"
      ["Gptel"

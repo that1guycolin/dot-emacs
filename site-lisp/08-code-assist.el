@@ -13,23 +13,18 @@
 ;; The packages called in this file set up an Emacs IDE.
 
 ;;; Code:
-;;;; =======  TEXT MANIPULATION  =======
-;; `adaptive-wrap'           (smart text wrapping)
-;; `comment-dwim-2'          (easily switch between comment-types)
-;; `dumb-jump'               (jump-to-def/find-refs)
-;; `rainbow-delimiters'      (colorize "", {}, [], ())
-;; `smartparens'             (auto-close "", {}, [], ())
-;; `visual-regexp'           (hl regexp as you type)
-;; `visual-regexp-steroids'  (use python-style regexp instead of Emacs)
-;;   ===================================
+;;; Text manipulation:
+;; Smart wrapping
 (use-package adaptive-wrap
   :defer t
   :hook ((prog-mode text-mode) . adaptive-wrap-prefix-mode))
 
+;; Easily switch between comment types
 (use-package comment-dwim-2
   :defer t
   :bind ([remap comment-dwim] . comment-dwim-2))
 
+;; Jump-to-def/find-refs
 (use-package dumb-jump
   :demand t
   :functions dumb-jump-xref-activate
@@ -39,30 +34,33 @@
   :config
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
 
+;; Colorize "", {}, [], ()
 (use-package rainbow-delimiters
   :defer t
   :hook ((prog-mode conf-mode) . rainbow-delimiters-mode))
 
+;; Auto-close "", {}, [], ()
 (use-package smartparens
   :defer t
   :hook ((prog-mode text-mode) . smartparens-mode)
   :config
   (require 'smartparens-config))
 
+;; Hl regexp while typing
 (use-package visual-regexp
   :defer t
   :bind
   (("C-c r" . vr/replace)
    ("C-c q" . vr/query-replace)))
 
+;; Python-style regexp over Emacs
 (use-package visual-regexp-steroids
   :defer t
   :bind
   (([remap isearch-forward-regexp]  . vr/isearch-forward)
    ([remap isearch-backward-regexp] . vr/isearch-backward)))
 
-
-;;;; =======  FLYCHECK  =======
+;;; Flycheck:
 ;; bash:        'shellcheck'    (pacman -S shellcheck)
 ;; emacs-lisp:  'emacs-lisp'    (built-in)
 ;; json:        'jsonlint'      (pnpm install -g jsonlint)
@@ -72,14 +70,7 @@
 ;; toml:        'tombi'         (uv tool install tombi)
 ;; xml:         'xmllint'       (pacman -S libxml2)
 ;; yaml:        'yamllint'      (pacman -S yamllint)
-;; --------------------------
-;; Extensions:
-;; `flyover'                     (display errors in buffer)
-;; `flycheck-color-mode-line'    (display buffer status)
-;; `flycheck-eask'               (Support Eask files)
-;; `flycheck-package'            (Support Emacs' pacakge files)
-;; `consult-flycheck'            (Completing-read for flycheck)
-;;   ==========================
+
 (use-package flycheck
   :defer t
   :preface
@@ -217,6 +208,7 @@ See URL `https://vale.sh'."
   (add-hook 'bash-ts-mode-hook #'(lambda ()
                                    (flycheck-select-checker 'sh-shellcheck))))
 
+;; Display flycheck errors in buffer
 (use-package flyover
   :after (flycheck)
   :functions flyover-mode flyover-toggle flyover-flash-error-at-point
@@ -262,6 +254,7 @@ See URL `https://vale.sh'."
     "p" "Flash Error @ Point")
   (keymap-global-set "C-c y" user/flyover-functions-map))
 
+;; Buffer status
 (use-package flycheck-color-mode-line
   :defer t
   :hook (flycheck-mode . flycheck-color-mode-line-mode))
@@ -278,15 +271,16 @@ See URL `https://vale.sh'."
   :after (consult flycheck))
 
 
-;;;; ============================  EGLOT  =============================
-;;   ---------------------------  REQUIRED  ---------------------------
+;;; Eglot:
+;; Required:
 ;; cmake:    'neocmakelsp'               (cargo install neocmakelsp)
 ;; fish:     'fish-lsp'                  (pnpm install -g fish-lsp)
 ;; lua:      'lua-language-server'       (pacman -S lua-language-server)
 ;; markdown: 'rumdl'                     (pacman -S rumdl)
 ;; python:   'rass' [`ty'/`ruff']        (uv tool install rass ty ruff)
 ;; toml:     'tombi'                     (pacman -S tombi)
-;;   ---------------------------  OPTIONAL  ---------------------------
+
+;; Optional:
 ;; bash:    'bash-language-server'
 ;;          (pnpm i -g bash-language-server)
 ;; compose: 'docker-compose-langserver'
@@ -297,9 +291,7 @@ See URL `https://vale.sh'."
 ;;          ((aur sync -c lemminx) OR (SEE github.com/eclipse-lemminx/lemminx))
 ;; yaml:    'yaml-language-server'
 ;;          (pnpm i -g yaml-language-server)
-;;   -------------------------  INTEGRATIONS  --------------------------
-;; `consult-eglot' `consult-eglot-embark' `flycheck-eglot' `lsp-snippet'
-;;   ===================================================================
+
 (use-package eglot
   :ensure nil
   :defer t
@@ -365,7 +357,7 @@ See URL `https://vale.sh'."
     (lsp-snippet-yasnippet-eglot-init)))
 
 
-;;;; =======  FORMATTING  =======
+;;; Formatting:
 ;; bash:         'shfmt'         (pacman -S shfmt)
 ;; cmake:        'neocmakelsp'   (cargo install neocmakelsp)
 ;; fish:         'fish_indent'   (bundled with fish shell)
@@ -373,11 +365,12 @@ See URL `https://vale.sh'."
 ;; json:         'jq'            (pacman -S jq)
 ;; lua:          'stylua'        (pacman -S stylua)
 ;; markdown:     'rumdl'         (pacman -S rumdl)
-;; python:       'ruff'          (uv tool install ruff)
+;; python:       'ruff'          (uv add ruff)
 ;; toml:         'tombi'         (pacman -S tombi)
 ;; xml:          'xmlstarlet'    (pacman -S xmlstarlet)
-;; yaml:         'yq-yqml'       (pacman -S yq-yaml)
-;;   ============================
+;; yaml:         'yq-yqml'       (pacman -S yamlfmt)
+
+;; sh-mode/bash-ts-mode
 (use-package shfmt
   :defer t
   :preface
@@ -392,6 +385,7 @@ See URL `https://vale.sh'."
   (shfmt-command "shfmt")
   (shfmt-arguments '("-i" "4" "-ci")))
 
+;; Everything else
 (use-package apheleia
   :defer t
   :bind ("C-c f" . apheleia-format-buffer)
@@ -442,13 +436,8 @@ See URL `https://vale.sh'."
   (setf (alist-get 'yaml-ts-mode        apheleia-mode-alist) 'yamlfmt))
 
 
-;;;; =======  FOLDING  =======
-;; `hideshow'            (fold based on buffer-syntax)
-;; `outline'             (fold based on headings)
-;; `outline-indent'      (fold based on indentation)
-;; `treesit-fold'        (fold based on treesit-language syntax)
-;; `kirigami'            (consistent settings across backends)
-;;   =========================
+;;; Folding:
+;; Based on buffer-syntax
 (use-package hideshow
   :ensure nil
   :defer t
@@ -457,6 +446,7 @@ See URL `https://vale.sh'."
     c++-mode css-mode go-mode html-mode java-mode js-mode json-mode lua-mode
     nxml-mode perl-mode php-mode ruby-mode rust-mode sh-mode typescript-mode) . hs-minor-mode))
 
+;; Based on headings
 (use-package outline
   :ensure nil
   :defer t
@@ -465,6 +455,7 @@ See URL `https://vale.sh'."
     diff-mode emacs-lisp-mode lisp-interaction-mode lisp-mode markdown-mode) .
     outline-minor-mode))
 
+;; Based on indentation
 (use-package outline-indent
   :defer t
   :hook
@@ -472,6 +463,7 @@ See URL `https://vale.sh'."
   :custom
   (outline-indent-ellipsis " ▼"))
 
+;; Based on treesit language syntax
 (use-package treesit-fold
   :defer t
   :hook
@@ -491,6 +483,7 @@ See URL `https://vale.sh'."
    :box nil
    :weight 'bold))
 
+;; Allows use of same keybindings across backends
 (use-package kirigami
   :defer t
   :hook
@@ -528,25 +521,24 @@ See URL `https://vale.sh'."
   (keymap-global-set "C-c z" user/kirigami-functions-map))
 
 
-;;;; =======  FLYSPELL  =======
-;; `flyspell'                    (spellcheck)
-;; `flyspell-correct'            (correct w/ flyspell...)
-;; `flyspell-correct-avy-menu'   (... and your favorite interface)
-;;   ==========================
-(declare-function embark-act "embark")
+;;; Spelling:
+;; Spellcheck engine
 (use-package flyspell
   :ensure nil
   :defer t
+  :preface (declare-function embark-act "embark")
   :hook ((prog-mode conf-mode text-mode) . flyspell-mode)
   :config
   (keymap-unset flyspell-mode-map "C-.")
   (keymap-global-set "C-." #'embark-act))
 
+;; Correct with flyspell...
 (use-package flyspell-correct
   :after flyspell
   :bind (:map flyspell-mode-map
               ("C-&" . flyspell-correct-wrapper)))
 
+;; ...and the avy interface
 (use-package flyspell-correct-avy-menu
   :after (flyspell-correct avy))
 

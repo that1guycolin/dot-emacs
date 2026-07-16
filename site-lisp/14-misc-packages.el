@@ -9,12 +9,8 @@
 ;; dashboard, benefit from loading near the end of the startup process.
 
 ;;; Code:
-;;;; =======  MISC  =======
-;; `emacs-everywhere'    (Use Emacs anywhere you type)
-;; `free-keys'           (buffer of available keybinds)
-;; `popper'              (keep select buffers hidden yet easily unhidden)
-;; `telega'              (chat in Emacs)
-;;   ======================
+;;; Miscellaneous:
+;; Typing is better in Emacs
 (unless (eq system-type 'android)
   (use-package emacs-everywhere
     :demand t
@@ -25,15 +21,18 @@
             (menu-bar-lines . 0) (tool-bar-lines . 0)
             (vertical-scroll-bars . nil)))))
 
+;; Show available keybinds
 (use-package free-keys
   :defer t
   :bind ("C-c C-=" . free-keys))
 
+;; Convert to html
 (use-package htmlize
   :defer t
   :commands (htmlize-buffer htmlize-region htmlize-file htmlize-many-files
                             htmlize-many-files-dired))
 
+;; Hide (but easily unhide) certain buffers
 (use-package popper
   :demand t
   :preface (keymap-global-unset "M-'")
@@ -52,6 +51,7 @@
   (popper-mode +1)
   (popper-echo-mode +1))
 
+;; Telegram in Emacs
 (unless (eq system-type 'android)
   (use-package telega
     :defer t
@@ -86,7 +86,7 @@
     (message "Telega loaded successfully.")))
 
 
-;;;; =======  CASUAL  =======
+;;; Casual:
 (use-package casual
   :defer t
   :preface
@@ -253,7 +253,7 @@
   :bind ("M-g" . casual-avy-tmenu))
 
 
-;;;; =======  DASHBOARD  =======
+;;; Dashboard:
 (use-package dashboard
   :demand t
   :preface

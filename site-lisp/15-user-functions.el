@@ -4,7 +4,7 @@
 ;; Variables, functions, and transient dispatches defined by the user.
 
 ;;; Code:
-;;;; =======  HOOKS  =======
+;;; Hooks:
 (defun user/untabify-buffer ()
   "Run `untabify' over current buffer."
   (interactive)
@@ -23,7 +23,7 @@
 (add-hook 'after-save-hook #'user/untabify-when-no-tab-mode)
 
 
-;;;; =======  SIDE-WINDOW  =======
+;;; Side window:
 (defun user/toggle-side-window ()
   "Switch focus between a side window and the main window area.
 If in a side window, return to the last used window.
@@ -44,7 +44,7 @@ If not in a side window, jump to the first found side window."
 (bind-keys ("M-0" . user/toggle-side-window))
 
 
-;;;; =======  ELPACA  =======
+;;; Elpaca:
 (declare-function elpaca-update-menus "elpaca")
 (defun user/elpaca-update-menus ()
   "Non-interactively run `elpaca-update-menus'."
@@ -149,7 +149,7 @@ If not in a side window, jump to the first found side window."
     "b c" "Build Compile"))
 (keymap-global-set "C-c e" user/elpaca-options-map)
 
-;;;; =======  EXERCISM  =======
+;;; Exercism:
 (declare-function ert-delete-all-tests "ert.el.gz")
 (defun user/eval-and-run-all-tests-in-buffer ()
   "Run tests for the `exercism' learning tool.

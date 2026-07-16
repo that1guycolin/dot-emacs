@@ -9,7 +9,7 @@
 ;; Activates and configures Emacs' built-in tree-sitter supported languages.
 
 ;;; Code:
-;;;; =======  GLOBAL TREESIT PACKAGES  =======
+;;; Global:
 (use-package treesit
   :ensure nil
   :demand t
@@ -76,7 +76,7 @@
     (add-to-list 'major-mode-remap-alist remaped)))
 
 
-;;;; =======  MODE CONFIGURATIONS  =======
+;;; Mode configurations:
 (use-package bash-ts-mode
   :ensure nil
   :defer t
