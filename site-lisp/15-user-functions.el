@@ -62,14 +62,14 @@ If not in a side window, jump to the first found side window."
       (message "Rebuilt %s" pkg))
     (message "All packages rebuilt!")))
 
-(defvar user/init-directory)
+(defvar user/lisp-directory)
 (defvar user/custom-packages)
 (defun user/get-external-packages ()
   "Return a list of all external packages installed via `elpaca'."
   (interactive)
   (let* ((packages '(elpaca elpaca-use-package))
          (init-files
-          (directory-files user/init-directory t
+          (directory-files user/lisp-directory t
                            directory-files-no-dot-files-regexp))
          (files (nreverse init-files)))
     (with-temp-buffer
