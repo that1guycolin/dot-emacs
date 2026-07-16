@@ -213,14 +213,16 @@ See URL `https://vale.sh'."
                           flycheck-error-message-mode))
 
   (add-hook 'org-mode-hook #'(lambda ()
-                               (flycheck-select-checker 'org-lint))))
+                               (flycheck-select-checker 'org-lint)))
+  (add-hook 'bash-ts-mode-hook #'(lambda ()
+                                   (flycheck-select-checker 'sh-shellcheck))))
 
 (use-package flyover
   :after (flycheck)
   :functions flyover-mode flyover-toggle flyover-flash-error-at-point
   :defines flyover-checkers
-  :init (setq flyover-checkers '(flycheck))
   
+  :init (setq flyover-checkers '(flycheck))
   :custom
   (flyover-levels '(error warning info))
   (flyover-use-theme-colors t)
@@ -245,7 +247,7 @@ See URL `https://vale.sh'."
   (flyover-display-mode 'always)
   (flyover-hide-during-completion t)
   :config
-  (flyover-mode 1)
+  (flyover-mode t)
   
   (defvar-keymap user/flyover-functions-map
     :doc "Useful functions for `flyover'."
