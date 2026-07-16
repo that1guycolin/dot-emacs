@@ -61,7 +61,7 @@
 ;; `org-noter-pdftools'  (annotate pdf files)
 ;;   ===========================
 (use-package org-mem
-  :after org
+  :demand t
   :preface
   (declare-function org-id-update-id-locations "org")
   (declare-function org-id-get-create "org-id")
@@ -75,10 +75,12 @@
     (org-id-update-id-locations)
     (org-mem-roamy-db-mode 1)
     (org-mem-updater-mode 1)
-    (setq user/org-mem-setup-p t))
+    (setq
+     org-mem-roamy-do-overwrite-real-db nil
+     user/org-mem-setup-p t))
 
-  (cl-defun user/org-mem-setup-wait (&optional (sec 5))
-    "Wait SEC seconds before `org-mem-setup' (default: 5)."
+  (cl-defun user/org-mem-setup-wait (&optional (sec 3))
+    "Wait SEC seconds before `org-mem-setup' (default: 3)."
     (unless (integerp sec)
       (error "Value of sec must be an INT, current value: %s" sec))
     (run-at-time sec nil #'user/org-mem-setup))
@@ -87,10 +89,10 @@
   :functions
   org-mem-roamy-db-mode org-mem-updater-mode org-mem-reset org-mem-await
   org-mem-tip-if-empty
+  :defines (org-mem-roamy-do-overwrite-real-db)
   :custom
   (org-mem-watch-dirs
-   (list (expand-file-name org-directory)))
-  (org-mem-roamy-do-overwrite-real-db nil))
+   (list (expand-file-name org-directory))))
 
 (use-package org-node
   :defer t
