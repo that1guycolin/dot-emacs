@@ -2,7 +2,7 @@
 
 ;;; Packages included:
 ;; activities, consult-project-extra, deadgrep, disproject, docker, project,
-;; rg, treemacs, treemacs-nerd-icons
+;; project-treemacs, rg, treemacs, treemacs-nerd-icons
 
 ;;; Commentary:
 ;; Support project functionality in Emacs.  Git integration for said projects
@@ -211,6 +211,9 @@ Wait two seconds before activating the mode."
   (treemacs-git-commit-diff-mode 1)
   (treemacs-project-follow-mode 1)
   (advice-add 'disproject-dispatch :before #'user/close-treemacs))
+
+(use-package project-treemacs
+  :after treemacs)
 
 (use-package treemacs-nerd-icons
   :after treemacs
