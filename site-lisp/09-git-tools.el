@@ -1,7 +1,8 @@
 ;;; 09-git-tools.el --- Git(hub) integration & tooling -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; diff-hl, forge, git-commit-ts-mode, git-modes, magit, treemacs-magit
+;; diff-hl, forge, git-commit-ts-mode, git-link, git-modes, magit,
+;; treemacs-magit
 
 ;;; Commentary:
 ;; Packages that simplify working with gits.  At present, this configuration is
