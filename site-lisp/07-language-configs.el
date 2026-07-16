@@ -87,13 +87,13 @@
 ;; Modern SLIME (cl)
 (use-package sly
   :defer t
+  :preface (declare-function corfu-mode "corfu")
   :bind ("C-c s" . sly)
   :hook (lisp-mode . sly-editing-mode)
   :init
-  (if (eq system-type 'android)
-      (setq inferior-lisp-program
-            "/data/data/com.termux/files/usr/bin/sbcl")
-    (setq inferior-lisp-program "sbcl"))
+  (setq
+   sly-lisp-implementations
+   '((sbcl ("sbcl" "--noinform") :init sly-init-using-slynk-loader)))
   :custom (sly-contribs '(sly-fancy))
   :config
   (add-hook 'sly-mrepl-mode-hook #'corfu-mode))
