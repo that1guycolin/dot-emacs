@@ -6,7 +6,7 @@
 #+AUTHOR: Colin Loeffler (that1guycolin)
 #+COMMENT: DO NOT COMMIT THIS FILE WITH EVALUATED RESULTS
 #+CREATED_DATE: [2026-06-13 Sat 05:08:11]
-#+LAST_EDIT: [2026-07-14 TUE 06:20:16]
+#+LAST_EDIT: [2026-07-16 THU 15:17:20]
 #+ID: tools:dou27p801zk0
 #+FILETAGS: :Emacs:emacsd:
 
@@ -34,7 +34,7 @@ ESCRIPT="${HOME}/.config/emacs/etc/tools/list-use-packages.el"
     echo "no-littering"
 } >$"$TEMP"
 
-for elfile in ${HOME}/.config/emacs/site-lisp/*; do 
+for elfile in ${HOME}/.config/emacs/site-lisp/*.el; do 
     emacs --script "$ESCRIPT" "$elfile" >>"$TEMP"
 done
 
