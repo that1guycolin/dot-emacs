@@ -65,47 +65,49 @@
  package-enable-at-startup nil
  package-quickstart nil
 
- ;; auth/vc
- auth-sources '("~/.authinfo.gpg")
+ ;; version-control
  version-control t
+ delete-old-versions t
  kept-new-versions 2
  kept-old-versions 0
- delete-old-versions t
+ ;; Follow symlinks and visit the real file (which avoids vc collisions)
+ vc-follow-symlinks t
 
- ;; Display scratch as initial buffer (changed when dashboard is loaded)
- initial-buffer-choice t
- ;; Don't display anything in the initial scratch buffer
- initial-scratch-message nil
- ;; Don't display the Emacs' startup-screen
- inhibit-startup-screen t
- ;; Disable GNU startup message (to disable, value must be your username)
- inhibit-startup-echo-area-message "colin-l"
+ ;; gpg-protected authorization info
+ auth-sources '("~/.authinfo.gpg")
  ;; Disable the second non-case-match pass that typically occurs if Emacs cannot
  ;; find a major-mode when opening a file
  auto-mode-case-fold nil
+ ;; Don't create lockfiles
+ create-lockfiles nil
+ ;; Alist of x windows options (see help)
+ command-line-x-option-alist nil
+ ;; Save modifications made in Emacs UI to alternate file
+ custom-file (expand-file-name "etc/auto-custom.el" user-emacs-directory)
  ;; Let tiling window manager handle frame size.
  ;; NOTE: This has little/no effect in fullscreen-mode or on Android GUI
  frame-inhibit-implied-resize 'force
  ;; Don't compact font caches during GC
  inhibit-compacting-font-caches t
+ ;; Disable GNU startup message (to disable, value must be your username)
+ inhibit-startup-echo-area-message "colin-l"
+ ;; Don't display the Emacs' startup-screen
+ inhibit-startup-screen t
+ ;; Display scratch as initial buffer (changed when dashboard is loaded)
+ initial-buffer-choice t
+ ;; Don't display anything in the initial scratch buffer
+ initial-scratch-message nil
  ;; Max # of bytes to read from subprocess in single chunk
  ;; (= /proc/sys/fs/pipe-max-size)
  read-process-output-max (* 1024 1024)
  ;; Can make scrolling smoother by avoiding unncessary fontifiation
  redisplay-skip-fontification-on-input t
- ;; Alist of x windows options (see help)
- command-line-x-option-alist nil
  ;; Explicitly set active region w/ mouse or shift-select
  select-active-regions 'only
- ;; Don't create lockfiles
- create-lockfiles nil
- ;; Follow symlinks and visit the real file (which avoids vc collisions)
- vc-follow-symlinks t
  ;; Use y/n instead of yes/no
  use-short-answers t
- ;; Save modifications made in Emacs UI to alternate file
- custom-file (expand-file-name "etc/auto-custom.el"
-                               user-emacs-directory))
+ ;; Don't display warnings for elpaca core or native-compiler
+ warning-suppress-types '((bytecomp comp) (elpaca core)))
 
 ;;; Variables depending on package load
 (defvar ffap-machine-p-known)
