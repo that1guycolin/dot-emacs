@@ -275,6 +275,17 @@ underneath it.  The header block will contain the following fields:
     (org-insert-structure-template "src")
     (insert lang "\n"))
 
+  (defvar-keymap user/org-insert-block-map
+    :doc "Keymap of functions for inserting/editing headers, drawers, srcblocks"
+    "h" #'user/org-insert-header-block
+    "d" #'user/org-insert-properties-drawer
+    "s" #'user/org-insert-src-block)
+  (with-eval-after-load 'which-key
+    (which-key-add-keymap-based-replacements user/org-insert-block-map
+      "h" "Header Block"
+      "d" "Properties Drawer"
+      "s" "Source Block"))
+
   (defun user/org-update-last-edit-dt ()
     "Update value of `LAST_EDIT' header in the active Org buffer.
 The new value is the current date & time in this format:

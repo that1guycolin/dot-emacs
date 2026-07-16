@@ -358,16 +358,6 @@ Values are mapped to informative strings."
   (org-tidy-top-property-style 'invisible)
   (org-tidy-properties-style 'invisible))
 
-(declare-function user/org-insert-properties-drawer "01-bootstrap-core")
-(declare-function user/org-insert-src-block         "01-bootstrap-core")
-(with-eval-after-load 'org
-  (defvar-keymap user/org-insert-block-map
-    :doc "Keymap of functions for inserting/editing headers, drawers, srcblocks"
-    "h" #'user/org-insert-header-block
-    "d" #'user/org-insert-properties-drawer
-    "s" #'user/org-insert-src-block)
-  (keymap-set org-mode-map "C-c b" user/org-insert-block-map))
-
 
 (provide '11-org-mode-extensions)
 ;;; 11-org-mode-extensions.el ends here
