@@ -216,8 +216,8 @@ follow this convention."
 (use-package nxml-mode
   :ensure nil
   :defer t
-  :mode ("\\.xml\\'" "\\.xsd\\'" "\\.xslt\\'" "\\.svg\\'" "\\.rss\\'"
-         "\\.pom\\'")
+  :mode ("\\.xml\\'"
+         "\\.xsd\\'" "\\.xslt\\'" "\\.svg\\'" "\\.rss\\'" "\\.pom\\'")
   :custom
   (nxml-child-indent 2)
   (nxml-attribute-indent 2)
