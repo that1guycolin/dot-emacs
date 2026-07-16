@@ -1,10 +1,9 @@
 ;;; 11-org-mode-extensions.el --- Extensions for Org-mode -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; djvu, el2org, magit-org-todos, nov, ob-rust, org-edna, org-make-toc,
-;; org-mem, org-modern, org-modern-indent, org-node, org-noter,
-;; org-noter-pdftools, org-pdftools, org-pomodoro, org-project-capture,
-;; org-tidy, pdf-tools
+;; djvu, el2org, nov, ob-rust, org-edna, org-make-toc, org-mem, org-modern,
+;; org-modern-indent, org-node, org-noter, org-noter-pdftools, org-pdftools,
+;; org-pomodoro, org-snitch, org-tidy, pdf-tools
 
 ;;; Commentary:
 ;; Provide extensions for Emacs' Org-mode.  NOTE: Many extensions in this file
@@ -14,100 +13,43 @@
 ;;; Code:
 ;;;; =======  TASKS  =======
 ;; `org-edna'                    (cond. task completion)
-;; `org-project-capture'         (integrate org-mode & projectile)
-;; `magit-org-todos'             (display TODO items in magit buffer)
 ;;   =======================
 (use-package org-edna
   :defer t
   :hook (org-mode . org-edna-mode))
 
-(use-package org-project-capture
   :demand t
   :preface
-  (defvar org-refile-targets)
+  (declare-function user/current-project-root "05-project-management.el")
 
-  (defun user/remove-org-todo ()
-    "If a TODO.org file exists in the org directory, delete it.
-Because the org-directory is a git repo, there is a possibility of
-accidentally creating a TODO file.  A TODO file in the org-directory is
-by definition redundant, since any TODO items should go in the tasks
-folder."
-    (interactive)
-    (let ((org-dir-todo (expand-file-name "TODO.org" org-directory)))
-      (if (file-exists-p org-dir-todo)
-          (progn
-            (delete-file org-dir-todo)
-            (message "Removed org-directory TODO file."))
-        (when (called-interactively-p 'any)
-          (message "There is no TODO file in the org directory.")))))
-
-  (defun user/open-project-todo ()
-    "Open the \"TODO.org\" file for the current project.
-The file is created if it doesn't exist."
-    (interactive)
-    (unless (project-current)
-      (error "No current project"))
-    (let* ((pr (project-root (project-current)))
-           (todo (expand-file-name "TODO.org" pr)))
-      (find-file todo)))
-
-  :functions
-  org-project-capture-capture-for-current-project
-  org-project-capture-project-todo-completing-read
-  org-project-capture-agenda-for-current-project
-
-  :custom
-  (org-project-capture-default-backend (make-instance
-                                        'org-project-capture-project-backend))
-  (org-project-capture-strategy (make-instance
-                                 'org-project-capture-per-project-strategy))
-  (org-project-capture-per-project-filepath "TODO.org")
-  :config
-  (defvar-keymap user/org-capture-options
-    :doc "Keymap containing available org-capture options."
-    "p" #'org-project-capture-capture-for-current-project
-    "n" #'org-project-capture-project-todo-completing-read
-    "g" #'org-capture)
-
-  (defvar-keymap user/org-agenda-options
-    :doc "Keymap containing availble org-agenda views."
-    "p" #'org-project-capture-agenda-for-current-project
-    "g" #'org-agenda)
-
-  (with-eval-after-load 'which-key
-    (which-key-add-keymap-based-replacements
-      user/org-capture-options
-      "p" "Current Project"
-      "n" "Non-Active Project"
-      "g" "General Capture")
-
-    (which-key-add-keymap-based-replacements
-      user/org-agenda-options
-      "p" "Current Project"
-      "g" "General Agenda"))
-  (keymap-global-set "C-c c" user/org-capture-options)
-  (keymap-global-set "C-c a" user/org-agenda-options)
-
-  (dolist (project (project-known-project-roots))
-    (let ((project-todo (expand-file-name "TODO.org" project)))
-      (when (file-exists-p project-todo)
-        (add-to-list 'org-agenda-files project-todo))))
+  (defun user/smart-project-file ()
+    "Return the name of the project file depending on the current project."
+    (if (string= "~/.config/emacs/" (user/current-project-root))
+        "site-lisp/TODO.ORG" "TODO.org"))
   
-  (unless org-refile-targets
-    (setq org-refile-targets '((nil :maxlevel . 9)
-                               (org-agenda-files :maxlevel . 9))))
+  :bind
+  (("C-c o s" . org-snitch-dispatch)
+   :map org-snitch-link-mode-map
+   ("C-c C-o" . org-open-at-point-global)
+   ("C-c C-d" . org-snitch-mark-done))
+  :functions
+  (org-snitch-setup org-snitch-mode org-snitch-magit-insert-task)
+  :custom
+  (org-snitch-target-file (user/smart-project-file))
+  (org-snitch-capture-key "p")
+  (org-snitch-independent-submodules t)
+  (org-snitch-capture-templates
+   '(("t" . "Tasks")
+     ("b" . "Bugs")
+     ("f" . "Features")
+     ("d" . "Docs")))
 
-  (with-eval-after-load 'disproject
-    (transient-append-suffix 'disproject-dispatch "C o"
-      '("t" "Project TODO" user/open-project-todo)))
-
-  (add-hook 'org-mode-hook #'user/remove-org-todo))
-
-(use-package magit-org-todos
-  :after (magit)
-  :functions magit-org-todos-autoinsert
   :config
-  (magit-org-todos-autoinsert))
+  (org-snitch-setup)
+  (org-snitch-mode 1)
+  (with-eval-after-load 'git-commit
+    (keymap-set 'git-commit-mode-map
+                "C-c C-t" #'org-snitch-magit-insert-task)))
 
 
 ;;;; =======  KNOWLEDGE  =======
