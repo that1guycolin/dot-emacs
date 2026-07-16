@@ -96,13 +96,16 @@
 (use-package org
   :demand t
   :preface
+  (declare-function sly-eval "sly")
+
+  ;; Org lazy-load
   (defvar user/org-loaded-p nil
     "Non-nil if org-mode has been actively loaded.")
 
   (defun user/org-config ()
     "Set up org-mode with customizations for personal use."
     (require 'ox-texinfo)
-
+    (keymap-set org-mode-map "C-c b" user/org-insert-block-map)
     (add-hook 'org-mode-hook #'user/org-search-folded)
 
     (setq org-src-lang-modes (assoc-delete-all "bash" org-src-lang-modes))
@@ -135,8 +138,7 @@
     (unless user/org-loaded-p
       (user/org-config)))
 
-  (declare-function sly-eval "sly")
-
+  ;; Helper functions
   (defun user/org-check ()
     "User-error if buffer is not in `org-mode'."
     (unless (derived-mode-p 'org-mode)
@@ -210,16 +212,6 @@ For entire buffer, return the top of the buffer."
           (point-min)
         location)))
 
-  (defun user/org-insert-properties-drawer ()
-    "Create org properties drawer at an interactively-selected heading."
-    (interactive)
-    (user/org-check)
-    (goto-char (user/org-get-heading-location))
-    (org-id-get-create)
-    (unless (org-entry-get nil "CREATED")
-      (org-entry-put nil "CREATED"
-                     (format-time-string "[%Y-%m-%d %a %H:%M:%S]"))))
-
   (defun user/org-top-property-drawer-id ()
     "Return ID from a top-of-file-property-drawer, or nil."
     (user/org-check)
@@ -232,6 +224,17 @@ For entire buffer, return the top of the buffer."
           (when (re-search-forward "^:ID:[ \t]+\\(.+\\)$" nil t)
             (string-trim (match-string 1)))))))
 
+  ;; Insert blocks
+  (defun user/org-insert-properties-drawer ()
+    "Create org properties drawer at an interactively-selected heading."
+    (interactive)
+    (user/org-check)
+    (goto-char (user/org-get-heading-location))
+    (org-id-get-create)
+    (unless (org-entry-get nil "CREATED")
+      (org-entry-put nil "CREATED"
+                     (format-time-string "[%Y-%m-%d %a %H:%M:%S]"))))
+  
   (defun user/org-insert-header-block (title author)
     "Insert a header block at the top of the current document.
 If there is a properties drawer at the top, the header block will go
