@@ -142,10 +142,11 @@ doubles as a model-switcher."
   :config
   (user/ensure-ollama-system-service)
   (setq
-   gptel-backend (gptel-make-ollama "Ollama"
-                   :host "localhost:11434"
-                   :stream t
-                   :models (mapcar #'car user/ollama-alist))
+   gptel-backend
+   (gptel-make-ollama "Ollama"
+     :host "localhost:11434"
+     :stream t
+     :models (mapcar #'car user/ollama-alist))
    gptel-model 'llama3.2:3b)
 
   (gptel-make-openai "OpenRouter"
