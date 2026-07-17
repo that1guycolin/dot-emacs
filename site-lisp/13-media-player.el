@@ -102,8 +102,8 @@
            :host github :repo "that1guycolin/emms-info-mediainfo"
            :files (:defaults) :method https)
   :after (emms)
-  :custom
-  (emms-info-functions (append '(emms-info-mediainfo) emms-info-functions)))
+  :custom (emms-info-functions
+           (append '(emms-info-mediainfo) emms-info-functions)))
 
 
 (provide '13-media-player)
