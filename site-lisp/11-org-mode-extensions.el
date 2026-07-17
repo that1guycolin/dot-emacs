@@ -22,6 +22,7 @@
   :demand t
   :preface
   (declare-function user/current-project-root "05-project-management.el")
+  (defvar git-commit-mode-map)
 
   (defun user/smart-project-file ()
     "Return the name of the project file depending on the current project."
@@ -48,7 +49,7 @@
   (org-snitch-setup)
   (org-snitch-mode 1)
   (with-eval-after-load 'git-commit
-    (keymap-set 'git-commit-mode-map
+    (keymap-set git-commit-mode-map
                 "C-c C-t" #'org-snitch-magit-insert-task)))
 
 
