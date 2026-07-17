@@ -51,54 +51,6 @@ If not in a side window, jump to the first found side window."
   (interactive)
   (funcall #'elpaca-update-menus))
 
-(declare-function elpaca--queued "elpaca")
-(defun user/elpaca-rebuild-all ()
-  "Rebuild all external packages installed via `elpaca'."
-  (interactive)
-  (let* ((pkg-list (mapcar #'car (elpaca--queued)))
-         (pkgs (nreverse pkg-list)))
-    (dolist (pkg pkgs)
-      (elpaca-rebuild pkg)
-      (message "Rebuilt %s" pkg))
-    (message "All packages rebuilt!")))
-
-(defvar user/lisp-directory)
-(defvar user/custom-packages)
-(defun user/get-external-packages ()
-  "Return a list of all external packages installed via `elpaca'."
-  (interactive)
-  (let* ((packages '(elpaca elpaca-use-package))
-         (init-files
-          (directory-files user/lisp-directory t
-                           directory-files-no-dot-files-regexp))
-         (files (nreverse init-files)))
-    (with-temp-buffer
-      (dolist (file files)
-        (insert-file-contents file))
-      (goto-char (point-min))
-      (condition-case nil
-          (while t
-            (let ((form (read (current-buffer))))
-              (when (and (listp form)
-                         (eq (car form) 'use-package))
-                (let ((args (cddr form)))
-                  (unless (or (and (plist-member args :ensure)
-                                   (null (plist-get args :ensure)))
-                              (member (cadr form) user/custom-packages))
-                    (push (cadr form) packages))))))
-        (end-of-file)))
-    (nreverse packages)))
-
-(defun user/elpaca-complete-update ()
-  "Fetch, merge, and rebuild every package installed via `elpaca'."
-  (interactive)
-  (user/elpaca-update-menus)
-  (dolist (pkg (user/get-external-packages))
-    (elpaca-fetch pkg)
-    (elpaca-merge pkg)
-    (when (member pkg (mapcar #'car (elpaca--queued)))
-      (elpaca-rebuild pkg))))
-
 (declare-function elpaca-manager                        "elpaca")
 (declare-function elpaca-fetch                          "elpaca")
 (declare-function elpaca-fetch-all                      "elpaca")
@@ -114,14 +66,12 @@ If not in a side window, jump to the first found side window."
 (defvar-keymap user/elpaca-options-map
   :doc "Functions for Elpaca package manager."
   "m"    #'elpaca-manager
-  "a"    #'user/elpaca-complete-update
   "n"    #'user/elpaca-update-menus
   "f"    #'elpaca-fetch
   "F"    #'elpaca-fetch-all
   "e"    #'elpaca-merge
   "E"    #'elpaca-merge-all
   "r"    #'elpaca-rebuild
-  "R"    #'user/elpaca-rebuild-all
   "u"    #'elpaca-update
   "U"    #'elpaca-update-all
   "b a"  #'elpaca-build-autoloads
@@ -133,14 +83,12 @@ If not in a side window, jump to the first found side window."
   (which-key-add-keymap-based-replacements
     user/elpaca-options-map
     "m"   "Elpaca Manager"
-    "a"   "Complete Update"
     "n"   "Update Menus"
     "f"   "Fetch"
     "F"   "Fetch All"
     "e"   "Merge"
     "E"   "Merge All"
     "r"   "Rebuild"
-    "R"   "Rebuild All"
     "u"   "Update"
     "U"   "Update All"
     "b a" "Build Autoloads"

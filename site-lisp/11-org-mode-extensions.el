@@ -160,10 +160,6 @@ this function as `org-node-creation-fn'."
            :type git :protocol https :inherit t :depth treeless)
   
   :defer t
-  :preface
-  (defvar user/custom-packages '()
-    "List of packages installed via Elpaca not in Elpaca menus.")
-  (add-to-list 'user/custom-packages 'pdf-tools)
   :magic ("%PDF" . pdf-view-mode)
   :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)
   :functions (pdf-tools-install)
@@ -205,8 +201,6 @@ this function as `org-node-creation-fn'."
            :files ("org-pdftools.el") :old-names (org-pdfview)
            :type git :protocol https :inherit t :depth treeless)
   :defer t
-  :preface
-  (add-to-list 'user/custom-packages 'org-pdftools)
   :hook (org-mode . org-pdftools-setup-link))
 
 (use-package org-noter-pdftools
@@ -217,7 +211,6 @@ this function as `org-node-creation-fn'."
            :type git :protocol https :inherit t :depth treeless)
   :after (org-noter org-pdftools)
   :preface
-  (add-to-list 'user/custom-packages 'org-noter-pdftools)
   (defun org-noter-pdftools-insert-precise-note (&optional toggle-no-questions)
     (interactive "P")
     (org-noter--with-valid-session

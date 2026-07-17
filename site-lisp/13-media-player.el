@@ -102,9 +102,6 @@
            :host github :repo "that1guycolin/emms-info-mediainfo"
            :files (:defaults) :method https)
   :after (emms)
-  :preface
-  (defvar user/custom-packages)
-  (add-to-list 'user/custom-packages 'emms-info-mediainfo)
   :custom
   (emms-info-functions (append '(emms-info-mediainfo) emms-info-functions)))
 
