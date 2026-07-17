@@ -6,9 +6,7 @@
 ;; org-pomodoro, org-snitch, org-tidy, pdf-tools
 
 ;;; Commentary:
-;; Provide extensions for Emacs' Org-mode.  NOTE: Many extensions in this file
-;; would typically load with the `:after' keyword.  I load them with `:demand'
-;; only because org-mode loads with a `wait' directive in the first init file.
+;; Provide extensions for Emacs' Org-mode.
 
 ;;; Code:
 ;;; Tasks:
