@@ -56,16 +56,20 @@ sh-mode
 	(p "description") n n "OPTIONS:" n "  " (p "flag") n
 	"      " (p "flag description") n n "  -h, --help" n
 	"      Display this message and exit." n n "EOF" n "}")
-
+(zinput "read -r \"" (p "var" var) "?" (p "prompt") "\"" n
+	"case \"$" var "\" in" n
+	(p "option") ")" (p "action") " ;;"
+	"*)" (p "nomatch") " ;;"
+	"esac")
 (zmapfile (p "array") "=(\"${(@f)$(<" (p "file") ")}\")")
-(zshbang "#!/bin/zsh")
 (zrcd "#!/bin/zsh" n "# "
       (p (or (file-name-nondirectory buffer-file-name)
 	     "No file")))
+(zshbang "#!/bin/zsh")
 
 toml-ts-mode
 (bdil (p "name") " = { source = \"" (p "source") "\", target = \"" (p "link_loc") "\", direct = "
-      (p "bool") " }" n)
+      (p "bool") " }")
 (tb-mpvs "mpv-scripts-" (p "fn" fn) " = { source = \"media/mpv/scripts/" fn ".lua\", \
 target = \".config/mpv/scripts/" fn ".lua\", direct = true }")
 (pyoptdeps "[project.optional-dependencies]" n "dev = [\"rassumfrassum\", \"ruff\", \"ty\"]" n
