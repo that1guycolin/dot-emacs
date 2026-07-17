@@ -121,15 +121,13 @@
             (cons '(:results . "value verbatim replace")
                   (assq-delete-all :results org-babel-default-header-args)))
       (setq org-babel-default-header-args:zsh '((:results . "output")))
-      (with-eval-after-load 'sly
-        (if org-babel-lisp-eval-fn
-            (setq org-babel-lisp-eval-fn #'sly-eval)
-          (defvar org-babel-lisp-eval-fun #'sly-eval)))
       (dolist (lang '(lisp lua makefile org python shell))
         (add-to-list 'org-babel-load-languages `(,lang . t)))
       (org-babel-do-load-languages
        'org-babel-load-languages
        org-babel-load-languages))
+    (with-eval-after-load 'ob-lisp
+      (setq org-babel-lisp-eval-fn 'sly))
 
     (setq user/org-loaded-p t))
 
