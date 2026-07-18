@@ -306,12 +306,7 @@ Add this function to `org-mode-hook'."
               org-mem-updater-mode org-mem-reset org-mem-await
               org-mem-tip-if-empty)
   :defines (org-mem-roamy-do-overwrite-real-db)
-  :custom (org-mem-watch-dirs (list (expand-file-name org-directory)))
-  :config
-  (org-id-update-id-locations)
-  (org-mem-roamy-db-mode 1)
-  (org-mem-updater-mode 1)
-  (setq org-mem-roamy-do-overwrite-real-db nil))
+  :custom (org-mem-watch-dirs (list (expand-file-name org-directory))))
 
 ;; Fast & simple note management
 (use-package org-node
