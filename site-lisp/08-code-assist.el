@@ -31,8 +31,7 @@
   :custom
   (dumb-jump-prefer-searcher 'ag)
   (xref-show-definitions-function #'consult-xref)
-  :config
-  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
+  :config (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
 
 ;; Colorize "", {}, [], ()
 (use-package rainbow-delimiters
@@ -43,22 +42,19 @@
 (use-package smartparens
   :defer t
   :hook ((prog-mode text-mode) . smartparens-mode)
-  :config
-  (require 'smartparens-config))
+  :config (require 'smartparens-config))
 
 ;; Hl regexp while typing
 (use-package visual-regexp
   :defer t
-  :bind
-  (("C-c r" . vr/replace)
-   ("C-c q" . vr/query-replace)))
+  :bind (("C-c r" . vr/replace)
+         ("C-c q" . vr/query-replace)))
 
 ;; Python-style regexp over Emacs
 (use-package visual-regexp-steroids
   :defer t
-  :bind
-  (([remap isearch-forward-regexp]  . vr/isearch-forward)
-   ([remap isearch-backward-regexp] . vr/isearch-backward)))
+  :bind (([remap isearch-forward-regexp]  . vr/isearch-forward)
+         ([remap isearch-backward-regexp] . vr/isearch-backward)))
 
 ;;; Flycheck:
 ;; bash:        'shellcheck'    (pacman -S shellcheck)
@@ -93,12 +89,10 @@
 
   :hook ((prog-mode text-mode) . flycheck-mode)
   :functions (flycheck-select-checker flycheck-add-mode)
-
   :custom
   (flycheck-emacs-lisp-load-path 'inherit)
   (flycheck-disabled-checkers
    '(emacs-lisp-elsa rpm-rpmlint yaml-jsyaml yaml-ruby))
-
   :config
   (add-to-list 'minions-prominent-modes 'flycheck-mode)
   (add-to-list 'flycheck-shellcheck-supported-shells 'dash)
@@ -211,9 +205,9 @@ See URL `https://vale.sh'."
 ;; Display flycheck errors in buffer
 (use-package flyover
   :after (flycheck)
+  :demand t
   :functions (flyover-mode flyover-toggle flyover-flash-error-at-point)
   :defines (flyover-checkers)
-  
   :init (setq flyover-checkers '(flycheck))
   :custom
   (flyover-levels '(error warning info))
@@ -268,7 +262,8 @@ See URL `https://vale.sh'."
   :hook (emacs-lisp-mode . flycheck-package-setup))
 
 (use-package consult-flycheck
-  :after (consult flycheck))
+  :after (consult flycheck)
+  :demand t)
 
 
 ;;; Eglot:
@@ -329,18 +324,20 @@ See URL `https://vale.sh'."
 
 (use-package consult-eglot
   :after (consult eglot)
+  :demand t
   :commands (consult-eglot-symbols))
 
 (use-package consult-eglot-embark
   :after (consult-eglot embark)
+  :demand t
   :functions (consult-eglot-embark-mode)
   :config (consult-eglot-embark-mode 1))
 
 (use-package flycheck-eglot
-  :after (flycheck)
+  :after (flycheck eglot)
+  :demand t
   :functions (global-flycheck-eglot-mode)
-  :config
-  (global-flycheck-eglot-mode 1))
+  :config (global-flycheck-eglot-mode 1))
 
 (use-package lsp-snippet
   :ensure (:id lsp-snippet :type git :host github
@@ -348,12 +345,14 @@ See URL `https://vale.sh'."
                :repo "svaante/lsp-snippet" :main "lsp-snippet.el" :build t
                :files ("Makefile" "*.el") :autoloads t)
   :after (eglot tempel)
+  :demand t
   :config
   (require 'lsp-snippet-tempel)
   (lsp-snippet-tempel-eglot-init))
 
 (use-package eglot-tempel
   :after (eglot tempel)
+  :demand t
   :functions (eglot-tempel-mode)
   :config (eglot-tempel-mode 1))
 
@@ -441,65 +440,57 @@ See URL `https://vale.sh'."
 (use-package hideshow
   :ensure nil
   :defer t
-  :hook
-  ((c-mode
-    c++-mode css-mode go-mode html-mode java-mode js-mode json-mode lua-mode
-    nxml-mode perl-mode php-mode ruby-mode rust-mode sh-mode typescript-mode) . hs-minor-mode))
+  :hook ((c-mode
+          c++-mode css-mode go-mode html-mode java-mode js-mode json-mode
+          lua-mode nxml-mode perl-mode php-mode ruby-mode rust-mode sh-mode
+          typescript-mode) . hs-minor-mode))
 
 ;; Based on headings
 (use-package outline
   :ensure nil
   :defer t
-  :hook
-  ((conf-mode
-    diff-mode emacs-lisp-mode lisp-interaction-mode lisp-mode markdown-mode) .
-    outline-minor-mode))
+  :hook ((conf-mode
+          diff-mode emacs-lisp-mode lisp-interaction-mode lisp-mode
+          markdown-mode) . outline-minor-mode))
 
 ;; Based on indentation
 (use-package outline-indent
   :defer t
-  :hook
-  ((python-mode python-ts-mode yaml-ts-mode) . outline-indent-minor-mode)
-  :custom
-  (outline-indent-ellipsis " ▼"))
+  :hook ((python-mode python-ts-mode yaml-ts-mode) . outline-indent-minor-mode)
+  :custom (outline-indent-ellipsis "…"))
 
 ;; Based on treesit language syntax
 (use-package treesit-fold
   :defer t
-  :hook
-  ((bash-ts-mode
-    cmake-ts-mode csharp-ts-mode css-ts-mode c++-ts-mode c-ts-mode
-    dockerfile-ts-mode go-mod-ts-mode go-ts-mode java-ts-mode json-ts-mode
-    lua-ts-mode makefile-ts-mode markdown-ts-mode php-ts-mode ruby-ts-mode
-    rust-ts-mode toml-ts-mode typescript-ts-mode xml-ts-mode) .
-    treesit-fold-mode)
+  :hook ((bash-ts-mode
+          cmake-ts-mode csharp-ts-mode css-ts-mode c++-ts-mode c-ts-mode
+          dockerfile-ts-mode go-mod-ts-mode go-ts-mode java-ts-mode json-ts-mode
+          lua-ts-mode markdown-ts-mode php-ts-mode ruby-ts-mode rust-ts-mode
+          toml-ts-mode typescript-ts-mode) . treesit-fold-mode)
   :custom
   (treesit-fold-line-count-show t)
   (treesit-fold-line-count-format " ▼")
-  :config
-  (set-face-attribute
-   'treesit-fold-replacement-face nil
-   :foreground "#808080"
-   :box nil
-   :weight 'bold))
+  :config (set-face-attribute
+           'treesit-fold-replacement-face nil
+           :foreground "#808080"
+           :box nil
+           :weight 'bold))
 
 ;; Allows use of same keybindings across backends
 (use-package kirigami
   :defer t
-  :hook
-  ((bash-ts-mode
-    cmake-ts-mode c++-mode c-mode conf-mode csharp-ts-mode css-mode css-ts-mode
-    c++-ts-mode c-ts-mode diff-mode dockerfile-ts-mode emacs-lisp-mode go-mode
-    go-mod-ts-mode go-ts-mode html-mode java-mode java-ts-mode js-mode
-    json-mode json-ts-mode lisp-interaction-mode lisp-mode lua-mode lua-ts-mode
-    makefile-ts-mode markdown-mode markdown-ts-mode nxml-mode perl-mode
-    php-mode php-ts-mode python-base-mode ruby-mode ruby-ts-mode rust-mode
-    rust-ts-mode sh-mode toml-ts-mode typescript-mode typescript-ts-mode
-    xml-ts-mode yaml-ts-mode) . kirigami-mode)
-  :functions
-  (kirigami-open-fold
-   kirigami-open-fold-rec kirigami-open-folds kirigami-close-fold
-   kirigami-close-folds kirigami-toggle-fold)
+  :hook ((bash-ts-mode
+          cmake-ts-mode c++-mode c-mode conf-mode csharp-ts-mode css-mode
+          css-ts-mode c++-ts-mode c-ts-mode diff-mode dockerfile-ts-mode
+          emacs-lisp-mode go-mode go-mod-ts-mode go-ts-mode html-mode java-mode
+          java-ts-mode js-mode json-mode json-ts-mode lisp-interaction-mode
+          lisp-mode lua-mode lua-ts-mode markdown-mode markdown-ts-mode
+          nxml-mode perl-mode php-mode php-ts-mode python-base-mode ruby-mode
+          ruby-ts-mode rust-mode rust-ts-mode sh-mode toml-ts-mode
+          typescript-mode typescript-ts-mode yaml-ts-mode) . kirigami-mode)
+  :functions (kirigami-open-fold
+              kirigami-open-fold-rec kirigami-open-folds kirigami-close-fold
+              kirigami-close-folds kirigami-toggle-fold)
 
   :config
   (defvar-keymap user/kirigami-functions-map
@@ -510,7 +501,6 @@ See URL `https://vale.sh'."
     "c" #'kirigami-close-fold
     "f" #'kirigami-close-folds
     "a" #'kirigami-toggle-fold)
-
   (with-eval-after-load 'which-key
     (which-key-add-keymap-based-replacements
       user/kirigami-functions-map
@@ -537,12 +527,13 @@ See URL `https://vale.sh'."
 ;; Correct with flyspell...
 (use-package flyspell-correct
   :after (flyspell)
-  :bind (:map flyspell-mode-map
-              ("C-&" . flyspell-correct-wrapper)))
+  :demand t
+  :bind (:map flyspell-mode-map ("C-&" . flyspell-correct-wrapper)))
 
 ;; ...and the avy interface
 (use-package flyspell-correct-avy-menu
-  :after (flyspell-correct avy))
+  :after (flyspell-correct avy)
+  :demand t)
 
 
 (provide '08-code-assist)

@@ -12,10 +12,9 @@
 ;;; Code:
 (use-package magit
   :defer t
-  :bind
-  (("C-x g"   . magit-status)
-   ("C-x M-g" . magit-dispatch)
-   ("C-c M-g" . magit-file-dispatch))
+  :bind (("C-x g"   . magit-status)
+         ("C-x M-g" . magit-dispatch)
+         ("C-c M-g" . magit-file-dispatch))
   :defines (magit-mode-map)
   :custom
   (magit-refresh-status-buffer t)
@@ -31,22 +30,18 @@
     (call-interactively #'forge-pull))
   :hook (magit-status-mode . user/interactive-forge-pull)
   :functions (forge-pull)
-  :custom
-  (forge-pull-notifications t))
+  :custom (forge-pull-notifications t))
 
 (use-package diff-hl
   :defer t
   :bind ("C-x v o" . diff-hl-mode)
-  :hook
-  (((prog-mode text-mode) . diff-hl-mode)
-   (magit-post-refresh    . diff-hl-magit-post-refresh))
-  :functions
-  (diff-hl-show-hunk
-   diff-hl-diff-goto-hunk diff-hl-stage-dwim diff-hl-revert-hunk
-   diff-hl-previous-hunk diff-hl-next-hunk diff-hl-show-hunk-previous
-   diff-hl-show-hunk-next)
-  :custom
-  (diff-hl-show-staged-changes nil)
+  :hook (((prog-mode text-mode) . diff-hl-mode)
+         (magit-post-refresh    . diff-hl-magit-post-refresh))
+  :functions (diff-hl-show-hunk
+              diff-hl-diff-goto-hunk diff-hl-stage-dwim diff-hl-revert-hunk
+              diff-hl-previous-hunk diff-hl-next-hunk diff-hl-show-hunk-previous
+              diff-hl-show-hunk-next)
+  :custom (diff-hl-show-staged-changes nil)
   :config
   (defvar-keymap user/diff-hl-functions
     :doc "Functions to use in diff-hl-mode."
@@ -58,7 +53,6 @@
     "]" #'diff-hl-next-hunk
     "{" #'diff-hl-show-hunk-previous
     "}" #'diff-hl-show-hunk-next)
-
   (with-eval-after-load 'which-key
     (which-key-add-keymap-based-replacements
       user/diff-hl-functions
@@ -84,7 +78,6 @@
     "l" #'git-link
     "c" #'git-link-commit
     "h" #'git-link-homepage)
-
   (with-eval-after-load 'which-key
     (which-key-add-keymap-based-replacements
       user/git-link-functions-map
@@ -99,7 +92,8 @@
   :mode ("\\.dockerignore\\'" . gitignore-mode))
 
 (use-package treemacs-magit
-  :after (treemacs magit))
+  :after (treemacs magit)
+  :demand t)
 
 
 (provide '09-git-tools)

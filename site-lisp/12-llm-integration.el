@@ -15,6 +15,7 @@
 (use-package llm-ollama
   :ensure nil
   :after (llm)
+  :demand t
   :preface
   (defvar user/ollama-alist
     `((codegemma:2b              . ,(* 1  4096))
@@ -80,7 +81,7 @@ to the user's device.")
      :chat-model (symbol-name model)
      :embedding-model "nomic-embed-text"
      :default-chat-max-tokens (cdr (assoc model user/ollama-alist))))
-
+  
   :functions (make-llm-ollama))
 
 
@@ -92,9 +93,8 @@ to the user's device.")
 (use-package org-mcp
   :defer t
   :commands (org-mcp-enable)
-  :custom
-  (org-mcp-allowed-files
-   (directory-files-recursively org-directory "\\.org\\'")))
+  :custom (org-mcp-allowed-files
+           (directory-files-recursively org-directory "\\.org\\'")))
 
 (use-package elisp-dev-mcp
   :defer t
@@ -138,7 +138,6 @@ doubles as a model-switcher."
   :commands (gptel gptel-send)
   :functions (gptel-get-backend gptel-make-ollama gptel-make-openai)
   :defines (gptel-backend)
-
   :config
   (user/ensure-ollama-system-service)
   (setq
@@ -169,8 +168,7 @@ doubles as a model-switcher."
   :defer t
   :commands (ellama-transient-main-menu)
   :functions (ellama-disable-scroll ellama-enable-scroll)
-  :init
-  (setopt ellama-language "English")
+  :init (setopt ellama-language "English")
   :config
   ;; -- Model Types --
   ;; Fast:

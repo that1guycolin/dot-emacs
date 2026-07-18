@@ -12,12 +12,15 @@
 ;;; Tasks:
 ;; Conditional task completion
 (use-package org-edna
-  :defer t
-  :hook (org-mode . org-edna-mode))
+  :after (org)
+  :demand t
+  :functions (org-edna-mode)
+  :config (org-edna-mode 1))
 
 ;; Project management via Org
 (use-package org-snitch
-  :demand t
+  :after (org)
+  :defer t
   :preface
   (declare-function user/current-project-root "05-project-management.el")
   (defvar git-commit-mode-map)
@@ -27,12 +30,12 @@
     (if (string= "~/.config/emacs/" (user/current-project-root))
         "site-lisp/TODO.ORG" "TODO.org"))
   
-  :bind
-  (("C-c o s" . org-snitch-dispatch)
-   :map org-snitch-link-mode-map
-   ("C-c C-o" . org-open-at-point-global)
-   ("C-c C-d" . org-snitch-mark-done))
+  :bind (("C-c o s" . org-snitch-dispatch)
+         :map org-snitch-link-mode-map
+         ("C-c C-o" . org-open-at-point-global)
+         ("C-c C-d" . org-snitch-mark-done))
   :functions (org-snitch-setup org-snitch-mode org-snitch-magit-insert-task)
+
   :custom
   (org-snitch-target-file (user/smart-project-file))
   (org-snitch-capture-key "p")
@@ -83,9 +86,7 @@
   (org-mem-roamy-db-mode
    org-mem-updater-mode org-mem-reset org-mem-await org-mem-tip-if-empty)
   :defines (org-mem-roamy-do-overwrite-real-db)
-  :custom
-  (org-mem-watch-dirs
-   (list (expand-file-name org-directory))))
+  :custom (org-mem-watch-dirs (list (expand-file-name org-directory)))
 
 ;; Fast & simple note management
 (use-package org-node
@@ -126,19 +127,16 @@ this function as `org-node-creation-fn'."
     (run-hooks 'org-node-creation-hook))
 
   :bind-keymap ("M-o" . org-node-global-prefix-map)
-  :commands org-node-org-prefix-map
-  :functions
-  (org-node-pop-to-fresh-file-buffer
-   org-node-cache-mode org-node-complete-at-point-mode org-node-backlink-mode)
+  :commands (org-node-org-prefix-map)
+  :functions (org-node-pop-to-fresh-file-buffer
+              org-node-cache-mode org-node-complete-at-point-mode
+              org-node-backlink-mode)
   :defines (org-node-backlink-do-drawers)
-  
-  :init
-  (keymap-set org-mode-map "M-o" org-node-org-prefix-map)
+  :init (keymap-set org-mode-map "M-o" org-node-org-prefix-map)
   :custom
   (org-node-creation-fn #'user/org-node-new-file)
   (org-node-file-directory-ask t)
   (org-node-prefer-with-heading nil)
-
   :config
   (org-node-cache-mode 1)
   (org-mem-updater-mode 1)
@@ -158,7 +156,7 @@ this function as `org-node-creation-fn'."
            :repo "that1guycolin/pdf-tools"
            :files (:defaults "README" ("build" "Makefile") ("build" "server"))
            :type git :protocol https :inherit t :depth treeless)
-  
+  :after (org)
   :defer t
   :magic ("%PDF" . pdf-view-mode)
   :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)
@@ -166,39 +164,33 @@ this function as `org-node-creation-fn'."
   :custom
   (pdf-view-display-size 'fit-page)
   (pdf-info-asynchronous t)
-  :config
-  (pdf-tools-install))
-
-;; PDF Tools ext
-(use-package nov
-  :after (org-noter))
-
-(use-package djvu
-  :after (org-noter))
+  :config (pdf-tools-install))
 
 ;; Annotate
 (use-package org-noter
   :defer t
-  :bind
-  (("C-c n n". org-noter)
-   :map dired-mode-map
-   ("N"      . org-noter-start-from-dired))
+  :bind (("C-c n n". org-noter)
+         :map dired-mode-map
+         ("N"      . org-noter-start-from-dired))
 
-  :init
-  (let ((note-dir (expand-file-name "notes" org-directory)))
-    (unless (file-directory-p note-dir)
-      (make-directory note-dir t)))
+  :init (let ((note-dir (expand-file-name "notes" org-directory)))
+          (unless (file-directory-p note-dir)
+            (make-directory note-dir t)))
   :custom
   (org-noter-auto-save-last-location t)
   (org-noter-notes-search-path (expand-file-name "notes" org-directory))
   (org-noter-default-notes-file-names '("notes.org")))
+
+;; PDF Tools ext
+(use-package nov :after (org-noter) :demand t)
+(use-package djvu :after (org-noter) :demand t)
 
 ;; Annotate PDFs
 (use-package org-pdftools
   :ensure (org-pdftools
            :source nil :package "org-pdftools" :id org-pdftools
            :fetcher github :repo "that1guycolin/org-pdftools"
-           :files ("org-pdftools.el") :old-names (org-pdfview)
+           :files ("org-pdftools.el") :old-names (org-preview)
            :type git :protocol https :inherit t :depth treeless)
   :defer t
   :hook (org-mode . org-pdftools-setup-link))
@@ -210,6 +202,7 @@ this function as `org-node-creation-fn'."
            :files ("org-noter-pdftools.el")
            :type git :protocol https :inherit t :depth treeless)
   :after (org-noter org-pdftools)
+  :demand t
   :preface
   (defun org-noter-pdftools-insert-precise-note (&optional toggle-no-questions)
     (interactive "P")
@@ -238,37 +231,31 @@ With a prefix ARG, remove start location."
               (org-entry-delete nil org-noter-property-note-location)
             (org-entry-put nil org-noter-property-note-location
                            (org-noter--pretty-print-location location))))))))
-  
-  :functions
-  (org-noter-insert-note
-   org-noter--get-precise-info org-noter--parse-root
-   org-noter--doc-approx-location org-entry-delete org-entry-put
-   org-noter--pretty-print-location org-noter-pdftools-jump-to-note)
-  
-  :config
-  (with-eval-after-load 'pdf-annot
-    (add-hook 'pdf-annot-activate-handler-functions
-              #'org-noter-pdftools-jump-to-note)))
+  :functions (org-noter-insert-note
+              org-noter--get-precise-info org-noter--parse-root
+              org-noter--doc-approx-location org-entry-delete org-entry-put
+              org-noter--pretty-print-location org-noter-pdftools-jump-to-note)
+  :config (with-eval-after-load 'pdf-annot
+            (add-hook 'pdf-annot-activate-handler-functions
+                      #'org-noter-pdftools-jump-to-note)))
 
 
 ;;; Babel
 (use-package ob-rust
   :after (org)
-  :custom
-  (org-babel-rust-command "rust-script")
-  :config
-  (add-to-list 'org-babel-load-languages '(rust . t)))
+  :demand t
+  :custom (org-babel-rust-command "rust-script")
+  :config (add-to-list 'org-babel-load-languages '(rust . t)))
 
 
 ;;; Miscellaneous
 ;; .org from .el
 (use-package el2org
   :defer t
-  :bind
-  (("C-c 2 f" . el2org-generate-file)
-   ("C-c 2 r" . el2org-generate-readme)
-   ("C-c 2 h" . el2org-generate-html)
-   ("C-c 2 o" . el2org-generate-org)))
+  :bind (("C-c 2 f" . el2org-generate-file)
+         ("C-c 2 r" . el2org-generate-readme)
+         ("C-c 2 h" . el2org-generate-html)
+         ("C-c 2 o" . el2org-generate-org)))
 
 ;; Table-of-contents
 (use-package org-make-toc
@@ -277,8 +264,7 @@ With a prefix ARG, remove start location."
               ("C-^" . org-make-toc-insert)
               ("C-&" . org-make-toc-set))
   :hook (org-mode . org-make-toc-mode)
-  :custom
-  (org-make-toc-insert-custom-ids t))
+  :custom (org-make-toc-insert-custom-ids t))
 
 ;; Improve Org appearance
 (use-package org-modern
@@ -305,10 +291,8 @@ With a prefix ARG, remove start location."
 ;; Manage time
 (use-package org-pomodoro
   :defer t
-  :bind (:map org-mode-map
-              ("M-P" . org-pomodoro))
-  :custom
-  (org-pomodoro-manual-break t))
+  :bind (:map org-mode-map ("M-P" . org-pomodoro))
+  :custom (org-pomodoro-manual-break t))
 
 ;; Invisible drawers
 (use-package org-tidy

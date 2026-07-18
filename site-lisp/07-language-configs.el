@@ -27,7 +27,7 @@
 (use-package checkdoc
   :ensure nil
   :defer t
-  :commands checkdoc-defun checkdoc-current-buffer)
+  :commands (checkdoc-defun checkdoc-current-buffer))
 
 ;; Go directly to symbol definition (elisp)
 (use-package elisp-def
@@ -48,14 +48,13 @@
 ;; Inspection tool (elisp)
 (use-package inspector
   :defer t
-  :bind (:map emacs-lisp-mode-map
-              ("M-I e" . inspector-inspect-expression))
-  :custom
-  (inspector-switch-to-buffer nil))
+  :bind (:map emacs-lisp-mode-map ("M-I e" . inspector-inspect-expression))
+  :custom (inspector-switch-to-buffer nil))
 
 ;; Integration (elisp)
 (use-package eros-inspector
   :after (eros inspector)
+  :demand t
   :bind (:map emacs-lisp-mode-map
               ([remap eros-eval-last-sexp] . eros-inspector-eval-last-sexp)
               ([remap eros-eval-defun]     . eros-inspector-eval-defun)))
@@ -95,8 +94,7 @@
    sly-lisp-implementations
    '((sbcl ("sbcl" "--noinform") :init sly-init-using-slynk-loader)))
   :custom (sly-contribs '(sly-fancy))
-  :config
-  (add-hook 'sly-mrepl-mode-hook #'corfu-mode))
+  :config (add-hook 'sly-mrepl-mode-hook #'corfu-mode))
 
 
 ;;; Python:
@@ -152,8 +150,7 @@
   :defer t
   :interpreter "fish"
   :mode "\\.fish\\'"
-  :custom
-  (fish-enable-auto-indent t))
+  :custom (fish-enable-auto-indent t))
 
 ;; Rust/cargo
 (use-package rustic
@@ -180,8 +177,7 @@
     (csv-align-mode 1))
   :hook (csv-mode . user/function-for-csv-mode-hook)
   :mode "\\.csv\\'"
-  :functions
-  (csv-guess-set-separator csv-align-mode))
+  :functions (csv-guess-set-separator csv-align-mode))
 
 (use-package docker-compose-mode
   :defer t
@@ -209,10 +205,9 @@
 
 (use-package systemd
   :defer t
-  :mode
-  (("\\.container\\'" . systemd-mode)
-   ("\\.service\\'"   . systemd-mode)
-   ("\\.socket\\'"    . systemd-mode)))
+  :mode (("\\.container\\'" . systemd-mode)
+         ("\\.service\\'"   . systemd-mode)
+         ("\\.socket\\'"    . systemd-mode)))
 
 
 ;;; Enhance built-in modes:
@@ -230,13 +225,11 @@
 (use-package grip-mode
   :defer t
   :preface (defvar markdown-ts-mode-map)
-  :bind
-  (:map markdown-ts-mode-map
-        ("C-c j" . grip-mode)
-        :map markdown-mode-map
-        ("C-c j" . grip-mode))
-  :custom
-  (grip-command 'auto))
+  :bind (:map markdown-ts-mode-map
+              ("C-c j" . grip-mode)
+              :map markdown-mode-map
+              ("C-c j" . grip-mode))
+  :custom (grip-command 'auto))
 
 ;; YAML like a pro
 (use-package yaml-pro

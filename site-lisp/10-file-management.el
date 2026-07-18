@@ -25,6 +25,8 @@
 (use-package dirvish
   :defer t
   :preface
+  (declare-function transient-define-prefix "transient")
+  
   (defvar user/dirvish-clipboard-files nil
     "Files currently staged by `user/dirvish-copy' or `user/dirvish-cut'.")
 
@@ -173,35 +175,27 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
     (setq-local user/dirvish-preview-buffer t)
     (read-only-mode 1))
 
-  (declare-function transient-define-prefix "transient")
-
   :bind ("C-x d" . dirvish)
-  :commands dirvish-dwim
-
-  :functions
-  (dired-create-director
-   dired-create-empty-file dired-current-directory dired-do-rename
-   dired-find-file dired-get-filename dired-get-marked-files dired-goto-file
-   dired-next-line dired-previous-line dired-up-directory
-   dirvish-override-dired-mode dirvish-subtree-toggle user/dirvish-dispatch)
+  :commands (dirvish-dwim)
+  :functions (dired-create-directory
+              dired-create-empty-file dired-current-directory dired-do-rename
+              dired-find-file dired-get-filename dired-get-marked-files
+              dired-goto-file dired-next-line dired-previous-line
+              dired-up-directory dirvish-override-dired-mode
+              dirvish-subtree-toggle user/dirvish-dispatch)
   :defines (dirvish-mode-map)
-
-  :init
-  (dirvish-override-dired-mode 1)
-
+  :init (dirvish-override-dired-mode 1)
   :custom
   (dirvish-hide-cursor nil)
   (dirvish-attributes '(subtree-state file-size file-time nerd-icons))
   (dirvish-hide-details t)
   (dirvish-reuse-session nil)
-
   :config
   (dolist (plugin '(dirvish-extras dirvish-subtree dirvish-yank))
     (require plugin))
-
   (dolist (optional-plugin '(dirvish-vc dirvish-emerge))
     (require optional-plugin nil t))
-
+  
   (add-hook 'dirvish-preview-setup-hook #'user/dirvish-preview-read-only)
 
   (defvar user/dirvish-dispatch)
@@ -295,14 +289,12 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
 -movflags +faststart '<<fne>>-audio.m4a'"
      :utils "ffmpeg"))
   
-  :bind
-  (("M-!" . dwim-shell-command)
-   :map dirvish-mode-map
-   ("F" . user/ffmpeg-actions-map))
-  :commands dwim-shell-command-on-marked-files
+  :bind (("M-!" . dwim-shell-command)
+         :map dirvish-mode-map
+         ("F" . user/ffmpeg-actions-map))
+  :commands (dwim-shell-command-on-marked-files)
   :config
   (defvar-keymap user/ffmpeg-actions-map
-
     :doc "Keymap with FFmpeg actions to run on marked files in dired/dirvish."
     "4" #'user/convert-ts-to-mp4
     "v" #'user/extract-video-only

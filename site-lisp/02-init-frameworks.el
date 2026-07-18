@@ -18,6 +18,7 @@
 (use-package tempel
   :demand t
   :preface
+  (defvar no-littering-etc-directory)
   (defun user/tempel-setup-capf ()
     "Locally add relevant tempel items to `completion-at-point-functions'."
     (setq-local completion-at-point-functions
@@ -31,22 +32,23 @@
           (find-file-other-window file))
       (find-file-other-window tempel-path)))
   
-  :bind
-  (("M-+"   . tempel-insert)
-   ("M-*"   . tempel-complete)
-   ("C-M-+" . user/tempel-edit-custom-templates)
-   :map tempel-map
-   ("TAB"   . tempel-next)
-   ("C-TAB" . tempel-previous))
+  :bind (("M-+"   . tempel-insert)
+         ("M-*"   . tempel-complete)
+         ("C-M-+" . user/tempel-edit-custom-templates)
+         :map tempel-map
+         ("TAB"   . tempel-next)
+         ("C-TAB" . tempel-previous))
   :hook ((text-mode prog-mode conf-mode) . user/tempel-setup-capf)
   :functions (tempel-complete tempel-abbrev-mode)
+
   :init
   (setq tempel-path (expand-file-name "templates" no-littering-etc-directory))
   (tempel-abbrev-mode 1))
 
 ;; tempel library
 (use-package tempel-collection
-  :after (tempel))
+  :after (tempel)
+  :demand t)
 
 
 ;;; Completions:
@@ -54,8 +56,7 @@
 (use-package savehist
   :ensure nil
   :demand t
-  :config
-  (savehist-mode 1))
+  :config (savehist-mode 1))
 
 ;; Fuzzy matching
 (use-package orderless
@@ -73,8 +74,7 @@
   :custom
   (vertico-resize t)
   (vertico-cycle t)
-  :config
-  (vertico-mode 1))
+  :config (vertico-mode 1))
 
 ;; Rich annotations
 (use-package marginalia
@@ -84,8 +84,7 @@
               :map completion-list-mode-map
               ("M-A" . marginalia-cycle))
   :functions (marginalia-mode)
-  :config
-  (marginalia-mode 1))
+  :config (marginalia-mode 1))
 
 ;; Inline completions
 (use-package corfu
@@ -206,10 +205,9 @@
   (defvar eldoc-documentation-strategy)
   (defvar prefix-help-command)
 
-  :bind
-  (("C-."   . embark-act)
-   ("C-;"   . embark-dwim)
-   ("C-h B" . embark-bindings))
+  :bind (("C-."   . embark-act)
+         ("C-;"   . embark-dwim)
+         ("C-h B" . embark-bindings))
   :functions (embark-prefix-help-command embark-eldoc-first-target)
 
   :init
@@ -232,24 +230,22 @@
 ;; Integrations
 (use-package embark-consult
   :after (embark consult)
+  :demand t
   :functions (consult-preview-at-point-mode)
-  :config
-  (add-hook 'embark-collect-mode-hook #'consult-preview-at-point-mode))
+  :config (add-hook 'embark-collect-mode-hook #'consult-preview-at-point-mode))
 
 ;; Even better help
 (use-package helpful
   :demand t
-  :preface
-  (dolist (bind '("C-h f" "C-h v" "C-h k" "C-h x" "C-h F" "C-z"))
-    (keymap-global-unset bind))
-  :bind
-  (("C-h f" . helpful-callable)
-   ("C-h v" . helpful-variable)
-   ("C-h k" . helpful-key)
-   ("C-h x" . helpful-command)
-   ("C-h ;" . helpful-at-point)
-   ("C-h F" . helpful-function)
-   ("C-h z" . helpful-kill-buffers)))
+  :preface (dolist (bind '("C-h f" "C-h v" "C-h k" "C-h x" "C-h F" "C-z"))
+             (keymap-global-unset bind))
+  :bind (("C-h f" . helpful-callable)
+         ("C-h v" . helpful-variable)
+         ("C-h k" . helpful-key)
+         ("C-h x" . helpful-command)
+         ("C-h ;" . helpful-at-point)
+         ("C-h F" . helpful-function)
+         ("C-h z" . helpful-kill-buffers)))
 
 
 (provide '02-init-frameworks)

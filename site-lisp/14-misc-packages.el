@@ -37,16 +37,14 @@
 (use-package popper
   :demand t
   :preface (keymap-global-unset "M-'")
-  :bind
-  (("C-'"   . popper-toggle)
-   ("M-'"   . popper-cycle)
-   ("C-M-'" . popper-toggle-type))
+  :bind (("C-'"   . popper-toggle)
+         ("M-'"   . popper-cycle)
+         ("C-M-'" . popper-toggle-type))
   :functions (popper-mode popper-echo-mode)
-  :custom
-  (popper-reference-buffers
-   '("\\*Messages\\*" "Output\\*$" "\\*Async Shell Command\\*" help-mode
-     helpful-mode compilation-mode "^\\*vterm.*\\*$" vterm-mode
-     "^\\*eat.*\\*$" eat-mode free-keys-mode))
+  :custom (popper-reference-buffers
+           '("\\*Messages\\*" "Output\\*$" "\\*Async Shell Command\\*" help-mode
+             helpful-mode compilation-mode "^\\*vterm.*\\*$" vterm-mode
+             "^\\*eat.*\\*$" eat-mode free-keys-mode))
   :config
   (popper-mode +1)
   (popper-echo-mode +1))
@@ -56,16 +54,14 @@
   (use-package telega
     :defer t
     :bind ("C-M-g" . telega)
-    :functions
-    (telega-mode-line-mode
-     telega-appindicator-mode telega-auto-download-mode telega-autoplay-mode
-     telega-chat-auto-fill-mode telega-highlight-text-mode
-     telega-notifications-mode telega-root-auto-fill-mode
-     telega-transient-keymaps-mode)
-    :init
-    (setq
-     telega-use-docker "podman"
-     telega-use-images t)
+    :functions (telega-mode-line-mode
+                telega-appindicator-mode telega-auto-download-mode
+                telega-autoplay-mode telega-chat-auto-fill-mode
+                telega-highlight-text-mode telega-notifications-mode
+                telega-root-auto-fill-mode telega-transient-keymaps-mode)
+    :init (setq
+           telega-use-docker "podman"
+           telega-use-images t)
     :config
     (if (daemonp)
         (add-hook 'after-make-frame-functions
@@ -145,71 +141,66 @@
   (defvar reb-lisp-mode-map)
   (defvar reb-mode-map)
 
-  :bind
-  (("C-o" . casual-editkit-main-tmenu)
-   :map org-agenda-mode-map      ("C-o"  . casual-agenda-tmenu)
-   :map calc-mode-map            ("C-o"  . casual-calc-tmenu)
-   :map calc-alg-ent-map         ("C-o"  . casual-calc-tmenu)
-   :map calendar-mode-map        ("C-o"  . casual-calendar)
-   :map compilation-mode-map     ("C-o"  . casual-compile-tmenu)
-   :map grep-mode-map            ("C-o"  . casual-compile-tmenu)
-   :map css-mode-map             ("M-m"  . casual-css-tmenu)
-   :map csv-mode-map             ("M-m"  . casual-csv-tmenu)
-   :map emacs-lisp-mode-map      ("M-m"  . casual-elisp-tmenu)
-   :map eshell-mode-map          ("C-o"  . casual-eshell-tmenu)
-   :map eww-mode-map             ("C-o"  . casual-eww-tmenu)
-   :map eww-bookmark-mode-map    ("C-o"  . casual-eww-bookmarks-tmenu)
-   :map ibuffer-mode-map         ("C-o"  . casual-ibuffer-tmenu)
-   :map ibuffer-mode-map         ("F"    . casual-ibuffer-filter-tmenu)
-   :map ibuffer-mode-map         ("s"    . casual-ibuffer-sortby-tmenu)
-   :map image-mode-map           ("C-o"  . casual-image-tmenu)
-   :map Info-mode-map            ("C-o"  . casual-info-tmenu)
-   :map isearch-mode-map         ("C-o"  . casual-isearch-tmenu)
-   :map makefile-mode-map        ("M-m"  . casual-make-tmenu)
-   :map org-mode-map             ("M-m"  . casual-org-tmenu)
-   :map org-table-fedit-map      ("M-m"  . casual-org-table-fedit-tmenu)
-   :map reb-mode-map             ("C-o"  . casual-re-builder-tmenu)
-   :map reb-lisp-mode-map        ("C-o"  . casual-re-builder-tmenu))
+  :bind (("C-o" . casual-editkit-main-tmenu)
+         :map org-agenda-mode-map      ("C-o"  . casual-agenda-tmenu)
+         :map calc-mode-map            ("C-o"  . casual-calc-tmenu)
+         :map calc-alg-ent-map         ("C-o"  . casual-calc-tmenu)
+         :map calendar-mode-map        ("C-o"  . casual-calendar)
+         :map compilation-mode-map     ("C-o"  . casual-compile-tmenu)
+         :map grep-mode-map            ("C-o"  . casual-compile-tmenu)
+         :map css-mode-map             ("M-m"  . casual-css-tmenu)
+         :map csv-mode-map             ("M-m"  . casual-csv-tmenu)
+         :map emacs-lisp-mode-map      ("M-m"  . casual-elisp-tmenu)
+         :map eshell-mode-map          ("C-o"  . casual-eshell-tmenu)
+         :map eww-mode-map             ("C-o"  . casual-eww-tmenu)
+         :map eww-bookmark-mode-map    ("C-o"  . casual-eww-bookmarks-tmenu)
+         :map ibuffer-mode-map         ("C-o"  . casual-ibuffer-tmenu)
+         :map ibuffer-mode-map         ("F"    . casual-ibuffer-filter-tmenu)
+         :map ibuffer-mode-map         ("s"    . casual-ibuffer-sortby-tmenu)
+         :map image-mode-map           ("C-o"  . casual-image-tmenu)
+         :map Info-mode-map            ("C-o"  . casual-info-tmenu)
+         :map isearch-mode-map         ("C-o"  . casual-isearch-tmenu)
+         :map makefile-mode-map        ("M-m"  . casual-make-tmenu)
+         :map org-mode-map             ("M-m"  . casual-org-tmenu)
+         :map org-table-fedit-map      ("M-m"  . casual-org-table-fedit-tmenu)
+         :map reb-mode-map             ("C-o"  . casual-re-builder-tmenu)
+         :map reb-lisp-mode-map        ("C-o"  . casual-re-builder-tmenu))
 
-  :functions
-  (casual-ediff-install
-   casual-ediff-tmenu casual-editkit-windows-tmenu
-   casual-editkit-rectangle-tmenu casual-editkit-registers-tmenu
-   casual-editkit-project-tmenu casual-lib-browse-forward-paragraph
-   casual-lib-browse-backward-paragraph casual-eww-backward-paragraph-link
-   casual-eww-forward-paragraph-link casual-info-browse-backward-paragraph
-   casual-info-browse-forward-paragraph)
+  :functions (casual-ediff-install
+              casual-ediff-tmenu casual-editkit-windows-tmenu
+              casual-editkit-rectangle-tmenu casual-editkit-registers-tmenu
+              casual-editkit-project-tmenu casual-lib-browse-forward-paragraph
+              casual-lib-browse-backward-paragraph
+              casual-eww-backward-paragraph-link
+              casual-eww-forward-paragraph-link
+              casual-info-browse-backward-paragraph
+              casual-info-browse-forward-paragraph)
   :defines (ediff-mode-map)
   :config
   (casual-ediff-install)
   (add-hook 'ediff-keymap-setup-hook
-            #'(lambda ()
-                (keymap-set ediff-mode-map "C-o" #'casual-ediff-tmenu)))
+            (lambda () (keymap-set ediff-mode-map "C-o" #'casual-ediff-tmenu)))
 
   (bind-keys
    ("C-c w"                      . casual-editkit-windows-tmenu)
    ("M-r"                        . casual-editkit-rectangle-tmenu)
    ("C-c g"                      . casual-editkit-registers-tmenu)
    ("C-c p"                      . casual-editkit-project-tmenu)
-
    :map org-agenda-mode-map
    ("M-j"                        . org-agenda-clock-goto)
    ("J"                          . bookmark-jump)
-
    :map compilation-mode-map
    ("k"                          . compilation-previous-error)
    ("j"                          . compilation-next-error)
    ("o"                          . compilation-display-error)
    ("["                          . compilation-previous-file)
    ("]"                          . compilation-next-file)
-
    :map grep-mode-map
    ("k"                          . compilation-previous-error)
    ("j"                          . compilation-next-error)
    ("o"                          . compilation-display-error)
    ("["                          . compilation-previous-file)
    ("]"                          . compilation-next-file)
-
    :map eww-mode-map
    ("C-c C-o"                    . eww-browse-with-external-browser)
    ("j"                          . shr-next-link)
@@ -223,12 +214,10 @@
    ("P"                          . casual-eww-backward-paragraph-link)
    ("N"                          . casual-eww-forward-paragraph-link)
    ("M-l"                        . eww)
-
    :map eww-bookmark-mode-map
    ("p"                          . previous-line)
    ("n"                          . next-line)
    ("<double-mouse-1>"           . eww-bookmark-browse)
-
    :map ibuffer-mode-map
    ("{"                          . ibuffer-backwards-next-marked)
    ("}"                          . ibuffer-forward-next-marked)
@@ -237,7 +226,6 @@
    ("$"                          . ibuffer-toggle-filter-group)
    ("<double-mouse-1>"           . ibuffer-visit-buffer)
    ("M-<double-mouse-1>"         . ibuffer-visit-buffer-other-window)
-
    :map Info-mode-map
    ("M-["                        . Info-history-back)
    ("M-]"                        . Info-history-forward)
@@ -252,6 +240,7 @@
 
 (use-package casual-avy
   :after (casual avy)
+  :demand t
   :bind ("M-g" . casual-avy-tmenu))
 
 
@@ -263,11 +252,10 @@
     "Correctly start dashboard during Elpaca-managed init."
     (dashboard-insert-startupify-lists)
     (dashboard-initialize))
-
-  :functions
-  (dashboard-insert-startupify-lists
-   dashboard-initialize dashboard-setup-startup-hook dashboard-refresh-buffer
-   dashboard-display-icons-p)
+  
+  :functions (dashboard-insert-startupify-lists
+              dashboard-initialize dashboard-setup-startup-hook
+              dashboard-refresh-buffer dashboard-display-icons-p)
   :init
   (add-hook 'elpaca-after-init-hook #'user/dashboard-setup)
   (setq initial-buffer-choice #'dashboard-refresh-buffer)
@@ -281,7 +269,6 @@
   (dashboard-vertically-center-content t)
   (dashboard-banner-logo-title "Welcome back")
   (dashboard-projects-backend 'project-el)
-
   :config
   (dashboard-setup-startup-hook)
   (setq dashboard-items

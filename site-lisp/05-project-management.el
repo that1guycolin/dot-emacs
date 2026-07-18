@@ -37,16 +37,15 @@
     ;; Scan these directories (but not their subdirectories)
     (let ((dotfiles-dir
            (if (equal system-type 'android)
-               (expand-file-name "dotfiles" android-home)
+               (concat android-home "/dotfiles")
              "~/dotfiles")))
       (dolist (dir (list user-emacs-directory org-directory dotfiles-dir))
         (project-remember-projects-under (expand-file-name dir))))
     (message "Successfully repopulated projects list"))
 
   :functions (project-remember-projects-under)
-  :init
-  (setq
-   project-list-file (no-littering-expand-etc-file-name "project-list.eld"))
+  :init (setq project-list-file
+              (no-littering-expand-etc-file-name "project-list.eld"))
   :custom
   (project-list-exclude
    (list (regexp-quote (expand-file-name elpaca-directory))
@@ -56,28 +55,23 @@
 ;; transient dispatch for project.el
 (use-package disproject
   :defer t
-  :preface
-  (keymap-global-unset "C-x p")
-  :bind (:map ctl-x-map
-              ("p" . disproject-dispatch))
-  :config
-  (transient-append-suffix 'disproject-dispatch "M-x"
-    '("R" "Reset Projects" user/project-reset-projects)))
+  :preface (keymap-global-unset "C-x p")
+  :bind (:map ctl-x-map ("p" . disproject-dispatch))
+  :config (with-eval-after-load 'consult-project-extra
+            (transient-append-suffix 'disproject-dispatch "C o"
+              '("R" "Reset Projects" user/project-reset-projects))))
 
 (use-package consult-project-extra
   :demand t
-  :bind
-  (("C-c p f" . consult-project-extra-find)
-   ("C-c p o" . consult-project-extra-find-other-window))
-  :custom
-  (consult-project-function #'consult-project-extra-project-fn)
-  :config
-  (with-eval-after-load 'disproject
-    (transient-append-suffix 'disproject-dispatch "&"
-      '("C f" "Consult Project Find" consult-project-extra-find))
-    (transient-append-suffix 'disproject-dispatch "C f"
-      '("C o" "C. P. Find Other Window"
-        consult-project-extra-find-other-window))))
+  :bind (("C-c p f" . consult-project-extra-find)
+         ("C-c p o" . consult-project-extra-find-other-window))
+  :custom (consult-project-function #'consult-project-extra-project-fn)
+  :config (with-eval-after-load 'disproject
+            (transient-append-suffix 'disproject-dispatch "&"
+              '("C f" "Consult Project Find" consult-project-extra-find))
+            (transient-append-suffix 'disproject-dispatch "C f"
+              '("C o" "C. P. Find Other Window"
+                consult-project-extra-find-other-window))))
 
 ;; Save frame-state & tab-state
 (use-package activities
@@ -99,7 +93,6 @@
     "l"          #'activities-list
     "C-r"        #'activities-rename
     "C-d"        #'activities-discard)
-
   (with-eval-after-load 'which-key
     (which-key-add-keymap-based-replacements
       user/activities-map
@@ -115,11 +108,11 @@
       "C-r"      "Rename Activity"
       "C-d"      "Discard Activity"))
   :bind-keymap ("C-x C-a" . user/activities-map)
-  :functions
-  (activities-new
-   activities-define activities-resume activities-suspend activities-kill
-   activities-switch activities-switch-buffer activities-revert activities-list
-   activities-rename activities-discard activities-mode activities-tabs-mode)
+  :functions (activities-new
+              activities-define activities-resume activities-suspend
+              activities-kill activities-switch activities-switch-buffer
+              activities-revert activities-list activities-rename
+              activities-discard activities-mode activities-tabs-mode)
 
   :init
   (activities-mode 1)
@@ -129,15 +122,13 @@
 (use-package docker
   :defer t
   :bind ("C-c D" . docker)
-  :custom
-  (docker-command "podman"))
+  :custom (docker-command "podman"))
 
 ;; Global rg integration
 (use-package deadgrep
   :defer t
-  :bind
-  (("<f5>"    . deadgrep)
-   ("C-c C-r" . deadgrep)))
+  :bind (("<f5>"    . deadgrep)
+         ("C-c C-r" . deadgrep)))
 
 ;; Project rg integration & more
 (use-package rg
@@ -145,8 +136,7 @@
   :bind (("C-c g" . rg-menu)
          :map isearch-mode-map
          ("M-s r" . rg-isearch-menu))
-  :config
-  (require 'rg-isearch))
+  :config (require 'rg-isearch))
 
 
 ;;; Treemacs:
@@ -186,18 +176,17 @@ Wait two seconds before activating the mode."
     (when (eq 'visible (treemacs-current-visibility))
       (treemacs)))
 
-  :bind
-  (("C-c t t"     . treemacs)
-   :map treemacs-mode-map
-   ("C-x j"       . treemacs-project-follow-mode)
-   ("<backspace>" . treemacs-root-up))
-  :commands treemacs treemacs-refresh
-  :functions
-  (treemacs-filewatch-mode
-   treemacs-git-mode treemacs-git-commit-diff-mode treemacs-select-window
-   treemacs-project-follow-mode treemacs-root-up treemacs-get-local-window
-   treemacs-hide-gitignored-files-mode treemacs--select-workspace-by-name
-   treemacs-switch-workspace)
+  :bind (("C-c t t"     . treemacs)
+         :map treemacs-mode-map
+         ("C-x j"       . treemacs-project-follow-mode)
+         ("<backspace>" . treemacs-root-up))
+  :commands (treemacs treemacs-refresh)
+  :functions (treemacs-filewatch-mode
+              treemacs-git-mode treemacs-git-commit-diff-mode
+              treemacs-select-window treemacs-project-follow-mode
+              treemacs-root-up treemacs-get-local-window
+              treemacs-hide-gitignored-files-mode
+              treemacs--select-workspace-by-name treemacs-switch-workspace)
   :defines (treemacs-mode-map)
 
   :custom
@@ -213,14 +202,15 @@ Wait two seconds before activating the mode."
 
 (use-package project-treemacs
   :after (treemacs)
+  :demand t
   :functions (project-treemacs-mode)
   :config (project-treemacs-mode 1))
 
 (use-package treemacs-nerd-icons
   :after (treemacs)
+  :demand t
   :functions (treemacs-nerd-icons-config)
-  :config
-  (treemacs-nerd-icons-config))
+  :config (treemacs-nerd-icons-config))
 
 
 (provide '05-project-management)

@@ -16,150 +16,145 @@
 ;; Readable Emacs' themes
 (use-package modus-themes
   :demand t
-  :functions
-  (modus-themes-include-derivatives-mode
-   modus-themes-load-random-dark modus-themes-load-random))
+  :functions (modus-themes-include-derivatives-mode
+              modus-themes-load-random-dark modus-themes-load-random))
 
 ;; Enhanced themes
 (use-package ef-themes
   :demand t
-  :init
-  (modus-themes-include-derivatives-mode 1)
+  :init (modus-themes-include-derivatives-mode 1)
   :custom
   (modus-themes-mixed-fonts t)
   (modus-themes-italic-constructs t)
-  :config
-  (modus-themes-load-random 'dark))
+  :config (modus-themes-load-random 'dark))
 
 
 ;;; Icons:
 (use-package nerd-icons
   :demand t
   :functions (nerd-icons-install-fonts)
-  :config
-  (when (and (not (member "Symbols Nerd Font Mono" (font-family-list)))
-             (window-system))
-    (nerd-icons-install-fonts t)))
+  :config (when (and (not (member "Symbols Nerd Font Mono" (font-family-list)))
+                     (window-system))
+            (nerd-icons-install-fonts t)))
 
 (use-package tab-line-nerd-icons
   :after (nerd-icons)
+  :demand t
   :functions (tab-line-nerd-icons-global-mode)
-  :config
-  (tab-line-nerd-icons-global-mode 1))
+  :config (tab-line-nerd-icons-global-mode 1))
 
 (use-package nerd-icons-corfu
   :after (nerd-icons)
+  :demand t
   :preface (defvar corfu-margin-formatters)
-  :config
-  (add-to-list 'corfu-margin-formatters 'nerd-icons-corfu-formatter))
+  :config (add-to-list 'corfu-margin-formatters 'nerd-icons-corfu-formatter))
 
 
 ;;; Font:
 (defvar user/font-alist nil
   "Alist mapping human-readable font names to non-directory filenames.")
+
 (if (eq system-type 'android)
-    (setq
-     user/font-alist
-     '(("Anonymice Pro NF"          . "AnonymicePro Nerd Font")
-       ("Anonymice Pro NFM"         . "AnonymicePro Nerd Font Mono")
-       ("Anonymice Pro NFP"         . "AnonymicePro Nerd Font Propo")
-       ("Blex NF"                   . "BlexMono Nerd Font")
-       ("Blex NFM"                  . "BlexMono Nerd Font Mono")
-       ("Blex NFP"                  . "BlexMono Nerd Font Propo")
-       ("DaddyTime NF"              . "DaddyTimeMono Nerd Font")
-       ("DaddyTime NFM"             . "DaddyTimeMono Nerd Font Mono")
-       ("DaddyTime NFP"             . "DaddyTimeMono Nerd Font Propo")
-       ("Droid Sans NF"             . "DroidSansM Nerd Font")
-       ("Droid Sans NFM"            . "DroidSansM Nerd Font Mono")
-       ("Droid Sans NFP"            . "DroidSansM Nerd Font Propo")
-       ("Fantasque Sans NF"         . "FantasqueSansM Nerd Font")
-       ("Fantasque Sans NFM"        . "FantasqueSansM Nerd Font Mono")
-       ("Fantasque Sans NFP"        . "FantasqueSansM Nerd Font Propo")
-       ("Go NF"                     . "GoMono Nerd Font")
-       ("Go NFM"                    . "GoMono Nerd Font Mono")
-       ("Go NFP"                    . "GoMono Nerd Font Propo")
-       ("Space NF"                  . "SpaceMono Nerd Font")
-       ("Space NFM"                 . "SpaceMono Nerd Font Mono")
-       ("Space NFP"                 . "SpaceMono Nerd Font Propo")))
-  (setq
-   user/font-alist
-   '(("0xProto"                   . "0xProtoNerdFontMono")
-     ("3270"                      . "3270NerdFontMono")
-     ("Adwaita"                   . "AdwaitaMonoNerdFontMono")
-     ("Agave"                     . "AgaveNerdFontMono")
-     ("Anonymice Pro"             . "AnonymiceProNerdFontMono")
-     ("Big Blue Term 437"         . "BigBlueTerm437NerdFontMono")
-     ("Big Blue Term Plus"        . "BigBlueTermPlusNerdFontMono")
-     ("Bitstrom Wera"             . "BitstromWeraNerdFontMono")
-     ("Blex"                      . "BlexMonoNerdFontMono")
-     ("Caskaydia Cove"            . "CaskaydiaCoveNerdFontMono")
-     ("Caskaydia"                 . "CaskaydiaMonoNerdFontMono")
-     ("Cousine"                   . "CousineNerdFontMono")
-     ("D2 Coding Ligature"        . "D2CodingLigatureNerdFontMono")
-     ("Daddy Time"                . "DaddyTimeMonoNerdFontMono")
-     ("DejaVu Sans"               . "DejaVuSansMNerdFontMono")
-     ("Envy CodeR"                . "EnvyCodeRNerdFontMono")
-     ("Fantasque Sans"            . "FantasqueSansMNerdFontMono")
-     ("Fira Code"                 . "FiraCodeNerdFontMono")
-     ("Gohu Font 11"              . "GohuFont11NerdFontMono")
-     ("Gohu Font 14"              . "GohuFont14NerdFontMono")
-     ("Gohu Fontuni 11"           . "GohuFontuni11NerdFontMono")
-     ("Gohu Fontuni 14"           . "GohuFontuni14NerdFontMono")
-     ("Go"                        . "GoMonoNerdFontMono")
-     ("Hack"                      . "HackNerdFontMono")
-     ("i M Writing"               . "iMWritingMonoNerdFontMono")
-     ("Inconsolata Go"            . "InconsolataGoNerdFontMono")
-     ("Inconsolata LGC"           . "InconsolataLGCNerdFontMono")
-     ("Inconsolata"               . "InconsolataNerdFontMono")
-     ("Intone"                    . "IntoneMonoNerdFontMono")
-     ("Iosevka"                   . "IosevkaNerdFontMono")
-     ("Iosevka Term"              . "IosevkaTermNerdFontMono")
-     ("Iosevka Term Slab"         . "IosevkaTermSlabNerdFontMono")
-     ("Jet Brains"                . "JetBrainsMonoNerdFontMono")
-     ("Jet Brains NL"             . "JetBrainsMonoNLNerdFontMono")
-     ("Lekton"                    . "LektonNerdFontMono")
-     ("Lilex"                     . "LilexNerdFontMono")
-     ("Literation"                . "LiterationMonoNerdFontMono")
-     ("M+1 Code"                  . "M+1CodeNerdFontMono")
-     ("M+Code Lat50"              . "M+CodeLat50NerdFontMono")
-     ("M+Code Lat60"              . "M+CodeLat60NerdFontMono")
-     ("Martian-Condensed"         .
-      "MartianMonoNerdFontMono-CondensedRegular")
-     ("Martian"                   . "MartianMonoNerdFontMono")
-     ("Meslo LGLDZ"               . "MesloLGLDZNerdFontMono")
-     ("Meslo LGL"                 . "MesloLGLNerdFontMono")
-     ("Meslo LGMDZ"               . "MesloLGMDZNerdFontMono")
-     ("Meslo LGM"                 . "MesloLGMNerdFontMono")
-     ("Meslo LGSDZ"               . "MesloLGSDZNerdFontMono")
-     ("Meslo LGS"                 . "MesloLGSNerdFontMono")
-     ("Monofur"                   . "MonofurNerdFontMono")
-     ("Monoid"                    . "MonoidNerdFontMono")
-     ("Mononoki"                  . "MononokiNerdFontMono")
-     ("Noto"                      . "NotoMonoNerdFontMono")
-     ("Noto Sans-Condensed"       .
-      "NotoSansMNerdFontMono-CondensedRegular")
-     ("Noto Sans-Extra Condensed" .
-      "NotoSansMNerdFontMono-ExtraCondensedRegular")
-     ("Noto Sans"                 . "NotoSansMNerdFontMono")
-     ("Noto Sans-Semi Condensed"  .
-      "NotoSansMNerdFontMono-SemiCondensedRegular")
-     ("Pro Font IIx"              . "ProFontIIxNerdFontMono")
-     ("Pro Font Windows"          . "ProFontWindowsNerdFontMono")
-     ("Proggy Clean CE"           . "ProggyCleanCENerdFontMono")
-     ("Proggy Clean"              . "ProggyCleanNerdFontMono")
-     ("Proggy Clean SZ"           . "ProggyCleanSZNerdFontMono")
-     ("Rec Casual"                . "RecMonoCasualNerdFontMono")
-     ("Rec Duotone"               . "RecMonoDuotoneNerdFontMono")
-     ("Rec Linear"                . "RecMonoLinearNerdFontMono")
-     ("Rec Sm Casual"             . "RecMonoSmCasualNerdFontMono")
-     ("Roboto"                    . "RobotoMonoNerdFontMono")
-     ("Sauce Code Pro"            . "SauceCodeProNerdFontMono")
-     ("Shure Tech"                . "ShureTechMonoNerdFontMono")
-     ("Space"                     . "SpaceMonoNerdFontMono")
-     ("Terminess"                 . "TerminessNerdFontMono")
-     ("Ubuntu"                    . "UbuntuMonoNerdFontMono")
-     ("Victor"                    . "VictorMonoNerdFontMono")
-     ("Zed"                       . "ZedMonoNerdFontMono"))))
+    (setq user/font-alist
+          '(("Anonymice Pro NF"          . "AnonymicePro Nerd Font")
+            ("Anonymice Pro NFM"         . "AnonymicePro Nerd Font Mono")
+            ("Anonymice Pro NFP"         . "AnonymicePro Nerd Font Propo")
+            ("Blex NF"                   . "BlexMono Nerd Font")
+            ("Blex NFM"                  . "BlexMono Nerd Font Mono")
+            ("Blex NFP"                  . "BlexMono Nerd Font Propo")
+            ("DaddyTime NF"              . "DaddyTimeMono Nerd Font")
+            ("DaddyTime NFM"             . "DaddyTimeMono Nerd Font Mono")
+            ("DaddyTime NFP"             . "DaddyTimeMono Nerd Font Propo")
+            ("Droid Sans NF"             . "DroidSansM Nerd Font")
+            ("Droid Sans NFM"            . "DroidSansM Nerd Font Mono")
+            ("Droid Sans NFP"            . "DroidSansM Nerd Font Propo")
+            ("Fantasque Sans NF"         . "FantasqueSansM Nerd Font")
+            ("Fantasque Sans NFM"        . "FantasqueSansM Nerd Font Mono")
+            ("Fantasque Sans NFP"        . "FantasqueSansM Nerd Font Propo")
+            ("Go NF"                     . "GoMono Nerd Font")
+            ("Go NFM"                    . "GoMono Nerd Font Mono")
+            ("Go NFP"                    . "GoMono Nerd Font Propo")
+            ("Space NF"                  . "SpaceMono Nerd Font")
+            ("Space NFM"                 . "SpaceMono Nerd Font Mono")
+            ("Space NFP"                 . "SpaceMono Nerd Font Propo")))
+  (setq user/font-alist
+        '(("0xProto"                   . "0xProtoNerdFontMono")
+          ("3270"                      . "3270NerdFontMono")
+          ("Adwaita"                   . "AdwaitaMonoNerdFontMono")
+          ("Agave"                     . "AgaveNerdFontMono")
+          ("Anonymice Pro"             . "AnonymiceProNerdFontMono")
+          ("Big Blue Term 437"         . "BigBlueTerm437NerdFontMono")
+          ("Big Blue Term Plus"        . "BigBlueTermPlusNerdFontMono")
+          ("Bitstrom Wera"             . "BitstromWeraNerdFontMono")
+          ("Blex"                      . "BlexMonoNerdFontMono")
+          ("Caskaydia Cove"            . "CaskaydiaCoveNerdFontMono")
+          ("Caskaydia"                 . "CaskaydiaMonoNerdFontMono")
+          ("Cousine"                   . "CousineNerdFontMono")
+          ("D2 Coding Ligature"        . "D2CodingLigatureNerdFontMono")
+          ("Daddy Time"                . "DaddyTimeMonoNerdFontMono")
+          ("DejaVu Sans"               . "DejaVuSansMNerdFontMono")
+          ("Envy CodeR"                . "EnvyCodeRNerdFontMono")
+          ("Fantasque Sans"            . "FantasqueSansMNerdFontMono")
+          ("Fira Code"                 . "FiraCodeNerdFontMono")
+          ("Gohu Font 11"              . "GohuFont11NerdFontMono")
+          ("Gohu Font 14"              . "GohuFont14NerdFontMono")
+          ("Gohu Fontuni 11"           . "GohuFontuni11NerdFontMono")
+          ("Gohu Fontuni 14"           . "GohuFontuni14NerdFontMono")
+          ("Go"                        . "GoMonoNerdFontMono")
+          ("Hack"                      . "HackNerdFontMono")
+          ("i M Writing"               . "iMWritingMonoNerdFontMono")
+          ("Inconsolata Go"            . "InconsolataGoNerdFontMono")
+          ("Inconsolata LGC"           . "InconsolataLGCNerdFontMono")
+          ("Inconsolata"               . "InconsolataNerdFontMono")
+          ("Intone"                    . "IntoneMonoNerdFontMono")
+          ("Iosevka"                   . "IosevkaNerdFontMono")
+          ("Iosevka Term"              . "IosevkaTermNerdFontMono")
+          ("Iosevka Term Slab"         . "IosevkaTermSlabNerdFontMono")
+          ("Jet Brains"                . "JetBrainsMonoNerdFontMono")
+          ("Jet Brains NL"             . "JetBrainsMonoNLNerdFontMono")
+          ("Lekton"                    . "LektonNerdFontMono")
+          ("Lilex"                     . "LilexNerdFontMono")
+          ("Literation"                . "LiterationMonoNerdFontMono")
+          ("M+1 Code"                  . "M+1CodeNerdFontMono")
+          ("M+Code Lat50"              . "M+CodeLat50NerdFontMono")
+          ("M+Code Lat60"              . "M+CodeLat60NerdFontMono")
+          ("Martian-Condensed"         .
+           "MartianMonoNerdFontMono-CondensedRegular")
+          ("Martian"                   . "MartianMonoNerdFontMono")
+          ("Meslo LGLDZ"               . "MesloLGLDZNerdFontMono")
+          ("Meslo LGL"                 . "MesloLGLNerdFontMono")
+          ("Meslo LGMDZ"               . "MesloLGMDZNerdFontMono")
+          ("Meslo LGM"                 . "MesloLGMNerdFontMono")
+          ("Meslo LGSDZ"               . "MesloLGSDZNerdFontMono")
+          ("Meslo LGS"                 . "MesloLGSNerdFontMono")
+          ("Monofur"                   . "MonofurNerdFontMono")
+          ("Monoid"                    . "MonoidNerdFontMono")
+          ("Mononoki"                  . "MononokiNerdFontMono")
+          ("Noto"                      . "NotoMonoNerdFontMono")
+          ("Noto Sans-Condensed"       .
+           "NotoSansMNerdFontMono-CondensedRegular")
+          ("Noto Sans-Extra Condensed" .
+           "NotoSansMNerdFontMono-ExtraCondensedRegular")
+          ("Noto Sans"                 . "NotoSansMNerdFontMono")
+          ("Noto Sans-Semi Condensed"  .
+           "NotoSansMNerdFontMono-SemiCondensedRegular")
+          ("Pro Font IIx"              . "ProFontIIxNerdFontMono")
+          ("Pro Font Windows"          . "ProFontWindowsNerdFontMono")
+          ("Proggy Clean CE"           . "ProggyCleanCENerdFontMono")
+          ("Proggy Clean"              . "ProggyCleanNerdFontMono")
+          ("Proggy Clean SZ"           . "ProggyCleanSZNerdFontMono")
+          ("Rec Casual"                . "RecMonoCasualNerdFontMono")
+          ("Rec Duotone"               . "RecMonoDuotoneNerdFontMono")
+          ("Rec Linear"                . "RecMonoLinearNerdFontMono")
+          ("Rec Sm Casual"             . "RecMonoSmCasualNerdFontMono")
+          ("Roboto"                    . "RobotoMonoNerdFontMono")
+          ("Sauce Code Pro"            . "SauceCodeProNerdFontMono")
+          ("Shure Tech"                . "ShureTechMonoNerdFontMono")
+          ("Space"                     . "SpaceMonoNerdFontMono")
+          ("Terminess"                 . "TerminessNerdFontMono")
+          ("Ubuntu"                    . "UbuntuMonoNerdFontMono")
+          ("Victor"                    . "VictorMonoNerdFontMono")
+          ("Zed"                       . "ZedMonoNerdFontMono"))))
 
 (defvar user/keep-frame-size-on-font-switch-p t
   "If non-nil, attempt to keep frame size fixed when changing font.
@@ -231,8 +226,7 @@ If nil, the number of frame lines and columns remains fixed.")
 (use-package minions
   :demand t
   :functions (minions-mode)
-  :config
-  (minions-mode 1))
+  :config (minions-mode 1))
 
 (use-package editorconfig
   :defer t
@@ -240,9 +234,9 @@ If nil, the number of frame lines and columns remains fixed.")
 
 (use-package visual-fill-column
   :defer t
-  :hook
-  ((visual-line-mode                . visual-fill-column-for-vline)
-   ((prog-mode text-mode conf-mode) . visual-line-mode)))
+  :hook ((prog-mode text-mode conf-mode) . visual-line-mode)
+  :functions (visual-fill-column-for-vline)
+  :init (add-hook 'visual-line-mode-hook #'visual-fill-column-for-vline))
 
 ;; DON'T MOVE THE MOUSE!
 (use-package inhibit-mouse
@@ -250,13 +244,11 @@ If nil, the number of frame lines and columns remains fixed.")
   :unless (eq system-type 'android)
   :functions (inhibit-mouse-mode)
   :custom
-  
   (inhibit-mouse-adjust-mouse-highlight t)
   (inhibit-mouse-adjust-show-help-function t)
   :config
   (if (daemonp)
-      (add-hook
-       'server-after-make-frame-hook #'inhibit-mouse-mode)
+      (add-hook 'server-after-make-frame-hook #'inhibit-mouse-mode)
     (inhibit-mouse-mode 1)))
 
 

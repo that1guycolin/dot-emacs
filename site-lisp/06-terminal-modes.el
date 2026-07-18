@@ -57,32 +57,27 @@
   :defer t
   :preface (advice-add 'ghostty :around #'user/call-in-other-window-advice)
   :bind ("C-c t g" . ghostel)
-  :custom
-  (ghostel-module-auto-install 'compile)
-  :config
-  (with-eval-after-load 'disproject
-    (transient-append-suffix 'disproject-dispatch
-      "s"
-      '("o" "Ghostel" ghostel-project))))
+  :custom (ghostel-module-auto-install 'compile)
+  :config (with-eval-after-load 'disproject
+            (transient-append-suffix 'disproject-dispatch
+              "s" '("o" "Ghostel" ghostel-project))))
 
 ;; Commit shell layer
 (use-package mistty
   :defer t
   :preface (advice-add 'mistty :around #'user/call-in-other-window-advice)
-  :bind
-  (("C-c t m" . mistty)
-   :map mistty-prompt-map
-   ("M-<up>"    . mistty-send-key)
-   ("M-<down>"  . mistty-send-key)
-   ("M-<left>"  . mistty-send-key)
-   ("M-<right>" . mistty-send-key)))
+  :bind (("C-c t m" . mistty)
+         :map mistty-prompt-map
+         ("M-<up>"    . mistty-send-key)
+         ("M-<down>"  . mistty-send-key)
+         ("M-<left>"  . mistty-send-key)
+         ("M-<right>" . mistty-send-key)))
 
 ;; The old workhorse
 (use-package vterm
   :defer t
-  :bind
-  (("C-c t v" . vterm)
-   ("C-c t V" . vterm-other-window)))
+  :bind (("C-c t v" . vterm)
+         ("C-c t V" . vterm-other-window)))
 
 
 ;;; Helpers:
@@ -94,11 +89,10 @@
 ;; Shell completion in shell buffers
 (use-package native-complete
   :defer t
-  :preface
-  (defun user/setup-native-complete ()
-    "Add `native-complete-at-point' to `completion-at-point-functions'."
-    (add-to-list 'completion-at-point-functions #'native-complete-at-point))
-  :hook (shell-mode . user/setup-native-complete)
+  :hook (shell-mode . (lambda ()
+                        (add-to-list
+                         'completion-at-point-functions
+                         #'native-complete-at-point)))
   :commands native-complete-at-point)
 
 

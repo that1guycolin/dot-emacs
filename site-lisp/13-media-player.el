@@ -44,41 +44,40 @@
       (progn
         (emms-player-mpv-pause))))
 
-  :bind
-  (("<f6>"    . emms-browser)
-   ("<f7>"    . emms-smart-browse)
-   ("<f8>"    . emms-playlist-mode-go)
-   ("<f9>"    . emms-playlist-mode-go-popup)
-   :map emms-playlist-mode-map
-   ("SPC"     . user/toggle-play-pause)
-   ("m"       . emms-next)
-   ("n"       . emms-previous)
-   ("s"       . emms-playlist-shuffle)
-   ("j"       . emms-seek-backward)
-   ("k"       . emms-seek-forward)
-   ("J"       . user/seek-backward-med)
-   ("K"       . user/seek-forward-med)
-   ("M-j"     . user/seek-backward-long)
-   ("M-k"     . user/seek-forward-long)
-   ("p"       . emms-play-playlist)
-   ("f"       . emms-play-file)
-   ("d"       . emms-play-find)
-   ("C-s"     . emms-playlist-save)
-   ("C-x n"   . emms-playlist-new)
-   ("i"       . emms-show)
-   ("l"       . emms-sort)
-   ("y"       . emms-playlist-mode-yank))
-
-  :functions
-  (emms-all
-   emms-seek emms-player-mpv-pause emms-player-mpv-resume emms-playlist-mode-go
-   emms-playlist-mode-go-popup emms-pause emms-next emms-previous
-   emms-playlist-shuffle emms-seek-backward emms-seek-forward
-   emms-play-playlist emms-play-file emms-play-find emms-playlist-save
-   emms-playlist-new emms-show emms-sort emms-playlist-mode-yank)
-  :defines
-  (emms-info-functions
-   emms-playlist-mode-map emms-player-mpv-command-name emms-player-mpv-parameters emms-browser-default-browse-type emms-browser-info-title-format)
+  :bind (("<f6>"    . emms-browser)
+         ("<f7>"    . emms-smart-browse)
+         ("<f8>"    . emms-playlist-mode-go)
+         ("<f9>"    . emms-playlist-mode-go-popup)
+         :map emms-playlist-mode-map
+         ("SPC"     . user/toggle-play-pause)
+         ("m"       . emms-next)
+         ("n"       . emms-previous)
+         ("s"       . emms-playlist-shuffle)
+         ("j"       . emms-seek-backward)
+         ("k"       . emms-seek-forward)
+         ("J"       . user/seek-backward-med)
+         ("K"       . user/seek-forward-med)
+         ("M-j"     . user/seek-backward-long)
+         ("M-k"     . user/seek-forward-long)
+         ("p"       . emms-play-playlist)
+         ("f"       . emms-play-file)
+         ("d"       . emms-play-find)
+         ("C-s"     . emms-playlist-save)
+         ("C-x n"   . emms-playlist-new)
+         ("i"       . emms-show)
+         ("l"       . emms-sort)
+         ("y"       . emms-playlist-mode-yank))
+  :functions (emms-all
+              emms-seek emms-player-mpv-pause emms-player-mpv-resume
+              emms-playlist-mode-go emms-playlist-mode-go-popup emms-pause
+              emms-next emms-previous emms-playlist-shuffle emms-seek-backward
+              emms-seek-forward emms-play-playlist emms-play-file
+              emms-play-find emms-playlist-save emms-playlist-new emms-show
+              emms-sort emms-playlist-mode-yank)
+  :defines (emms-info-functions
+            emms-playlist-mode-map emms-player-mpv-command-name
+            emms-player-mpv-parameters emms-browser-default-browse-type
+            emms-browser-info-title-format)
   
   :config
   (require 'emms-setup)
@@ -102,6 +101,7 @@
            :host github :repo "that1guycolin/emms-info-mediainfo"
            :files (:defaults) :method https)
   :after (emms)
+  :demand t
   :custom (emms-info-functions
            (append '(emms-info-mediainfo) emms-info-functions)))
 

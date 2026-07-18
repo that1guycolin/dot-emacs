@@ -32,11 +32,9 @@
     "Alist of cons cells mapping orig lang modes to their treesit versions.")
   
   :mode ("\\.tsx\\'" . tsx-ts-mode)
-  :init
-  (setq treesit-extra-load-path
-        (list (no-littering-expand-var-file-name "tree-sitter")))
-  :custom
-  (treesit-font-lock-level 4)
+  :init (setq treesit-extra-load-path
+              (list (no-littering-expand-var-file-name "tree-sitter")))
+  :custom (treesit-font-lock-level 4)
   :config
   (setq
    treesit-language-source-alist
@@ -91,16 +89,10 @@
 (use-package dockerfile-ts-mode
   :ensure nil
   :defer t
-  :preface
-  (defun user/dockerfile-fill-column ()
-    "Set `fill-column' to 1000 in dockerfile-ts-mode.
-Setting the `fill-column' value to 1000 effectively disables
-`fill-column-mode'. Use this function as a hook for
-`dockerfile-ts-mode'."
-    (setq-local fill-column 1000))
   :mode ("Dockerfile\\'" "Containerfile\\'")
   :config
-  (add-hook 'dockerfile-ts-mode-hook #'user/dockerfile-fill-column))
+  (add-hook 'dockerfile-ts-mode-hook
+            (lambda () (setq-local fill-column 1000))))
 
 (use-package emacs-lisp-mode
   :ensure nil
@@ -122,8 +114,7 @@ Setting the `fill-column' value to 1000 effectively disables
   :ensure nil
   :defer t
   :mode "\\.lua\\'"
-  :custom
-  (lua-ts-inferior-lua "luajit"))
+  :custom (lua-ts-inferior-lua "luajit"))
 
 (use-package markdown-ts-mode
   :ensure nil
@@ -133,81 +124,30 @@ Setting the `fill-column' value to 1000 effectively disables
 (use-package python-ts-mode
   :ensure nil
   :defer t
-  :preface
-  (defvar python-base-mode-map)
-  (defun user/python-docstrings()
-    "Toggle `fill-column' between 88 (code) & 72 (docstrings).
-
-Black recommends a line length of 88 for the actual document/code, but a
-line length of 72 for docstrings; this helps make sure python docstrings
-follow this convention."
-    (interactive)
-    (cond ((= fill-column 88)
-           (setq-local fill-column 72))
-          ((= fill-column 72)
-           (setq-local fill-column 88))
-          (t
-           (error "Value of fill-column (%d) is neither 88 or 72" fill-column))))
-  :bind
-  (:map python-base-mode-map
-        ("C-\""      . user/python-docstrings)
-        ("C-c C-k c" . python-skeleton-class)
-        ("C-c C-k d" . python-skeleton-def)
-        ("C-c C-k f" . python-skeleton-for)
-        ("C-c C-k i" . python-skeleton-if)
-        ("C-c C-k m" . python-skeleton-import)
-        ("C-c C-k t" . python-skeleton-try)
-        ("C-c C-k w" . python-skeleton-while))
+  :preface (defvar python-base-mode-map)
+  :bind (:map python-base-mode-map
+              ("C-c C-k c" . python-skeleton-class)
+              ("C-c C-k d" . python-skeleton-def)
+              ("C-c C-k f" . python-skeleton-for)
+              ("C-c C-k i" . python-skeleton-if)
+              ("C-c C-k m" . python-skeleton-import)
+              ("C-c C-k t" . python-skeleton-try)
+              ("C-c C-k w" . python-skeleton-while))
   :interpreter ("python3" "uv")
   :mode "\\.py\\'"
-  
-  :functions
-  (python-skeleton-class
-   python-skeleton-def python-skeleton-for python-skeleton-if
-   python-skeleton-import python-skeleton-try python-skeleton-while)
+  :functions (python-skeleton-class
+              python-skeleton-def python-skeleton-for python-skeleton-if
+              python-skeleton-import python-skeleton-try python-skeleton-while)
   :custom
   (python-indent-offset 4)
   (python-shell-interpreter "python3")
-  :config
-  (keymap-unset python-base-mode-map "C-c C-t"))
+  :config (keymap-unset python-base-mode-map "C-c C-t"))
 
 (use-package sh-mode
   :ensure nil
   :defer t
-  :preface
-  (defun user/zsh-redirect-error-echoes ()
-    "Redirect ERROR echo calls to stderr in zsh buffers."
-    (when (derived-mode-p 'sh-mode)
-      (save-excursion
-        (goto-char (point-min))
-        (while (search-forward "echo \"ERROR:" nil t)
-          (replace-match "echo >&2 \"ERROR:" t t)))))
-
-  (defun user/enable-zsh-error-echo-fix ()
-    "Enable automatic stderr redirection for zsh files."
-    (when (and (derived-mode-p 'sh-mode)
-               (boundp 'sh-shell)
-               (string= sh-shell "zsh"))
-      (add-hook 'before-save-hook #'user/zsh-redirect-error-echoes nil t)))
-
-  (defun user/fix-zsh-error-echoes (dir)
-    "Replace `echo \"ERROR:` with `echo >&2 \"ERROR:` on all .zsh files in DIR."
-    (interactive "DDirectory: ")
-    (dolist (file (directory-files-recursively dir "\\.zsh\\'"))
-      (with-temp-buffer
-        (insert-file-contents file)
-        (goto-char (point-min))
-        (let ((modified nil))
-          (while (search-forward "echo \"ERROR:" nil t)
-            (replace-match "echo >&2 \"ERROR:" t t)
-            (setq modified t))
-          (when modified
-            (write-region nil nil file nil 'silent)
-            (message "Updated: %s" file))))))
   :interpreter ("sh" "zsh" "dash")
-  :mode ("\\.zsh\\'" "\\.dash\\'")
-  :config
-  (add-hook 'sh-mode-hook #'user/enable-zsh-error-echo-fix))
+  :mode ("\\.zsh\\'" "\\.dash\\'"))
 
 (use-package rustic-ts-mode
   :ensure nil
@@ -233,12 +173,10 @@ follow this convention."
   :ensure nil
   :defer t
   :preface
-  (defun user/yaml-fill-column ()
-    "Set local `fill-column' value to 1000."
-    (setq-local fill-column 1000))
   :mode ("\\.yml\\'" "\\.yaml\\'")
   :config
-  (add-hook 'yaml-ts-mode-hook #'user/yaml-fill-column))
+  (add-hook 'yaml-ts-mode-hook
+	    (lambda () (setq-local fill-column 1000))))
 
 
 (provide '04-tree-sitter-lang-config)
