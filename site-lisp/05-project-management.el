@@ -5,8 +5,8 @@
 ;; project-treemacs, rg, treemacs, treemacs-nerd-icons
 
 ;;; Commentary:
-;; Support project functionality in Emacs.  Git integration for said projects
-;; occurs in "09-git-tools.el".
+;; The packages defined in this file support projects or are in some way related
+;; to project workflows.
 
 ;;; Code:
 ;;; Projects:
