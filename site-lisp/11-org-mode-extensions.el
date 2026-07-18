@@ -214,9 +214,6 @@ Add this function to `org-mode-hook'."
   (org-confirm-babel-evaluate nil)
   (org-default-notes-file (expand-file-name ".notes" org-directory))
   (org-edit-src-content-indentation 0)
-  (org-id-extra-files
-   (if (file-directory-p org-directory)
-       (directory-files-recursively org-directory "\\.org$")) nil)
   (org-id-locations-file (expand-file-name ".id-locations" org-directory))
   (org-id-method 'org)
   (org-id-prefix "unk")
