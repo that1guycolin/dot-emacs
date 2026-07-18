@@ -233,7 +233,7 @@ See URL `https://vale.sh'."
   (flyover-display-mode 'always)
   (flyover-hide-during-completion t)
   :config
-  (flyover-mode t)
+  (flyover-mode 1)
   
   (defvar-keymap user/flyover-functions-map
     :doc "Useful functions for `flyover'."
