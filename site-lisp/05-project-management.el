@@ -1,8 +1,8 @@
 ;;; 05-project-management.el --- Projects & Workspaces -*-lexical-binding: t; -*-
 
 ;;; Packages included:
-;; activities, consult-project-extra, deadgrep, disproject, docker, project,
-;; project-treemacs, rg, treemacs, treemacs-nerd-icons
+;; activities, consult-project-extra, deadgrep, disproject, docker, guix,
+;; project, project-treemacs, rg, treemacs, treemacs-nerd-icons
 
 ;;; Commentary:
 ;; The packages defined in this file support projects or are in some way related
@@ -123,6 +123,11 @@
   :defer t
   :bind ("C-c D" . docker)
   :custom (docker-command "podman"))
+
+;; Guix support
+(use-package guix
+  :defer t
+  :bind ("C-c x" . guix))
 
 ;; Global rg integration
 (use-package deadgrep

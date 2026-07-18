@@ -100,6 +100,15 @@
   (flycheck-add-mode 'yaml-yamllint 'docker-compose-mode)
   (add-hook 'sh-mode-hook #'user/flycheck-shellcheck-setup-dash)
 
+  (flycheck-define-checker cl-ocicl
+    "Common Lisp checker using `ocicl lint`."
+    :command ("ocicl" "lint" source)
+    :error-patterns
+    ((warning line-start (file-name) ":" line ":" column ": "
+              (id (one-or-more (not (any ":")))) ": " (message) line-end))
+    :modes (lisp-mode lisp-data-mode))
+  (add-to-list 'flycheck-checkers 'cl-ocicl)
+  
   (flycheck-define-checker cl-mallet
     "A Common Lisp linter using Mallet.
 See URL: `https://github.com/fukamachi/mallet'."
@@ -355,6 +364,7 @@ See URL `https://vale.sh'."
   :demand t
   :functions (eglot-tempel-mode)
   :config (eglot-tempel-mode 1))
+
 
 ;;; Formatting:
 ;; bash:         'shfmt'         (pacman -S shfmt)
