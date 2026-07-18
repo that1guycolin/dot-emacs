@@ -273,22 +273,21 @@ Add this function to `org-mode-hook'."
          ("C-c C-o" . org-open-at-point-global)
          ("C-c C-d" . org-snitch-mark-done))
   :functions (org-snitch-setup org-snitch-mode org-snitch-magit-insert-task)
+  :custom
+  (org-snitch-target-file "TODO.org")
+  (org-snitch-capture-key "p")
+  (org-snitch-independent-submodules t)
+  (org-snitch-capture-templates
+   '(("t" . "Tasks")
+     ("b" . "Bugs")
+     ("f" . "Features")
+     ("d" . "Docs")))
   :config
-  (with-eval-after-load 'org
-    (setq
-     org-snitch-target-file "TODO.org"
-     org-snitch-capture-key "p"
-     org-snitch-independent-submodules t
-     org-snitch-capture-templates
-     '(("t" . "Tasks")
-       ("b" . "Bugs")
-       ("f" . "Features")
-       ("d" . "Docs")))
-    (org-snitch-setup)
-    (org-snitch-mode 1)
-    (with-eval-after-load 'git-commit
-      (keymap-set git-commit-mode-map
-                  "C-c C-t" #'org-snitch-magit-insert-task))))
+  (org-snitch-setup)
+  (org-snitch-mode 1)
+  (with-eval-after-load 'git-commit
+    (keymap-set git-commit-mode-map
+                "C-c C-t" #'org-snitch-magit-insert-task)))
 
 
 ;;; Knowledge
@@ -301,7 +300,10 @@ Add this function to `org-mode-hook'."
               org-mem-updater-mode org-mem-reset org-mem-await
               org-mem-tip-if-empty)
   :defines (org-mem-roamy-do-overwrite-real-db)
-  :custom (org-mem-watch-dirs (list (expand-file-name org-directory))))
+  :custom (org-mem-watch-dirs (list (expand-file-name org-directory)))
+  :config
+  (org-mem-roamy-db-mode 1)
+  (org-mem-updater-mode 1))
 
 ;; Fast & simple note management
 (use-package org-node
@@ -347,23 +349,22 @@ this function as `org-node-creation-fn'."
               org-node-cache-mode org-node-complete-at-point-mode
               org-node-backlink-mode)
   :defines (org-node-backlink-do-drawers)
-  :init (keymap-set org-mode-map "M-o" org-node-org-prefix-map)
+  :init (with-eval-after-load 'org
+          (keymap-set org-mode-map "M-o" org-node-org-prefix-map))
+  :custom
+  (org-node-creation-fn #'user/org-node-new-file)
+  (org-node-file-directory-ask t)
+  (org-node-prefer-with-heading nil)
   :config
-  (with-eval-after-load 'org
-    (setq
-     org-node-creation-fn #'user/org-node-new-file
-     org-node-file-directory-ask t
-     org-node-prefer-with-heading nil)
-    (org-node-cache-mode 1)
-    (org-mem-updater-mode 1)
-    (org-mem-reset nil "Org-node waiting for org-mem...")
-    (org-mem-await "Org-node waiting for org-mem..." 60)
-    (org-mem-tip-if-empty)
-    (org-node-complete-at-point-mode 1)
-
-    (require 'org-node-backlink)
-    (setq org-node-backlink-do-drawers nil)
-    (org-node-backlink-mode 1)))
+  (org-node-cache-mode 1)
+  (org-mem-updater-mode 1)
+  (org-mem-reset nil "Org-node waiting for org-mem...")
+  (org-mem-await "Org-node waiting for org-mem..." 60)
+  (org-mem-tip-if-empty)
+  (org-node-complete-at-point-mode 1)
+  (require 'org-node-backlink)
+  (setq org-node-backlink-do-drawers nil)
+  (org-node-backlink-mode 1))
 
 ;; View PDFs in Emacs
 (use-package pdf-tools
@@ -407,9 +408,9 @@ this function as `org-node-creation-fn'."
            :fetcher github :repo "that1guycolin/org-pdftools"
            :files ("org-pdftools.el") :old-names (org-preview)
            :type git :protocol https :inherit t :depth treeless)
-  :after (org)
-  :defer t
-  :hook (org-mode . org-pdftools-setup-link))
+  :after (org pdf-view-mode)
+  :demand t
+  :config (org-pdftools-setup-link))
 
 (use-package org-noter-pdftools
   :ensure (org-noter-pdftools
@@ -486,7 +487,6 @@ With a prefix ARG, remove start location."
 
 ;; Improve Org appearance
 (use-package org-modern
-  :after (org)
   :defer t
   :hook (org-mode . org-modern-mode)
   :custom
