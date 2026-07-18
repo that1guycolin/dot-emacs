@@ -258,7 +258,6 @@ Add this function to `org-mode-hook'."
 
 ;; Project management via Org
 (use-package org-snitch
-  :after (org)
   :defer t
   :preface
   (declare-function user/current-project-root "05-project-management.el")
@@ -274,23 +273,22 @@ Add this function to `org-mode-hook'."
          ("C-c C-o" . org-open-at-point-global)
          ("C-c C-d" . org-snitch-mark-done))
   :functions (org-snitch-setup org-snitch-mode org-snitch-magit-insert-task)
-
-  :custom
-  (org-snitch-target-file (user/smart-project-file))
-  (org-snitch-capture-key "p")
-  (org-snitch-independent-submodules t)
-  (org-snitch-capture-templates
-   '(("t" . "Tasks")
-     ("b" . "Bugs")
-     ("f" . "Features")
-     ("d" . "Docs")))
-
   :config
-  (org-snitch-setup)
-  (org-snitch-mode 1)
-  (with-eval-after-load 'git-commit
-    (keymap-set git-commit-mode-map
-                "C-c C-t" #'org-snitch-magit-insert-task)))
+  (with-eval-after-load 'org
+    (setq
+     org-snitch-target-file "TODO.org"
+     org-snitch-capture-key "p"
+     org-snitch-independent-submodules t
+     org-snitch-capture-templates
+     '(("t" . "Tasks")
+       ("b" . "Bugs")
+       ("f" . "Features")
+       ("d" . "Docs")))
+    (org-snitch-setup)
+    (org-snitch-mode 1)
+    (with-eval-after-load 'git-commit
+      (keymap-set git-commit-mode-map
+                  "C-c C-t" #'org-snitch-magit-insert-task))))
 
 
 ;;; Knowledge
@@ -307,7 +305,6 @@ Add this function to `org-mode-hook'."
 
 ;; Fast & simple note management
 (use-package org-node
-  :after (org org-mem)
   :defer t
   :preface
   (declare-function org-id-new "org-id")
@@ -351,21 +348,22 @@ this function as `org-node-creation-fn'."
               org-node-backlink-mode)
   :defines (org-node-backlink-do-drawers)
   :init (keymap-set org-mode-map "M-o" org-node-org-prefix-map)
-  :custom
-  (org-node-creation-fn #'user/org-node-new-file)
-  (org-node-file-directory-ask t)
-  (org-node-prefer-with-heading nil)
   :config
-  (org-node-cache-mode 1)
-  (org-mem-updater-mode 1)
-  (org-mem-reset nil "Org-node waiting for org-mem...")
-  (org-mem-await "Org-node waiting for org-mem..." 60)
-  (org-mem-tip-if-empty)
-  (org-node-complete-at-point-mode 1)
+  (with-eval-after-load 'org
+    (setq
+     org-node-creation-fn #'user/org-node-new-file
+     org-node-file-directory-ask t
+     org-node-prefer-with-heading nil)
+    (org-node-cache-mode 1)
+    (org-mem-updater-mode 1)
+    (org-mem-reset nil "Org-node waiting for org-mem...")
+    (org-mem-await "Org-node waiting for org-mem..." 60)
+    (org-mem-tip-if-empty)
+    (org-node-complete-at-point-mode 1)
 
-  (require 'org-node-backlink)
-  (setq org-node-backlink-do-drawers nil)
-  (org-node-backlink-mode 1))
+    (require 'org-node-backlink)
+    (setq org-node-backlink-do-drawers nil)
+    (org-node-backlink-mode 1)))
 
 ;; View PDFs in Emacs
 (use-package pdf-tools
@@ -374,7 +372,6 @@ this function as `org-node-creation-fn'."
            :repo "that1guycolin/pdf-tools"
            :files (:defaults "README" ("build" "Makefile") ("build" "server"))
            :type git :protocol https :inherit t :depth treeless)
-  :after (org)
   :defer t
   :magic ("%PDF" . pdf-view-mode)
   :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)
@@ -386,7 +383,6 @@ this function as `org-node-creation-fn'."
 
 ;; Annotate
 (use-package org-noter
-  :after (org)
   :defer t
   :bind (("C-c n n". org-noter)
          :map dired-mode-map
