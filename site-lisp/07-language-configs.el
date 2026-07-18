@@ -162,7 +162,7 @@
   (rustic-cargo-use-last-stored-arguments t)
   (rustic-format-on-save-method 'rustic-format-buffer)
   (rustic-format-trigger 'on-save)
-  (rustic-lsp-client 'lsp-mode))
+  (rustic-lsp-client 'eglot))
 
 
 ;;; Configuration file modes:
