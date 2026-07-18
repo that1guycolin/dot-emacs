@@ -391,9 +391,8 @@ See URL `https://vale.sh'."
   :hook ((prog-mode text-mode) . apheleia-mode)
 
   :config
-  (when (or (equal major-mode 'bash-ts-mode)
-            (equal major-mode 'sh-mode))
-    (apheleia-mode -1))
+  (add-hook 'bash-ts-mode-hook (lambda () (apheleia-mode -1)))
+  (add-hook 'sh-mode-hook      (lambda () (apheleia-mode -1)))
   
   (setf (alist-get 'jq          apheleia-formatters)
         '("jq" "." "-M" "--indent" "2"))
