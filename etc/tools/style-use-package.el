@@ -13,8 +13,8 @@
 ;; directory follow the included style guide.
 
 ;; INSTALLATION:
-;; It's safe to assume this package will almost universally be called via
-;; `use-package'.  This object binds a directory check to "M-*" in
+;; This package will almost universally be called via `use-package'.
+;; The below object binds a directory check to "M-*" in
 ;; `emacs-lisp-mode' and adds the recommended after-save-hook.
 ;;
 ;;    (use-package style-use-package
@@ -25,6 +25,7 @@
 ;;      :hook (after-save . style-use-package-maybe-check-buffer-objects))
 
 ;;; Code:
+
 (require 'use-package)
 
 (defgroup style-use-package nil
@@ -33,13 +34,13 @@
   :prefix "style-use-package-")
 
 (defconst style-use-package-key-order
-  '(:ensure :load-path :defer :demand :after :preface :bind :hook
+  '(:ensure :load-path :after :defer :demand :preface :if :unless :bind :hook
 	    :interpreter :magic :mode :commands :functions :defines :init
 	    :custom :config)
   "Style guide key order for `use-package' blocks.")
 
 (defconst style-use-package-required-load-keys
-  '(:defer :demand :after)
+  '(:defer :demand)
   "Exactly one of these keys must exist in each `use-package' block.")
 
 (defun style-use-package-get-keys (form)
@@ -49,10 +50,10 @@
 	   collect elt))
 
 (defun style-use-package-valid-load-key-count-p (keys)
-  "Ensure each `use-package' object contains one of the three required KEYS."
-  (= 1 (length (cl-remove-if-not
-		(lambda (k) (memq k style-use-package-required-load-keys))
-		keys))))
+  "Ensure each `use-package' object contains one of the required KEYS."
+  (= 1 (length
+	(cl-remove-if-not
+	 (lambda (k) (memq k style-use-package-required-load-keys)) keys))))
 
 (defun style-use-package-keys-in-order-p (keys)
   "Return nil if KEYS violate the canonical order or t if they do not.
@@ -110,8 +111,7 @@ Provide optional FILE if you want to include specific filename in report."
 		  (unless (style-use-package-keys-in-order-p keys)
 		    (push (list (when file file) start name keys)
 			  violations))))))
-	(end-of-file nil)))
-    violations))
+	(end-of-file nil))) violations))
 
 (defun style-use-package-check-buffer ()
   "Check key order of all `use-package' forms in the current buffer.
@@ -144,14 +144,14 @@ The order in which keys appear in each form should match
       (style-use-package-report-violations (nreverse all-violations) nil t))))
 
 (defun style-use-package-maybe-check-buffer-objects (&optional dir)
-  "Check the order of each `use-package' in files in `user-emacs-directory'.
+  "Check the key order of each `use-package' object in `user-emacs-directory'.
 Optionally, specify an alternate DIR (including subdirs of
 `user-emacs-directory').  This function is designed to be an
 `after-save-hook'.  Add with:
-\(add-to-list \='after-save-hook
+  (add-to-list \='after-save-hook
     #\='style-use-package-maybe-check-buffer-objects)
 OR
-\(add-to-list \='after-save-hook
+  (add-to-list \='after-save-hook
                (lambda ()
                  (style-use-package-maybe-check-buffer-objects
                    (expand-file-name \"lisp\" user-emacs-directory))))"
