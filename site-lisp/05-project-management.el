@@ -57,9 +57,8 @@
   :defer t
   :preface (keymap-global-unset "C-x p")
   :bind (:map ctl-x-map ("p" . disproject-dispatch))
-  :config (with-eval-after-load 'consult-project-extra
-            (transient-append-suffix 'disproject-dispatch "C o"
-              '("R" "Reset Projects" user/project-reset-projects))))
+  :config (transient-append-suffix 'disproject-dispatch "M-x"
+            '("R" "Reset Projects" user/project-reset-projects)))
 
 (use-package consult-project-extra
   :demand t
