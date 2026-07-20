@@ -303,7 +303,8 @@ Add this function to `org-mode-hook'."
   :custom (org-mem-watch-dirs (list (expand-file-name org-directory)))
   :config
   (org-mem-roamy-db-mode 1)
-  (org-mem-updater-mode 1))
+  (org-mem-updater-mode 1)
+  (setq org-mem-roamy-do-overwrite-real-db nil))
 
 ;; Fast & simple note management
 (use-package org-node
