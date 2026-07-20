@@ -174,14 +174,8 @@
   ;; Projects & Workspaces
   (require '02-project-VC)
 
-  ;; Enable tree-sitter support
-  (require '04-tree-sitter-lang-config)
-
   ;; Support for terminal and Emacs' shells
   (require '06-terminal-modes)
-
-  ;; Packages & settings for select languages
-  (require '07-language-configs)
 
   ;; Linting, formatting, & LSPs
   (require '08-code-assist)
@@ -193,6 +187,8 @@
 
   ;; Extensions for Org-mode
   (require '11-org-mode-extensions)
+  ;; Language Specific Settings
+  (require '04-languages)
 
   (unless (eq system-type 'android)
     ;; Configure Emacs to work with LLMs
