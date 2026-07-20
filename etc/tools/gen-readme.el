@@ -2,7 +2,7 @@
 
 ;; Author: Colin Loeffler (that1guycolin)
 ;; Version: 0.1.0
-;; Package-Requires: ((emacs "30.1") (org "9.8"))
+;; Package-Requires: ((emacs "30.1"))
 ;; Homepage: https://github.com/that1guycolin/dot-emacs
 ;; Keywords: comm convenience docs internal local
 
@@ -111,7 +111,7 @@ package links to its online repo."
   "Create the README's title block."
   (save-excursion
     (goto-char (point-min))
-    (let ((id (org-id-new)))
+    (let ((id "emacs:zms5tnb090l0"))
       (insert ":PROPERTIES:\n"
               ":ID:       " id "\n"
               ":END:\n"
@@ -126,16 +126,16 @@ package links to its online repo."
 (defun gen-readme-packages-by-file ()
   "Create the block of the README that lists all installed pacakges.
 Packages are sorted by the file contianing their `use-package' object."
+  (goto-char (point-max))
   (dolist
-      (file
-       (directory-files "~/.config/emacs/site-lisp" t
-                        directory-files-no-dot-files-regexp))
+      (file (directory-files "~/.config/emacs/site-lisp" t
+                             ".*\\.el"))
     (gen-readme-print-file-info file))
-  (insert "Custom functions to manipulate fonts, elpaca, and more.")
   (insert "\n"))
 
 (defun gen-readme-end ()
   "Generate the TODO and LICENSE sections of the readme."
+  (goto-char (point-max))
   (insert "\n* Todo")
   (insert "\n")
   (insert "\n- See [[file:TODO][TODO]].")
@@ -145,6 +145,7 @@ Packages are sorted by the file contianing their `use-package' object."
   (insert "\n[[file:LICENSE][GPL-3.0]]")
   (insert "\n"))
 
+;;;###autoload
 (defun gen-readme-full ()
   "Generate the README in a new buffer."
   (interactive)
@@ -152,6 +153,7 @@ Packages are sorted by the file contianing their `use-package' object."
   (gen-readme-title-block)
   (gen-readme-packages-by-file)
   (gen-readme-end))
+
 
 (provide 'gen-readme)
 ;;; gen-readme.el ends here.
