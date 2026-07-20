@@ -19,37 +19,40 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-;;; Packages included:
+;;; Global packages included:
 ;; activities, adaptive-wrap, adjust-parens, apheleia, auto-rename-tag, avy,
 ;; bash-ts-mode, cape, casual, casual-avy, checkdoc, cmake-ts-mode,
 ;; comment-dwim-2, consult, consult-eglot, consult-eglot-embark,
 ;; consult-flycheck, consult-project-extra, corfu, csv-mode, dashboard,
-;; deadgrep, diff-hl, dirvish, disproject, djvu, docker, docker-compose-mode,
-;; dockerfile-ts-mode, dumb-jump, dwim-shell-command, eask-mode, eat,
-;; editorconfig, ef-themes, eglot, eglot-tempel, el2org, eldoc-cmake,
-;; elisp-def, elisp-dev-mcp, ellama, elpaca, elpaca-use-package, emacs,
-;; emacs-lisp-mode, embark, embark-consult, emms, emms-info-mediainfo, envrc,
-;; eros, eros-inspector, exec-path-from-shell, fish-mode, flycheck,
-;; flycheck-color-mode-line, flycheck-eask, flycheck-eglot, flycheck-package,
-;; flyover, flyspell, flyspell-correct, flyspell-correct-avy-menu, forge,
-;; free-keys, gcmh, ghostel, git-commit-ts-mode, git-link, git-modes,
-;; glsl-mode, gptel, gptel-forge-prs, grip-mode, helpful, hideshow, htmlize,
-;; ielm, inhibit-mouse, ini-mode, inspector, json-ts-mode, just-ts-mode,
-;; kdl-mode, kirigami, lisp-mode, lisp-semantic-hl, live-py-mode, llm,
-;; llm-ollama, lsp-snippet, lua-ts-mode, macrostep, magit, marginalia,
-;; markdown-ts-mode, mcp-server-lib, minions, mistty, modus-themes, morlock,
-;; native-complete, nerd-icons, nerd-icons-corfu, no-littering, nov, nxml-mode,
-;; ob-rust, orderless, org, org-edna, org-make-toc, org-mcp, org-mem,
-;; org-modern, org-modern-indent, org-node, org-noter, org-noter-pdftools,
-;; org-pdftools, org-pomodoro, org-snitch, org-tidy, outline, outline-indent,
-;; pdf-tools, popper, project, project-treemacs, python-pytest, python-ts-mode,
-;; python-x, rainbow-delimiters, ready-player, recentf, rg, rustic,
-;; rustic-ts-mode, savehist, shfmt, sh-mode, show-font, sly, smartparens,
-;; suggest, systemd, tab-line-nerd-icons, tempel, tempel-collection,
-;; toml-ts-mode, transient, tree-inspector, treemacs, treemacs-magit,
-;; treemacs-nerd-icons, treesit, treesit-fold, vertico, visual-fill-column,
-;; visual-regexp, visual-regexp-steroids, vterm, with-editor, yaml-pro,
-;; yaml-ts-mode
+;; diff-hl, dirvish, disproject, djvu, docker-compose-mode, dockerfile-ts-mode,
+;; dumb-jump, dwim-shell-command, eask-mode, eat, editorconfig, ef-themes,
+;; eglot, eglot-tempel, el2org, eldoc-cmake, elisp-def, elisp-dev-mcp, ellama,
+;; elpaca, emacs, emacs-everywhere, emacs-lisp-mode, embark, embark-consult,
+;; emms, emms-info-mediainfo, envrc, eros, eros-inspector,
+;; exec-path-from-shell, fish-mode, flycheck, flycheck-color-mode-line,
+;; flycheck-eask, flycheck-eglot, flycheck-guile, flycheck-package, flyover,
+;; flyspell, flyspell-correct, flyspell-correct-avy-menu, forge, free-keys,
+;; gcmh, geiser, geiser-guile, ghostel, git-commit-ts-mode, git-link,
+;; git-modes, glsl-mode, gptel, grip-mode, helpful, hideshow, htmlize, ielm,
+;; inhibit-mouse, ini-mode, inspector, json-ts-mode, just-ts-mode, kdl-mode,
+;; kirigami, lisp-mode, lisp-semantic-hl, live-py-mode, llm, llm-ollama,
+;; lsp-snippet, lua-ts-mode, macrostep, macrostep-geiser, magit, marginalia,
+;; markdown-mode, markdown-ts-mode, mcp-server-lib, minions, mistty,
+;; modus-themes, morlock, native-complete, nerd-icons, nerd-icons-corfu,
+;; no-littering, nov, nxml-mode, ob-rust, orderless, org, org-edna,
+;; org-make-toc, org-mcp, org-mem, org-modern, org-modern-indent, org-node,
+;; org-node-backlink, org-noter, org-noter-pdftools, org-pdftools,
+;; org-pomodoro, org-snitch, org-tidy, outline, outline-indent, pdf-tools,
+;; popper, project, project-treemacs, python-pytest, python-ts-mode, python-x,
+;; rainbow-delimiters, ready-player, recentf, rustic, rust-ts-mode, savehist,
+;; shfmt, sh-mode, show-font, sly, smartparens, suggest, systemd,
+;; tab-line-nerd-icons, telega, tempel, tempel-collection, toml-ts-mode,
+;; transient, tree-inspector, treemacs, treemacs-magit, treemacs-nerd-icons,
+;; treesit, treesit-fold, vertico, visual-fill-column, visual-regexp,
+;; visual-regexp-steroids, vterm, with-editor, yaml-pro, yaml-ts-mode
+
+;;; Packages included:
+;; elpaca, elpaca-use-package, no-littering
 
 ;;; Commentary:
 ;; that1guycolin's personal Emacs configuration.  Reduces startup time by
