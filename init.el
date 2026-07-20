@@ -152,7 +152,7 @@
 (defvar user/scripts-directory nil
   "Directory containing custom \='one off' scripts.")
 
-(if (equal system-type 'android)
+(if (eq system-type 'android)
     (progn
       (defvar android-home "/data/data/com.termux/files/home"
         "Termux home directory on Android.")
@@ -168,11 +168,9 @@
 
 ;;; Modular Init:
 (with-eval-after-load 'no-littering
-  ;; Load startup and core packages
-  (require '01-bootstrap-core)
+  ;; Startup & Core Packages
+  (require '01-env-cap)
 
-  ;; Initialize global frameworks
-  (require '02-init-frameworks)
 
   ;; Core UI configuration
   (require '03-visual-settings)
