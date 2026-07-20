@@ -182,8 +182,6 @@
   ;; Core UI Configuration
   (require '03-visual)
 
-  ;; Extensions for Org-mode
-  (require '11-org-mode-extensions)
   ;; Language Specific Settings
   (require '04-languages)
 
@@ -197,6 +195,8 @@
 
   ;; Misc & Dashboard
   (require '14-misc-packages)
+  ;; Org Config & Support Packages
+  (require '06-org-extend)
 
   ;; Custom variables & functions
   (require '15-user-functions))
