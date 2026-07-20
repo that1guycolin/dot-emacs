@@ -177,9 +177,6 @@
   ;; Support for terminal and Emacs' shells
   (require '06-terminal-modes)
 
-  ;; Linting, formatting, & LSPs
-  (require '08-code-assist)
-
   ;; File explorer functions
   (require '10-file-management)
   ;; Core UI Configuration
@@ -195,6 +192,8 @@
     (require '12-llm-integration)
     ;; Listen to music & watch videos
     (require '13-media-player))
+  ;; Code Smarter, Not Harder
+  (require '05-coding)
 
   ;; Misc & Dashboard
   (require '14-misc-packages)

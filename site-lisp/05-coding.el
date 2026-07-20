@@ -1,16 +1,17 @@
-;;; 08-code-assist.el --- Linting, formatting, & LSPs -*- lexical-binding: t; -*-
+;;; 05-coding.el --- Code Smarter, Not Harder -*- lexical-binding: t -*-
 
 ;;; Packages included:
 ;; adaptive-wrap, apheleia, comment-dwim-2, consult-eglot,
-;; consult-eglot-embark, consult-flycheck, dumb-jump, eglot, flycheck,
-;; flycheck-color-mode-line, flycheck-eask, flycheck-eglot, flycheck-package,
-;; flyover, flyspell, flyspell-correct, flyspell-correct-avy-menu, hideshow,
-;; kirigami, lsp-snippet, outline, outline-indent, rainbow-delimiters, shfmt,
+;; consult-eglot-embark, consult-flycheck, dumb-jump, editorconfig, eglot,
+;; eglot-tempel, flycheck, flycheck-color-mode-line, flycheck-eask,
+;; flycheck-eglot, flycheck-guile, flycheck-package, flyover, flyspell,
+;; flyspell-correct, flyspell-correct-avy-menu, hideshow, kirigami,
+;; lsp-snippet, outline, outline-indent, rainbow-delimiters, shfmt,
 ;; smartparens, treesit-fold, visual-regexp, visual-regexp-steroids
 
 ;;; Commentary:
 ;; Call packages that support efficient & productive coding at a global scope.
-;; The packages called in this file set up an Emacs IDE.
+;; The packages configured in this file set up IDE-like features within Emacs.
 
 ;;; Code:
 ;;; Text manipulation:
@@ -32,6 +33,11 @@
   (dumb-jump-prefer-searcher 'ag)
   (xref-show-definitions-function #'consult-xref)
   :config (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
+
+;; Integrate with editorconfig
+(use-package editorconfig
+  :defer t
+  :hook ((prog-mode text-mode conf-mode) . editorconfig-mode))
 
 ;; Colorize "", {}, [], ()
 (use-package rainbow-delimiters
@@ -56,16 +62,21 @@
   :bind (([remap isearch-forward-regexp]  . vr/isearch-forward)
          ([remap isearch-backward-regexp] . vr/isearch-backward)))
 
-;;; Flycheck:
-;; bash:        'shellcheck'    (pacman -S shellcheck)
-;; emacs-lisp:  'emacs-lisp'    (built-in)
-;; json:        'jsonlint'      (pnpm install -g jsonlint)
-;; lua:         'luacheck'      (pacman -S luacheck)
-;; markdown:    'rumdl'         (pacman -S rumdl)
-;; systemd:     'systemdlint'   (uv tool install systemdlint)
-;; toml:        'tombi'         (uv tool install tombi)
-;; xml:         'xmllint'       (pacman -S libxml2)
-;; yaml:        'yamllint'      (pacman -S yamllint)
+
+;;; Linting (Flycheck):
+;; bash:          'shellcheck'    (pacman -S shellcheck)
+;; common-lisp:   'mallet'        (git clone)
+;; common-lisp:   'ocicl'         (pacman -S ocicl)
+;; docker-compose 'dclint'        (npm install -g dclint)
+;; emacs-lisp:    'emacs-lisp'    (built-in)
+;; fish:          'fish-check'    (included with fish)
+;; json:          'jsonlint'      (npm install -g jsonlint)
+;; lua:           'luacheck'      (pacman -S luacheck)
+;; markdown:      'rumdl'         (pacman -S rumdl)
+;; systemd:       'systemdlint'   (uv tool install systemdlint)
+;; toml:          'tombi'         (pacman -S tombi)
+;; xml:           'xmllint'       (pacman -S libxml2)
+;; yaml:          'yamllint'      (pacman -S yamllint)
 
 (use-package flycheck
   :defer t
@@ -74,7 +85,7 @@
   (defvar minions-prominent-modes)
   (defvar sh-shell)
   (defun user/setup-vale ()
-    "If not setup, install the vale from the .ini file in dot-Emacs."
+    "If not setup, install the vale from the .ini file in site-lisp."
     (interactive)
     (let* ((vale-config (expand-file-name ".vale.ini" user/lisp-directory))
            (vale-install (expand-file-name ".vale-styles" user/lisp-directory))
@@ -96,7 +107,6 @@
   :config
   (add-to-list 'minions-prominent-modes 'flycheck-mode)
   (add-to-list 'flycheck-shellcheck-supported-shells 'dash)
-  (flycheck-add-mode 'org-lint 'org-gtd-clarify-mode)
   (flycheck-add-mode 'yaml-yamllint 'docker-compose-mode)
   (add-hook 'sh-mode-hook #'user/flycheck-shellcheck-setup-dash)
 
@@ -263,39 +273,189 @@ See URL `https://vale.sh'."
   :hook (flycheck-mode . flycheck-color-mode-line-mode))
 
 (use-package flycheck-eask
-  :defer t
-  :hook (eask-mode . flycheck-eask-setup))
+  :after (eask-mode)
+  :demand t
+  :config (flycheck-eask-setup))
 
 (use-package flycheck-package
+  :after (emacs-lisp-mode)
   :defer t
-  :hook (emacs-lisp-mode . flycheck-package-setup))
+  :config (flycheck-package-setup))
+
+(use-package flycheck-guile
+  :after (geiser)
+  :demand t)
 
 (use-package consult-flycheck
   :after (consult flycheck)
   :demand t)
 
 
-;;; Eglot:
-;; Required:
-;; cmake:    'neocmakelsp'               (cargo install neocmakelsp)
-;; fish:     'fish-lsp'                  (pnpm install -g fish-lsp)
-;; lua:      'lua-language-server'       (pacman -S lua-language-server)
-;; markdown: 'rumdl'                     (pacman -S rumdl)
-;; python:   'rass' [`ty'/`ruff']        (uv tool install rass ty ruff)
-;; toml:     'tombi'                     (pacman -S tombi)
+;;; Formatting:
+;;; Formatting:
+;; bash:         'shfmt'         (pacman -S shfmt)
+;; cmake:        'neocmakelsp'   (cargo install neocmakelsp)
+;; fish:         'fish_indent'   (bundled with fish shell)
+;; emacs-lisp:   'lisp-indent'   (built-in)
+;; json:         'jq'            (pacman -S jq)
+;; lua:          'stylua'        (pacman -S stylua)
+;; markdown:     'rumdl'         (pacman -S rumdl)
+;; python:       'ruff'          (uv add ruff)
+;; toml:         'tombi'         (pacman -S tombi)
+;; xml:          'xmlstarlet'    (pacman -S xmlstarlet)
+;; yaml:         'yamlfmt'       (pacman -S yamlfmt)
 
-;; Optional:
-;; bash:    'bash-language-server'
-;;          (pnpm i -g bash-language-server)
-;; compose: 'docker-compose-langserver'
-;;          (pnpm i -g @microsoft/container-language-service)
-;; json:    'json-language-server'
-;;          (pnpm i -g vscode-json-languageserver)
-;; xml:     'lemminx'
-;;          ((aur sync -c lemminx) OR (SEE github.com/eclipse-lemminx/lemminx))
-;; yaml:    'yaml-language-server'
-;;          (pnpm i -g yaml-language-server)
+;; sh-mode/bash-ts-mode
+(use-package shfmt
+  :defer t
+  :preface
+  (defvar bash-ts-mode-map)
+  (defvar sh-mode-map)
+  :bind ((:map bash-ts-mode-map
+               ("C-c C-f" . shfmt-buffer))
+         (:map sh-mode-map
+               ("C-c C-f". shfmt-buffer)))
+  :hook ((bash-ts-mode sh-mode) . shfmt-on-save-mode)
+  :custom
+  (shfmt-command "shfmt")
+  (shfmt-arguments '("-i" "4" "-ci")))
 
+;; Everything else
+(use-package apheleia
+  :defer t
+  :preface
+  (defun user/apheleia-set-json-formatter (fmtr)
+    "Get user-input on which FMTR they want for JSON files."
+    (interactive
+     (list (completing-read
+            "Which formatter do you want to use for JSON files? "
+            '(jq prettier-json) nil t)))
+    (unless (eq fmtr (or 'jq 'prettier-json))
+      (user-error "Formatter must be either jq or prettier-json"))
+    (setf
+     (alist-get 'js-json-mode apheleia-mode-alist) fmtr
+     (alist-get 'json-ts-mode apheleia-mode-alist) fmtr)
+    (message "JSON formatter set to %s" fmtr))
+  
+  (defun user/apheleia-toggle-json-formatter ()
+    "Switch aphelia formatter between jq & prettier in json-modes."
+    (interactive)
+    (unless (eq major-mode (or 'json-ts-mode 'js-json-mode))
+      (error "Buffer not in a json major-mode"))
+    (let ((current-fmtr (alist-get major-mode apheleia-mode-alist)))
+      (cond
+       ((eq current-fmtr 'jq)
+        (user/apheleia-set-json-formatter 'prettier-json))
+       ((eq current-fmtr 'prettier-json)
+        (user/apheleia-set-json-formatter 'jq))
+       (t
+        (call-interactively #'user/apheleia-set-json-formatter)))))
+
+  (defun user/apheleia-set-yaml-formatter (fmtr)
+    "Get user-input on which FMTR they want for Yaml files."
+    (interactive
+     (list (completing-read
+            "Which formatter do you want to use for Yaml files? "
+            '(yamlfmt prettier-yaml) nil t)))
+    (unless (eq fmtr (or 'yamlfmt prettier-yaml))
+      (user-error "Formatter must be either yamlfmt or prettier-yaml"))
+    (setf
+     (alist-get 'yaml-mode    apheleia-mode-alist) fmtr
+     (alist-get 'yaml-ts-mode apheleia-mode-alist) fmtr)
+    (message "Yaml formatter set to %s" fmtr))
+  
+  (defun user/apheleia-toggle-yaml-formatter ()
+    "Switch aphelia formatter between yamlfmt & prettier in yaml modes."
+    (interactive)
+    (unless (eq major-mode (or 'yaml-mode 'yaml-ts-mode))
+      (error "Buffer not in a Yaml major-mode"))
+    (let ((current-fmtr (alist-get major-mode apheleia-mode-alist)))
+      (cond
+       ((eq current-fmtr 'yamlfmt)
+        (user/apheleia-set-yaml-formatter 'prettier-yaml))
+       ((eq current-fmtr 'prettier-yaml)
+        (user/apheleia-set-yaml-formatter 'yamlfmt))
+       (t
+        (call-interactively #'user/apheleia-set-yaml-formatter)))))
+  
+  :bind ("C-c f" . apheleia-format-buffer)
+  :hook ((prog-mode text-mode) . apheleia-mode)
+  :config
+  (add-hook 'bash-ts-mode-hook (lambda () (apheleia-mode -1)))
+  (add-hook 'sh-mode-hook      (lambda () (apheleia-mode -1)))
+  
+  (setf (alist-get 'jq          apheleia-formatters)
+        '("jq" "." "-M" "--indent" "2"))
+  
+  (setf (alist-get 'neocmakelsp apheleia-formatters)
+        '("neocmakelsp" "format" (buffer-file-name)))
+  
+  (setf (alist-get 'ruff        apheleia-formatters)
+        '("ruff" "format" "-"))
+  
+  (setf (alist-get 'tombi       apheleia-formatters)
+        '("tombi" "fmt" "-"))
+  
+  (setf (alist-get 'xmlstarlet  apheleia-formatters)
+        '("xmlstarlet" "fo" "--indent-spaces" "2" "-"))
+
+  (setf (alist-get 'yamlfmt     apheleia-formatters)
+        '("yamlfmt" "--in"  "-"))
+
+  (setf (alist-get 'cmake-ts-mode       apheleia-mode-alist) 'neocmakelsp)
+  (setf (alist-get 'eask-mode           apheleia-mode-alist) 'lisp-indent)
+  (setf (alist-get 'fish-mode           apheleia-mode-alist) 'fish-indent)
+  (setf (alist-get 'js-json-mode        apheleia-mode-alist) 'jq)
+  (setf (alist-get 'json-ts-mode        apheleia-mode-alist) 'jq)
+  (setf (alist-get 'markdown-mode       apheleia-mode-alist) 'rumdl)
+  (setf (alist-get 'markdown-ts-mode    apheleia-mode-alist) 'rumdl)
+  (setf (alist-get 'gfm-mode            apheleia-mode-alist) 'rumdl)
+  (setf (alist-get 'python-mode         apheleia-mode-alist) 'ruff)
+  (setf (alist-get 'python-ts-mode      apheleia-mode-alist) 'ruff)
+  (setf (alist-get 'toml-ts-mode        apheleia-mode-alist) 'tombi)
+  (setf (alist-get 'conf-toml-mode      apheleia-mode-alist) 'tombi)
+  (setf (alist-get 'nxml-mode           apheleia-mode-alist) 'xmlstarlet)
+  (setf (alist-get 'yaml-mode           apheleia-mode-alist) 'yamlfmt)
+  (setf (alist-get 'yaml-ts-mode        apheleia-mode-alist) 'yamlfmt)
+
+  (with-eval-after-load 'js-json-mode
+    (keymap-set js-json-mode-map "C-c v"
+                #'user/apheleia-toggle-json-formatter))
+  (with-eval-after-load 'json-ts-mode
+    (keymap-set json-ts-mode-map "C-c v"
+                #'user/apheleia-toggle-json-formatter))
+
+  (with-eval-after-load 'yaml-mode
+    (keymap-set yaml-mode-map "C-c v"
+                #'user/apheleia-toggle-yaml-formatter))
+  (with-eval-after-load 'js-json-mode
+    (keymap-set yaml-ts-mode-map "C-c v"
+                #'user/apheleia-toggle-yaml-formatter)))
+
+
+;;; Language-Server-Protocol (eglot):
+;; bash:     'bash-language-server'
+;;           (pnpm i -g bash-language-server)
+;; cmake:    'neocmakelsp'
+;;           (cargo install neocmakelsp)
+;; compose:  'docker-compose-langserver'
+;;           (npm i -g @microsoft/container-language-service)
+;; fish:     'fish-lsp'
+;;           (npm install -g fish-lsp)
+;; json:     'json-language-server'
+;;           (pnpm i -g vscode-json-languageserver)
+;; lua:      'lua-language-server'
+;;           (pacman -S lua-language-server)
+;; markdown: 'rumdl'
+;;           (pacman -S rumdl)
+;; python:   'rass' [`ty'/`ruff']
+;;           (uv tool install rass ty ruff)
+;; toml:     'tombi'
+;;           (pacman -S tombi)
+;; xml:      'lemminx'
+;;           (install from AUR or see github.com/eclipse-lemminx/lemminx)
+;; yaml:     'yaml-language-server'
+;;           (npm i -g yaml-language-server)
 (use-package eglot
   :ensure nil
   :defer t
@@ -366,93 +526,14 @@ See URL `https://vale.sh'."
   :config (eglot-tempel-mode 1))
 
 
-;;; Formatting:
-;; bash:         'shfmt'         (pacman -S shfmt)
-;; cmake:        'neocmakelsp'   (cargo install neocmakelsp)
-;; fish:         'fish_indent'   (bundled with fish shell)
-;; emacs-lisp:   'lisp-indent'   (built-in)
-;; json:         'jq'            (pacman -S jq)
-;; lua:          'stylua'        (pacman -S stylua)
-;; markdown:     'rumdl'         (pacman -S rumdl)
-;; python:       'ruff'          (uv add ruff)
-;; toml:         'tombi'         (pacman -S tombi)
-;; xml:          'xmlstarlet'    (pacman -S xmlstarlet)
-;; yaml:         'yq-yqml'       (pacman -S yamlfmt)
-
-;; sh-mode/bash-ts-mode
-(use-package shfmt
-  :defer t
-  :preface
-  (defvar bash-ts-mode-map)
-  (defvar sh-mode-map)
-  :bind ((:map bash-ts-mode-map
-               ("C-c C-f" . shfmt-buffer))
-         (:map sh-mode-map
-               ("C-c C-f". shfmt-buffer)))
-  :hook ((bash-ts-mode sh-mode) . shfmt-on-save-mode)
-  :custom
-  (shfmt-command "shfmt")
-  (shfmt-arguments '("-i" "4" "-ci")))
-
-;; Everything else
-(use-package apheleia
-  :defer t
-  :bind ("C-c f" . apheleia-format-buffer)
-  :hook ((prog-mode text-mode) . apheleia-mode)
-
-  :config
-  (add-hook 'bash-ts-mode-hook (lambda () (apheleia-mode -1)))
-  (add-hook 'sh-mode-hook      (lambda () (apheleia-mode -1)))
-  
-  (setf (alist-get 'jq          apheleia-formatters)
-        '("jq" "." "-M" "--indent" "2"))
-  
-  (setf (alist-get 'neocmakelsp apheleia-formatters)
-        '("neocmakelsp" "format" (buffer-file-name)))
-
-  (setf (alist-get 'prettier    apheleia-formatters)
-        '("prettier" "--stdin-filepath" filepath))
-  
-  (setf (alist-get 'ruff        apheleia-formatters)
-        '("ruff" "format" "-"))
-  
-  (setf (alist-get 'tombi       apheleia-formatters)
-        '("tombi" "fmt" "-"))
-  
-  (setf (alist-get 'xmlstarlet  apheleia-formatters)
-        '("xmlstarlet" "fo" "--indent-spaces" "2" "-"))
-
-  (setf (alist-get 'yamlfmt     apheleia-formatters)
-        '("yamlfmt" "--in"  "-"))
-
-  (setf (alist-get 'cmake-mode          apheleia-mode-alist) 'neocmakelsp)
-  (setf (alist-get 'cmake-ts-mode       apheleia-mode-alist) 'neocmakelsp)
-  (setf (alist-get 'eask-mode           apheleia-mode-alist) 'lisp-indent)
-  (setf (alist-get 'fish-mode           apheleia-mode-alist) 'fish-indent)
-  (setf (alist-get 'json-mode           apheleia-mode-alist) 'jq)
-  (setf (alist-get 'js-json-mode        apheleia-mode-alist) 'jq)
-  (setf (alist-get 'json-ts-mode        apheleia-mode-alist) 'jq)
-  (setf (alist-get 'markdown-mode       apheleia-mode-alist) 'rumdl)
-  (setf (alist-get 'markdown-ts-mode    apheleia-mode-alist) 'rumdl)
-  (setf (alist-get 'gfm-mode            apheleia-mode-alist) 'rumdl)
-  (setf (alist-get 'python-mode         apheleia-mode-alist) 'ruff)
-  (setf (alist-get 'python-ts-mode      apheleia-mode-alist) 'ruff)
-  (setf (alist-get 'toml-ts-mode        apheleia-mode-alist) 'tombi)
-  (setf (alist-get 'conf-toml-mode      apheleia-mode-alist) 'tombi)
-  (setf (alist-get 'nxml-mode           apheleia-mode-alist) 'xmlstarlet)
-  (setf (alist-get 'yaml-mode           apheleia-mode-alist) 'yamlfmt)
-  (setf (alist-get 'yaml-ts-mode        apheleia-mode-alist) 'yamlfmt))
-
-
-;;; Folding:
+;;; Code Folding:
 ;; Based on buffer-syntax
 (use-package hideshow
   :ensure nil
   :defer t
   :hook ((c-mode
-          c++-mode css-mode go-mode html-mode java-mode js-mode json-mode
-          lua-mode nxml-mode perl-mode php-mode ruby-mode rust-mode sh-mode
-          typescript-mode) . hs-minor-mode))
+          c++-mode css-mode html-mode java-mode js-mode js-json-mode lua-mode
+          nxml-mode perl-mode ruby-mode rust-mode sh-mode) . hs-minor-mode))
 
 ;; Based on headings
 (use-package outline
@@ -465,8 +546,9 @@ See URL `https://vale.sh'."
 ;; Based on indentation
 (use-package outline-indent
   :defer t
-  :hook ((python-mode python-ts-mode yaml-ts-mode) . outline-indent-minor-mode)
-  :custom (outline-indent-ellipsis "…"))
+  :hook ((python-mode python-ts-mode yaml-mode yaml-ts-mode) .
+         outline-indent-minor-mode)
+  :custom (outline-indent-ellipsis " …"))
 
 ;; Based on treesit language syntax
 (use-package treesit-fold
@@ -478,7 +560,7 @@ See URL `https://vale.sh'."
           toml-ts-mode typescript-ts-mode) . treesit-fold-mode)
   :custom
   (treesit-fold-line-count-show t)
-  (treesit-fold-line-count-format " ▼")
+  (treesit-fold-line-count-format " …")
   :config (set-face-attribute
            'treesit-fold-replacement-face nil
            :foreground "#808080"
@@ -491,16 +573,15 @@ See URL `https://vale.sh'."
   :hook ((bash-ts-mode
           cmake-ts-mode c++-mode c-mode conf-mode csharp-ts-mode css-mode
           css-ts-mode c++-ts-mode c-ts-mode diff-mode dockerfile-ts-mode
-          emacs-lisp-mode go-mode go-mod-ts-mode go-ts-mode html-mode java-mode
-          java-ts-mode js-mode json-mode json-ts-mode lisp-interaction-mode
+          emacs-lisp-mode go-mod-ts-mode go-ts-mode html-mode java-mode
+          java-ts-mode js-mode js-json-mode json-ts-mode lisp-interaction-mode
           lisp-mode lua-mode lua-ts-mode markdown-mode markdown-ts-mode
-          nxml-mode perl-mode php-mode php-ts-mode python-base-mode ruby-mode
+          nxml-mode perl-mode php-ts-mode python-base-mode ruby-mode
           ruby-ts-mode rust-mode rust-ts-mode sh-mode toml-ts-mode
-          typescript-mode typescript-ts-mode yaml-ts-mode) . kirigami-mode)
+          typescript-ts-mode yaml-ts-mode) . kirigami-mode)
   :functions (kirigami-open-fold
               kirigami-open-fold-rec kirigami-open-folds kirigami-close-fold
               kirigami-close-folds kirigami-toggle-fold)
-
   :config
   (defvar-keymap user/kirigami-functions-map
     :doc "Common code folding functions from `kirigami'."
@@ -522,8 +603,8 @@ See URL `https://vale.sh'."
   (keymap-global-set "C-c z" user/kirigami-functions-map))
 
 
-;;; Spelling:
-;; Spellcheck engine
+;;; Spellcheck:
+;; Backend:
 (use-package flyspell
   :ensure nil
   :defer t
@@ -545,7 +626,5 @@ See URL `https://vale.sh'."
   :demand t)
 
 
-(provide '08-code-assist)
-;;; 08-code-assist.el ends here
-
-                                        ; LocalWords:  hs
+(provide '05-coding)
+;;; 05-coding.el ends here
