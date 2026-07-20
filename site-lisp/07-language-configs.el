@@ -86,15 +86,45 @@
 ;; Modern SLIME (cl)
 (use-package sly
   :defer t
-  :preface (declare-function corfu-mode "corfu")
-  :bind ("C-c s" . sly)
+  :preface
+  (declare-function corfu-mode "corfu")
+
+  (defvar-keymap user/sly-functions-map
+    :doc "Common functions from the sly lisp implementation."
+    "s" #'sly-setup
+    "r" #'sly-mrepl
+    "m" #'sly-mrepl-new
+    "y" #'sly-mrepl-sync
+    "d" #'sly-mrepl-set-directory
+    "c" #'sly-cd
+    "i" #'sly-inspect
+    "a" #'sly-apropos
+    "w" #'sly-describe-symbol)
+  (with-eval-after-load 'which-key
+    (which-key-add-keymap-based-replacements user/sly-functions-map
+      "s" "Start Sly"
+      "r" "Sly REPL"
+      "m" "New Sly REPL"
+      "y" "Set pkg & dir"
+      "d" "Set REPL dir"
+      "c" "Set lisp dir"
+      "i" "Eval & inspect expr"
+      "a" "Symbol match"
+      "w" "Describe symbol"))
+  
+  :bind-keymap ("C-c s" . user/sly-functions-map)
   :hook (lisp-mode . sly-editing-mode)
-  :init
-  :config (add-hook 'sly-mrepl-mode-hook #'corfu-mode))
+  :init (setq inferior-lisp-program "sbcl")
   :custom (sly-lisp-implementations
            '((sbcl ("sbcl" "--load"
                     (no-littering-expand-etc-file-name "sly-setup.lisp"))
                    :coding-system utf-8-unix)))
+  :config
+  (dolist (contrib '(sly-fancy sly-mrepl sly-indentation
+                               sly-package-fu))
+    (add-to-list 'sly-contribs contrib))
+  (setq sly-auto-start 'always)
+  (add-hook 'sly-mrepl-mode-hook #'corfu-mode))
 
 
 ;;; Python:
