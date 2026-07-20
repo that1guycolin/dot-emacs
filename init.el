@@ -174,9 +174,6 @@
   ;; Projects & Workspaces
   (require '02-project-VC)
 
-  ;; Core UI configuration
-  (require '03-visual-settings)
-
   ;; Enable tree-sitter support
   (require '04-tree-sitter-lang-config)
 
@@ -191,6 +188,8 @@
 
   ;; File explorer functions
   (require '10-file-management)
+  ;; Core UI Configuration
+  (require '03-visual)
 
   ;; Extensions for Org-mode
   (require '11-org-mode-extensions)
