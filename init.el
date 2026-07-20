@@ -174,32 +174,20 @@
   ;; Projects & Workspaces
   (require '02-project-VC)
 
-  ;; Support for terminal and Emacs' shells
-  (require '06-terminal-modes)
-
-  ;; File explorer functions
-  (require '10-file-management)
   ;; Core UI Configuration
   (require '03-visual)
 
   ;; Language Specific Settings
   (require '04-languages)
 
-  (unless (eq system-type 'android)
-    ;; Configure Emacs to work with LLMs
-    (require '12-llm-integration)
-    ;; Listen to music & watch videos
-    (require '13-media-player))
   ;; Code Smarter, Not Harder
   (require '05-coding)
 
-  ;; Misc & Dashboard
-  (require '14-misc-packages)
   ;; Org Config & Support Packages
   (require '06-org-extend)
 
-  ;; Custom variables & functions
-  (require '15-user-functions))
+  ;; Integrate or Emulate External Tools
+  (require '07-tools))
 
 
 (provide 'init)
