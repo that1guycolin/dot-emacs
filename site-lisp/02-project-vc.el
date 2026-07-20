@@ -1,12 +1,22 @@
-;;; 05-project-management.el --- Projects & Workspaces -*-lexical-binding: t; -*-
+;;; 02-project-vc.el --- Projects & Workspaces -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; activities, consult-project-extra, deadgrep, disproject, docker, guix,
-;; project, project-treemacs, rg, treemacs, treemacs-nerd-icons
+;; activities, consult-project-extra, diff-hl, disproject, forge,
+;; git-commit-ts-mode, git-link, git-modes, magit, project, project-treemacs,
+;; treemacs, treemacs-magit
 
 ;;; Commentary:
-;; The packages defined in this file support projects or are in some way related
-;; to project workflows.
+;; Packages to assist with project management in Emacs.  The first section
+;; focuses on the built-in `project.el' package, which is fortunately so robust
+;; as-is that most of the additional packages are small quality of life
+;; improvements.  The middle portion of this file is dedicated to
+;; version-control, which in Emacs is synonymous with `magit'.  The typical
+;; `magit' toolchain is configured to my personal preferences.  The third and
+;; final section of the config focuses on treemacs, which provides a utilitarian
+;; & user-friendly side-buffer containing the current project's directory.
+;;
+;; `Project.el' & related packages are loaded with `:demand t'; `magit' &
+;; `treemacs' related packages are deferred.
 
 ;;; Code:
 ;;; Projects:
@@ -112,35 +122,92 @@
               activities-kill activities-switch activities-switch-buffer
               activities-revert activities-list activities-rename
               activities-discard activities-mode activities-tabs-mode)
-
   :init
   (activities-mode 1)
   (activities-tabs-mode 1))
 
-;; Podman/container integration
-(use-package docker
-  :defer t
-  :bind ("C-c D" . docker)
-  :custom (docker-command "podman"))
 
-;; Guix support
-(use-package guix
+;;; VC/Git:
+(use-package magit
   :defer t
-  :bind ("C-c x" . guix))
+  :bind (("C-x g"   . magit-status)
+         ("C-x M-g" . magit-dispatch)
+         ("C-c M-g" . magit-file-dispatch))
+  :defines (magit-mode-map)
+  :custom
+  (magit-refresh-status-buffer t)
+  (magit-define-global-key-bindings 'default)
+  (magit-save-repository-buffers t))
 
-;; Global rg integration
-(use-package deadgrep
+(use-package forge
   :defer t
-  :bind (("<f5>"    . deadgrep)
-         ("C-c C-r" . deadgrep)))
+  :preface
+  (defun user/interactive-forge-pull ()
+    "Call forge-pull interactively."
+    (interactive)
+    (call-interactively #'forge-pull))
+  :hook (magit-status-mode . user/interactive-forge-pull)
+  :functions (forge-pull)
+  :custom (forge-pull-notifications t))
 
-;; Project rg integration & more
-(use-package rg
+(use-package diff-hl
   :defer t
-  :bind (("C-c g" . rg-menu)
-         :map isearch-mode-map
-         ("M-s r" . rg-isearch-menu))
-  :config (require 'rg-isearch))
+  :bind ("C-x v o" . diff-hl-mode)
+  :hook (((prog-mode text-mode) . diff-hl-mode)
+         (magit-post-refresh    . diff-hl-magit-post-refresh))
+  :functions (diff-hl-show-hunk
+              diff-hl-diff-goto-hunk diff-hl-stage-dwim diff-hl-revert-hunk
+              diff-hl-previous-hunk diff-hl-next-hunk diff-hl-show-hunk-previous
+              diff-hl-show-hunk-next)
+  :custom (diff-hl-show-staged-changes nil)
+  :config
+  (defvar-keymap user/diff-hl-functions
+    :doc "Functions to use in diff-hl-mode."
+    "*" #'diff-hl-show-hunk
+    "=" #'diff-hl-diff-goto-hunk
+    "S" #'diff-hl-stage-dwim
+    "n" #'diff-hl-revert-hunk
+    "[" #'diff-hl-previous-hunk
+    "]" #'diff-hl-next-hunk
+    "{" #'diff-hl-show-hunk-previous
+    "}" #'diff-hl-show-hunk-next)
+  (with-eval-after-load 'which-key
+    (which-key-add-keymap-based-replacements
+      user/diff-hl-functions
+      "*" "Show Hunk"
+      "=" "Goto Hunk"
+      "S" "Stage"
+      "n" "Revert"
+      "[" "Previous Hunk"
+      "]" "Next Hunk"
+      "{" "Show Prev. Hunk"
+      "}" "Show Next Hunk"))
+  (keymap-global-set "C-x v ?" user/diff-hl-functions))
+
+(use-package git-commit-ts-mode
+  :defer t
+  :mode "\\COMMIT_EDITMSG\\'")
+
+(use-package git-link
+  :defer t
+  :preface
+  (defvar-keymap user/git-link-functions-map
+    :doc "Useful functions from the package `git-link'."
+    "l" #'git-link
+    "c" #'git-link-commit
+    "h" #'git-link-homepage)
+  (with-eval-after-load 'which-key
+    (which-key-add-keymap-based-replacements
+      user/git-link-functions-map
+      "l" "Link to current buffer"
+      "c" "Link to specified commit"
+      "h" "Link to repo homepage"))
+  :bind-keymap ("C-c C-y" . user/git-link-functions-map)
+  :functions (git-link git-link-commit git-link-homepage))
+
+(use-package git-modes
+  :defer t
+  :mode ("\\.dockerignore\\'" . gitignore-mode))
 
 
 ;;; Treemacs:
@@ -192,11 +259,9 @@ Wait two seconds before activating the mode."
               treemacs-hide-gitignored-files-mode
               treemacs--select-workspace-by-name treemacs-switch-workspace)
   :defines (treemacs-mode-map)
-
   :custom
   (treemacs-width 35)
   (treemacs-is-never-other-window t)
-
   :config
   (treemacs-filewatch-mode 1)
   (treemacs-git-mode 'deferred)
@@ -204,19 +269,18 @@ Wait two seconds before activating the mode."
   (treemacs-project-follow-mode 1)
   (advice-add 'disproject-dispatch :before #'user/close-treemacs))
 
+;; Integrations
 (use-package project-treemacs
   :after (treemacs)
   :demand t
   :functions (project-treemacs-mode)
   :config (project-treemacs-mode 1))
 
-(use-package treemacs-nerd-icons
-  :after (treemacs)
-  :demand t
-  :functions (treemacs-nerd-icons-config)
-  :config (treemacs-nerd-icons-config))
+(use-package treemacs-magit
+  :after (treemacs magit)
+  :demand t)
 
 
-(provide '05-project-management)
-;;; 05-project-management.el ends here
+(provide '02-project-vc)
+;;; 02-project-vc.el ends here
 

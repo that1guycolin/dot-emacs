@@ -171,15 +171,14 @@
   ;; Startup & Core Packages
   (require '01-env-cap)
 
+  ;; Projects & Workspaces
+  (require '02-project-VC)
 
   ;; Core UI configuration
   (require '03-visual-settings)
 
   ;; Enable tree-sitter support
   (require '04-tree-sitter-lang-config)
-
-  ;; Project management and file navigation
-  (require '05-project-management)
 
   ;; Support for terminal and Emacs' shells
   (require '06-terminal-modes)
@@ -189,9 +188,6 @@
 
   ;; Linting, formatting, & LSPs
   (require '08-code-assist)
-
-  ;; Git(hub) integration & tooling
-  (require '09-git-tools)
 
   ;; File explorer functions
   (require '10-file-management)
