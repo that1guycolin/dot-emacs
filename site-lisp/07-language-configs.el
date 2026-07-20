@@ -90,11 +90,11 @@
   :bind ("C-c s" . sly)
   :hook (lisp-mode . sly-editing-mode)
   :init
-  (setq
-   sly-lisp-implementations
-   '((sbcl ("sbcl" "--noinform") :init sly-init-using-slynk-loader)))
-  :custom (sly-contribs '(sly-fancy))
   :config (add-hook 'sly-mrepl-mode-hook #'corfu-mode))
+  :custom (sly-lisp-implementations
+           '((sbcl ("sbcl" "--load"
+                    (no-littering-expand-etc-file-name "sly-setup.lisp"))
+                   :coding-system utf-8-unix)))
 
 
 ;;; Python:
