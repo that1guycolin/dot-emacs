@@ -631,38 +631,43 @@ doubles as a model-switcher."
   (use-package emms
     :defer t
     :preface
-    (defun user/seek-backward-med ()
-      "Seek backwards 30 seconds in Emms."
+    (defun user/emms-seek-backward-med ()
+      "Seek backwards 30 seconds in EMMS."
       (interactive)
       (emms-seek -30))
 
-    (defun user/seek-forward-med ()
-      "Seek forward 30 seconds in Emms."
+    (defun user/emms-seek-forward-med ()
+      "Seek forward 30 seconds in EMMS."
       (interactive)
       (emms-seek 30))
 
-    (defun user/seek-backward-long ()
-      "Seek backwards 2 minutes in Emms."
+    (defun user/emms-seek-backward-long ()
+      "Seek backwards 2 minutes in EMMS."
       (interactive)
       (emms-seek (* -2 60)))
 
-    (defun user/seek-forward-long ()
-      "Seek forward 2 minutes in Emms."
+    (defun user/emms-seek-forward-long ()
+      "Seek forward 2 minutes in EMMS."
       (interactive)
       (emms-seek (* 2 60)))
 
-    (defvar user/player-is-playing nil
-      "Non-nil if Emms player is not paused.")
+    (defvar user/emms-is-paused t
+      "Non-nil if EMMS player is paused.")
 
-    (defun user/toggle-play-pause ()
-      "If player is playing, pause it.  If it is paused, start playing."
+    (defun user/emms-play ()
+      "Set user/emms-is-paused to nil."
+      (setq user/emms-is-paused nil))
+
+    (defun user/emms-toggle-play-pause ()
+      "If EMMS player is playing, pause it.  If it is paused, start playing."
       (interactive)
-      (if user/player-is-playing
+      (if user/emms-is-paused
           (progn
-            (emms-player-mpv-pause)
-            (setq user/player-is-playing nil))
+            (emms-player-mpv-resume)
+            (setq user/emms-is-paused nil))
         (progn
-          (emms-player-mpv-pause))))
+          (emms-player-mpv-pause)
+          (setq user/emms-is-paused t))))
 
     (defvar-keymap user/emms-view-options-map
       :doc "Different options for viewing & interacting with EMMS."
@@ -676,30 +681,30 @@ doubles as a model-switcher."
         "s" "Smart Browse"
         "g" "Playlist Mode Go"
         "p" "Playlist Mode Popup"))
-
-    :bind (("<f6>"    . emms-browser)
-           ("<f7>"    . emms-smart-browse)
-           ("<f8>"    . emms-playlist-mode-go)
-           ("<f9>"    . emms-playlist-mode-go-popup)
-           :map emms-playlist-mode-map
-           ("SPC"     . user/toggle-play-pause)
-           ("m"       . emms-next)
-           ("n"       . emms-previous)
-           ("s"       . emms-playlist-shuffle)
-           ("j"       . emms-seek-backward)
-           ("k"       . emms-seek-forward)
-           ("J"       . user/seek-backward-med)
-           ("K"       . user/seek-forward-med)
-           ("M-j"     . user/seek-backward-long)
-           ("M-k"     . user/seek-forward-long)
-           ("p"       . emms-play-playlist)
-           ("f"       . emms-play-file)
-           ("d"       . emms-play-find)
-           ("C-s"     . emms-playlist-save)
-           ("C-x n"   . emms-playlist-new)
-           ("i"       . emms-show)
-           ("l"       . emms-sort)
-           ("y"       . emms-playlist-mode-yank))
+    :bind (("<f6>" . emms-browser)
+           ("<f7>" . emms-smart-browse)
+           ("<f8>" . emms-playlist-mode-go)
+           ("<f9>" . emms-playlist-mode-go-popup)
+           (:map emms-playlist-mode-map
+                 ("SPC"     . user/toggle-play-pause)
+                 ("m"       . emms-next)
+                 ("n"       . emms-previous)
+                 ("s"       . emms-playlist-shuffle)
+                 ("j"       . emms-seek-backward)
+                 ("k"       . emms-seek-forward)
+                 ("J"       . user/emms-seek-backward-med)
+                 ("K"       . user/emms-seek-forward-med)
+                 ("M-j"     . user/emms-seek-backward-long)
+                 ("M-k"     . user/emms-seek-forward-long)
+                 ("p"       . emms-play-playlist)
+                 ("f"       . emms-play-file)
+                 ("d"       . emms-play-find)
+                 ("C-x C-s" . emms-playlist-save)
+                 ("C-x n"   . emms-playlist-new)
+                 ("C-x u"   . emms-playlist-mode-undo)
+                 ("i"       . emms-show)
+                 ("l"       . emms-sort)
+                 ("C-y"     . emms-playlist-mode-yank)))
     :bind-keymap ("C-c m" . user/emms-view-options-map)
     :functions (emms-all
                 emms-seek emms-player-mpv-pause emms-player-mpv-resume
@@ -707,7 +712,7 @@ doubles as a model-switcher."
                 emms-next emms-previous emms-playlist-shuffle emms-seek-backward
                 emms-seek-forward emms-play-playlist emms-play-file
                 emms-play-find emms-playlist-save emms-playlist-new emms-show
-                emms-sort emms-playlist-mode-yank)
+                emms-sort emms-playlist-mode-undo emms-playlist-mode-yank)
     :defines (emms-info-functions
               emms-playlist-mode-map emms-player-mpv-command-name
               emms-player-mpv-parameters emms-browser-default-browse-type
@@ -719,7 +724,8 @@ doubles as a model-switcher."
      emms-info-functions '(emms-info-native emms-info-exiftool)
      emms-player-list '(emms-player-mpv)
      emms-player-mpv-command-name "mpv"
-     emms-player-mpv-parameters '("--force-window=yes")))
+     emms-player-mpv-parameters '("--force-window=yes"))
+    (advice-add 'emms-playlist-mode-play-smart :after #'user/emms-play))
 
   (use-package emms-info-mediainfo
     :ensure (emms-info-mediainfo
