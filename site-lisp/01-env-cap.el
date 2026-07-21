@@ -356,7 +356,7 @@ If not in a side window, jump to the first found side window."
   :init
   (setq register-preview-delay 0.5)
   (with-eval-after-load 'consult-register
-    (advice-add #'register-preview :override #'consult-register-window))
+    (advice-add 'register-preview :override #'consult-register-window))
   :custom
   (consult-narrow-key "<")
   (consult-project-function #'consult--default-project-function)
