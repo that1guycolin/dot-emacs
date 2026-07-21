@@ -242,7 +242,7 @@ Add this function to `org-mode-hook'."
           (cons '(:results . "value verbatim replace")
                 (assq-delete-all :results org-babel-default-header-args)))
     (setq org-babel-default-header-args:zsh '((:results . "output")))
-    (dolist (lang '(bash lisp lua makefile org python sh shell))
+    (dolist (lang '(lisp lua makefile org python sh shell))
       (add-to-list 'org-babel-load-languages `(,lang . t)))
     (org-babel-do-load-languages
      'org-babel-load-languages
