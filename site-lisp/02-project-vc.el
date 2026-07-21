@@ -185,8 +185,9 @@
   (keymap-global-set "C-x v ?" user/diff-hl-functions))
 
 (use-package git-commit-ts-mode
+  :after (treesit)
   :defer t
-  :mode "\\COMMIT_EDITMSG\\'")
+  :mode "COMMIT_EDITMSG\\'")
 
 (use-package git-link
   :defer t
