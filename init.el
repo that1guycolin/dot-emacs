@@ -175,7 +175,7 @@
   (require '01-env-cap)
 
   ;; Projects & Workspaces
-  (require '02-project-VC)
+  (require '02-project-vc)
 
   ;; Core UI Configuration
   (require '03-visual)
