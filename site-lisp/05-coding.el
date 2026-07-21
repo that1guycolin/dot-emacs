@@ -253,18 +253,17 @@ See URL `https://vale.sh'."
   (flyover-hide-during-completion t)
   :config
   (flyover-mode 1)
-  
   (defvar-keymap user/flyover-functions-map
     :doc "Useful functions for `flyover'."
     "m" #'flyover-mode
     "t" #'flyover-toggle
     "P" #'flyover-flash-error-at-point)
-  (with-eval-after-load 'which-key)
-  (which-key-add-keymap-based-replacements
-    user/flyover-functions-map
-    "m" "(De)Activate Flyover-Mode"
-    "t" "Flyover Toggle"
-    "p" "Flash Error @ Point")
+  (with-eval-after-load 'which-key
+    (which-key-add-keymap-based-replacements
+      user/flyover-functions-map
+      "m" "(De)Activate Flyover-Mode"
+      "t" "Flyover Toggle"
+      "p" "Flash Error @ Point"))
   (keymap-global-set "C-c y" user/flyover-functions-map))
 
 ;; Buffer status
