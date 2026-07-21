@@ -277,7 +277,7 @@ See URL `https://vale.sh'."
   :config (flycheck-eask-setup))
 
 (use-package flycheck-package
-  :after (emacs-lisp-mode)
+  :after (elisp-mode)
   :defer t
   :config (flycheck-package-setup))
 
