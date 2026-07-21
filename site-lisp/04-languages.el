@@ -101,7 +101,7 @@
 ;;; Containers:
 (use-package docker-compose-mode
   :defer t
-  :mode ("docker-copmpose\\.ya?ml\\'" "compose\\.ya?ml\\'"))
+  :mode ("docker-compose\\.ya?ml\\'" "compose\\.ya?ml\\'"))
 
 (use-package dockerfile-ts-mode
   :ensure nil
@@ -478,7 +478,7 @@
 (use-package json-ts-mode
   :ensure nil
   :defer t
-  :mode ("\\.json\\'" "\\.json\\'"))
+  :mode ("\\.json\\'" "\\.jsonc\\'"))
 
 ;; KDL:
 (use-package kdl-mode
