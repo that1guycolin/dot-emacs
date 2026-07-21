@@ -329,7 +329,7 @@ See URL `https://vale.sh'."
      (list (completing-read
             "Which formatter do you want to use for JSON files? "
             '(jq prettier-json) nil t)))
-    (unless (eq fmtr (or 'jq 'prettier-json))
+    (unless (memq fmtr '(jq prettier-json))
       (user-error "Formatter must be either jq or prettier-json"))
     (setf
      (alist-get 'js-json-mode apheleia-mode-alist) fmtr
@@ -339,7 +339,7 @@ See URL `https://vale.sh'."
   (defun user/apheleia-toggle-json-formatter ()
     "Switch aphelia formatter between jq & prettier in json-modes."
     (interactive)
-    (unless (eq major-mode (or 'json-ts-mode 'js-json-mode))
+    (unless (memq major-mode '(json-ts-mode js-json-mode))
       (error "Buffer not in a json major-mode"))
     (let ((current-fmtr (alist-get major-mode apheleia-mode-alist)))
       (cond
@@ -356,7 +356,7 @@ See URL `https://vale.sh'."
      (list (completing-read
             "Which formatter do you want to use for Yaml files? "
             '(yamlfmt prettier-yaml) nil t)))
-    (unless (eq fmtr (or 'yamlfmt prettier-yaml))
+    (unless (memq fmtr '(yamlfmt prettier-yaml))
       (user-error "Formatter must be either yamlfmt or prettier-yaml"))
     (setf
      (alist-get 'yaml-mode    apheleia-mode-alist) fmtr
@@ -366,7 +366,7 @@ See URL `https://vale.sh'."
   (defun user/apheleia-toggle-yaml-formatter ()
     "Switch aphelia formatter between yamlfmt & prettier in yaml modes."
     (interactive)
-    (unless (eq major-mode (or 'yaml-mode 'yaml-ts-mode))
+    (unless (memq major-mode '(yaml-mode yaml-ts-mode))
       (error "Buffer not in a Yaml major-mode"))
     (let ((current-fmtr (alist-get major-mode apheleia-mode-alist)))
       (cond
@@ -427,7 +427,7 @@ See URL `https://vale.sh'."
   (with-eval-after-load 'yaml-mode
     (keymap-set yaml-mode-map "C-c v"
                 #'user/apheleia-toggle-yaml-formatter))
-  (with-eval-after-load 'js-json-mode
+  (with-eval-after-load 'yaml-ts-mode
     (keymap-set yaml-ts-mode-map "C-c v"
                 #'user/apheleia-toggle-yaml-formatter)))
 
