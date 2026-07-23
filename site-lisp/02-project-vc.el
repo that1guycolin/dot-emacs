@@ -187,7 +187,7 @@
 (use-package git-commit-ts-mode
   :after (treesit)
   :defer t
-  :mode "COMMIT_EDITMSG\\'")
+  :hook (git-commit-setup . git-commit-ts-mode))
 
 (use-package git-link
   :defer t
