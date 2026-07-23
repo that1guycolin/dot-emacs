@@ -376,51 +376,40 @@ See URL `https://vale.sh'."
         (user/apheleia-set-yaml-formatter 'yamlfmt))
        (t
         (call-interactively #'user/apheleia-set-yaml-formatter)))))
-  
+
   :bind ("C-c f" . apheleia-format-buffer)
   :hook ((prog-mode text-mode) . apheleia-mode)
   :config
   (add-hook 'bash-ts-mode-hook (lambda () (apheleia-mode -1)))
   (add-hook 'sh-mode-hook      (lambda () (apheleia-mode -1)))
-  
-  (setf (alist-get 'jq          apheleia-formatters)
-        '("jq" "." "-M" "--indent" "2"))
-  
-  (setf (alist-get 'neocmakelsp apheleia-formatters)
-        '("neocmakelsp" "format" (buffer-file-name)))
-  
-  (setf (alist-get 'ruff        apheleia-formatters)
-        '("ruff" "format" "-"))
-  
-  (setf (alist-get 'tombi       apheleia-formatters)
-        '("tombi" "fmt" "-"))
-
-  (setf (alist-get 'yamlfmt     apheleia-formatters)
-        '("yamlfmt" "--in"  "-"))
-
-  (setf (alist-get 'cmake-ts-mode       apheleia-mode-alist) 'neocmakelsp)
-  (setf (alist-get 'eask-mode           apheleia-mode-alist) 'lisp-indent)
-  (setf (alist-get 'fish-mode           apheleia-mode-alist) 'fish-indent)
-  (setf (alist-get 'js-json-mode        apheleia-mode-alist) 'jq)
-  (setf (alist-get 'json-ts-mode        apheleia-mode-alist) 'jq)
-  (setf (alist-get 'markdown-mode       apheleia-mode-alist) 'rumdl)
-  (setf (alist-get 'markdown-ts-mode    apheleia-mode-alist) 'rumdl)
-  (setf (alist-get 'gfm-mode            apheleia-mode-alist) 'rumdl)
-  (setf (alist-get 'python-mode         apheleia-mode-alist) 'ruff)
-  (setf (alist-get 'python-ts-mode      apheleia-mode-alist) 'ruff)
-  (setf (alist-get 'toml-ts-mode        apheleia-mode-alist) 'tombi)
-  (setf (alist-get 'conf-toml-mode      apheleia-mode-alist) 'tombi)
-  (setf (alist-get 'nxml-mode           apheleia-mode-alist) 'xmlstarlet)
-  (setf (alist-get 'yaml-mode           apheleia-mode-alist) 'yamlfmt)
-  (setf (alist-get 'yaml-ts-mode        apheleia-mode-alist) 'yamlfmt)
-
+  (setf
+   (alist-get 'jq          apheleia-formatters) '("jq" "." "-M" "--indent" "2")
+   (alist-get 'neocmakelsp apheleia-formatters) '("neocmakelsp" "format" "-")
+   (alist-get 'ruff        apheleia-formatters) '("ruff" "format" "-")
+   (alist-get 'tombi       apheleia-formatters) '("tombi" "fmt" "-")
+   (alist-get 'yamlfmt     apheleia-formatters) '("yamlfmt" "--in"  "-"))
+  (setf
+   (alist-get 'cmake-ts-mode       apheleia-mode-alist) 'neocmakelsp
+   (alist-get 'docker-compose-mode apheleia-mode-alist) 'yamlfmt
+   (alist-get 'eask-mode           apheleia-mode-alist) 'lisp-indent
+   (alist-get 'fish-mode           apheleia-mode-alist) 'fish-indent
+   (alist-get 'js-json-mode        apheleia-mode-alist) 'jq
+   (alist-get 'json-ts-mode        apheleia-mode-alist) 'jq
+   (alist-get 'markdown-mode       apheleia-mode-alist) 'rumdl
+   (alist-get 'markdown-ts-mode    apheleia-mode-alist) 'rumdl
+   (alist-get 'gfm-mode            apheleia-mode-alist) 'rumdl
+   (alist-get 'python-mode         apheleia-mode-alist) 'ruff
+   (alist-get 'python-ts-mode      apheleia-mode-alist) 'ruff
+   (alist-get 'toml-ts-mode        apheleia-mode-alist) 'tombi
+   (alist-get 'conf-toml-mode      apheleia-mode-alist) 'tombi
+   (alist-get 'yaml-mode           apheleia-mode-alist) 'yamlfmt
+   (alist-get 'yaml-ts-mode        apheleia-mode-alist) 'yamlfmt)
   (with-eval-after-load 'js-json-mode
     (keymap-set js-json-mode-map "C-c v"
                 #'user/apheleia-toggle-json-formatter))
   (with-eval-after-load 'json-ts-mode
     (keymap-set json-ts-mode-map "C-c v"
                 #'user/apheleia-toggle-json-formatter))
-
   (with-eval-after-load 'docker-compose-mode
     (keymap-set docker-compose-mode-map "C-c w"
                 #'user/apheleia-toggle-yaml-formatter))
