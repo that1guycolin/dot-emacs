@@ -358,14 +358,15 @@ See URL `https://vale.sh'."
     (unless (memq fmtr '(yamlfmt prettier-yaml))
       (user-error "Formatter must be either yamlfmt or prettier-yaml"))
     (setf
-     (alist-get 'yaml-mode    apheleia-mode-alist) fmtr
-     (alist-get 'yaml-ts-mode apheleia-mode-alist) fmtr)
+     (alist-get 'yaml-mode           apheleia-mode-alist) fmtr
+     (alist-get 'yaml-ts-mode        apheleia-mode-alist) fmtr
+     (alist-get 'docker-compose-mode apheleia-mode-alist) fmtr)
     (message "Yaml formatter set to %s" fmtr))
-  
+
   (defun user/apheleia-toggle-yaml-formatter ()
     "Switch aphelia formatter between yamlfmt & prettier in yaml modes."
     (interactive)
-    (unless (memq major-mode '(yaml-mode yaml-ts-mode))
+    (unless (memq major-mode '(yaml-mode yaml-ts-mode docker-compose-mode))
       (error "Buffer not in a Yaml major-mode"))
     (let ((current-fmtr (alist-get major-mode apheleia-mode-alist)))
       (cond
@@ -420,6 +421,9 @@ See URL `https://vale.sh'."
     (keymap-set json-ts-mode-map "C-c v"
                 #'user/apheleia-toggle-json-formatter))
 
+  (with-eval-after-load 'docker-compose-mode
+    (keymap-set docker-compose-mode-map "C-c w"
+                #'user/apheleia-toggle-yaml-formatter))
   (with-eval-after-load 'yaml-mode
     (keymap-set yaml-mode-map "C-c v"
                 #'user/apheleia-toggle-yaml-formatter))
