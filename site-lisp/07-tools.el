@@ -686,7 +686,7 @@ doubles as a model-switcher."
            ("<f8>" . emms-playlist-mode-go)
            ("<f9>" . emms-playlist-mode-go-popup)
            (:map emms-playlist-mode-map
-                 ("SPC"     . user/toggle-play-pause)
+                 ("SPC"     . user/emms-toggle-play-pause)
                  ("m"       . emms-next)
                  ("n"       . emms-previous)
                  ("s"       . emms-playlist-shuffle)
