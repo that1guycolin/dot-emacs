@@ -291,7 +291,6 @@ See URL `https://vale.sh'."
 
 
 ;;; Formatting:
-;;; Formatting:
 ;; bash:         'shfmt'         (pacman -S shfmt)
 ;; cmake:        'neocmakelsp'   (cargo install neocmakelsp)
 ;; fish:         'fish_indent'   (bundled with fish shell)
@@ -301,7 +300,7 @@ See URL `https://vale.sh'."
 ;; markdown:     'rumdl'         (pacman -S rumdl)
 ;; python:       'ruff'          (uv add ruff)
 ;; toml:         'tombi'         (pacman -S tombi)
-;; xml:          'xmlstarlet'    (pacman -S xmlstarlet)
+;; xml:          'xmllint'       (pacman -S libxml2)
 ;; yaml:         'yamlfmt'       (pacman -S yamlfmt)
 
 ;; sh-mode/bash-ts-mode
@@ -394,9 +393,6 @@ See URL `https://vale.sh'."
   
   (setf (alist-get 'tombi       apheleia-formatters)
         '("tombi" "fmt" "-"))
-  
-  (setf (alist-get 'xmlstarlet  apheleia-formatters)
-        '("xmlstarlet" "fo" "--indent-spaces" "2" "-"))
 
   (setf (alist-get 'yamlfmt     apheleia-formatters)
         '("yamlfmt" "--in"  "-"))
