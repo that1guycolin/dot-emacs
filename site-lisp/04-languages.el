@@ -303,6 +303,17 @@
   :ensure nil
   :defer t
   :preface
+  (defun user/markdown-toggle-ts-mode ()
+    "Switch between `markdown-mode' & `markdown-ts-mode'."
+    (interactive)
+    (cond
+     ((eq major-mode 'markdown-mode)
+      (markdown-ts-mode))
+     ((eq major-mode 'markdown-ts-mode)
+      (markdown-mode))
+     (t
+      (user-error "not a markdown buffer"))))
+  
   (defvar-keymap user/markdown-ts-toggle-map
     :doc "Functions to toggle the display of markdown elements."
     "RET" #'markdown-ts-toggle-hide-markup
@@ -318,6 +329,9 @@
   :mode ("\\.md\\'" "README\\'" "INSTALL\\'")
   :defines (markdown-ts-mode-map)
   :config
+  (with-eval-after-load 'markdown-mode
+    (keymap-set markdown-mode-map  "C-c v"   #'user/markdown-toggle-ts-mode))
+  (keymap-set markdown-ts-mode-map "C-c v"   #'user/markdown-toggle-ts-mode)
   (keymap-set markdown-ts-mode-map "C-c w"     user/markdown-ts-toggle-map)
   (keymap-set markdown-ts-mode-map "C-c C-x" #'toggle-frame-maximized))
 
