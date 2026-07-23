@@ -455,11 +455,9 @@ See URL `https://vale.sh'."
            (cl-some
             (lambda (mode)
               (memq mode '(css-mode
-                           css-ts-mode
-                           dockerfile-mode dockerfile-ts-mode
-                           json-mode json-ts-mode
-                           markdown-mode markdown-ts-mode
-                           python-mode python-ts-mode)))
+                           css-ts-mode dockerfile-ts-mode json-ts-mode
+                           markdown-mode markdown-ts-mode python-mode
+                           python-ts-mode)))
             (ensure-list (car cell))))
          eglot-server-programs))
 
