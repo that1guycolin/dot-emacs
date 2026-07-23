@@ -450,7 +450,11 @@
 
 (use-package macrostep-geiser
   :defer t
-  :bind ())
+  :bind ((:map geiser-mode-map
+               ("C-c j" . macrostep-geiser))
+         (:map geiser-repl-mode-map
+               ("C-c j" . macrostep-geiser))))
+
 
 ;;; Shell scripts:
 (use-package bash-ts-mode
