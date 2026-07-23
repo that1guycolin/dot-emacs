@@ -289,6 +289,8 @@
       "C-f" "Toggle Code Block Fontification"
       "C-l" "Toggle URL Hiding"
       "C-x" "Toggle GFM Checkbox"))
+  :bind (:map markdown-mode-map
+              ("C-c C-l" . markdown-insert-link))
   :commands (markdown-mode)
   :custom (markdown-fontify-code-blocks-natively t)
   :config
@@ -311,19 +313,20 @@
       "RET" "Toggle Hide Markup"
       "C-f" "Emphasize"
       "C-v" "Toggle Inline Images"))
-  :defines (markdown-ts-mode-map)
+  :bind (:map markdown-ts-mode-map
+              ("C-c C-l" . markdown-insert-link))
   :mode ("\\.md\\'" "README\\'" "INSTALL\\'")
+  :defines (markdown-ts-mode-map)
   :config
-  (keymap-set markdown-ts-mode-map "C-c l"   #'markdown-mode)
   (keymap-set markdown-ts-mode-map "C-c w"     user/markdown-ts-toggle-map)
   (keymap-set markdown-ts-mode-map "C-c C-x" #'toggle-frame-maximized))
 
 (use-package grip-mode
   :defer t
   :bind ((:map markdown-ts-mode-map
-               ("C-c j" . grip-mode))
+               ("C-c g" . grip-mode))
          (:map markdown-mode-map
-               ("C-c j" . grip-mode)))
+               ("C-c g" . grip-mode)))
   :custom (grip-command 'auto))
 
 
