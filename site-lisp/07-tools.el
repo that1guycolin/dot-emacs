@@ -749,10 +749,21 @@ doubles as a model-switcher."
             (menu-bar-lines . 0) (tool-bar-lines . 0)
             (vertical-scroll-bars . nil)))))
 
+;; Podman/container integration
+(use-package docker
+  :defer t
+  :bind ("C-c d" . docker)
+  :custom (docker-command "podman"))
+
 ;; Show available keybinds
 (use-package free-keys
   :defer t
   :bind ("C-c C-=" . free-keys))
+
+;; GUIX
+(use-package guix
+  :defer t
+  :bind ("C-c x" . guix))
 
 ;; Convert to html
 (use-package htmlize
@@ -761,7 +772,19 @@ doubles as a model-switcher."
              htmlize-region htmlize-file htmlize-many-files
              htmlize-many-files-dired))
 
+;; Global rg integration
+(use-package deadgrep
+  :defer t
+  :bind (("<f5>"    . deadgrep)
+         ("C-c C-d" . deadgrep)))
 
+;; Project rg integration & more
+(use-package rg
+  :defer t
+  :bind (("C-c C-r" . rg-menu)
+         (:map isearch-mode-map
+               ("M-s r" . rg-isearch-menu)))
+  :config (require 'rg-isearch))
 
 ;; Telegram in Emacs
 (unless (eq system-type 'android)
