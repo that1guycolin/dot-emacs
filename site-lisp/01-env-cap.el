@@ -168,15 +168,15 @@ If not in a side window, jump to the first found side window."
 ;; Environment
 (use-package exec-path-from-shell
   :demand t
-  :preface (defvar user/exec-path-from-shell-vars
-             '("CC"
-               "CXX" "LSP_USE_PLISTS" "PKG_CONFIG_PATH" "SSH_AGENT_PID"
-               "SSH_AUTH_SOCK" "WAYLAND_DISPLAY")
-             "List of environment variables to load at Emacs start.")
+  :preface
+  (defvar user/exec-path-from-shell-vars
+    '("CC"
+      "CXX" "INFOPATH" "LSP_USE_PLISTS" "PKG_CONFIG_PATH" "SSH_AGENT_PID"
+      "SSH_AUTH_SOCK" "WAYLAND_DISPLAY")
+    "List of environment variables to load at Emacs start.")
   :functions (exec-path-from-shell-initialize)
   :custom (exec-path-from-shell-shell-name "zsh")
   :config
-  (setenv "PNPM_HOME" "/home/colin-l/.local/share/pnpm")
   (dolist (var user/exec-path-from-shell-vars)
     (add-to-list 'exec-path-from-shell-variables var))
   (exec-path-from-shell-initialize))
