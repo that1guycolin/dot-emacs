@@ -233,7 +233,6 @@
       "i" "Eval & inspect expr"
       "a" "Symbol match"
       "w" "Describe symbol"))
-  
   :bind-keymap ("C-c s" . user/sly-functions-map)
   :hook (lisp-mode . sly-editing-mode)
   :init (setq inferior-lisp-program "sbcl")
@@ -291,11 +290,12 @@
       "C-l" "Toggle URL Hiding"
       "C-x" "Toggle GFM Checkbox"))
   :commands (markdown-mode)
-  :custom (markdown-fontify-codeblocks-natively t)
+  :custom (markdown-fontify-code-blocks-natively t)
   :config
   (keymap-set markdown-mode-map "C-c l"    #'markdown-ts-mode)
   (keymap-set markdown-mode-map "C-c w"      user/markdown-toggle-map)
-  (keymap-set markdown-mode-map "C-c C-x"  #'toggle-frame-maximized))
+  (keymap-set markdown-mode-map "C-c C-x"  #'toggle-frame-maximized)
+  (keymap-set markdown-mode-map "C-c C-="  #'free-keys))
 
 (use-package markdown-ts-mode
   :ensure nil
