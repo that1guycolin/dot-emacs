@@ -434,6 +434,11 @@
 
 
 ;;; Scheme:
+(use-package scheme-mode
+  :ensure nil
+  :defer t
+  :mode "\\.scm\\'")
+
 (use-package geiser
   :defer t
   :bind ("C-c C-s" . geiser)
