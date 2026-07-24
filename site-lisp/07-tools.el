@@ -50,7 +50,8 @@
 (use-package vterm
   :defer t
   :bind (("C-c t v" . vterm)
-         ("C-c t V" . vterm-other-window)))
+         ("C-c t V" . vterm-other-window))
+  :init (setq vterm-always-compile-module t))
 
 ;; Set EDITOR to current Emacs session
 (use-package with-editor
