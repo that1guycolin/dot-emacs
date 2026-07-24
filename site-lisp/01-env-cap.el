@@ -40,7 +40,8 @@
 
   (defvar user/no-tab-modes
     '(bash-ts-mode
-      emacs-lisp-mode lisp-mode python-mode python-ts-mode sh-mode)
+      emacs-lisp-mode lisp-mode lisp-data-mode python-mode python-ts-mode
+      sh-mode)
     "Major modes indented by spaces and not by tabs.")
 
   (defun user/untabify-when-no-tab-mode ()
