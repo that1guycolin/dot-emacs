@@ -40,11 +40,11 @@
 (use-package mistty
   :defer t
   :bind (("C-c t m" . mistty)
-         :map mistty-prompt-map
-         ("M-<up>"    . mistty-send-key)
-         ("M-<down>"  . mistty-send-key)
-         ("M-<left>"  . mistty-send-key)
-         ("M-<right>" . mistty-send-key)))
+         (:map mistty-prompt-map
+               ("M-<up>"    . mistty-send-key)
+               ("M-<down>"  . mistty-send-key)
+               ("M-<left>"  . mistty-send-key)
+               ("M-<right>" . mistty-send-key))))
 
 ;; The old workhorse
 (use-package vterm
