@@ -12,10 +12,6 @@
 ;; server-frame.
 
 ;;; Code:
-;; Start fullscreen:
-(add-to-list 'default-frame-alist '(fullscreen . maximized))
-(setq font-use-system-font t)
-
 ;;; Themes & Icons:
 ;; Readable Emacs' themes
 (use-package modus-themes
