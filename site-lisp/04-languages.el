@@ -262,6 +262,17 @@
 (use-package markdown-mode
   :defer t
   :preface
+  (defun user/markdown-toggle-ts-mode ()
+    "Switch between `markdown-mode' & `markdown-ts-mode'."
+    (interactive)
+    (cond
+     ((eq major-mode 'markdown-mode)
+      (progn (markdown-ts-mode) (message "Activated %s" major-mode)))
+     ((eq major-mode 'markdown-ts-mode)
+      (progn (markdown-mode) (message "Activated %s" major-mode)))
+     (t
+      (user-error "not a markdown buffer"))))
+
   (defvar-keymap user/markdown-toggle-map
     :doc "Functions to toggle the display of elements in markdown."
     "RET" #'markdown-toggle-markup-hiding
@@ -291,7 +302,8 @@
       "C-l" "Toggle URL Hiding"
       "C-x" "Toggle GFM Checkbox"))
   :bind (:map markdown-mode-map
-              ("C-c C-l" . markdown-insert-link))
+              ("C-c C-l" . markdown-insert-link)
+              ("C-c v"   . user/markdown-toggle-ts-mode))
   :commands (markdown-mode)
   :custom (markdown-fontify-code-blocks-natively t)
   :config
@@ -303,17 +315,6 @@
   :ensure nil
   :defer t
   :preface
-  (defun user/markdown-toggle-ts-mode ()
-    "Switch between `markdown-mode' & `markdown-ts-mode'."
-    (interactive)
-    (cond
-     ((eq major-mode 'markdown-mode)
-      (progn (markdown-ts-mode) (message "Activated %s" major-mode)))
-     ((eq major-mode 'markdown-ts-mode)
-      (progn (markdown-mode) (message "Activated %s" major-mode)))
-     (t
-      (user-error "not a markdown buffer"))))
-  
   (defvar-keymap user/markdown-ts-toggle-map
     :doc "Functions to toggle the display of markdown elements."
     "RET" #'markdown-ts-toggle-hide-markup
@@ -325,13 +326,11 @@
       "C-f" "Emphasize"
       "C-v" "Toggle Inline Images"))
   :bind (:map markdown-ts-mode-map
-              ("C-c C-l" . markdown-insert-link))
+              ("C-c C-l" . markdown-insert-link)
+              ("C-c v"   . user/markdown-toggle-ts-mode))
   :mode ("\\.md\\'" "README\\'" "INSTALL\\'")
   :defines (markdown-ts-mode-map)
   :config
-  (with-eval-after-load 'markdown-mode
-    (keymap-set markdown-mode-map  "C-c v"   #'user/markdown-toggle-ts-mode))
-  (keymap-set markdown-ts-mode-map "C-c v"   #'user/markdown-toggle-ts-mode)
   (keymap-set markdown-ts-mode-map "C-c w"     user/markdown-ts-toggle-map)
   (keymap-set markdown-ts-mode-map "C-c C-x" #'toggle-frame-maximized))
 
