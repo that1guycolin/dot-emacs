@@ -383,11 +383,18 @@ See URL `https://vale.sh'."
   (add-hook 'bash-ts-mode-hook (lambda () (apheleia-mode -1)))
   (add-hook 'sh-mode-hook      (lambda () (apheleia-mode -1)))
   (setf
-   (alist-get 'jq          apheleia-formatters) '("jq" "." "-M" "--indent" "2")
-   (alist-get 'neocmakelsp apheleia-formatters) '("neocmakelsp" "format" "-")
-   (alist-get 'ruff        apheleia-formatters) '("ruff" "format" "-")
-   (alist-get 'tombi       apheleia-formatters) '("tombi" "fmt" "-")
-   (alist-get 'yamlfmt     apheleia-formatters) '("yamlfmt" "--in"  "-"))
+   (alist-get 'jq            apheleia-formatters)
+   '("jq" "." "-M" "--indent" "2")
+   (alist-get 'neocmakelsp   apheleia-formatters)
+   '("neocmakelsp" "format" "-")
+   (alist-get 'prettier-json apheleia-formatters)
+   '("pnpx" "prettier" "--stdin-filepath" filepath "--parser=json")
+   (alist-get 'ruff          apheleia-formatters)
+   '("ruff" "format" "-")
+   (alist-get 'tombi         apheleia-formatters)
+   '("tombi" "fmt" "-")
+   (alist-get 'yamlfmt       apheleia-formatters)
+   '("yamlfmt" "--in"  "-"))
   (setf
    (alist-get 'cmake-ts-mode       apheleia-mode-alist) 'neocmakelsp
    (alist-get 'docker-compose-mode apheleia-mode-alist) 'yamlfmt
