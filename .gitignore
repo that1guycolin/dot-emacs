@@ -21,6 +21,7 @@ emms
 .envrc
 eshell
 etc/*
+!etc/sly-setup.lisp
 !etc/tools/
 !etc/templates
 forge-database.sqlite
