@@ -259,13 +259,13 @@ If nil, the number of frame lines and columns remains fixed.")
     ["Modify UI"
      ["Fonts"
       ("f s" "Switch font"         user/switch-font)
-      ("f r" "Random font"         user/random-font)
+      ("f r" "Random font"         user/random-font :transient t)
       ("f b" "Font size behaviour" user/set-font-size-behaviour :transient t)
       ("f f" "Show Font Family"    show-font-select-preview)
       ("f a" "Show Fonts (All)"    show-font-tabulated)]
      ["Theme"
       ("t s" "Switch theme"        modus-themes-select-dark)
-      ("t r" "Random theme"        modus-themes-load-random-dark)
+      ("t r" "Random theme"        modus-themes-load-random-dark :transient t)
       ("t n" "Rotate theme"        modus-themes-rotate)]])
   (keymap-global-set "C-c u" 'user/visual-settings-dispatch))
 
