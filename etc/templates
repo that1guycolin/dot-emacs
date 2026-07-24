@@ -1,23 +1,28 @@
 emacs-lisp-mode
 (conf-head ";;; " (p "Heading") ":")
 (conf-meta ";;; " (p (file-name-base (or (buffer-file-name) (buffer-name))) file) ".el --- " (p "summary" summary) " -*- lexical-binding: t -*-" n n
-	   ";;; Packages included:" n n
-	   ";;; Commentary:" n n
-	   ";;; Code:" n n n n
-	   "(provide '" file ")" n
-	   ";;; " file ".el ends here")
+           ";;; Packages included:" n n
+           ";;; Commentary:" n n
+           ";;; Code:" n n n n
+           "(provide '" file ")" n
+           ";;; " file ".el ends here")
 (decf "(declare-function " (p "func") " \"" (p "pkg") "\")")
 (defkeym "(defvar-keymap " (p "keymap-name" kname) n>
-	 ":doc \"" (p "docstring") "\"" n>
-	 "\"" (p "key") "\" #'" (p "function") n>
-	 "\"" (p "key") "\" #'" (p "function") ")" n n>
-	 "(with-eval-after-load 'which-key)" n>
-	 "(which-key-add-keymap-based-replacements" n>
-	 kname n>
-	 "\"" (p "key") "\" \"" (p "displaytext") "\"" n>
-	 "\"" (p "key") "\" \"" (p "displaytext") "\")")
+         ":doc \"" (p "docstring") "\"" n>
+         "\"" (p "key") "\" #'" (p "function") n>
+         "\"" (p "key") "\" #'" (p "function") ")" n n>
+         "(with-eval-after-load 'which-key)" n>
+         "(which-key-add-keymap-based-replacements" n>
+         kname n>
+         "\"" (p "key") "\" \"" (p "displaytext") "\"" n>
+         "\"" (p "key") "\" \"" (p "displaytext") "\")")
 (kgbset "(keymap-global-set \"" (p "keys") "\" #'" (p "func") ")")
 (kset "(keymap-set " (p "keymap") " \"" (p "keys") "\" #'" (p "func") ")")
+
+json-ts-mode
+(scm-obj "\"" (p "name") "\": {" n>
+         "\"type\": \"" (p "type") "\"," n>
+         "\"description\": \"" (p "description") "\"" n> "}," n>)
 
 lisp-mode
 (s2o "((or (string-equal string \"" (p "name" method) "\")" n>
@@ -25,44 +30,44 @@ lisp-mode
 
 sh-mode
 (argparse "PARSED=$(getopt -o " (p "shortflags") " -l "
-	   (p "long-flags") " -- \"$@\") || { usage; exit 1; }" n>
-	   "eval set -- \"$PARSED\"" n> "while true; do" n
-	   "case \"$1\" in" n n> "-h | --help) usage; exit ;;" n>
-	   "--) shift; break ;;" n>
-	   "*) echo \"Invalid option: $1\"; usage; exit 2 ;;" n>
-	   "esac" n> "done" n>)
+           (p "long-flags") " -- \"$@\") || { usage; exit 1; }" n>
+           "eval set -- \"$PARSED\"" n> "while true; do" n
+           "case \"$1\" in" n n> "-h | --help) usage; exit ;;" n>
+           "--) shift; break ;;" n>
+           "*) echo \"Invalid option: $1\"; usage; exit 2 ;;" n>
+           "esac" n> "done" n>)
 (bash-safe "#!/usr/bin/env bash" n "set -euo pipefail" n "IFS=$\'\\n\\t\'")
 (cmd-e "command -v " (p "cmd") " >/dev/null 2>&1")
 (env-chk "[ -" (p "dfe") " " (p "loc" loc) " ] && { " (p "var" var) "=" loc "; export " var "; }")
 (flag "-" (p "s") " | --" (p "long") ")" n>
       (p "FLAG") "=" (p "VALUE") n> "shift" (p "shiftn") n> ";;")
 (fusage "function usage {" n> "cat <<EOF" n
-	"USAGE: ${funcstack[2]} [OPTIONS] " (p "req arguments") n n
-	(p "description") n n "OPTIONS:" n "  " (p "flag") n
-	"      " (p "flag description") n n "  -h, --help" n
-	"      Display this message and exit." n n "EOF" n "}")
+        "USAGE: ${funcstack[2]} [OPTIONS] " (p "req arguments") n n
+        (p "description") n n "OPTIONS:" n "  " (p "flag") n
+        "      " (p "flag description") n n "  -h, --help" n
+        "      Display this message and exit." n n "EOF" n "}")
 (fargparse "PARSED=$(getopt -o " (p "shortflags") " -l "
-	   (p "long-flags") " -- \"@\") || { usage; return 1; }" n>
-	   "eval set -- \"$PARSED\"" n> "while true; do" n
-	   "case \"$1\" in" n n> "-h | --help) usage; return ;;" n>
-	   "--) shift; break ;;" n>
-	   "*) echo \"Invalid option: $1\"; usage; return 2 ;;" n>
-	   "esac" n> "done" n>)
+           (p "long-flags") " -- \"@\") || { usage; return 1; }" n>
+           "eval set -- \"$PARSED\"" n> "while true; do" n
+           "case \"$1\" in" n n> "-h | --help) usage; return ;;" n>
+           "--) shift; break ;;" n>
+           "*) echo \"Invalid option: $1\"; usage; return 2 ;;" n>
+           "esac" n> "done" n>)
 (shbang "#!/bin/sh")
 (usage "function usage {" n> "cat <<EOF" n
-	"USAGE: ${0##*/} [OPTIONS] " (p "req arguments") n n
-	(p "description") n n "OPTIONS:" n "  " (p "flag") n
-	"      " (p "flag description") n n "  -h, --help" n
-	"      Display this message and exit." n n "EOF" n "}")
+        "USAGE: ${0##*/} [OPTIONS] " (p "req arguments") n n
+        (p "description") n n "OPTIONS:" n "  " (p "flag") n
+        "      " (p "flag description") n n "  -h, --help" n
+        "      Display this message and exit." n n "EOF" n "}")
 (zinput "read -r \"" (p "var" var) "?" (p "prompt") "\"" n
-	"case \"$" var "\" in" n
-	(p "option") ")" (p "action") " ;;"
-	"*)" (p "nomatch") " ;;"
-	"esac")
+        "case \"$" var "\" in" n
+        (p "option") ")" (p "action") " ;;"
+        "*)" (p "nomatch") " ;;"
+        "esac")
 (zmapfile (p "array") "=(\"${(@f)$(<" (p "file") ")}\")")
 (zrcd "#!/bin/zsh" n "# "
       (p (or (file-name-nondirectory buffer-file-name)
-	     "No file")))
+             "No file")))
 (zshbang "#!/bin/zsh")
 
 toml-ts-mode
@@ -71,8 +76,7 @@ toml-ts-mode
 (tb-mpvs "mpv-scripts-" (p "fn" fn) " = { source = \"media/mpv/scripts/" fn ".lua\", \
 target = \".config/mpv/scripts/" fn ".lua\", direct = true }")
 (pyoptdeps "[project.optional-dependencies]" n "dev = [\"rassumfrassum\", \"ruff\", \"ty\"]" n
-	   "doc = [\"sphinx\", \"furo\"]")
-
+           "doc = [\"sphinx\", \"furo\"]")
 
 
 ;; Local Variables:
