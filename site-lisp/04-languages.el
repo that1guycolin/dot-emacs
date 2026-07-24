@@ -295,7 +295,6 @@
   :commands (markdown-mode)
   :custom (markdown-fontify-code-blocks-natively t)
   :config
-  (keymap-set markdown-mode-map "C-c l"    #'markdown-ts-mode)
   (keymap-set markdown-mode-map "C-c w"      user/markdown-toggle-map)
   (keymap-set markdown-mode-map "C-c C-x"  #'toggle-frame-maximized)
   (keymap-set markdown-mode-map "C-c C-="  #'free-keys))
@@ -309,9 +308,9 @@
     (interactive)
     (cond
      ((eq major-mode 'markdown-mode)
-      (markdown-ts-mode))
+      (progn (markdown-ts-mode) (message "Activated %s" major-mode)))
      ((eq major-mode 'markdown-ts-mode)
-      (markdown-mode))
+      (progn (markdown-mode) (message "Activated %s" major-mode)))
      (t
       (user-error "not a markdown buffer"))))
   
@@ -337,7 +336,7 @@
   (keymap-set markdown-ts-mode-map "C-c C-x" #'toggle-frame-maximized))
 
 (use-package grip-mode
-  :defer t
+  :after (:any markdown-mode markdown-ts-mode)
   :bind ((:map markdown-ts-mode-map
                ("C-c g" . grip-mode))
          (:map markdown-mode-map
