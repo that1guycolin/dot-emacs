@@ -127,9 +127,7 @@ package links to its online repo."
   "Create the block of the README that lists all installed pacakges.
 Packages are sorted by the file contianing their `use-package' object."
   (goto-char (point-max))
-  (dolist
-      (file (directory-files "~/.config/emacs/site-lisp" t
-                             ".*\\.el"))
+  (dolist (file (directory-files "~/.config/emacs/site-lisp" t "\\.el\\'"))
     (gen-readme-print-file-info file))
   (insert "\n"))
 
