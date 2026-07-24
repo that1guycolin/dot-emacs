@@ -1,12 +1,14 @@
-;;; 11-org-mode-extensions.el --- Extensions for Org-mode -*- lexical-binding: t; -*-
+;;; 06-org-extend.el --- Org Config & Support Packages -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; djvu, el2org, nov, ob-rust, org-edna, org-make-toc, org-mem, org-modern,
-;; org-modern-indent, org-node, org-noter, org-noter-pdftools, org-pdftools,
-;; org-pomodoro, org-snitch, org-tidy, pdf-tools
+;; djvu, el2org, nov, ob-rust, org, org-edna, org-make-toc, org-mem,
+;; org-modern, org-modern-indent, org-node, org-node-backlink, org-noter,
+;; org-noter-pdftools, org-pdftools, org-pomodoro, org-snitch, org-tidy,
+;; pdf-tools
 
 ;;; Commentary:
-;; Provide extensions for Emacs' Org-mode.
+;; Set up Emacs' Org-mode.  Also, configure packages that extend Org's already
+;; awesome power.
 
 ;;; Code:
 (use-package org
@@ -195,6 +197,7 @@ Add this function to `org-mode-hook'."
 
   :bind (("C-c o o" . org-mode)
          ("C-c c"   . org-capture)
+         ("C-c o c" . org-capture)
          ("C-c o l" . org-store-link)
          :map org-mode-map
          ("C-c l"   . org-toggle-link-display)
@@ -227,11 +230,11 @@ Add this function to `org-mode-hook'."
   (add-hook 'org-mode-hook #'user/org-search-folded)
 
   (setq org-src-lang-modes (assoc-delete-all "bash" org-src-lang-modes))
-  (dolist (lang-mode-cons '(("bash"   . bash-ts) ("cmake" . cmake-ts)
-                            ("json"   . json-ts) ("lua"   . lua-ts)
-                            ("python" . python-ts) ("sh"  . sh)
-                            ("toml"   . toml-ts) ("yaml"  . yaml-ts)
-                            ("zsh"    . shell)))
+  (dolist (lang-mode-cons '(("zsh"   . shell)    ("bash" . bash-ts)
+                            ("cmake" . cmake-ts) ("json" . json-ts)
+                            ("lua"   . lua-ts) ("python" . python-ts)
+                            ("sh"    . sh)       ("toml" . toml-ts)
+                            ("yaml"  . yaml-ts)))
     (add-to-list 'org-src-lang-modes lang-mode-cons))
 
   (with-eval-after-load 'ob
@@ -295,16 +298,12 @@ Add this function to `org-mode-hook'."
 (use-package org-mem
   :after (org)
   :demand t
-  :preface (declare-function org-id-update-id-locations "org-id")
-  :functions (org-mem-roamy-db-mode
-              org-mem-updater-mode org-mem-reset org-mem-await
-              org-mem-tip-if-empty)
-  :defines (org-mem-roamy-do-overwrite-real-db)
-  :custom (org-mem-watch-dirs (list (expand-file-name org-directory)))
-  :config
-  (org-mem-roamy-db-mode 1)
-  (org-mem-updater-mode 1)
-  (setq org-mem-roamy-do-overwrite-real-db nil))
+  :functions (org-mem-updater-mode
+              org-mem-reset org-mem-await org-mem-tip-if-empty)
+  :custom
+  (org-mem-watch-dirs (list (expand-file-name org-directory)))
+  (org-mem-do-look-everywhere nil)
+  :config (org-mem-updater-mode 1))
 
 ;; Fast & simple note management
 (use-package org-node
@@ -362,10 +361,14 @@ this function as `org-node-creation-fn'."
   (org-mem-reset nil "Org-node waiting for org-mem...")
   (org-mem-await "Org-node waiting for org-mem..." 60)
   (org-mem-tip-if-empty)
-  (org-node-complete-at-point-mode 1)
-  (require 'org-node-backlink)
-  (setq org-node-backlink-do-drawers nil)
-  (org-node-backlink-mode 1))
+  (org-node-complete-at-point-mode 1))
+
+(use-package org-node-backlink
+  :ensure nil
+  :after (org-node)
+  :demand t
+  :custom (org-node-backlink-do-drawers nil)
+  :config (org-node-backlink-mode 1))
 
 ;; View PDFs in Emacs
 (use-package pdf-tools
@@ -556,5 +559,5 @@ Values are mapped to informative strings."
   (org-tidy-properties-style 'invisible))
 
 
-(provide '11-org-mode-extensions)
-;;; 11-org-mode-extensions.el ends here
+(provide '06-org-extend)
+;;; 06-org-extend.el ends here

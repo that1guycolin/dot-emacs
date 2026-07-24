@@ -6,9 +6,9 @@
 #+AUTHOR: Colin Loeffler (that1guycolin)
 #+COMMENT: DO NOT COMMIT THIS FILE WITH EVALUATED RESULTS
 #+CREATED_DATE: [2026-06-13 Sat 05:08:11]
-#+LAST_EDIT: [2026-07-16 THU 15:17:20]
+#+LAST_EDIT: [2026-07-20 MON 18:21:39]
 #+ID: tools:dou27p801zk0
-#+FILETAGS: :Emacs:emacsd:
+#+FILETAGS: :Emacs:emacsd:elpaca:use_package:
 
 * DO NOT COMMIT THIS FILE WITH EVALUATED RESULTS
 :PROPERTIES:
@@ -22,20 +22,34 @@ DO NOT COMMIT THIS FILE WITH EVALUATED RESULTS
 :END:
 
 #+NAME: all-packages
-#+begin_src bash 
+#+begin_src bash
 IFS=$'\n\t'
 
 TEMP="$(mktemp)"
 ESCRIPT="${HOME}/.config/emacs/etc/tools/list-use-packages.el"
+non_android_pkgs=(
+    llm
+    llm-ollama
+    mcp-server-lib
+    org-mcp
+    elisp-dev-mcp
+    gptel
+    ellama
+    emms
+    emms-info-mediainfo
+    emacs-everywhere
+    telega
+)
 
-{
-    echo "elpaca"
-    echo "elpaca-use-package"
-    echo "no-littering"
-} >$"$TEMP"
+emacs --script "$ESCRIPT" \
+      "${XDG_CONFIG_HOME:-${HOME}/.config}/emacs/init.el" >"$TEMP"
 
-for elfile in ${HOME}/.config/emacs/site-lisp/*.el; do 
+for elfile in "${HOME}/.config/emacs/site-lisp/"*.el; do 
     emacs --script "$ESCRIPT" "$elfile" >>"$TEMP"
+done
+
+for pkg in "${non_android_pkgs[@]}"; do
+    echo "$pkg" >>"$TEMP"
 done
 
 mapfile -t PACKAGES < <(
@@ -55,6 +69,7 @@ done
 printf '\n'
 #+end_src
 
+
 * site-lisp
 :PROPERTIES:
 :CUSTOM_ID: site-lisp
@@ -63,6 +78,9 @@ printf '\n'
 
 #+NAME: list-packages
 #+begin_src bash :session list-pkgs
+lisp_dir="${XDG_CONFIG_HOME:-${HOME}/.config}/emacs/site-lisp"
+export lisp_dir
+
 function list-packages {
     escript="${HOME}/.config/emacs/etc/tools/list-use-packages.el"
     local temp="$(mktemp)"
@@ -95,82 +113,52 @@ function list-packages {
 }
 #+end_src
 
-#+RESULTS: list-packages
-#+begin_src bash
+#+NAME: 01-env-cap
+#+begin_src bash :session list-pkgs
+list-packages "${lisp_dir}/01-env-cap.el"
 #+end_src
 
-#+NAME: 01-bootstrap-core.el
+#+NAME: 02-project-vc
 #+begin_src bash :session list-pkgs
-list-packages "${HOME}/.config/emacs/site-lisp/01-bootstrap-core.el"
+list-packages "${lisp_dir}/02-project-vc.el"
 #+end_src
 
-#+NAME: 02-init-frameworks.el
+#+NAME: 03-visual
 #+begin_src bash :session list-pkgs
-list-packages "${HOME}/.config/emacs/site-lisp/02-init-frameworks.el"
+list-packages "${lisp_dir}/03-visual.el"
 #+end_src
 
-#+NAME: 03-visual-settings.el
+#+NAME: 04-languages
 #+begin_src bash :session list-pkgs
-list-packages "${HOME}/.config/emacs/site-lisp/03-visual-settings.el" \
-    inhibit-mouse
+list-packages "${lisp_dir}/04-languages.el"
 #+end_src
 
-#+NAME: 04-tree-sitter-lang-config.el
+#+NAME: 05-coding
 #+begin_src bash :session list-pkgs
-list-packages "${HOME}/.config/emacs/site-lisp/04-tree-sitter-lang-config.el"
+list-packages "${lisp_dir}/05-coding.el"
 #+end_src
 
-#+NAME: 05-project-management.el
+#+NAME: 06-org-extend
 #+begin_src bash :session list-pkgs
-list-packages "${HOME}/.config/emacs/site-lisp/05-project-management.el"
+list-packages "${lisp_dir}/06-org-extend.el"
 #+end_src
 
-#+NAME: 06-terminal-modes.el
+#+NAME: 07-tools
 #+begin_src bash :session list-pkgs
-list-packages "${HOME}/.config/emacs/site-lisp/06-terminal-modes.el"
-#+end_src
-
-#+NAME: 07-language-configs.el
-#+begin_src bash :session list-pkgs
-list-packages "${HOME}/.config/emacs/site-lisp/07-language-configs.el"
-#+end_src
-
-#+NAME: 08-code-assist.el
-#+begin_src bash :session list-pkgs
-list-packages "${HOME}/.config/emacs/site-lisp/08-code-assist.el"
-#+end_src 
-
-#+NAME: 09-git-tools.el
-#+begin_src bash :session list-pkgs
-list-packages "${HOME}/.config/emacs/site-lisp/09-git-tools.el"
-#+end_src
-
-#+NAME: 10-file-management.el
-#+begin_src bash :session list-pkgs
-list-packages "${HOME}/.config/emacs/site-lisp/10-file-management.el"
-#+end_src
-
-#+NAME: 11-org-mode-extensions.el
-#+begin_src bash :session list-pkgs
-list-packages "${HOME}/.config/emacs/site-lisp/11-org-mode-extensions.el"
-#+end_src
-
-#+NAME: 12-llm-integration.el
-#+begin_src bash :session list-pkgs
-list-packages "${HOME}/.config/emacs/site-lisp/12-llm-integration.el"
-#+end_src
-
-#+NAME: 13-media-player.el
-#+begin_src bash :session list-pkgs
-list-packages "${HOME}/.config/emacs/site-lisp/13-media-player.el"
-#+end_src
-
-#+NAME: 14-misc-packages.el
-#+begin_src bash :session list-pkgs
-list-packages "${HOME}/.config/emacs/site-lisp/14-misc-packages.el" \
-    emacs-everywhere \
+non_android_pkgs=(
+    llm
+    llm-ollama
+    mcp-server-lib
+    org-mcp
+    elisp-dev-mcp
+    gptel
+    ellama
+    emms
+    emms-info-mediainfo
+    emacs-everywhere
     telega
+)
+
+list-packages "${lisp_dir}/07-tools.el" \
+	      "${non_android_pkgs[@]}"
 #+end_src
-
-
-

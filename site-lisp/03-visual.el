@@ -1,18 +1,22 @@
 ;;; 03-visual-settings.el --- Core UI configuration -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; editorconfig, ef-themes, inhibit-mouse, minions, modus-themes, nerd-icons,
-;; nerd-icons-corfu, show-font, tab-line-nerd-icons, visual-fill-column
+;; dashboard, ef-themes, inhibit-mouse, minions, modus-themes, nerd-icons,
+;; nerd-icons-corfu, popper, show-font, tab-line-nerd-icons,
+;; treemacs-nerd-icons, visual-fill-column
 
 ;;; Commentary:
-;; Core UI elements that provide visual feedback and interaction.
+;; Define the user-interface.  In the case of this configuration, start with
+;; some functional, yet beautiful themes, go heavy on the nerd-icons, and finish
+;; off with a dashboard to greet you every time you open Emacs or a new
+;; server-frame.
 
 ;;; Code:
-;;; Start fullscreen:
+;; Start fullscreen:
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 (setq font-use-system-font t)
 
-;;; Themes:
+;;; Themes & Icons:
 ;; Readable Emacs' themes
 (use-package modus-themes
   :demand t
@@ -29,7 +33,7 @@
   :config (modus-themes-load-random 'dark))
 
 
-;;; Icons:
+;; Icons
 (use-package nerd-icons
   :demand t
   :functions (nerd-icons-install-fonts)
@@ -44,10 +48,58 @@
   :config (tab-line-nerd-icons-global-mode 1))
 
 (use-package nerd-icons-corfu
-  :after (nerd-icons)
+  :after (nerd-icons corfu)
   :demand t
   :preface (defvar corfu-margin-formatters)
   :config (add-to-list 'corfu-margin-formatters 'nerd-icons-corfu-formatter))
+
+(use-package treemacs-nerd-icons
+  :after (treemacs nerd-icons)
+  :demand t
+  :functions (treemacs-nerd-icons-config)
+  :config (treemacs-nerd-icons-config))
+
+;; DON'T MOVE THE MOUSE!
+(use-package inhibit-mouse
+  :demand t
+  :unless (eq system-type 'android)
+  :functions (inhibit-mouse-mode)
+  :custom
+  (inhibit-mouse-adjust-mouse-highlight t)
+  (inhibit-mouse-adjust-show-help-function t)
+  :config
+  (if (daemonp)
+      (add-hook 'server-after-make-frame-hook #'inhibit-mouse-mode)
+    (inhibit-mouse-mode 1)))
+
+;; Madeline:
+(use-package minions
+  :demand t
+  :functions (minions-mode)
+  :config (minions-mode 1))
+
+;; Hide (but easily unhide) certain buffers
+(use-package popper
+  :demand t
+  :preface (keymap-global-unset "M-'")
+  :bind (("C-'"   . popper-toggle)
+         ("M-'"   . popper-cycle)
+         ("C-M-'" . popper-toggle-type))
+  :functions (popper-mode popper-echo-mode)
+  :custom (popper-reference-buffers
+           '("\\*Messages\\*" "Output\\*$" "\\*Async Shell Command\\*" help-mode
+             helpful-mode compilation-mode "^\\*vterm.*\\*$" vterm-mode
+             "^\\*eat.*\\*$" eat-mode free-keys-mode))
+  :config
+  (popper-mode +1)
+  (popper-echo-mode +1))
+
+;; Line-length:
+(use-package visual-fill-column
+  :defer t
+  :hook ((prog-mode text-mode conf-mode) . visual-line-mode)
+  :functions (visual-fill-column-for-vline)
+  :init (add-hook 'visual-line-mode-hook #'visual-fill-column-for-vline))
 
 
 ;;; Font:
@@ -201,6 +253,7 @@ If nil, the number of frame lines and columns remains fixed.")
   :defer t
   :commands (show-font-select-preview show-font-tabulated))
 
+;;; Custom visual transient
 (with-eval-after-load 'transient
   (declare-function transient-define-prefix "transient")
   (defvar user/visual-settings-dispatch nil)
@@ -221,36 +274,37 @@ If nil, the number of frame lines and columns remains fixed.")
   (keymap-global-set "C-c u" 'user/visual-settings-dispatch))
 
 
-;;; Other:
-;; de-clutter modeline w/ menu for minor-modes
-(use-package minions
+;;; Dashboard:
+(use-package dashboard
   :demand t
-  :functions (minions-mode)
-  :config (minions-mode 1))
-
-(use-package editorconfig
-  :defer t
-  :hook ((prog-mode text-mode conf-mode) . editorconfig-mode))
-
-(use-package visual-fill-column
-  :defer t
-  :hook ((prog-mode text-mode conf-mode) . visual-line-mode)
-  :functions (visual-fill-column-for-vline)
-  :init (add-hook 'visual-line-mode-hook #'visual-fill-column-for-vline))
-
-;; DON'T MOVE THE MOUSE!
-(use-package inhibit-mouse
-  :demand t
-  :unless (eq system-type 'android)
-  :functions (inhibit-mouse-mode)
+  :preface
+  (defun user/dashboard-setup ()
+    "Correctly start dashboard during Elpaca-managed init."
+    (dashboard-insert-startupify-lists)
+    (dashboard-initialize))
+  
+  :functions (dashboard-insert-startupify-lists
+              dashboard-initialize dashboard-setup-startup-hook
+              dashboard-refresh-buffer dashboard-display-icons-p)
+  :init
+  (add-hook 'elpaca-after-init-hook #'user/dashboard-setup)
+  (setq initial-buffer-choice #'dashboard-refresh-buffer)
   :custom
-  (inhibit-mouse-adjust-mouse-highlight t)
-  (inhibit-mouse-adjust-show-help-function t)
+  (dashboard-startup-banner 'logo)
+  (dashboard-icon-type 'nerd-icons)
+  (dashboard-set-heading-icons t)
+  (dashboard-display-icons-p t)
+  (dashboard-set-file-icons t)
+  (dashboard-center-content t)
+  (dashboard-vertically-center-content t)
+  (dashboard-banner-logo-title "Welcome back")
+  (dashboard-projects-backend 'project-el)
   :config
-  (if (daemonp)
-      (add-hook 'server-after-make-frame-hook #'inhibit-mouse-mode)
-    (inhibit-mouse-mode 1)))
+  (dashboard-setup-startup-hook)
+  (setq dashboard-items
+        `((projects . ,(length (project-known-project-roots)))
+          (recents . 5))))
 
 
-(provide '03-visual-settings)
-;;; 03-visual-settings.el ends here
+(provide '03-visual)
+;;; 03-visual.el ends here
