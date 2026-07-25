@@ -1,4 +1,4 @@
-;;; 07-tools.el --- Integrate or Emulate External Tools -*- lexical-binding: t -*-
+;;; 07-support.el --- Integrate or Emulate External Tools -*- lexical-binding: t -*-
 
 ;;; Packages included:
 ;; casual, casual-avy, dirvish, dwim-shell-command, eat, elisp-dev-mcp, ellama,
@@ -980,5 +980,5 @@ doubles as a model-switcher."
   :bind ("M-g" . casual-avy-tmenu))
 
 
-(provide '07-tools)
-;;; 07-tools.el ends here
+(provide '07-support)
+;;; 07-support.el ends here

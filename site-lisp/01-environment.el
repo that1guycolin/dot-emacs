@@ -1,4 +1,4 @@
-;;; 01-env-cap.el --- Startup & Core Packages -*- lexical-binding: t; -*-
+;;; 01-environment.el --- Startup & Core Packages -*- lexical-binding: t; -*-
 
 ;;; Packages included:
 ;; avy, cape, consult, corfu, emacs, embark, embark-consult, envrc,
@@ -422,5 +422,5 @@ If not in a side window, jump to the first found side window."
          ("C-h z" . helpful-kill-buffers)))
 
 
-(provide '01-env-cap)
-;;; 01-env-cap.el ends here
+(provide '01-environment)
+;;; 01-environment.el ends here
