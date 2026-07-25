@@ -478,6 +478,7 @@ See URL `https://vale.sh'."
             ("vscode-json-language-server" "--stdio"))
            ((markdown-mode markdown-ts-mode) . ("rumdl" "server"))
            ((nxml-mode) . ("lemminx"))
+           ((pkgbuild-mode) . ("termux-language-server", "--check" ))
            ((python-mode python-ts-mode) . ("uv" "run" "rass" "python")))))
     (dolist (con lsp-cons-cells)
       (add-to-list 'eglot-server-programs con))))
