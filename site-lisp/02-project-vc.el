@@ -210,6 +210,10 @@
   :defer t
   :mode ("\\.dockerignore\\'" . gitignore-mode))
 
+(use-package magit-todos
+  :after magit
+  :config (magit-todos-mode 1))
+
 
 ;;; Treemacs:
 (use-package treemacs
