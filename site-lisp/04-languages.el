@@ -468,6 +468,10 @@
   :interpreter ("sh" "zsh" "dash")
   :mode ("\\.zsh\\'" "\\.dash\\'"))
 
+(use-package pkgbuild-mode
+  :defer t
+  :mode "^PKGBUILD\\'")
+
 ;; Fish shell:
 (use-package fish-mode
   :defer t
