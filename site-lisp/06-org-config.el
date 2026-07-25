@@ -571,16 +571,16 @@ With a prefix ARG, remove start location."
                       #'org-noter-pdftools-jump-to-note)))
 
 ;; Recipe Management
-(use-package org-check
+(use-package org-chef
   :after (org)
   :demand t
   :preface
   (defvar user/org-recipe-templates
     '(("c" "Cookbook" entry (file "~/org/cookbook.org")
-       "%(org-check-get-recipe-from-url)"
+       "%(org-chef-get-recipe-from-url)"
        :empty-lines 1)
       ("z" "Protocol Cookbook" entry (file "~/org/cookbook.org")
-       "%(org-check-get-recipe-string-from-url \"%:link\")"
+       "%(org-chef-get-recipe-string-from-url \"%:link\")"
        :empty-lines 1)
       ("m" "Manual Cookbook" entry (file "~/org/cookbook.org")
        "* %^{Recipe title: }\n  :PROPERTIES:\n  :source-url:\n  :servings:\n
@@ -625,8 +625,6 @@ With a prefix ARG, remove start location."
   :after (org)
   :defer t
   :preface
-  (declare-function user/org-check "01-bootstrap-core")
-  
   (defun user/org-tidy-get-styles-cons ()
     "Return a cons list of values for `org-tidy-properties-style'.
 Values are mapped to informative strings."
