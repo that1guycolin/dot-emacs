@@ -51,7 +51,7 @@
 ;; treesit, treesit-fold, vertico, visual-fill-column, visual-regexp,
 ;; visual-regexp-steroids, vterm, with-editor, yaml-pro, yaml-ts-mode
 
-;;; Packages included:
+;;; Packages included (file-local):
 ;; elpaca, elpaca-use-package, no-littering
 
 ;;; Commentary:
@@ -137,7 +137,8 @@
 ;; Neat & tidy `user-emacs-directory'
 (use-package no-littering
   :ensure (:wait t)
-  :demand t)
+  :demand t
+  :functions (no-littering-expand-etc-file-name))
 
 
 ;;; Load Paths:
@@ -145,9 +146,10 @@
   (expand-file-name "site-lisp" user-emacs-directory)
   "Directory from which init files are loaded.")
 
-(defvar user/tools-directory
-  (expand-file-name "etc/tools" user-emacs-directory)
-  "Directory containing scripts, etc for editing this configuration.")
+(with-eval-after-load 'no-littering
+  (defvar user/tools-directory
+    (no-littering-expand-etc-file-name "tools")
+    "Directory containing scripts, etc for editing this configuration."))
 
 (defvar user/projects-directory nil
   "Directory containing active projects.")
@@ -172,7 +174,7 @@
 ;;; Modular Init:
 (with-eval-after-load 'no-littering
   ;; Startup & Core Packages
-  (require '01-env-cap)
+  (require '01-environment)
 
   ;; Projects & Workspaces
   (require '02-project-vc)
@@ -187,10 +189,10 @@
   (require '05-coding)
 
   ;; Org Config & Support Packages
-  (require '06-org-extend)
+  (require '06-org-config)
 
   ;; Integrate or Emulate External Tools
-  (require '07-tools))
+  (require '07-support))
 
 
 (provide 'init)

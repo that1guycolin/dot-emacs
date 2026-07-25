@@ -1,4 +1,4 @@
-;;; 06-org-extend.el --- Org Config & Support Packages -*- lexical-binding: t; -*-
+;;; 06-org-config.el --- Org-Mode Setup -*- lexical-binding: t; -*-
 
 ;;; Packages included:
 ;; djvu, el2org, nov, ob-rust, org, org-edna, org-make-toc, org-mem,
@@ -13,15 +13,32 @@
 ;;; Code:
 (use-package org
   :defer t
-  :preface
-  (declare-function sly-eval "sly")
+  :preface (declare-function sly-eval "sly")
+;;;; Org task sequences
+  (defconst user/org-keywords--get-done
+    '(sequence "TODO(t)" "NEXT(n)" "WAIT(w)" "|" "DONE(d)" "CANCELLED(c)")
+    "Keyword sequence with names based on the getting-things-done method.
+Their implementation in this config is far less strict than traditional GTD.")
 
-  ;; Helper functions
+  (defconst user/org-keywords--ideas
+    '(sequence "THOUGHT(o)" "PLANNING(p)" "IMPLEMENTATION(i)" "|"
+               "COMPLETE(e)" "ABANDONED(a)")
+    "Keyword sequence for turning dreams into reality.")
+
+  (defconst user/org-keywords--reading-list
+    '(sequence "TOREAD(r)" "READING(R)" "|" "FINISHED(f)")
+    "Keyword sequence to track what you're reading.")
+
+  (defconst user/org-keywords--media-download
+    '(sequence "TAGGED(g)" "|" "DOWNLOADED(w)" "IGNORED(I)"))
+  
+;;;; Helper function
   (defun user/org-check ()
     "User-error if buffer is not in `org-mode'."
     (unless (derived-mode-p 'org-mode)
       (user-error "This buffer is not in org mode")))
 
+;;;; `org-id-prefix' functions
   (defun user/org-id-prefix-slug (s)
     "Turn S into a safe(-ish) `org-id-prefix'."
     (when s
@@ -68,6 +85,7 @@ creating org nodes."
       (apply orig-fn args)))
   (advice-add 'org-id-new :around #'user/org-id-dynamic-prefix)
 
+;;;; Custom header settings
   (defun user/org-get-heading-location ()
     "In an org-mode buffer, prompt user to pick a scope.
 The scope could be the entire buffer or a heading within that buffer.
@@ -102,7 +120,20 @@ For entire buffer, return the top of the buffer."
           (when (re-search-forward "^:ID:[ \t]+\\(.+\\)$" nil t)
             (string-trim (match-string 1)))))))
 
-  ;; Insert blocks
+  (defun user/org-update-last-edit-dt ()
+    "Update value of `LAST_EDIT' header in the active Org buffer.
+The new value is the current date & time in this format:
+YYYY-MM-DD DAY HH:MM:ss (e.g., 2026-03-15 SUN 14:24:06)"
+    (when (derived-mode-p 'org-mode)
+      (save-excursion
+        (goto-char (point-min))
+        (when (re-search-forward "^#\\+LAST_EDIT:[ \t]*.*$" nil t)
+          (replace-match
+           (format-time-string
+            "#+LAST_EDIT: [%Y-%m-%d %a %H:%M:%S]"))))))
+  (add-hook 'before-save-hook #'user/org-update-last-edit-dt)
+
+;;;; Insert objects
   (defun user/org-insert-properties-drawer ()
     "Create org properties drawer at an interactively-selected heading."
     (interactive)
@@ -125,7 +156,6 @@ underneath it.  The header block will contain the following fields:
                           nil nil default))))
     (user/org-check)
     (save-excursion
-      (goto-char (point-min))
       (let ((id (or (user/org-top-property-drawer-id)
                     (org-id-new))))
         (if (looking-at org-property-drawer-re)
@@ -164,21 +194,7 @@ underneath it.  The header block will contain the following fields:
       "d" "Properties Drawer"
       "s" "Source Block"))
 
-  (defun user/org-update-last-edit-dt ()
-    "Update value of `LAST_EDIT' header in the active Org buffer.
-The new value is the current date & time in this format:
-YYYY-MM-DD DAY HH:MM:ss (e.g., 2026-03-15 SUN 14:24:06)"
-    (when (derived-mode-p 'org-mode)
-      (save-excursion
-        (goto-char (point-min))
-        (when (re-search-forward
-               "^#\\+LAST_EDIT:[ \t]*.*$"
-               nil t)
-          (replace-match
-           (format-time-string
-            "#+LAST_EDIT: [%Y-%m-%d %a %H:%M:%S]"))))))
-  (add-hook 'before-save-hook #'user/org-update-last-edit-dt)
-
+;;;; Miscellaneous
   (defun user/org-convert-md-links ()
     "Convert all md-style links in the current buffer to org-style."
     (interactive)
@@ -195,7 +211,9 @@ Add this function to `org-mode-hook'."
         (setq search-invisible t)
       (setq search-invisible nil)))
 
+;;;; Finnish use-package sexp
   :bind (("C-c o o" . org-mode)
+         ("C-c o a" . org-agenda)
          ("C-c c"   . org-capture)
          ("C-c o c" . org-capture)
          ("C-c o l" . org-store-link)
@@ -214,21 +232,27 @@ Add this function to `org-mode-hook'."
             (setq org-directory "/storage/emulated/0/Documents/org")
           (setq org-directory (expand-file-name "~/org")))
   :custom
+  (org-agenda-files
+   (directory-files (expand-file-name "tasks" org-directory) t
+                    directory-files-no-dot-files-regexp))
+  (org-agenda-diary-file (expand-file-name "diary" org-directory))
   (org-confirm-babel-evaluate nil)
-  (org-default-notes-file (expand-file-name ".notes" org-directory))
+  (org-default-notes-file (expand-file-name "notes" org-directory))
   (org-edit-src-content-indentation 0)
   (org-id-locations-file (expand-file-name ".id-locations" org-directory))
   (org-id-method 'org)
-  (org-id-prefix "unk")
+  (org-id-prefix "default")
   (org-insert-mode-line-in-empty-file t)
-  (org-startup-folded 'fold)
+  (org-startup-folded 'show2levels)
+  (org-todo-keywords
+   (list user/org-keywords--get-done user/org-keywords--ideas
+         user/org-keywords--reading-list user/org-keywords--media-download))
   (org-use-sub-superscripts '{})
   :config
   (require 'org-id)
   (require 'ox-texinfo)
   (keymap-set org-mode-map "C-c b" user/org-insert-block-map)
   (add-hook 'org-mode-hook #'user/org-search-folded)
-
   (setq org-src-lang-modes (assoc-delete-all "bash" org-src-lang-modes))
   (dolist (lang-mode-cons '(("zsh"   . shell)    ("bash" . bash-ts)
                             ("cmake" . cmake-ts) ("json" . json-ts)
@@ -260,37 +284,123 @@ Add this function to `org-mode-hook'."
   :config (org-edna-mode 1))
 
 ;; Project management via Org
-(use-package org-snitch
-  :defer t
+(use-package org-project-capture
+  :demand t
   :preface
-  (declare-function user/current-project-root "05-project-management.el")
-  (defvar git-commit-mode-map)
+  (defvar org-refile-targets)
 
-  (defun user/smart-project-file ()
-    "Return the name of the project file depending on the current project."
-    (if (string= "~/.config/emacs/" (user/current-project-root))
-        "site-lisp/TODO.ORG" "TODO.org"))
-  
-  :bind (("C-c o s" . org-snitch-dispatch)
-         :map org-snitch-link-mode-map
-         ("C-c C-o" . org-open-at-point-global)
-         ("C-c C-d" . org-snitch-mark-done))
-  :functions (org-snitch-setup org-snitch-mode org-snitch-magit-insert-task)
+  (defun user/remove-org-todo ()
+    "If a TODO.org file exists in the org directory, delete it.
+Because the org-directory is a git repo, there is a possibility of
+accidentally creating a TODO file.  A TODO file in the org-directory is
+by definition redundant, since any TODO items should go in the tasks
+folder."
+    (interactive)
+    (let ((org-dir-todo (expand-file-name "TODO.org" org-directory)))
+      (if (file-exists-p org-dir-todo)
+          (progn
+            (delete-file org-dir-todo)
+            (message "Removed org-directory TODO file."))
+        (when (called-interactively-p 'any)
+          (message "There is no TODO file in the org directory.")))))
+
+  (defun user/open-project-todo ()
+    "Open the \"TODO.org\" file for the current project.
+The file is created if it doesn't exist."
+    (interactive)
+    (unless (project-current)
+      (error "No current project"))
+    (let* ((pr (project-root (project-current)))
+           (todo (expand-file-name "TODO.org" pr)))
+      (find-file todo)))
+
+  :functions (org-project-capture-capture-for-current-project
+              org-project-capture-project-todo-completing-read
+              org-project-capture-agenda-for-current-project)
   :custom
-  (org-snitch-target-file "TODO.org")
-  (org-snitch-capture-key "p")
-  (org-snitch-independent-submodules t)
-  (org-snitch-capture-templates
-   '(("t" . "Tasks")
-     ("b" . "Bugs")
-     ("f" . "Features")
-     ("d" . "Docs")))
+  (org-project-capture-default-backend
+   (make-instance 'org-project-capture-project-backend))
+  (org-project-capture-strategy
+   (make-instance 'org-project-capture-per-project-strategy))
+  (org-project-capture-per-project-filepath "TODO.org")
   :config
-  (org-snitch-setup)
-  (org-snitch-mode 1)
-  (with-eval-after-load 'git-commit
-    (keymap-set git-commit-mode-map
-                "C-c C-t" #'org-snitch-magit-insert-task)))
+  (defvar-keymap user/org-capture-options
+    :doc "Keymap containing available org-capture options."
+    "p" #'org-project-capture-capture-for-current-project
+    "n" #'org-project-capture-project-todo-completing-read
+    "g" #'org-capture)
+  (with-eval-after-load 'which-key
+    (which-key-add-keymap-based-replacements
+      user/org-capture-options
+      "p" "Current Project"
+      "n" "Non-Active Project"
+      "g" "General Capture"))
+  (keymap-global-set "C-c c" user/org-capture-options)
+
+  (defvar-keymap user/org-agenda-options
+    :doc "Keymap containing availble org-agenda views."
+    "p" #'org-project-capture-agenda-for-current-project
+    "g" #'org-agenda)
+  (with-eval-after-load 'which-key
+    (which-key-add-keymap-based-replacements
+      user/org-agenda-options
+      "p" "Current Project"
+      "g" "General Agenda"))
+  (keymap-global-set "C-c a" user/org-agenda-options)
+  
+  (dolist (project (project-known-project-roots))
+    (let ((project-todo (expand-file-name "TODO.org" project)))
+      (when (file-exists-p project-todo)
+        (add-to-list 'org-agenda-files project-todo))))
+
+  (unless org-refile-targets
+    (setq org-refile-targets '((nil :maxlevel . 9)
+                               (org-agenda-files :maxlevel . 9))))
+
+  (with-eval-after-load 'disproject
+    (transient-append-suffix 'disproject-dispatch "C o"
+      '("t" "Project TODO" user/open-project-todo)))
+  (add-hook 'org-mode-hook #'user/remove-org-todo))
+
+(use-package org-category-capture
+  :ensure nil
+  :after (org-project-capture)
+  :demand t
+  :custom (occ-auto-insert-category-heading t))
+
+(use-package org-recur
+  :defer t
+  :bind ((:map org-recur-mode-map
+               ("C-c d"   . org-recur-finish))
+         (:map org-recur-agenda-mode-map
+               ("d"       . org-recur-finish)
+               ("C-c d"   . org-recur-finish)))
+  :hook ((org-mode        . org-recur-mode)
+         (org-agenda-mode . org-recur-agenda-mode))
+  :custom
+  (org-recur-finish-done t)
+  (org-recur-finish-archive t))
+
+(use-package org-super-agenda
+  :after (org)
+  :demand t
+  :init (org-super-agenda-mode)
+  :config
+  (setq
+   org-super-agenda-groups
+   '((:name "Overdue"         :deadline past                 :order 0)
+     (:name "Today"           :time-grid t                 :date today
+            :deadline today   :scheduled today               :order 1)
+     (:name "High Priority"   :priority "A"                  :order 2)
+     (:name "Project Next Actions"                                :and
+            (:todo "NEXT"     :tag "project")                :order 3)
+     (:name "Projects"        :todo "PROJECT"                :order 4)
+     (:name "Emacs"           :tag ("Emacs" "elisp")         :order 5)
+     (:name "org Mode"         :tag "Org"                    :order 6)
+     (:name "Waiting"         :todo "WAITING"                :order 9)
+     (:name "To Read"         :todo "TO-READ" :tag "read"    :order 10)
+     (:name "Someday"         :todo "SOMEDAY"                :order 11)
+     (:name "Remaining Tasks" :anything t                    :order 99))))
 
 
 ;;; Knowledge
@@ -460,6 +570,23 @@ With a prefix ARG, remove start location."
             (add-hook 'pdf-annot-activate-handler-functions
                       #'org-noter-pdftools-jump-to-note)))
 
+;; Recipe Management
+(use-package org-check
+  :after (org)
+  :demand t
+  :preface
+  (defvar user/org-recipe-templates
+    '(("c" "Cookbook" entry (file "~/org/cookbook.org")
+       "%(org-check-get-recipe-from-url)"
+       :empty-lines 1)
+      ("z" "Protocol Cookbook" entry (file "~/org/cookbook.org")
+       "%(org-check-get-recipe-string-from-url \"%:link\")"
+       :empty-lines 1)
+      ("m" "Manual Cookbook" entry (file "~/org/cookbook.org")
+       "* %^{Recipe title: }\n  :PROPERTIES:\n  :source-url:\n  :servings:\n
+:prep-time:\n  :cook-time:\n  :ready-in:\n  :END\n** Ingredients\n
+%?\n** Directions\n\n"))))
+
 
 ;;; Babel
 (use-package ob-rust
@@ -469,26 +596,7 @@ With a prefix ARG, remove start location."
   :config (add-to-list 'org-babel-load-languages '(rust . t)))
 
 
-;;; Miscellaneous
-;; .org from .el
-(use-package el2org
-  :after (org)
-  :defer t
-  :bind (("C-c 2 f" . el2org-generate-file)
-         ("C-c 2 r" . el2org-generate-readme)
-         ("C-c 2 h" . el2org-generate-html)
-         ("C-c 2 o" . el2org-generate-org)))
-
-;; Table-of-contents
-(use-package org-make-toc
-  :after (org)
-  :defer t
-  :bind (:map org-mode-map
-              ("C-^" . org-make-toc-insert)
-              ("C-&" . org-make-toc-set))
-  :hook (org-mode . org-make-toc-mode)
-  :custom (org-make-toc-insert-custom-ids t))
-
+;;; Appearance:
 ;; Improve Org appearance
 (use-package org-modern
   :defer t
@@ -511,13 +619,6 @@ With a prefix ARG, remove start location."
   :after (org org-modern)
   :defer t
   :hook (org-modern-mode . org-modern-indent-mode))
-
-;; Manage time
-(use-package org-pomodoro
-  :after (org)
-  :defer t
-  :bind (:map org-mode-map ("M-P" . org-pomodoro))
-  :custom (org-pomodoro-manual-break t))
 
 ;; Invisible drawers
 (use-package org-tidy
@@ -558,6 +659,40 @@ Values are mapped to informative strings."
   (org-tidy-top-property-style 'invisible)
   (org-tidy-properties-style 'invisible))
 
+(use-package org-appear
+  :defer t
+  :hook (org-mode . org-appear-mode))
 
-(provide '06-org-extend)
-;;; 06-org-extend.el ends here
+
+;;; Miscellaneous
+;; .org from .el
+(use-package el2org
+  :after (org)
+  :defer t
+  :bind (("C-c 2 f" . el2org-generate-file)
+         ("C-c 2 r" . el2org-generate-readme)
+         ("C-c 2 h" . el2org-generate-html)
+         ("C-c 2 o" . el2org-generate-org)))
+
+;; Table-of-contents
+(use-package org-make-toc
+  :after (org)
+  :defer t
+  :bind (:map org-mode-map
+              ("C-^" . org-make-toc-insert)
+              ("C-&" . org-make-toc-set))
+  :hook (org-mode . org-make-toc-mode)
+  :custom (org-make-toc-insert-custom-ids t))
+
+;; Manage time
+(use-package org-pomodoro
+  :after (org)
+  :defer t
+  :bind (:map org-mode-map ("M-P" . org-pomodoro))
+  :custom (org-pomodoro-manual-break t))
+
+
+(provide '06-org-config)
+;;; 06-org-config.el ends here
+
+                                        ; LocalWords:  bolp dt alnum GTD
