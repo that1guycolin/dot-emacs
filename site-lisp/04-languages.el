@@ -531,6 +531,7 @@
 (use-package nxml-mode
   :ensure nil
   :defer t
+  :hook (nxml-mode . (lambda () (setq-local fill-column 250)))
   :mode ("\\.xml\\'"
          "\\.xsd\\'" "\\.xslt\\'" "\\.svg\\'" "\\.rss\\'" "\\.pom\\'")
   :custom
