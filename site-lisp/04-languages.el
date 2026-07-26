@@ -212,9 +212,13 @@
   :preface
   (declare-function corfu-mode "corfu")
 
+  (defun user/sly-load-if-not-connected ()
+    "Connect to sly, unless an active connection exists already."
+    (unless (sly-connected-p) (save-excursion (sly))))
+
   (defvar-keymap user/sly-functions-map
     :doc "Common functions from the sly lisp implementation."
-    "s" #'sly-setup
+    "s" #'sly
     "r" #'sly-mrepl
     "m" #'sly-mrepl-new
     "y" #'sly-mrepl-sync
@@ -237,16 +241,20 @@
   :bind-keymap ("C-c s" . user/sly-functions-map)
   :hook (lisp-mode . sly-editing-mode)
   :init (setq inferior-lisp-program "sbcl")
-  :custom (sly-lisp-implementations
-           '((sbcl ("sbcl" "--load"
-                    (no-littering-expand-etc-file-name "sly-setup.lisp"))
-                   :coding-system utf-8-unix)))
+  :custom
+  (sly-lisp-implementations
+   `((sbcl
+      ("lisp-repl-core-dumper"
+       "-s" "sb-bsd-sockets sb-posix sb-introspect sb-cltl2 asdf"
+       "-g" ,(format "--load %s" (expand-file-name "sly/slynk/slynk-loader.lisp"
+                                                   elpaca-sources-directory))
+       "sbcl"))))
   :config
-  (dolist (contrib '(sly-fancy sly-mrepl sly-indentation
-                               sly-package-fu))
+  (dolist (contrib '(sly-fancy sly-mrepl sly-indentation sly-package-fu))
     (add-to-list 'sly-contribs contrib))
   (setq sly-auto-start 'always)
-  (add-hook 'sly-mrepl-mode-hook #'corfu-mode))
+  (add-hook 'sly-mrepl-mode-hook #'corfu-mode)
+  (add-hook 'sly-mode-hook       #'user/sly-load-if-not-connected))
 
 
 
