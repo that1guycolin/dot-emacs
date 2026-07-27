@@ -26,23 +26,24 @@
   :preface
   (declare-function no-littering-expand-etc-file-name "no-littering")
   (defvar android-home)
-  (defvar user/projects-directory)
-  (defvar user/scripts-directory)
+  (defvar that1guycolin/projects-directory)
+  (defvar that1guycolin/scripts-directory)
   (defvar org-directory)
 
-  (defun user/current-project-root ()
+  (defun that1guycolin/current-project-root ()
     "Return the current project's root directory or nil if not in project."
     (when-let* ((project (project-current nil)))
       (project-root project)))
   
-  (defun user/project-reset-projects ()
+  (defun that1guycolin/project-reset-projects ()
     "Clear the project list and repopulate it."
     (interactive)
     (dolist (project (project-known-project-roots))
       (project-forget-project project))
     (message "Cleared all projects")
     ;; Scan these directories recursively
-    (dolist (dir (list user/projects-directory user/scripts-directory))
+    (dolist (dir (list that1guycolin/projects-directory
+		       that1guycolin/scripts-directory))
       (project-remember-projects-under dir t))
     ;; Scan these directories (but not their subdirectories)
     (let ((dotfiles-dir
@@ -68,7 +69,7 @@
   :preface (keymap-global-unset "C-x p")
   :bind (:map ctl-x-map ("p" . disproject-dispatch))
   :config (transient-append-suffix 'disproject-dispatch "M-x"
-            '("R" "Reset Projects" user/project-reset-projects)))
+            '("R" "Reset Projects" that1guycolin/project-reset-projects)))
 
 (use-package consult-project-extra
   :demand t
@@ -89,7 +90,7 @@
   (defvar edebug-inhibit-emacs-lisp-mode-bindings t)
   (setq edebug-inhibit-emacs-lisp-mode-bindings t)
 
-  (defvar-keymap user/activities-map
+  (defvar-keymap that1guycolin/activities-map
     :doc "Functions from the package activities.el"
     "n"          #'activities-new
     "d"          #'activities-define
@@ -104,7 +105,7 @@
     "C-d"        #'activities-discard)
   (with-eval-after-load 'which-key
     (which-key-add-keymap-based-replacements
-      user/activities-map
+      that1guycolin/activities-map
       "n"        "New Activity"
       "d"        "Define Activity"
       "r"        "Resume Activity"
@@ -116,7 +117,7 @@
       "l"        "List Activities"
       "C-r"      "Rename Activity"
       "C-d"      "Discard Activity"))
-  :bind-keymap ("C-x C-a" . user/activities-map)
+  :bind-keymap ("C-x C-a" . that1guycolin/activities-map)
   :functions (activities-new
               activities-define activities-resume activities-suspend
               activities-kill activities-switch activities-switch-buffer
@@ -142,11 +143,11 @@
 (use-package forge
   :defer t
   :preface
-  (defun user/interactive-forge-pull ()
+  (defun that1guycolin/interactive-forge-pull ()
     "Call forge-pull interactively."
     (interactive)
     (call-interactively #'forge-pull))
-  :hook (magit-status-mode . user/interactive-forge-pull)
+  :hook (magit-status-mode . that1guycolin/interactive-forge-pull)
   :functions (forge-pull)
   :custom (forge-pull-notifications t))
 
@@ -161,7 +162,7 @@
               diff-hl-show-hunk-next)
   :custom (diff-hl-show-staged-changes nil)
   :config
-  (defvar-keymap user/diff-hl-functions
+  (defvar-keymap that1guycolin/diff-hl-functions
     :doc "Functions to use in diff-hl-mode."
     "*" #'diff-hl-show-hunk
     "=" #'diff-hl-diff-goto-hunk
@@ -173,7 +174,7 @@
     "}" #'diff-hl-show-hunk-next)
   (with-eval-after-load 'which-key
     (which-key-add-keymap-based-replacements
-      user/diff-hl-functions
+      that1guycolin/diff-hl-functions
       "*" "Show Hunk"
       "=" "Goto Hunk"
       "S" "Stage"
@@ -182,7 +183,7 @@
       "]" "Next Hunk"
       "{" "Show Prev. Hunk"
       "}" "Show Next Hunk"))
-  (keymap-global-set "C-x v ?" user/diff-hl-functions))
+  (keymap-global-set "C-x v ?" that1guycolin/diff-hl-functions))
 
 (use-package git-commit-ts-mode
   :after (treesit)
@@ -192,18 +193,18 @@
 (use-package git-link
   :defer t
   :preface
-  (defvar-keymap user/git-link-functions-map
+  (defvar-keymap that1guycolin/git-link-functions-map
     :doc "Useful functions from the package `git-link'."
     "l" #'git-link
     "c" #'git-link-commit
     "h" #'git-link-homepage)
   (with-eval-after-load 'which-key
     (which-key-add-keymap-based-replacements
-      user/git-link-functions-map
+      that1guycolin/git-link-functions-map
       "l" "Link to current buffer"
       "c" "Link to specified commit"
       "h" "Link to repo homepage"))
-  :bind-keymap ("C-c C-y" . user/git-link-functions-map)
+  :bind-keymap ("C-c C-y" . that1guycolin/git-link-functions-map)
   :functions (git-link git-link-commit git-link-homepage))
 
 (use-package git-modes
@@ -219,7 +220,7 @@
 (use-package treemacs
   :defer t
   :preface
-  (defun user/treemacs-switch-workspace-focus ()
+  (defun that1guycolin/treemacs-switch-workspace-focus ()
     "Run `treemacs-switch-workspace' and ensure the Treemacs window is focused.
 The ending behaviour, where treemacs is selected, then unselected, then
 selected again,"
@@ -232,7 +233,7 @@ selected again,"
           (other-window 1))
         (select-window treemacs-win))))
 
-  (defun user/toggle-gitignored-wait-2 (&rest _args)
+  (defun that1guycolin/toggle-gitignored-wait-2 (&rest _args)
     "Toggle `treemacs-hide-gitignored-files-mode' if treemacs window.
 Wait two seconds before activating the mode."
     (pcase (treemacs-current-visibility)
@@ -245,9 +246,9 @@ Wait two seconds before activating the mode."
                     #'(lambda ()
                         (treemacs-hide-gitignored-files-mode 1))))
       ('none (ignore))))
-  (advice-add 'treemacs :after #'user/toggle-gitignored-wait-2)
+  (advice-add 'treemacs :after #'that1guycolin/toggle-gitignored-wait-2)
 
-  (defun user/close-treemacs (&rest _args)
+  (defun that1guycolin/close-treemacs (&rest _args)
     "If a treemacs window exists, close it."
     (when (eq 'visible (treemacs-current-visibility))
       (treemacs)))
@@ -272,7 +273,7 @@ Wait two seconds before activating the mode."
   (treemacs-git-mode 'deferred)
   (treemacs-git-commit-diff-mode 1)
   (treemacs-project-follow-mode 1)
-  (advice-add 'disproject-dispatch :before #'user/close-treemacs))
+  (advice-add 'disproject-dispatch :before #'that1guycolin/close-treemacs))
 
 ;; Integrations
 (use-package project-treemacs

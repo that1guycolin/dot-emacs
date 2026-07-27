@@ -29,7 +29,7 @@
 (use-package docstr
   :defer t
   :preface
-  (defun user/print-docstr-hooks ()
+  (defun that1guycolin/print-docstr-hooks ()
     "Print the `use-package' \":key\" values for `docstr'."
     (interactive)
     (insert ":hook (")
@@ -124,19 +124,21 @@
 (use-package flycheck
   :defer t
   :preface
-  (defvar user/lisp-directory)
+  (defvar that1guycolin/lisp-directory)
   (defvar minions-prominent-modes)
   (defvar sh-shell)
-  (defun user/setup-vale ()
+  (defun that1guycolin/setup-vale ()
     "If not setup, install the vale from the .ini file in site-lisp."
     (interactive)
-    (let* ((vale-config (expand-file-name ".vale.ini" user/lisp-directory))
-           (vale-install (expand-file-name ".vale-styles" user/lisp-directory))
+    (let* ((vale-config (expand-file-name ".vale.ini"
+                                          that1guycolin/lisp-directory))
+           (vale-install (expand-file-name ".vale-styles"
+                                           that1guycolin/lisp-directory))
            (command (format "vale --config %s sync >/dev/null" vale-config)))
       (unless (file-exists-p vale-install)
         (shell-command command))))
 
-  (defun user/flycheck-shellcheck-setup-dash ()
+  (defun that1guycolin/flycheck-shellcheck-setup-dash ()
     "Update `flycheck-shell-check-args' when `sh-shell' is dash."
     (when (and (eq major-mode 'sh) (eq sh-shell 'dash))
       (setq-local flycheck-shellcheck-args '("--shell=dash"))))
@@ -151,7 +153,7 @@
   (add-to-list 'minions-prominent-modes 'flycheck-mode)
   (add-to-list 'flycheck-shellcheck-supported-shells 'dash)
   (flycheck-add-mode 'yaml-yamllint 'docker-compose-mode)
-  (add-hook 'sh-mode-hook #'user/flycheck-shellcheck-setup-dash)
+  (add-hook 'sh-mode-hook #'that1guycolin/flycheck-shellcheck-setup-dash)
 
   (flycheck-define-checker cl-ocicl
     "Common Lisp checker using `ocicl lint`."
@@ -296,18 +298,18 @@ See URL `https://vale.sh'."
   (flyover-hide-during-completion t)
   :config
   (flyover-mode 1)
-  (defvar-keymap user/flyover-functions-map
+  (defvar-keymap that1guycolin/flyover-functions-map
     :doc "Useful functions for `flyover'."
     "m" #'flyover-mode
     "t" #'flyover-toggle
     "P" #'flyover-flash-error-at-point)
   (with-eval-after-load 'which-key
     (which-key-add-keymap-based-replacements
-      user/flyover-functions-map
+      that1guycolin/flyover-functions-map
       "m" "(De)Activate Flyover-Mode"
       "t" "Flyover Toggle"
       "p" "Flash Error @ Point"))
-  (keymap-global-set "C-c y" user/flyover-functions-map))
+  (keymap-global-set "C-c y" that1guycolin/flyover-functions-map))
 
 ;; Buffer status
 (use-package flycheck-color-mode-line
@@ -365,7 +367,7 @@ See URL `https://vale.sh'."
 (use-package apheleia
   :defer t
   :preface
-  (defun user/apheleia-set-json-formatter (fmtr)
+  (defun that1guycolin/apheleia-set-json-formatter (fmtr)
     "Get user-input on which FMTR they want for JSON files."
     (interactive
      (list (completing-read
@@ -378,7 +380,7 @@ See URL `https://vale.sh'."
      (alist-get 'json-ts-mode apheleia-mode-alist) fmtr)
     (message "JSON formatter set to %s" fmtr))
   
-  (defun user/apheleia-toggle-json-formatter ()
+  (defun that1guycolin/apheleia-toggle-json-formatter ()
     "Switch aphelia formatter between jq & prettier in json-modes."
     (interactive)
     (unless (memq major-mode '(json-ts-mode js-json-mode))
@@ -386,13 +388,13 @@ See URL `https://vale.sh'."
     (let ((current-fmtr (alist-get major-mode apheleia-mode-alist)))
       (cond
        ((eq current-fmtr 'jq)
-        (user/apheleia-set-json-formatter 'prettier-json))
+        (that1guycolin/apheleia-set-json-formatter 'prettier-json))
        ((eq current-fmtr 'prettier-json)
-        (user/apheleia-set-json-formatter 'jq))
+        (that1guycolin/apheleia-set-json-formatter 'jq))
        (t
-        (call-interactively #'user/apheleia-set-json-formatter)))))
+        (call-interactively #'that1guycolin/apheleia-set-json-formatter)))))
 
-  (defun user/apheleia-set-yaml-formatter (fmtr)
+  (defun that1guycolin/apheleia-set-yaml-formatter (fmtr)
     "Get user-input on which FMTR they want for Yaml files."
     (interactive
      (list (completing-read
@@ -406,7 +408,7 @@ See URL `https://vale.sh'."
      (alist-get 'docker-compose-mode apheleia-mode-alist) fmtr)
     (message "Yaml formatter set to %s" fmtr))
 
-  (defun user/apheleia-toggle-yaml-formatter ()
+  (defun that1guycolin/apheleia-toggle-yaml-formatter ()
     "Switch aphelia formatter between yamlfmt & prettier in yaml modes."
     (interactive)
     (unless (memq major-mode '(yaml-mode yaml-ts-mode docker-compose-mode))
@@ -414,11 +416,11 @@ See URL `https://vale.sh'."
     (let ((current-fmtr (alist-get major-mode apheleia-mode-alist)))
       (cond
        ((eq current-fmtr 'yamlfmt)
-        (user/apheleia-set-yaml-formatter 'prettier-yaml))
+        (that1guycolin/apheleia-set-yaml-formatter 'prettier-yaml))
        ((eq current-fmtr 'prettier-yaml)
-        (user/apheleia-set-yaml-formatter 'yamlfmt))
+        (that1guycolin/apheleia-set-yaml-formatter 'yamlfmt))
        (t
-        (call-interactively #'user/apheleia-set-yaml-formatter)))))
+        (call-interactively #'that1guycolin/apheleia-set-yaml-formatter)))))
 
   :bind ("C-c f" . apheleia-format-buffer)
   :hook ((prog-mode text-mode) . apheleia-mode)
@@ -456,19 +458,19 @@ See URL `https://vale.sh'."
    (alist-get 'yaml-ts-mode        apheleia-mode-alist) 'yamlfmt)
   (with-eval-after-load 'js-json-mode
     (keymap-set js-json-mode-map "C-c v"
-                #'user/apheleia-toggle-json-formatter))
+                #'that1guycolin/apheleia-toggle-json-formatter))
   (with-eval-after-load 'json-ts-mode
     (keymap-set json-ts-mode-map "C-c v"
-                #'user/apheleia-toggle-json-formatter))
+                #'that1guycolin/apheleia-toggle-json-formatter))
   (with-eval-after-load 'docker-compose-mode
     (keymap-set docker-compose-mode-map "C-c w"
-                #'user/apheleia-toggle-yaml-formatter))
+                #'that1guycolin/apheleia-toggle-yaml-formatter))
   (with-eval-after-load 'yaml-mode
     (keymap-set yaml-mode-map "C-c v"
-                #'user/apheleia-toggle-yaml-formatter))
+                #'that1guycolin/apheleia-toggle-yaml-formatter))
   (with-eval-after-load 'yaml-ts-mode
     (keymap-set yaml-ts-mode-map "C-c v"
-                #'user/apheleia-toggle-yaml-formatter)))
+                #'that1guycolin/apheleia-toggle-yaml-formatter)))
 
 
 ;;; Language-Server-Protocol (eglot):
@@ -618,7 +620,7 @@ See URL `https://vale.sh'."
               kirigami-open-fold-rec kirigami-open-folds kirigami-close-fold
               kirigami-close-folds kirigami-toggle-fold)
   :config
-  (defvar-keymap user/kirigami-functions-map
+  (defvar-keymap that1guycolin/kirigami-functions-map
     :doc "Common code folding functions from `kirigami'."
     "o" #'kirigami-open-fold
     "r" #'kirigami-open-fold-rec
@@ -628,14 +630,14 @@ See URL `https://vale.sh'."
     "a" #'kirigami-toggle-fold)
   (with-eval-after-load 'which-key
     (which-key-add-keymap-based-replacements
-      user/kirigami-functions-map
+      that1guycolin/kirigami-functions-map
       "o" "Open Fold"
       "r" "Recursively Open Fold"
       "u" "Open Folds"
       "c" "Close Fold"
       "f" "Close Folds"
       "a" "Toggle Folds"))
-  (keymap-global-set "C-c z" user/kirigami-functions-map))
+  (keymap-global-set "C-c z" that1guycolin/kirigami-functions-map))
 
 
 ;;; Spellcheck:

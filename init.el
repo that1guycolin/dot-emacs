@@ -142,19 +142,19 @@
 
 
 ;;; Load Paths:
-(defvar user/lisp-directory
+(defvar that1guycolin/lisp-directory
   (expand-file-name "site-lisp" user-emacs-directory)
   "Directory from which init files are loaded.")
 
 (with-eval-after-load 'no-littering
-  (defvar user/tools-directory
+  (defvar that1guycolin/tools-directory
     (no-littering-expand-etc-file-name "tools")
     "Directory containing scripts, etc for editing this configuration."))
 
-(defvar user/projects-directory nil
+(defvar that1guycolin/projects-directory nil
   "Directory containing active projects.")
 
-(defvar user/scripts-directory nil
+(defvar that1guycolin/scripts-directory nil
   "Directory containing custom \='one off' scripts.")
 
 (if (eq system-type 'android)
@@ -162,13 +162,15 @@
       (defvar android-home "/data/data/com.termux/files/home"
         "Termux home directory on Android.")
       (setq
-       user/projects-directory (expand-file-name "projects" android-home)
-       user/scripts-directory (expand-file-name "scripts" android-home)))
+       that1guycolin/projects-directory (expand-file-name "projects"
+                                                          android-home)
+       that1guycolin/scripts-directory (expand-file-name "scripts"
+                                                         android-home)))
   (setq
-   user/projects-directory (expand-file-name "~/projects")
-   user/scripts-directory (expand-file-name "~/scripts")))
+   that1guycolin/projects-directory (expand-file-name "~/projects")
+   that1guycolin/scripts-directory (expand-file-name "~/scripts")))
 
-(add-to-list 'load-path user/lisp-directory)
+(add-to-list 'load-path that1guycolin/lisp-directory)
 
 
 ;;; Modular Init:

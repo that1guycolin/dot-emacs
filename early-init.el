@@ -15,31 +15,32 @@
           "/data/data/com.termux/files/usr/lib/pkgconfig/"))
 
 ;;; Optionally Profile Startup
-(defvar user/profile-startup nil
+(defvar that1guycolin/profile-startup nil
   "When non-nil, enable CPU profiling during startup.")
 
-(when user/profile-startup
+(when that1guycolin/profile-startup
   (declare-function profiler-stop "profiler")
   (declare-function profiler-report "profiler")
   (setq debug-on-error t)
   (profiler-start 'cpu)
-  (defvar user/profiler-report-active-p nil
-    "Non-nil if if user/profiler-startup-report has been triggered.")
-  (defun user/profiler-startup-report ()
+  (defvar that1guycolin/profiler-report-active-p nil
+    "Non-nil if if that1guycolin/profiler-startup-report has been triggered.")
+  (defun that1guycolin/profiler-startup-report ()
     "Stop the cpu profiler and generate its report."
-    (unless user/profiler-report-active-p
+    (unless that1guycolin/profiler-report-active-p
       (require 'profiler)
       (profiler-stop)
       (with-eval-after-load 'profiler
         (profiler-report))))
-  (declare-function user/profiler-startup-report "early-init.el")
+  (declare-function that1guycolin/profiler-startup-report "early-init.el")
   (add-hook 'emacs-startup-hook
             #'(lambda ()
-                (run-with-idle-timer 10 nil #'user/profiler-startup-report)))
-  (run-with-idle-timer 30 nil #'user/profiler-startup-report))
+                (run-with-idle-timer 10 nil
+                                     #'that1guycolin/profiler-startup-report)))
+  (run-with-idle-timer 30 nil #'that1guycolin/profiler-startup-report))
 
 ;;; Modify variables for startup, then reset
-(defvar user/file-name-handler-alist-backup file-name-handler-alist)
+(defvar that1guycolin/file-name-handler-alist-backup file-name-handler-alist)
 (setq
  ;; Ignore `tramp' & `compressed'/`archive'
  file-name-handler-alist nil
@@ -48,7 +49,8 @@
 (add-hook 'emacs-startup-hook
           (lambda ()
             (setq
-             file-name-handler-alist user/file-name-handler-alist-backup
+             file-name-handler-alist
+             that1guycolin/file-name-handler-alist-backup
              inhibit-message nil)))
 
 ;;; Other Variable Mods

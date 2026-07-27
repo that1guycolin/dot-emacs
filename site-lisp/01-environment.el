@@ -14,7 +14,8 @@
 ;; snippets (tempel) are loaded first because they hook into the completion
 ;; functions that follow.
 ;;
-;; Note that every package in this file, even if called with `:after t', is called with `:demand t'.
+;; Note that every package in this file, even if called with `:after t', is
+;; called with `:demand t'.
 
 ;;; Code:
 ;;; Global Settings:
@@ -22,35 +23,35 @@
   :ensure nil
   :demand t
   :preface
-  (defun user/check-parens-with-message ()
+  (defun that1guycolin/check-parens-with-message ()
     "Run `check-parens'.  Print a message when all parentheses match."
     (interactive)
     (when (not (check-parens))
       (message "All parentheses match!")))
 
-  (defun user/ibuffer-hook-functions ()
+  (defun that1guycolin/ibuffer-hook-functions ()
     "Group of functions to include in `ibuffer-mode-hook'."
     (hl-line-mode 1)
     (ibuffer-auto-mode 1))
 
-  (defun user/untabify-buffer ()
+  (defun that1guycolin/untabify-buffer ()
     "Run `untabify' over current buffer."
     (interactive)
     (untabify (point-min) (point-max)))
 
-  (defvar user/no-tab-modes
+  (defvar that1guycolin/no-tab-modes
     '(bash-ts-mode
       emacs-lisp-mode lisp-mode lisp-data-mode python-mode python-ts-mode
       sh-mode)
     "Major modes indented by spaces and not by tabs.")
 
-  (defun user/untabify-when-no-tab-mode ()
-    "Run `user/untabify-buffer' if `major-mode' member `user/no-tab-modes'."
-    (when (member major-mode user/no-tab-modes)
-      (user/untabify-buffer)))
+  (defun that1guycolin/untabify-when-no-tab-mode ()
+    "Run `untabify-buffer' if `major-mode' in `no-tab-modes'."
+    (when (member major-mode that1guycolin/no-tab-modes)
+      (that1guycolin/untabify-buffer)))
 
   ;; Side window:
-  (defun user/toggle-side-window ()
+  (defun that1guycolin/toggle-side-window ()
     "Switch focus between a side window and the main window area.
 If in a side window, return to the last used window.
 If not in a side window, jump to the first found side window."
@@ -68,17 +69,17 @@ If not in a side window, jump to the first found side window."
        (t
         (select-window side-window)))))
 
-  (defvar user/emacs-load-libs '(bs cl-lib hl-line mouse seq subr-x)
+  (defvar that1guycolin/emacs-load-libs '(bs cl-lib hl-line mouse seq subr-x)
     "List of optional Emacs libraries to load at Emacs start.")
 
   :bind (("C-TAB"   . completion-at-point)
          ("C-c C-x" . toggle-frame-maximized)
-         ("C-c ("   . user/check-parens-with-message)
+         ("C-c ("   . that1guycolin/check-parens-with-message)
          ("C-c #"   . display-line-numbers-mode)
          ("C-c C-#" . global-display-line-numbers-mode)
          ("C-c C-$" . restart-emacs)
-         ("M-0"     . user/toggle-side-window))
-  :hook (after-save . user/untabify-when-no-tab-mode)
+         ("M-0"     . that1guycolin/toggle-side-window))
+  :hook (after-save . that1guycolin/untabify-when-no-tab-mode)
   :functions (ibuffer-auto-mode)
   :custom
   (auto-save-visited-interval 60)
@@ -89,9 +90,9 @@ If not in a side window, jump to the first found side window."
   (tab-always-indent 'complete)
   (text-mode-ispell-word-completion nil)
   :config
-  (dolist (lib user/emacs-load-libs)
+  (dolist (lib that1guycolin/emacs-load-libs)
     (require lib))
-  (add-hook 'ibuffer-mode-hook #'user/ibuffer-hook-functions)
+  (add-hook 'ibuffer-mode-hook #'that1guycolin/ibuffer-hook-functions)
   (abbrev-mode 1)
   (auto-save-visited-mode 1)
   (context-menu-mode 1)
@@ -121,15 +122,15 @@ If not in a side window, jump to the first found side window."
   (declare-function elpaca-build-docs-process-sentinel    "elpaca")
   (declare-function elpaca-build-compile                  "elpaca")
   
-  (defun user/elpaca-update-menus ()
+  (defun that1guycolin/elpaca-update-menus ()
     "Non-interactively run `elpaca-update-menus'."
     (interactive)
     (funcall #'elpaca-update-menus))
 
-  (defvar-keymap user/elpaca-options-map
+  (defvar-keymap that1guycolin/elpaca-options-map
     :doc "Functions for Elpaca package manager."
     "m"    #'elpaca-manager
-    "n"    #'user/elpaca-update-menus
+    "n"    #'that1guycolin/elpaca-update-menus
     "f"    #'elpaca-fetch
     "F"    #'elpaca-fetch-all
     "e"    #'elpaca-merge
@@ -144,7 +145,7 @@ If not in a side window, jump to the first found side window."
 
   (with-eval-after-load 'which-key
     (which-key-add-keymap-based-replacements
-      user/elpaca-options-map
+      that1guycolin/elpaca-options-map
       "m"   "Elpaca Manager"
       "n"   "Update Menus"
       "f"   "Fetch"
@@ -158,7 +159,7 @@ If not in a side window, jump to the first found side window."
       "b d" "Build Docs"
       "b D" "Build Docs (Process Sentinel)"
       "b c" "Build Compile"))
-  :bind-keymap ("C-c e" . user/elpaca-options-map))
+  :bind-keymap ("C-c e" . that1guycolin/elpaca-options-map))
 
 ;;; Other bootstraps:
 ;; Smart garbage collection
@@ -171,7 +172,7 @@ If not in a side window, jump to the first found side window."
 (use-package exec-path-from-shell
   :demand t
   :preface
-  (defvar user/exec-path-from-shell-vars
+  (defvar that1guycolin/exec-path-from-shell-vars
     '("CC"
       "CXX" "INFOPATH" "LSP_USE_PLISTS" "PKG_CONFIG_PATH" "SSH_AGENT_PID"
       "SSH_AUTH_SOCK" "WAYLAND_DISPLAY")
@@ -179,7 +180,7 @@ If not in a side window, jump to the first found side window."
   :functions (exec-path-from-shell-initialize)
   :custom (exec-path-from-shell-shell-name "zsh")
   :config
-  (dolist (var user/exec-path-from-shell-vars)
+  (dolist (var that1guycolin/exec-path-from-shell-vars)
     (add-to-list 'exec-path-from-shell-variables var))
   (exec-path-from-shell-initialize))
 
@@ -200,12 +201,12 @@ If not in a side window, jump to the first found side window."
   :demand t
   :preface
   (defvar no-littering-etc-directory)
-  (defun user/tempel-setup-capf ()
+  (defun that1guycolin/tempel-setup-capf ()
     "Locally add relevant tempel items to `completion-at-point-functions'."
     (setq-local completion-at-point-functions
                 (cons #'tempel-complete completion-at-point-functions)))
 
-  (defun user/tempel-edit-custom-templates ()
+  (defun that1guycolin/tempel-edit-custom-templates ()
     "Open tempel template file(s) in another window."
     (interactive)
     (if (listp tempel-path)
@@ -215,11 +216,11 @@ If not in a side window, jump to the first found side window."
   
   :bind (("M-+"   . tempel-insert)
          ("M-*"   . tempel-complete)
-         ("C-M-+" . user/tempel-edit-custom-templates)
+         ("C-M-+" . that1guycolin/tempel-edit-custom-templates)
          :map tempel-map
          ("TAB"   . tempel-next)
          ("C-TAB" . tempel-previous))
-  :hook ((text-mode prog-mode conf-mode) . user/tempel-setup-capf)
+  :hook ((text-mode prog-mode conf-mode) . that1guycolin/tempel-setup-capf)
   :functions (tempel-complete tempel-abbrev-mode)
 
   :init

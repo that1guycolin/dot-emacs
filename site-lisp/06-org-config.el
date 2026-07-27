@@ -15,31 +15,31 @@
   :defer t
   :preface (declare-function sly-eval "sly")
 ;;;; Org task sequences
-  (defconst user/org-keywords--get-done
+  (defconst that1guycolin/org-keywords--get-done
     '(sequence "TODO(t)" "NEXT(n)" "WAIT(w)" "|" "DONE(d)" "CANCELLED(c)")
     "Keyword sequence with names based on the getting-things-done method.
 Their implementation in this config is far less strict than traditional GTD.")
 
-  (defconst user/org-keywords--ideas
+  (defconst that1guycolin/org-keywords--ideas
     '(sequence "THOUGHT(o)" "PLANNING(p)" "IMPLEMENTATION(i)" "|"
                "COMPLETE(e)" "ABANDONED(a)")
     "Keyword sequence for turning dreams into reality.")
 
-  (defconst user/org-keywords--reading-list
+  (defconst that1guycolin/org-keywords--reading-list
     '(sequence "TOREAD(r)" "READING(R)" "|" "FINISHED(f)")
     "Keyword sequence to track what you're reading.")
 
-  (defconst user/org-keywords--media-download
+  (defconst that1guycolin/org-keywords--media-download
     '(sequence "TAGGED(g)" "|" "DOWNLOADED(w)" "IGNORED(I)"))
   
 ;;;; Helper function
-  (defun user/org-check ()
+  (defun that1guycolin/org-check ()
     "User-error if buffer is not in `org-mode'."
     (unless (derived-mode-p 'org-mode)
       (user-error "This buffer is not in org mode")))
 
 ;;;; `org-id-prefix' functions
-  (defun user/org-id-prefix-slug (s)
+  (defun that1guycolin/org-id-prefix-slug (s)
     "Turn S into a safe(-ish) `org-id-prefix'."
     (when s
       (replace-regexp-in-string
@@ -48,19 +48,19 @@ Their implementation in this config is far less strict than traditional GTD.")
         "[^[:alnum:]_]+" "-"
         (downcase s)))))
 
-  (defun user/get-parent-directory ()
+  (defun that1guycolin/get-parent-directory ()
     "Return parent directory name for current buffer."
     (when buffer-file-name
       (file-name-nondirectory
        (directory-file-name
         (file-name-directory buffer-file-name)))))
 
-  (defun user/org-id-context-prefix ()
+  (defun that1guycolin/org-id-context-prefix ()
     "Return `org-id-prefix' based on node level."
-    (user/org-check)
+    (that1guycolin/org-check)
     (cond
      ((org-before-first-heading-p)
-      (user/get-parent-directory))
+      (that1guycolin/get-parent-directory))
      ((save-excursion
         (org-back-to-heading t)
         (= (org-outline-level) 1))
@@ -72,25 +72,26 @@ Their implementation in this config is far less strict than traditional GTD.")
         (when (org-up-heading-safe)
           (org-get-heading t t t t))))))
 
-  (defun user/org-id-dynamic-prefix (orig-fn &rest args)
+  (defun that1guycolin/org-id-dynamic-prefix (orig-fn &rest args)
     "Dynamically compute org-id-prefix' each time an ID is created.
 Designed to wrap around ORIG-FN `org-id-new' (accepting the same ARGS) when
 creating org nodes."
     (defvar org-id-prefix)
     (let ((org-id-prefix
            (if (derived-mode-p 'org-mode)
-               (or (user/org-id-prefix-slug (user/org-id-context-prefix))
+               (or (that1guycolin/org-id-prefix-slug
+                    (that1guycolin/org-id-context-prefix))
                    org-id-prefix)
-             (user/get-parent-directory))))
+             (that1guycolin/get-parent-directory))))
       (apply orig-fn args)))
-  (advice-add 'org-id-new :around #'user/org-id-dynamic-prefix)
+  (advice-add 'org-id-new :around #'that1guycolin/org-id-dynamic-prefix)
 
 ;;;; Custom header settings
-  (defun user/org-get-heading-location ()
+  (defun that1guycolin/org-get-heading-location ()
     "In an org-mode buffer, prompt user to pick a scope.
 The scope could be the entire buffer or a heading within that buffer.
 For entire buffer, return the top of the buffer."
-    (user/org-check)
+    (that1guycolin/org-check)
     (let* ((doc-option `(,(buffer-name) . document))
            (heading-options
             (org-map-entries
@@ -108,9 +109,9 @@ For entire buffer, return the top of the buffer."
           (point-min)
         location)))
 
-  (defun user/org-top-property-drawer-id ()
+  (defun that1guycolin/org-top-property-drawer-id ()
     "Return ID from a top-of-file-property-drawer, or nil."
-    (user/org-check)
+    (that1guycolin/org-check)
     (save-excursion
       (goto-char (point-min))
       (when (looking-at org-property-drawer-re)
@@ -120,7 +121,7 @@ For entire buffer, return the top of the buffer."
           (when (re-search-forward "^:ID:[ \t]+\\(.+\\)$" nil t)
             (string-trim (match-string 1)))))))
 
-  (defun user/org-update-last-edit-dt ()
+  (defun that1guycolin/org-update-last-edit-dt ()
     "Update value of `LAST_EDIT' header in the active Org buffer.
 The new value is the current date & time in this format:
 YYYY-MM-DD DAY HH:MM:ss (e.g., 2026-03-15 SUN 14:24:06)"
@@ -131,20 +132,20 @@ YYYY-MM-DD DAY HH:MM:ss (e.g., 2026-03-15 SUN 14:24:06)"
           (replace-match
            (format-time-string
             "#+LAST_EDIT: [%Y-%m-%d %a %H:%M:%S]"))))))
-  (add-hook 'before-save-hook #'user/org-update-last-edit-dt)
+  (add-hook 'before-save-hook #'that1guycolin/org-update-last-edit-dt)
 
 ;;;; Insert objects
-  (defun user/org-insert-properties-drawer ()
+  (defun that1guycolin/org-insert-properties-drawer ()
     "Create org properties drawer at an interactively-selected heading."
     (interactive)
-    (user/org-check)
-    (goto-char (user/org-get-heading-location))
+    (that1guycolin/org-check)
+    (goto-char (that1guycolin/org-get-heading-location))
     (org-id-get-create)
     (unless (org-entry-get nil "CREATED")
       (org-entry-put nil "CREATED"
                      (format-time-string "[%Y-%m-%d %a %H:%M:%S]"))))
   
-  (defun user/org-insert-header-block (title author)
+  (defun that1guycolin/org-insert-header-block (title author)
     "Insert a header block at the top of the current document.
 If there is a properties drawer at the top, the header block will go
 underneath it.  The header block will contain the following fields:
@@ -154,9 +155,9 @@ underneath it.  The header block will contain the following fields:
            (let ((default "Colin Loeffler (that1guycolin)"))
              (read-string (format "Author [DEFAULT: \"%s\"]: " default)
                           nil nil default))))
-    (user/org-check)
+    (that1guycolin/org-check)
     (save-excursion
-      (let ((id (or (user/org-top-property-drawer-id)
+      (let ((id (or (that1guycolin/org-top-property-drawer-id)
                     (org-id-new))))
         (if (looking-at org-property-drawer-re)
             (progn
@@ -174,7 +175,7 @@ underneath it.  The header block will contain the following fields:
                 "\n#+ID: " id
                 "\n#+FILETAGS: \n"))))
 
-  (defun user/org-insert-src-block (lang)
+  (defun that1guycolin/org-insert-src-block (lang)
     "Insert a block structure of the type #+begin_src LANG/#+end_src."
     (interactive
      (list
@@ -183,28 +184,28 @@ underneath it.  The header block will contain the following fields:
     (org-insert-structure-template "src")
     (insert lang "\n"))
 
-  (defvar-keymap user/org-insert-block-map
+  (defvar-keymap that1guycolin/org-insert-block-map
     :doc "Keymap of functions for inserting/editing headers, drawers, srcblocks"
-    "h" #'user/org-insert-header-block
-    "d" #'user/org-insert-properties-drawer
-    "s" #'user/org-insert-src-block)
+    "h" #'that1guycolin/org-insert-header-block
+    "d" #'that1guycolin/org-insert-properties-drawer
+    "s" #'that1guycolin/org-insert-src-block)
   (with-eval-after-load 'which-key
-    (which-key-add-keymap-based-replacements user/org-insert-block-map
+    (which-key-add-keymap-based-replacements that1guycolin/org-insert-block-map
       "h" "Header Block"
       "d" "Properties Drawer"
       "s" "Source Block"))
 
 ;;;; Miscellaneous
-  (defun user/org-convert-md-links ()
+  (defun that1guycolin/org-convert-md-links ()
     "Convert all md-style links in the current buffer to org-style."
     (interactive)
-    (user/org-check)
+    (that1guycolin/org-check)
     (save-excursion
       (goto-char (point-min))
       (while (re-search-forward "\\[\\([^]]+\\)\\](\\([^)]+\\))" nil t)
         (replace-match "[[\\2][\\1]]" nil nil))))
 
-  (defun user/org-search-folded ()
+  (defun that1guycolin/org-search-folded ()
     "Set value of `search-invisible' to t in `org-mode' buffers.
 Add this function to `org-mode-hook'."
     (if (derived-mode-p 'org-mode)
@@ -245,14 +246,15 @@ Add this function to `org-mode-hook'."
   (org-insert-mode-line-in-empty-file t)
   (org-startup-folded 'show2levels)
   (org-todo-keywords
-   (list user/org-keywords--get-done user/org-keywords--ideas
-         user/org-keywords--reading-list user/org-keywords--media-download))
+   (list that1guycolin/org-keywords--get-done that1guycolin/org-keywords--ideas
+         that1guycolin/org-keywords--reading-list
+         that1guycolin/org-keywords--media-download))
   (org-use-sub-superscripts '{})
   :config
   (require 'org-id)
   (require 'ox-texinfo)
-  (keymap-set org-mode-map "C-c b" user/org-insert-block-map)
-  (add-hook 'org-mode-hook #'user/org-search-folded)
+  (keymap-set org-mode-map "C-c b" that1guycolin/org-insert-block-map)
+  (add-hook 'org-mode-hook #'that1guycolin/org-search-folded)
   (setq org-src-lang-modes (assoc-delete-all "bash" org-src-lang-modes))
   (dolist (lang-mode-cons '(("zsh"   . shell)    ("bash" . bash-ts)
                             ("cmake" . cmake-ts) ("json" . json-ts)
@@ -289,7 +291,7 @@ Add this function to `org-mode-hook'."
   :preface
   (defvar org-refile-targets)
 
-  (defun user/remove-org-todo ()
+  (defun that1guycolin/remove-org-todo ()
     "If a TODO.org file exists in the org directory, delete it.
 Because the org-directory is a git repo, there is a possibility of
 accidentally creating a TODO file.  A TODO file in the org-directory is
@@ -304,7 +306,7 @@ folder."
         (when (called-interactively-p 'any)
           (message "There is no TODO file in the org directory.")))))
 
-  (defun user/open-project-todo ()
+  (defun that1guycolin/open-project-todo ()
     "Open the \"TODO.org\" file for the current project.
 The file is created if it doesn't exist."
     (interactive)
@@ -324,29 +326,29 @@ The file is created if it doesn't exist."
    (make-instance 'org-project-capture-per-project-strategy))
   (org-project-capture-per-project-filepath "TODO.org")
   :config
-  (defvar-keymap user/org-capture-options
+  (defvar-keymap that1guycolin/org-capture-options
     :doc "Keymap containing available org-capture options."
     "p" #'org-project-capture-capture-for-current-project
     "n" #'org-project-capture-project-todo-completing-read
     "g" #'org-capture)
   (with-eval-after-load 'which-key
     (which-key-add-keymap-based-replacements
-      user/org-capture-options
+      that1guycolin/org-capture-options
       "p" "Current Project"
       "n" "Non-Active Project"
       "g" "General Capture"))
-  (keymap-global-set "C-c c" user/org-capture-options)
+  (keymap-global-set "C-c c" that1guycolin/org-capture-options)
 
-  (defvar-keymap user/org-agenda-options
+  (defvar-keymap that1guycolin/org-agenda-options
     :doc "Keymap containing availble org-agenda views."
     "p" #'org-project-capture-agenda-for-current-project
     "g" #'org-agenda)
   (with-eval-after-load 'which-key
     (which-key-add-keymap-based-replacements
-      user/org-agenda-options
+      that1guycolin/org-agenda-options
       "p" "Current Project"
       "g" "General Agenda"))
-  (keymap-global-set "C-c a" user/org-agenda-options)
+  (keymap-global-set "C-c a" that1guycolin/org-agenda-options)
   
   (dolist (project (project-known-project-roots))
     (let ((project-todo (expand-file-name "TODO.org" project)))
@@ -359,8 +361,8 @@ The file is created if it doesn't exist."
 
   (with-eval-after-load 'disproject
     (transient-append-suffix 'disproject-dispatch "C o"
-      '("t" "Project TODO" user/open-project-todo)))
-  (add-hook 'org-mode-hook #'user/remove-org-todo))
+      '("t" "Project TODO" that1guycolin/open-project-todo)))
+  (add-hook 'org-mode-hook #'that1guycolin/remove-org-todo))
 
 (use-package org-category-capture
   :ensure nil
@@ -420,9 +422,9 @@ The file is created if it doesn't exist."
   :defer t
   :preface
   (declare-function org-id-new "org-id")
-  (declare-function user/org-insert-header-block "01-bootstrap-core")
+  (declare-function that1guycolin/org-insert-header-block "01-bootstrap-core")
   
-  (defun user/org-node-new-file (&optional title cust-id)
+  (defun that1guycolin/org-node-new-file (&optional title cust-id)
     "Create a new file for a new node.
 Optionally, provide the TITLE and CUST-ID for the new node. This is the
 original `org-node-new-fn' with a custom \=':PROPERTIES:' block.  Set
@@ -447,7 +449,7 @@ this function as `org-node-creation-fn'."
            "\n")
         (progn
           (org-id-get-create)
-          (user/org-insert-header-block
+          (that1guycolin/org-insert-header-block
            title "Colin Loeffler (that1guycolin)"))))
 
     (push (current-buffer) org-node--new-unsaved-buffers)
@@ -462,7 +464,7 @@ this function as `org-node-creation-fn'."
   :init (with-eval-after-load 'org
           (keymap-set org-mode-map "M-o" org-node-org-prefix-map))
   :custom
-  (org-node-creation-fn #'user/org-node-new-file)
+  (org-node-creation-fn #'that1guycolin/org-node-new-file)
   (org-node-file-directory-ask t)
   (org-node-prefer-with-heading nil)
   :config
@@ -575,7 +577,7 @@ With a prefix ARG, remove start location."
   :after (org)
   :demand t
   :preface
-  (defvar user/org-recipe-templates
+  (defvar that1guycolin/org-recipe-templates
     '(("c" "Cookbook" entry (file "~/org/cookbook.org")
        "%(org-chef-get-recipe-from-url)"
        :empty-lines 1)
@@ -625,7 +627,7 @@ With a prefix ARG, remove start location."
   :after (org)
   :defer t
   :preface
-  (defun user/org-tidy-get-styles-cons ()
+  (defun that1guycolin/org-tidy-get-styles-cons ()
     "Return a cons list of values for `org-tidy-properties-style'.
 Values are mapped to informative strings."
     (cond
@@ -639,11 +641,11 @@ Values are mapped to informative strings."
       '(("Inline (current)" . inline)
         ("Invisible" . invisible) ("Fringe" . fringe)))))
   
-  (defun user/org-tidy-switch-style ()
+  (defun that1guycolin/org-tidy-switch-style ()
     "Interactively change the value of `org-tidy-properties-style'."
     (interactive)
-    (user/org-check)
-    (let* ((cons-list (user/org-tidy-get-styles-cons))
+    (that1guycolin/org-check)
+    (let* ((cons-list (that1guycolin/org-tidy-get-styles-cons))
            (new-style-cons-string
             (completing-read "Select new `org-tidy-properties-style': "
                              (mapcar #'car cons-list) nil t))

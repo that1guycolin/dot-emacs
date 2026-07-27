@@ -87,32 +87,32 @@
   :preface
   (declare-function transient-define-prefix "transient")
   
-  (defvar user/dirvish-clipboard-files nil
-    "Files currently staged by `user/dirvish-copy' or `user/dirvish-cut'.")
+  (defvar that1guycolin/dirvish-clipboard-files nil
+    "Files currently staged by `dirvish-copy' or `dirvish-cut'.")
 
-  (defvar user/dirvish-clipboard-action nil
-    "Current Dirvish clipboard action.
-Expected values are `copy' or `cut'.")
+  (defvar that1guycolin/dirvish-clipboard-action nil
+    "Current Dirvish clipboard action.  Expected values are `copy' or `cut'.")
 
-  (defvar-local user/dirvish-preview-buffer nil
+  (defvar-local that1guycolin/dirvish-preview-buffer nil
     "Non-nil when this buffer was made read-only as a Dirvish preview.")
 
-  (defun user/dirvish--file-at-point ()
+  (defun that1guycolin/dirvish--file-at-point ()
     "Return the file at point, or signal a user error."
     (or (dired-get-filename nil t)
         (user-error "No file at point")))
 
-  (defun user/dirvish--marked-files-or-current ()
+  (defun that1guycolin/dirvish--marked-files-or-current ()
     "Return marked files, or the file at point if nothing is marked."
     (let ((files (dired-get-marked-files nil nil)))
       (unless files
         (user-error "No files selected"))
       files))
 
-  (defun user/dirvish-rename-file ()
+  (defun that1guycolin/dirvish-rename-file ()
     "Rename the file at point by editing only its basename."
     (interactive)
-    (let* ((old-file (directory-file-name (user/dirvish--file-at-point)))
+    (let* ((old-file (directory-file-name
+                      (that1guycolin/dirvish--file-at-point)))
            (old-dir  (file-name-directory old-file))
            (old-name (file-name-nondirectory old-file))
            (new-name (read-string "Rename to: " old-name)))
@@ -130,21 +130,24 @@ Expected values are `copy' or `cut'.")
           (dired-goto-file new-file)
           (message "Renamed %s -> %s" old-name new-name)))))
 
-  (defun user/dirvish-copy ()
+  (defun that1guycolin/dirvish-copy ()
     "Stage marked files, or current file, for copying."
     (interactive)
-    (setq user/dirvish-clipboard-files (user/dirvish--marked-files-or-current)
-          user/dirvish-clipboard-action 'copy)
-    (message "Copied %d item(s)" (length user/dirvish-clipboard-files)))
+    (setq that1guycolin/dirvish-clipboard-files
+          (that1guycolin/dirvish--marked-files-or-current)
+          that1guycolin/dirvish-clipboard-action 'copy)
+    (message "Copied %d item(s)"
+             (length that1guycolin/dirvish-clipboard-files)))
 
-  (defun user/dirvish-cut ()
+  (defun that1guycolin/dirvish-cut ()
     "Stage marked files, or current file, for moving."
     (interactive)
-    (setq user/dirvish-clipboard-files (user/dirvish--marked-files-or-current)
-          user/dirvish-clipboard-action 'cut)
-    (message "Cut %d item(s)" (length user/dirvish-clipboard-files)))
+    (setq that1guycolin/dirvish-clipboard-files
+          (that1guycolin/dirvish--marked-files-or-current)
+          that1guycolin/dirvish-clipboard-action 'cut)
+    (message "Cut %d item(s)" (length that1guycolin/dirvish-clipboard-files)))
 
-  (defun user/dirvish--paste-target-directory ()
+  (defun that1guycolin/dirvish--paste-target-directory ()
     "Return the directory where staged files should be pasted.
 If point is on a directory, paste into that directory.
 Otherwise paste into the current Dired/Dirvish directory."
@@ -154,22 +157,23 @@ Otherwise paste into the current Dired/Dirvish directory."
            file
          (dired-current-directory)))))
 
-  (defun user/dirvish--copy-one-file (src dest)
+  (defun that1guycolin/dirvish--copy-one-file (src dest)
     "Copy SRC to DEST without overwriting."
     (if (file-directory-p src)
         (copy-directory src dest t nil nil)
       (copy-file src dest nil t)))
 
-  (defun user/dirvish-paste ()
+  (defun that1guycolin/dirvish-paste ()
     "Paste staged files into the directory at point or current directory."
     (interactive)
-    (unless user/dirvish-clipboard-files
+    (unless that1guycolin/dirvish-clipboard-files
       (user-error "Nothing has been copied or cut"))
-    (unless (memq user/dirvish-clipboard-action '(copy cut))
-      (user-error "Unknown clipboard action: %s" user/dirvish-clipboard-action))
-    (let* ((dest-dir (user/dirvish--paste-target-directory))
-           (files user/dirvish-clipboard-files)
-           (action user/dirvish-clipboard-action)
+    (unless (memq that1guycolin/dirvish-clipboard-action '(copy cut))
+      (user-error "Unknown clipboard action: %s"
+                  that1guycolin/dirvish-clipboard-action))
+    (let* ((dest-dir (that1guycolin/dirvish--paste-target-directory))
+           (files that1guycolin/dirvish-clipboard-files)
+           (action that1guycolin/dirvish-clipboard-action)
            first-dest)
       (dolist (src files)
         (let* ((base (file-name-nondirectory (directory-file-name src)))
@@ -179,11 +183,11 @@ Otherwise paste into the current Dired/Dirvish directory."
           (unless first-dest
             (setq first-dest dest))
           (pcase action
-            ('copy (user/dirvish--copy-one-file src dest))
+            ('copy (that1guycolin/dirvish--copy-one-file src dest))
             ('cut  (rename-file src dest nil)))))
       (when (eq action 'cut)
-        (setq user/dirvish-clipboard-files nil
-              user/dirvish-clipboard-action nil))
+        (setq that1guycolin/dirvish-clipboard-files nil
+              that1guycolin/dirvish-clipboard-action nil))
       (revert-buffer)
       (when (and first-dest (file-exists-p first-dest))
         (ignore-errors (dired-goto-file first-dest)))
@@ -194,34 +198,34 @@ Otherwise paste into the current Dired/Dirvish directory."
                (length files)
                dest-dir)))
 
-  (defun user/dirvish-down-directory ()
+  (defun that1guycolin/dirvish-down-directory ()
     "Open the directory at point in the current Dirvish window."
     (interactive)
-    (let ((file (user/dirvish--file-at-point)))
+    (let ((file (that1guycolin/dirvish--file-at-point)))
       (unless (file-directory-p file)
         (user-error "Not a directory: %s" file))
       (dired-find-file)))
 
-  (defun user/dirvish-make-opened-file-editable ()
+  (defun that1guycolin/dirvish-make-opened-file-editable ()
     "Undo preview read-only state after opening a file normally."
     (when (and buffer-file-name
-               (bound-and-true-p user/dirvish-preview-buffer))
-      (setq-local user/dirvish-preview-buffer nil)
+               (bound-and-true-p that1guycolin/dirvish-preview-buffer))
+      (setq-local that1guycolin/dirvish-preview-buffer nil)
       (when (bound-and-true-p view-mode)
         (view-mode -1))
       (when (file-writable-p buffer-file-name)
         (read-only-mode -1))))
 
-  (defun user/dirvish-return-dwim ()
+  (defun that1guycolin/dirvish-return-dwim ()
     "On directories, descend.  On files, open the file normally."
     (interactive)
-    (let ((file (user/dirvish--file-at-point)))
+    (let ((file (that1guycolin/dirvish--file-at-point)))
       (if (file-directory-p file)
-          (user/dirvish-down-directory)
+          (that1guycolin/dirvish-down-directory)
         (dired-find-file)
-        (user/dirvish-make-opened-file-editable))))
+        (that1guycolin/dirvish-make-opened-file-editable))))
 
-  (defun user/dirvish-tab-dwim ()
+  (defun that1guycolin/dirvish-tab-dwim ()
     "Change behaviour based on current marker positions.
 On directories, toggle subtree.  On files, use Dirvish file outline viewer."
     (interactive)
@@ -229,9 +233,9 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
       (user-error "`dirvish-subtree-toggle' is not available"))
     (dirvish-subtree-toggle))
 
-  (defun user/dirvish-preview-read-only ()
+  (defun that1guycolin/dirvish-preview-read-only ()
     "Make Dirvish preview buffers read-only."
-    (setq-local user/dirvish-preview-buffer t)
+    (setq-local that1guycolin/dirvish-preview-buffer t)
     (read-only-mode 1))
 
   :bind ("C-x d" . dirvish)
@@ -241,7 +245,7 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
               dired-find-file dired-get-filename dired-get-marked-files
               dired-goto-file dired-next-line dired-previous-line
               dired-up-directory dirvish-override-dired-mode
-              dirvish-subtree-toggle user/dirvish-dispatch)
+              dirvish-subtree-toggle that1guycolin/dirvish-dispatch)
   :defines (dirvish-mode-map)
   :init (dirvish-override-dired-mode 1)
   :custom
@@ -255,10 +259,11 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
   (dolist (optional-plugin '(dirvish-vc dirvish-emerge))
     (require optional-plugin nil t))
   
-  (add-hook 'dirvish-preview-setup-hook #'user/dirvish-preview-read-only)
+  (add-hook 'dirvish-preview-setup-hook
+            #'that1guycolin/dirvish-preview-read-only)
 
-  (defvar user/dirvish-dispatch)
-  (transient-define-prefix user/dirvish-dispatch ()
+  (defvar that1guycolin/dirvish-dispatch)
+  (transient-define-prefix that1guycolin/dirvish-dispatch ()
     "Custom Dirvish command menu."
     [
      ["Navigation"
@@ -266,16 +271,18 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
       ("C-n"   "Next line"           dired-next-line :transient t)
       ("^"     "Up directory"        dired-up-directory :transient t)
       ("C-M-p" "Up directory"        dired-up-directory :transient t)
-      ("C-M-n" "Down directory"      user/dirvish-down-directory :transient t)
-      ("TAB"   "Subtree / outline"   user/dirvish-tab-dwim :transient t)
-      ("RET"   "Open / down"         user/dirvish-return-dwim)]
+      ("C-M-n" "Down directory"      that1guycolin/dirvish-down-directory
+       :transient t)
+      ("TAB"   "Subtree / outline"   that1guycolin/dirvish-tab-dwim
+       :transient t)
+      ("RET"   "Open / down"         that1guycolin/dirvish-return-dwim)]
 
      ["File operations"
-      ("R"   "Rename filename only" user/dirvish-rename-file)
+      ("R"   "Rename filename only" that1guycolin/dirvish-rename-file)
       ("m"   "Move..."              dired-do-rename)
-      ("C-w" "Cut"                  user/dirvish-cut)
-      ("M-w" "Copy"                 user/dirvish-copy)
-      ("C-y" "Paste here"           user/dirvish-paste)
+      ("C-w" "Cut"                  that1guycolin/dirvish-cut)
+      ("M-w" "Copy"                 that1guycolin/dirvish-copy)
+      ("C-y" "Paste here"           that1guycolin/dirvish-paste)
       ("c f" "Create file"          dired-create-empty-file)
       ("c d" "Create directory"     dired-create-directory)]
 
@@ -300,18 +307,18 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
         (create-map (make-sparse-keymap)))
     (keymap-set map "C-p"        #'dired-previous-line)
     (keymap-set map "C-n"        #'dired-next-line)
-    (keymap-set map "R"          #'user/dirvish-rename-file)
+    (keymap-set map "R"          #'that1guycolin/dirvish-rename-file)
     (keymap-set map "m"          #'dired-do-rename)
     (keymap-set map "c"            create-map)
-    (keymap-set map "C-w"        #'user/dirvish-cut)
-    (keymap-set map "M-w"        #'user/dirvish-copy)
-    (keymap-set map "C-y"        #'user/dirvish-paste)
+    (keymap-set map "C-w"        #'that1guycolin/dirvish-cut)
+    (keymap-set map "M-w"        #'that1guycolin/dirvish-copy)
+    (keymap-set map "C-y"        #'that1guycolin/dirvish-paste)
     (keymap-set map "^"          #'dired-up-directory)
     (keymap-set map "C-M-p"      #'dired-up-directory)
-    (keymap-set map "C-M-n"      #'user/dirvish-down-directory)
-    (keymap-set map "TAB"        #'user/dirvish-tab-dwim)
-    (keymap-set map "RET"        #'user/dirvish-return-dwim)
-    (keymap-set map "?"          #'user/dirvish-dispatch)
+    (keymap-set map "C-M-n"      #'that1guycolin/dirvish-down-directory)
+    (keymap-set map "TAB"        #'that1guycolin/dirvish-tab-dwim)
+    (keymap-set map "RET"        #'that1guycolin/dirvish-return-dwim)
+    (keymap-set map "?"          #'that1guycolin/dirvish-dispatch)
     (keymap-set create-map "f"   #'dired-create-empty-file)
     (keymap-set create-map "d"   #'dired-create-directory)))
 
@@ -321,7 +328,7 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
   :preface
   (keymap-global-unset "M-!")
 
-  (defun user/convert-ts-to-mp4 ()
+  (defun that1guycolin/convert-ts-to-mp4 ()
     "Convert .ts files to .mp4 using FFmpeg."
     (interactive)
     (dwim-shell-command-on-marked-files
@@ -330,7 +337,7 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
 -c copy -movflags +faststart '<<fne>>.mp4'"
      :utils "ffmpeg"))
 
-  (defun user/extract-video-only ()
+  (defun that1guycolin/extract-video-only ()
     "Extract only video streams from file using FFmpeg."
     (interactive)
     (dwim-shell-command-on-marked-files
@@ -339,7 +346,7 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
 -movflags +faststart '<<fne>>-video.mp4'"
      :utils "ffmpeg"))
 
-  (defun user/extract-audio-only ()
+  (defun that1guycolin/extract-audio-only ()
     "Extract only audio streams from file using FFmpeg."
     (interactive)
     (dwim-shell-command-on-marked-files
@@ -350,16 +357,16 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
   
   :bind (("M-!" . dwim-shell-command)
          :map dirvish-mode-map
-         ("F" . user/ffmpeg-actions-map))
+         ("F" . that1guycolin/ffmpeg-actions-map))
   :commands (dwim-shell-command-on-marked-files)
   :config
-  (defvar-keymap user/ffmpeg-actions-map
+  (defvar-keymap that1guycolin/ffmpeg-actions-map
     :doc "Keymap with FFmpeg actions to run on marked files in dired/dirvish."
-    "4" #'user/convert-ts-to-mp4
-    "v" #'user/extract-video-only
-    "a" #'user/extract-audio-only)
-  (transient-append-suffix 'user/dirvish-dispatch "c d"
-    '("F" "FFmpeg Actions" user/ffmpeg-actions-map)))
+    "4" #'that1guycolin/convert-ts-to-mp4
+    "v" #'that1guycolin/extract-video-only
+    "a" #'that1guycolin/extract-audio-only)
+  (transient-append-suffix 'that1guycolin/dirvish-dispatch "c d"
+    '("F" "FFmpeg Actions" that1guycolin/ffmpeg-actions-map)))
 
 ;; Launch media directly from `dirvish'
 (use-package ready-player
@@ -377,7 +384,7 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
     :after (llm)
     :demand t
     :preface
-    (defvar user/ollama-alist
+    (defvar that1guycolin/ollama-alist
       `((codegemma:2b              . ,(* 1  4096))
         (codegemma:7b              . ,(* 2  4096))
         (codellama:7b-instruct     . ,(* 2  4096))
@@ -409,16 +416,17 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
 Models on this list are either cloud-based or have already been downloaded
 to the user's device.")
 
-    (defvar user/ollama-models (mapcar #'car user/ollama-alist)
+    (defvar that1guycolin/ollama-models (mapcar #'car
+                                                that1guycolin/ollama-alist)
       "List of ollama-models (without their context lengths).")
 
-    (defvar user/openrouter-list
+    (defvar that1guycolin/openrouter-list
       '(google/gemma-3-27b-it:free
         meta-llama/llama-3.3-70b-instruct:free openai/gpt-oss-120b:free
         openrouter/free qwen/qwen3-4b:free qwen/qwen3-coder:free)
       "A list of user-selected LLMs available through OpenRouter.")
 
-    (defun user/ensure-ollama-system-service ()
+    (defun that1guycolin/ensure-ollama-system-service ()
       "Check if the system-wide Ollama service is active and start it if not."
       (interactive)
       (let ((status (shell-command-to-string "systemctl is-active ollama")))
@@ -430,17 +438,18 @@ to the user's device.")
             (message "Ollama service start command sent.")
             (kill-buffer "*Async Shell Command*")))))
     
-    (defun user/llm-ollama-model-setup (model)
+    (defun that1guycolin/llm-ollama-model-setup (model)
       "Setup Ollama MODEL for use with llm, ellama, etc..."
       (interactive
        (list
-        (completing-read "Model: " (mapcar #'car user/ollama-alist) nil t)))
-      (unless (member model (mapcar #'car user/ollama-alist))
-        (error "Model not in `user/ollama-alist'"))
+        (completing-read "Model: " (mapcar #'car that1guycolin/ollama-alist)
+                         nil t)))
+      (unless (member model (mapcar #'car that1guycolin/ollama-alist))
+        (error "Model not in `that1guycolin/ollama-alist'"))
       (make-llm-ollama
        :chat-model (symbol-name model)
        :embedding-model "nomic-embed-text"
-       :default-chat-max-tokens (cdr (assoc model user/ollama-alist))))
+       :default-chat-max-tokens (cdr (assoc model that1guycolin/ollama-alist))))
     
     :functions (make-llm-ollama))
 
@@ -465,12 +474,14 @@ to the user's device.")
     :preface
     (declare-function auth-source-pick-first-password "auth-source")
 
-    (defvar user/gptel--backend-map
-      `(("Ollama"     . (name "Ollama"  models ,(mapcar #'car user/ollama-alist)))
-        ("OpenRouter" . (name "OpenRouter"  models user/openrouter-list)))
+    (defvar that1guycolin/gptel--backend-map
+      `(("Ollama"     . (name "Ollama"  models
+                              ,(mapcar #'car that1guycolin/ollama-alist)))
+        ("OpenRouter" . (name "OpenRouter"  models
+                              that1guycolin/openrouter-list)))
       "Alist mapping display names to backend metadata plists.")
 
-    (defun user/gptel-switch-backend ()
+    (defun that1guycolin/gptel-switch-backend ()
       "Interactively select a gptel backend, then select a model for it.
 The user is allowed to select their already-active backend, so this function
 doubles as a model-switcher."
@@ -479,8 +490,8 @@ doubles as a model-switcher."
               (completing-read
                (format "Backend (current: %s): "
                        (gptel-backend-name gptel-backend))
-               user/gptel--backend-map nil t))
-             (meta  (cdr (assoc backend-name user/gptel--backend-map)))
+               that1guycolin/gptel--backend-map nil t))
+             (meta  (cdr (assoc backend-name that1guycolin/gptel--backend-map)))
              (gptel-name (plist-get meta 'name))
              (models (plist-get meta 'models))
              (model
@@ -497,13 +508,13 @@ doubles as a model-switcher."
     :functions (gptel-get-backend gptel-make-ollama gptel-make-openai)
     :defines (gptel-backend)
     :config
-    (user/ensure-ollama-system-service)
+    (that1guycolin/ensure-ollama-system-service)
     (setq
      gptel-backend
      (gptel-make-ollama "Ollama"
        :host "localhost:11434"
        :stream t
-       :models (mapcar #'car user/ollama-alist))
+       :models (mapcar #'car that1guycolin/ollama-alist))
      gptel-model 'llama3.2:3b)
 
     (gptel-make-openai "OpenRouter"
@@ -514,7 +525,7 @@ doubles as a model-switcher."
              (auth-source-pick-first-password
               :host "openrouter.ai"
               :user "apikey"))
-      :models user/openrouter-list))
+      :models that1guycolin/openrouter-list))
 
   (use-package gptel-forge-prs
     :defer t
@@ -529,41 +540,41 @@ doubles as a model-switcher."
     :config
     ;; -- Model Types --
     ;; Fast:
-    (defvar user/ellama-model-fast-chat
-      (user/llm-ollama-model-setup 'lfm2.5-thinking:1.2b))
+    (defvar that1guycolin/ellama-model-fast-chat
+      (that1guycolin/llm-ollama-model-setup 'lfm2.5-thinking:1.2b))
 
-    (defvar user/ellama-model-fast-code
-      (user/llm-ollama-model-setup 'cogito:3b))
+    (defvar that1guycolin/ellama-model-fast-code
+      (that1guycolin/llm-ollama-model-setup 'cogito:3b))
 
     ;; Balanced:
-    (defvar user/ellama-model-balanced-chat
-      (user/llm-ollama-model-setup 'llama3.2:3b))
+    (defvar that1guycolin/ellama-model-balanced-chat
+      (that1guycolin/llm-ollama-model-setup 'llama3.2:3b))
 
-    (defvar user/ellama-model-balanced-summary
-      (user/llm-ollama-model-setup 'qwen3:4b))
+    (defvar that1guycolin/ellama-model-balanced-summary
+      (that1guycolin/llm-ollama-model-setup 'qwen3:4b))
 
-    (defvar user/ellama-model-balanced-code
-      (user/llm-ollama-model-setup 'codellama:7b-instruct))
+    (defvar that1guycolin/ellama-model-balanced-code
+      (that1guycolin/llm-ollama-model-setup 'codellama:7b-instruct))
 
     ;; Heavy
-    (defvar user/ellama-model-heavy-chat
-      (user/llm-ollama-model-setup 'granite4.1:8b))
+    (defvar that1guycolin/ellama-model-heavy-chat
+      (that1guycolin/llm-ollama-model-setup 'granite4.1:8b))
 
-    (defvar user/ellama-model-heavy-code
-      (user/llm-ollama-model-setup 'cogito:8b))
+    (defvar that1guycolin/ellama-model-heavy-code
+      (that1guycolin/llm-ollama-model-setup 'cogito:8b))
 
     ;; Cloud-Based
-    (defvar user/ellama-model-cloud-chat
-      (user/llm-ollama-model-setup 'gpt-oss:120b-cloud))
+    (defvar that1guycolin/ellama-model-cloud-chat
+      (that1guycolin/llm-ollama-model-setup 'gpt-oss:120b-cloud))
 
-    (defvar user/ellama-model-cloud-summary
-      (user/llm-ollama-model-setup 'qwen3.5:cloud))
+    (defvar that1guycolin/ellama-model-cloud-summary
+      (that1guycolin/llm-ollama-model-setup 'qwen3.5:cloud))
 
-    (defvar user/ellama-model-cloud-code
-      (user/llm-ollama-model-setup 'qwen3-coder-next:cloud))
+    (defvar that1guycolin/ellama-model-cloud-code
+      (that1guycolin/llm-ollama-model-setup 'qwen3-coder-next:cloud))
 
     ;; -- Functions --
-    (defun user/ellama-set-tier (tier)
+    (defun that1guycolin/ellama-set-tier (tier)
       "Activate default models for TIER."
       (interactive
        (list
@@ -571,37 +582,40 @@ doubles as a model-switcher."
       (pcase tier
         ('fast
          (setopt
-          ellama-provider user/ellama-model-fast-chat
-          ellama-coding-provider user/ellama-model-fast-code
-          ellama-summarization-provider user/ellama-model-fast-chat)
+          ellama-provider that1guycolin/ellama-model-fast-chat
+          ellama-coding-provider that1guycolin/ellama-model-fast-code
+          ellama-summarization-provider that1guycolin/ellama-model-fast-chat)
          (message "Ellama tier → FAST"))
 
         ('balanced
          (setopt
-          ellama-provider user/ellama-model-balanced-chat
-          ellama-coding-provider user/ellama-model-balanced-code
-          ellama-summarization-provider user/ellama-model-balanced-summary)
+          ellama-provider that1guycolin/ellama-model-balanced-chat
+          ellama-coding-provider that1guycolin/ellama-model-balanced-code
+          ellama-summarization-provider
+          that1guycolin/ellama-model-balanced-summary)
          (message "Ellama tier → BALANCED"))
 
         ('heavy
          (setopt
-          ellama-provider user/ellama-model-heavy-chat
-          ellama-coding-provider user/ellama-model-heavy-code
-          ellama-summarization-provider user/ellama-model-balanced-summary)
+          ellama-provider that1guycolin/ellama-model-heavy-chat
+          ellama-coding-provider that1guycolin/ellama-model-heavy-code
+          ellama-summarization-provider
+          that1guycolin/ellama-model-balanced-summary)
          (message "Ellama tier → HEAVY"))
 
         ('cloud
          (setopt
-          ellama-provider user/ellama-model-cloud-chat
-          ellama-coding-provider user/ellama-model-cloud-code
-          ellama-summarization-provider user/ellama-model-cloud-summary)
+          ellama-provider that1guycolin/ellama-model-cloud-chat
+          ellama-coding-provider that1guycolin/ellama-model-cloud-code
+          ellama-summarization-provider
+          that1guycolin/ellama-model-cloud-summary)
          (message "Ellama tier → CLOUD"))))
     
     ;; -- Defaults --
     (setopt
-     ellama-provider user/ellama-model-fast-chat
-     ellama-coding-provider user/ellama-model-fast-code
-     ellama-summarization-provider user/ellama-model-balanced-summary
+     ellama-provider that1guycolin/ellama-model-fast-chat
+     ellama-coding-provider that1guycolin/ellama-model-fast-code
+     ellama-summarization-provider that1guycolin/ellama-model-balanced-summary
      ;; Display
      ellama-chat-display-action-function #'display-buffer-full-frame
      ellama-instant-display-action-function #'display-buffer-at-bottom)
@@ -612,19 +626,20 @@ doubles as a model-switcher."
   ;; Transient:
   (with-eval-after-load 'transient
     (declare-function transient-define-prefix "transient")
-    (defvar user/llm-dispatch nil)
-    (transient-define-prefix user/llm-dispatch ()
+    (defvar that1guycolin/llm-dispatch nil)
+    (transient-define-prefix that1guycolin/llm-dispatch ()
       "Commands to interact with LLMs in Emacs."
       ["LLM Integrations"
        ["Gptel"
         ("g ." "Activate @ cursor" gptel-send)
         ("g b" "Chat buffer"       gptel)
-        ("g s" "Switch backend"    user/gptel-switch-backend :transient t)]
+        ("g s" "Switch backend"    that1guycolin/gptel-switch-backend
+         :transient t)]
        ["Ellama / MCP"
         ("e"   "Ellama Menu"       ellama-transient-main-menu)
         ("m s" "Server Start"      mcp-server-lib-start)
         ("m e" "Server Stop"       mcp-server-lib-stop)]])
-    (keymap-global-set "C-c a" 'user/llm-dispatch)))
+    (keymap-global-set "C-c a" 'that1guycolin/llm-dispatch)))
 
 
 ;;; Media player (mpv):
@@ -632,52 +647,53 @@ doubles as a model-switcher."
   (use-package emms
     :defer t
     :preface
-    (defun user/emms-seek-backward-med ()
+    (defun that1guycolin/emms-seek-backward-med ()
       "Seek backwards 30 seconds in EMMS."
       (interactive)
       (emms-seek -30))
 
-    (defun user/emms-seek-forward-med ()
+    (defun that1guycolin/emms-seek-forward-med ()
       "Seek forward 30 seconds in EMMS."
       (interactive)
       (emms-seek 30))
 
-    (defun user/emms-seek-backward-long ()
+    (defun that1guycolin/emms-seek-backward-long ()
       "Seek backwards 2 minutes in EMMS."
       (interactive)
       (emms-seek (* -2 60)))
 
-    (defun user/emms-seek-forward-long ()
+    (defun that1guycolin/emms-seek-forward-long ()
       "Seek forward 2 minutes in EMMS."
       (interactive)
       (emms-seek (* 2 60)))
 
-    (defvar user/emms-is-paused t
+    (defvar that1guycolin/emms-is-paused t
       "Non-nil if EMMS player is paused.")
 
-    (defun user/emms-play ()
-      "Set user/emms-is-paused to nil."
-      (setq user/emms-is-paused nil))
+    (defun that1guycolin/emms-play ()
+      "Set that1guycolin/emms-is-paused to nil."
+      (setq that1guycolin/emms-is-paused nil))
 
-    (defun user/emms-toggle-play-pause ()
+    (defun that1guycolin/emms-toggle-play-pause ()
       "If EMMS player is playing, pause it.  If it is paused, start playing."
       (interactive)
-      (if user/emms-is-paused
+      (if that1guycolin/emms-is-paused
           (progn
             (emms-player-mpv-resume)
-            (setq user/emms-is-paused nil))
+            (setq that1guycolin/emms-is-paused nil))
         (progn
           (emms-player-mpv-pause)
-          (setq user/emms-is-paused t))))
+          (setq that1guycolin/emms-is-paused t))))
 
-    (defvar-keymap user/emms-view-options-map
+    (defvar-keymap that1guycolin/emms-view-options-map
       :doc "Different options for viewing & interacting with EMMS."
       "b" #'emms-browser
       "s" #'emms-smart-browse
       "g" #'emms-playlist-mode-go
       "p" #'emms-playlist-mode-go-popup)
     (with-eval-after-load 'which-key
-      (which-key-add-keymap-based-replacements user/emms-view-options-map
+      (which-key-add-keymap-based-replacements
+        that1guycolin/emms-view-options-map
         "b" "EMMS Browser"
         "s" "Smart Browse"
         "g" "Playlist Mode Go"
@@ -687,16 +703,16 @@ doubles as a model-switcher."
            ("<f8>" . emms-playlist-mode-go)
            ("<f9>" . emms-playlist-mode-go-popup)
            (:map emms-playlist-mode-map
-                 ("SPC"     . user/emms-toggle-play-pause)
+                 ("SPC"     . that1guycolin/emms-toggle-play-pause)
                  ("m"       . emms-next)
                  ("n"       . emms-previous)
                  ("s"       . emms-playlist-shuffle)
                  ("j"       . emms-seek-backward)
                  ("k"       . emms-seek-forward)
-                 ("J"       . user/emms-seek-backward-med)
-                 ("K"       . user/emms-seek-forward-med)
-                 ("M-j"     . user/emms-seek-backward-long)
-                 ("M-k"     . user/emms-seek-forward-long)
+                 ("J"       . that1guycolin/emms-seek-backward-med)
+                 ("K"       . that1guycolin/emms-seek-forward-med)
+                 ("M-j"     . that1guycolin/emms-seek-backward-long)
+                 ("M-k"     . that1guycolin/emms-seek-forward-long)
                  ("p"       . emms-play-playlist)
                  ("f"       . emms-play-file)
                  ("d"       . emms-play-find)
@@ -706,7 +722,7 @@ doubles as a model-switcher."
                  ("i"       . emms-show)
                  ("l"       . emms-sort)
                  ("C-y"     . emms-playlist-mode-yank)))
-    :bind-keymap ("C-c m" . user/emms-view-options-map)
+    :bind-keymap ("C-c m" . that1guycolin/emms-view-options-map)
     :functions (emms-all
                 emms-seek emms-player-mpv-pause emms-player-mpv-resume
                 emms-playlist-mode-go emms-playlist-mode-go-popup emms-pause
@@ -726,7 +742,8 @@ doubles as a model-switcher."
      emms-player-list '(emms-player-mpv)
      emms-player-mpv-command-name "mpv"
      emms-player-mpv-parameters '("--force-window=yes"))
-    (advice-add 'emms-playlist-mode-play-smart :after #'user/emms-play))
+    (advice-add 'emms-playlist-mode-play-smart :after
+                #'that1guycolin/emms-play))
 
   (use-package emms-info-mediainfo
     :ensure (emms-info-mediainfo

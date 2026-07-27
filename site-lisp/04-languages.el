@@ -24,7 +24,7 @@
   :demand t
   :preface
   (declare-function no-littering-expand-var-file-name "no-littering")
-  (defvar user/remapped-langs-alist
+  (defvar that1guycolin/remapped-langs-alist
     '((bash-mode              . bash-ts-mode)
       (cmake-mode             . cmake-ts-mode)
       (css-mode               . css-ts-mode)
@@ -80,7 +80,7 @@
      (xml . ("https://github.com/tree-sitter-grammars/tree-sitter-xml"))
      (yaml . ("https://github.com/ikatyang/tree-sitter-yaml"))
      (zsh . ("https://github.com/georgeharker/tree-sitter-zsh"))))
-  (dolist (remaped user/remapped-langs-alist)
+  (dolist (remaped that1guycolin/remapped-langs-alist)
     (add-to-list 'major-mode-remap-alist remaped)))
 
 
@@ -88,13 +88,13 @@
 (use-package csv-mode
   :defer t
   :preface
-  (defun user/function-for-csv-mode-hook ()
+  (defun that1guycolin/function-for-csv-mode-hook ()
     "Use this as a the hook for `csv-mode'."
     (visual-line-mode -1)
     (toggle-truncate-lines 1)
     (csv-guess-set-separator)
     (csv-align-mode 1))
-  :hook (csv-mode . user/function-for-csv-mode-hook)
+  :hook (csv-mode . that1guycolin/function-for-csv-mode-hook)
   :mode "\\.csv\\'"
   :functions (csv-guess-set-separator csv-align-mode))
 
@@ -212,11 +212,11 @@
   :preface
   (declare-function corfu-mode "corfu")
 
-  (defun user/sly-load-if-not-connected ()
+  (defun that1guycolin/sly-load-if-not-connected ()
     "Connect to sly, unless an active connection exists already."
     (unless (sly-connected-p) (save-excursion (sly))))
 
-  (defvar-keymap user/sly-functions-map
+  (defvar-keymap that1guycolin/sly-functions-map
     :doc "Common functions from the sly lisp implementation."
     "s" #'sly
     "r" #'sly-mrepl
@@ -228,7 +228,7 @@
     "a" #'sly-apropos
     "w" #'sly-describe-symbol)
   (with-eval-after-load 'which-key
-    (which-key-add-keymap-based-replacements user/sly-functions-map
+    (which-key-add-keymap-based-replacements that1guycolin/sly-functions-map
       "s" "Start Sly"
       "r" "Sly REPL"
       "m" "New Sly REPL"
@@ -238,7 +238,7 @@
       "i" "Eval & inspect expr"
       "a" "Symbol match"
       "w" "Describe symbol"))
-  :bind-keymap ("C-c s" . user/sly-functions-map)
+  :bind-keymap ("C-c s" . that1guycolin/sly-functions-map)
   :hook (lisp-mode . sly-editing-mode)
   :init (setq inferior-lisp-program "sbcl")
   :custom
@@ -254,7 +254,7 @@
     (add-to-list 'sly-contribs contrib))
   (setq sly-auto-start 'always)
   (add-hook 'sly-mrepl-mode-hook #'corfu-mode)
-  (add-hook 'sly-mode-hook       #'user/sly-load-if-not-connected))
+  (add-hook 'sly-mode-hook       #'that1guycolin/sly-load-if-not-connected))
 
 
 
@@ -270,7 +270,7 @@
 (use-package markdown-mode
   :defer t
   :preface
-  (defun user/markdown-toggle-ts-mode ()
+  (defun that1guycolin/markdown-toggle-ts-mode ()
     "Switch between `markdown-mode' & `markdown-ts-mode'."
     (interactive)
     (cond
@@ -281,7 +281,7 @@
      (t
       (user-error "not a markdown buffer"))))
 
-  (defvar-keymap user/markdown-toggle-map
+  (defvar-keymap that1guycolin/markdown-toggle-map
     :doc "Functions to toggle the display of elements in markdown."
     "RET" #'markdown-toggle-markup-hiding
     "TAB" #'markdown-toggle-inline-images
@@ -296,7 +296,7 @@
     "C-l" #'markdown-toggle-url-hiding
     "C-x" #'markdown-toggle-gfm-checkbox)
   (with-eval-after-load 'which-key
-    (which-key-add-keymap-based-replacements user/markdown-toggle-map
+    (which-key-add-keymap-based-replacements that1guycolin/markdown-toggle-map
       "RET" "Toggle Markup Hiding"
       "TAB" "Toggle Inline Images"
       "d"   "Move Down"
@@ -311,11 +311,11 @@
       "C-x" "Toggle GFM Checkbox"))
   :bind (:map markdown-mode-map
               ("C-c C-l" . markdown-insert-link)
-              ("C-c v"   . user/markdown-toggle-ts-mode))
+              ("C-c v"   . that1guycolin/markdown-toggle-ts-mode))
   :commands (markdown-mode)
   :custom (markdown-fontify-code-blocks-natively t)
   :config
-  (keymap-set markdown-mode-map "C-c w"      user/markdown-toggle-map)
+  (keymap-set markdown-mode-map "C-c w"      that1guycolin/markdown-toggle-map)
   (keymap-set markdown-mode-map "C-c C-x"  #'toggle-frame-maximized)
   (keymap-set markdown-mode-map "C-c C-="  #'free-keys))
 
@@ -323,23 +323,25 @@
   :ensure nil
   :defer t
   :preface
-  (defvar-keymap user/markdown-ts-toggle-map
+  (defvar-keymap that1guycolin/markdown-ts-toggle-map
     :doc "Functions to toggle the display of markdown elements."
     "RET" #'markdown-ts-toggle-hide-markup
     "C-f" #'markdown-ts-emphasize
     "C-v" #'markdown-ts-toggle-inline-images)
   (with-eval-after-load 'which-key
-    (which-key-add-keymap-based-replacements user/markdown-ts-toggle-map
+    (which-key-add-keymap-based-replacements
+      that1guycolin/markdown-ts-toggle-map
       "RET" "Toggle Hide Markup"
       "C-f" "Emphasize"
       "C-v" "Toggle Inline Images"))
   :bind (:map markdown-ts-mode-map
               ("C-c C-l" . markdown-insert-link)
-              ("C-c v"   . user/markdown-toggle-ts-mode))
+              ("C-c v"   . that1guycolin/markdown-toggle-ts-mode))
   :mode ("\\.md\\'" "README\\'" "INSTALL\\'")
   :defines (markdown-ts-mode-map)
   :config
-  (keymap-set markdown-ts-mode-map "C-c w"     user/markdown-ts-toggle-map)
+  (keymap-set markdown-ts-mode-map "C-c w"
+              that1guycolin/markdown-ts-toggle-map)
   (keymap-set markdown-ts-mode-map "C-c C-x" #'toggle-frame-maximized))
 
 (use-package grip-mode
@@ -358,7 +360,7 @@
   :preface
   (defvar python-base-mode-map)
 
-  (defun user/python-uv-script-p ()
+  (defun that1guycolin/python-uv-script-p ()
     "Return non-nil if current buffer is a uv script."
     (and buffer-file-name
          (save-excursion
@@ -366,11 +368,11 @@
            (looking-at-p
             (rx "#!/usr/bin/env -S uv tool run --script")))))
 
-  (defun user/python-run-smart ()
+  (defun that1guycolin/python-run-smart ()
     "Run current Python file appropriately."
     (interactive)
     (cond
-     ((user/python-uv-script-p)
+     ((that1guycolin/python-uv-script-p)
       (compile
        (format "uv run %s"
                (shell-quote-argument buffer-file-name))))
@@ -389,7 +391,7 @@
               ("C-c C-k m" . python-skeleton-import)
               ("C-c C-k t" . python-skeleton-try)
               ("C-c C-k w" . python-skeleton-while)
-              ("C-c C-r"   . user/python-run-smart))
+              ("C-c C-r"   . that1guycolin/python-run-smart))
   :interpreter ("python3" "uv")
   :mode "\\.py\\'"
   :functions (python-skeleton-class
