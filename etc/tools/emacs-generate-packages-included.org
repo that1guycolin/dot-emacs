@@ -6,7 +6,7 @@
 #+AUTHOR: Colin Loeffler (that1guycolin)
 #+COMMENT: DO NOT COMMIT THIS FILE WITH EVALUATED RESULTS
 #+CREATED_DATE: [2026-06-13 Sat 05:08:11]
-#+LAST_EDIT: [2026-07-20 MON 18:21:39]
+#+LAST_EDIT: [2026-07-27 MON 15:20:43]
 #+ID: tools:dou27p801zk0
 #+FILETAGS: :Emacs:emacsd:elpaca:use_package:
 
@@ -27,29 +27,12 @@ IFS=$'\n\t'
 
 TEMP="$(mktemp)"
 ESCRIPT="${HOME}/.config/emacs/etc/tools/list-use-packages.el"
-non_android_pkgs=(
-    llm
-    llm-ollama
-    mcp-server-lib
-    org-mcp
-    elisp-dev-mcp
-    gptel
-    ellama
-    emms
-    emms-info-mediainfo
-    emacs-everywhere
-    telega
-)
 
 emacs --script "$ESCRIPT" \
       "${XDG_CONFIG_HOME:-${HOME}/.config}/emacs/init.el" >"$TEMP"
 
 for elfile in "${HOME}/.config/emacs/site-lisp/"*.el; do 
     emacs --script "$ESCRIPT" "$elfile" >>"$TEMP"
-done
-
-for pkg in "${non_android_pkgs[@]}"; do
-    echo "$pkg" >>"$TEMP"
 done
 
 mapfile -t PACKAGES < <(
@@ -113,7 +96,7 @@ function list-packages {
 }
 #+end_src
 
-#+NAME: 01-env-cap
+#+NAME: 01-environment
 #+begin_src bash :session list-pkgs
 list-packages "${lisp_dir}/01-env-cap.el"
 #+end_src
@@ -138,27 +121,12 @@ list-packages "${lisp_dir}/04-languages.el"
 list-packages "${lisp_dir}/05-coding.el"
 #+end_src
 
-#+NAME: 06-org-extend
+#+NAME: 06-org-config
 #+begin_src bash :session list-pkgs
 list-packages "${lisp_dir}/06-org-extend.el"
 #+end_src
 
-#+NAME: 07-tools
+#+NAME: 07-support
 #+begin_src bash :session list-pkgs
-non_android_pkgs=(
-    llm
-    llm-ollama
-    mcp-server-lib
-    org-mcp
-    elisp-dev-mcp
-    gptel
-    ellama
-    emms
-    emms-info-mediainfo
-    emacs-everywhere
-    telega
-)
-
-list-packages "${lisp_dir}/07-tools.el" \
-	      "${non_android_pkgs[@]}"
+list-packages "${lisp_dir}/07-tools.el"
 #+end_src
