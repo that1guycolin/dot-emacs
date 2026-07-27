@@ -377,7 +377,7 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
 
 ;;; Email:
 (use-package notmuch
-  :ensure (if (eq system-type 'android) nil t)
+  (when (eq system-type 'android) :ensure t)
   :demand t
   :preface
   (unless (eq system-type 'android)
@@ -420,13 +420,13 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
   (add-hook 'notmuch-hello-mode-hook (lambda () (inhibit-mouse-mode -1))))
 
 (use-package notmuch-addr
-  :ensure (if (eq system-type 'android) nil t)
+  (when (eq system-type 'android) :ensure t)
   :demand t
   :unless (eq system-type 'android)
   :config (with-eval-after-load 'notmuch-address (notmuch-addr-setup)))
 
 (use-package notmuch-transient
-  :ensure (if (eq system-type 'android) nil t)
+  (when (eq system-type 'android) :ensure t)
   :after (notmuch)
   :defer t
   :unless (eq system-type 'android)
@@ -440,7 +440,7 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
                ("M-m" . notmuch-show-mode-transient))))
 
 (use-package notmuch-indicator
-  :ensure (if (eq system-type 'android) nil t)
+  (when (eq system-type 'android) :ensure t)
   :after (notmuch)
   :demand t
   :unless (eq system-type 'android)
@@ -448,7 +448,7 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
 
 ;;; LLM:
 (use-package llm
-  :ensure (if (eq system-type 'android) nil t)
+  (when (eq system-type 'android) :ensure t)
   :demand t
   :unless (eq system-type 'android))
 
@@ -530,13 +530,13 @@ to the user's device.")
 
 ;; MCP:
 (use-package mcp-server-lib
-  :ensure (if (eq system-type 'android) nil t)
+  (when (eq system-type 'android) :ensure t)
   :defer t
   :unless (eq system-type 'android)
   :commands (mcp-server-lib-start mcp-server-lib-stop))
 
 (use-package org-mcp
-  :ensure (if (eq system-type 'android) nil t)
+  (when (eq system-type 'android) :ensure t)
   :defer t
   :unless (eq system-type 'android)
   :commands (org-mcp-enable)
@@ -544,14 +544,14 @@ to the user's device.")
            (directory-files-recursively org-directory "\\.org\\'")))
 
 (use-package elisp-dev-mcp
-  :ensure (if (eq system-type 'android) nil t)
+  (when (eq system-type 'android) :ensure t)
   :defer t
   :unless (eq system-type 'android)
   :commands (elisp-dev-mcp-enable))
 
 ;; GPTel
 (use-package gptel
-  :ensure (if (eq system-type 'android) nil t)
+  (when (eq system-type 'android) :ensure t)
   :defer t
   :preface
   (unless (eq system-type 'android)
@@ -606,14 +606,14 @@ doubles as a model-switcher."
     :models that1guycolin/openrouter-list))
 
 (use-package gptel-forge-prs
-  :ensure (if (eq system-type 'android) nil t)
+  (when (eq system-type 'android) :ensure t)
   :defer t
   :unless (eq system-type 'android)
   :hook (forge-pullreq-mode . gptel-forge-prs-install))
 
 ;; Ellama:
 (use-package ellama
-  :ensure (if (eq system-type 'android) nil t)
+  (when (eq system-type 'android) :ensure t)
   :defer t
   :unless (eq system-type 'android)
   :commands (ellama-transient-main-menu)
@@ -727,7 +727,7 @@ doubles as a model-switcher."
 
 ;;; Media player (mpv):
 (use-package emms
-  :ensure (if (eq system-type 'android) nil t)
+  (when (eq system-type 'android) :ensure t)
   :defer t
   :preface
   (unless (eq system-type 'android)
@@ -846,7 +846,7 @@ doubles as a model-switcher."
 ;;; Miscellaneous:
 ;; Typing is better in Emacs
 (use-package emacs-everywhere
-  :ensure (if (eq system-type 'android) nil t)
+  (when (eq system-type 'android) :ensure t)
   :demand t
   :unless (eq system-type 'android)
   :config
@@ -895,7 +895,7 @@ doubles as a model-switcher."
 
 ;; Telegram in Emacs
 (use-package telega
-  :ensure (if (eq system-type 'android) nil t)
+  (when (eq system-type 'android) :ensure t)
   :defer t
   :preface
   (unless (eq system-type 'android)
