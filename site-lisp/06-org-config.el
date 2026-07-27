@@ -218,9 +218,9 @@ Add this function to `org-mode-hook'."
          ("C-c c"   . org-capture)
          ("C-c o c" . org-capture)
          ("C-c o l" . org-store-link)
-         :map org-mode-map
-         ("C-c l"   . org-toggle-link-display)
-         ("C-c C-q" . org-set-tags-command))
+         (:map org-mode-map
+               ("C-c l"   . org-toggle-link-display)
+               ("C-c C-q" . org-set-tags-command)))
   :mode (("\\.org\\'"   . org-mode)
          ("\\.notes\\'" . org-mode))
   :functions (org-before-first-heading-p
