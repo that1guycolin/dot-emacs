@@ -49,13 +49,13 @@
   (setq
    treesit-language-source-alist
    '((bash . ("https://github.com/tree-sitter/tree-sitter-bash"))
-     (common-lisp . ("https://github.com/tree-sitter-grammars/tree-sitter-commonlisp"))
+     (lisp . ("https://github.com/tree-sitter-grammars/tree-sitter-commonlisp"))
      (cmake . ("https://github.com/uyha/tree-sitter-cmake"))
      (css . ("https://github.com/tree-sitter/tree-sitter-css"))
      (cpp . ("https://github.com/tree-sitter/tree-sitter-cpp"))
      (dockerfile . ("https://github.com/camdencheek/tree-sitter-dockerfile"))
      (fish . ("https://github.com/ram02z/tree-sitter-fish"))
-     (emacs-lisp . ("https://github.com/Wilfred/tree-sitter-elisp"))
+     (elisp . ("https://github.com/Wilfred/tree-sitter-elisp"))
      (gitcommit . ("https://github.com/gbprod/tree-sitter-gitcommit"))
      (go . ("https://github.com/tree-sitter/tree-sitter-go"))
      (html . ("https://github.com/tree-sitter/tree-sitter-html"))
