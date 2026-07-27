@@ -87,8 +87,7 @@
 (use-package activities
   :demand t
   :preface
-  (defvar edebug-inhibit-emacs-lisp-mode-bindings t)
-  (setq edebug-inhibit-emacs-lisp-mode-bindings t)
+  (defvar edebug-inhibit-emacs-lisp-mode-bindings)
 
   (defvar-keymap that1guycolin/activities-map
     :doc "Functions from the package activities.el"
@@ -124,6 +123,8 @@
               activities-revert activities-list activities-rename
               activities-discard activities-mode activities-tabs-mode)
   :init
+  (setq edebug-inhibit-emacs-lisp-mode-bindings t)
+  :config
   (activities-mode 1)
   (activities-tabs-mode 1))
 
