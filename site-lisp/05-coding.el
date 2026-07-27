@@ -25,6 +25,49 @@
   :defer t
   :bind ([remap comment-dwim] . comment-dwim-2))
 
+;; docstring support
+(use-package docstr
+  :defer t
+  :preface
+  (defun user/print-docstr-hooks ()
+    "Print the `use-package' \":key\" values for `docstr'."
+    (interactive)
+    (insert ":hook (")
+    (dolist (mode (docstr-major-modes))
+      (let ((mode-str (symbol-name mode)))
+        (insert "\n(" mode-str " . docstr-mode)")))
+    (insert ")"))
+  :hook
+  ((actionscript-mode . docstr-mode)
+   (c-mode            . docstr-mode)
+   (c++-mode          . docstr-mode)
+   (csharp-mode       . docstr-mode)
+   (go-mode           . docstr-mode)
+   (go-ts-mode        . docstr-mode)
+   (groovy-mode       . docstr-mode)
+   (java-mode         . docstr-mode)
+   (javascript-mode   . docstr-mode)
+   (js-mode           . docstr-mode)
+   (js2-mode          . docstr-mode)
+   (js3-mode          . docstr-mode)
+   (lua-mode          . docstr-mode)
+   (lua-ts-mode       . docstr-mode)
+   (objc-mode         . docstr-mode)
+   (php-mode          . docstr-mode)
+   (python-mode       . docstr-mode)
+   (python-ts-mode    . docstr-mode)
+   (rjsx-mode         . docstr-mode)
+   (ruby-mode         . docstr-mode)
+   (rust-mode         . docstr-mode)
+   (rust-ts-mode      . docstr-mode)
+   (scala-mode        . docstr-mode)
+   (swift-mode        . docstr-mode)
+   (typescript-mode   . docstr-mode)
+   (web-mode          . docstr-mode))
+  :functions docstr-major-modes
+  :custom
+  (docstr-python-style 'google))
+
 ;; Jump-to-def/find-refs
 (use-package dumb-jump
   :demand t
