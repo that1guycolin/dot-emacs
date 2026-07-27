@@ -1,4 +1,4 @@
-;;; 03-visual-settings.el --- Core UI configuration -*- lexical-binding: t; -*-
+;;; 03-visual.el --- Core UI configuration -*- lexical-binding: t; -*-
 
 ;;; Packages included:
 ;; dashboard, ef-themes, inhibit-mouse, minions, modus-themes, nerd-icons,
