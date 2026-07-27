@@ -6,7 +6,7 @@
 #+AUTHOR: Colin Loeffler (that1guycolin)
 #+COMMENT: DO NOT COMMIT THIS FILE WITH EVALUATED RESULTS
 #+CREATED_DATE: [2026-06-13 Sat 05:08:11]
-#+LAST_EDIT: [2026-07-27 MON 15:20:43]
+#+LAST_EDIT: [2026-07-27 MON 15:31:14]
 #+ID: tools:dou27p801zk0
 #+FILETAGS: :Emacs:emacsd:elpaca:use_package:
 
@@ -98,7 +98,7 @@ function list-packages {
 
 #+NAME: 01-environment
 #+begin_src bash :session list-pkgs
-list-packages "${lisp_dir}/01-env-cap.el"
+list-packages "${lisp_dir}/01-environment.el"
 #+end_src
 
 #+NAME: 02-project-vc
@@ -123,10 +123,11 @@ list-packages "${lisp_dir}/05-coding.el"
 
 #+NAME: 06-org-config
 #+begin_src bash :session list-pkgs
-list-packages "${lisp_dir}/06-org-extend.el"
+list-packages "${lisp_dir}/06-org-config.el"
 #+end_src
 
 #+NAME: 07-support
 #+begin_src bash :session list-pkgs
-list-packages "${lisp_dir}/07-tools.el"
+list-packages "${lisp_dir}/07-support.el"
 #+end_src
+
