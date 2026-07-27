@@ -7,9 +7,9 @@
 ;; geiser-guile, glsl-mode, grip-mode, ielm, ini-mode, inspector, json-ts-mode,
 ;; just-ts-mode, kdl-mode, lisp-mode, lisp-semantic-hl, live-py-mode,
 ;; lua-ts-mode, macrostep, macrostep-geiser, markdown-mode, markdown-ts-mode,
-;; morlock, nxml-mode, python-pytest, python-ts-mode, python-x, rustic,
-;; rust-ts-mode, sh-mode, sly, suggest, systemd, toml-ts-mode, tree-inspector,
-;; treesit, yaml-pro, yaml-ts-mode
+;; morlock, nxml-mode, pkgbuild-mode, python-pytest, python-ts-mode, python-x,
+;; rustic, rust-ts-mode, scheme-mode, sh-mode, sly, suggest, systemd,
+;; toml-ts-mode, tree-inspector, treesit, yaml-pro, yaml-ts-mode
 
 ;;; Commentary:
 ;; The purpose of this file is to define how Emacs should behave in the

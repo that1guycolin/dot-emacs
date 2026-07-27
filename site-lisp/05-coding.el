@@ -2,8 +2,8 @@
 
 ;;; Packages included:
 ;; adaptive-wrap, apheleia, comment-dwim-2, consult-eglot,
-;; consult-eglot-embark, consult-flycheck, dumb-jump, editorconfig, eglot,
-;; eglot-tempel, flycheck, flycheck-color-mode-line, flycheck-eask,
+;; consult-eglot-embark, consult-flycheck, docstr, dumb-jump, editorconfig,
+;; eglot, eglot-tempel, flycheck, flycheck-color-mode-line, flycheck-eask,
 ;; flycheck-eglot, flycheck-guile, flycheck-package, flyover, flyspell,
 ;; flyspell-correct, flyspell-correct-avy-menu, hideshow, kirigami,
 ;; lsp-snippet, outline, outline-indent, rainbow-delimiters, shfmt,

@@ -1,10 +1,12 @@
 ;;; 07-support.el --- Integrate or Emulate External Tools -*- lexical-binding: t -*-
 
 ;;; Packages included:
-;; casual, casual-avy, dirvish, dwim-shell-command, eat, elisp-dev-mcp, ellama,
-;; emacs-everywhere, emms, emms-info-mediainfo, free-keys, ghostel, gptel,
-;; htmlize, llm, llm-ollama, mcp-server-lib, mistty, native-complete, org-mcp,
-;; ready-player, recentf, telega, vterm, with-editor
+;; casual, casual-avy, deadgrep, dirvish, docker, dwim-shell-command, eat,
+;; elisp-dev-mcp, ellama, emacs-everywhere, emms, emms-info-mediainfo,
+;; free-keys, ghostel, gptel, gptel-forge-prs, guix, htmlize, llm, llm-ollama,
+;; mcp-server-lib, mistty, native-complete, notmuch, notmuch-addr,
+;; notmuch-indicator, notmuch-transient, org-mcp, ready-player, recentf, rg,
+;; telega, vterm, with-editor
 
 ;;; Commentary:
 ;; This file contains use-package objects for packages that help integrate Emacs

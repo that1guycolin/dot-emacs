@@ -2,8 +2,8 @@
 
 ;;; Packages included:
 ;; activities, consult-project-extra, diff-hl, disproject, forge,
-;; git-commit-ts-mode, git-link, git-modes, magit, project, project-treemacs,
-;; treemacs, treemacs-magit
+;; git-commit-ts-mode, git-link, git-modes, magit, magit-todos, project,
+;; project-treemacs, treemacs, treemacs-magit
 
 ;;; Commentary:
 ;; Packages to assist with project management in Emacs.  The first section
@@ -43,7 +43,7 @@
     (message "Cleared all projects")
     ;; Scan these directories recursively
     (dolist (dir (list that1guycolin/projects-directory
-		       that1guycolin/scripts-directory))
+                       that1guycolin/scripts-directory))
       (project-remember-projects-under dir t))
     ;; Scan these directories (but not their subdirectories)
     (let ((dotfiles-dir

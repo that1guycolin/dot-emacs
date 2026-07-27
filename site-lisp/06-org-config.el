@@ -1,9 +1,10 @@
 ;;; 06-org-config.el --- Org-Mode Setup -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; djvu, el2org, nov, ob-rust, org, org-edna, org-make-toc, org-mem,
-;; org-modern, org-modern-indent, org-node, org-node-backlink, org-noter,
-;; org-noter-pdftools, org-pdftools, org-pomodoro, org-snitch, org-tidy,
+;; djvu, el2org, nov, ob-rust, org, org-appear, org-category-capture, org-chef,
+;; org-edna, org-make-toc, org-mem, org-modern, org-modern-indent, org-node,
+;; org-node-backlink, org-noter, org-noter-pdftools, org-pdftools,
+;; org-pomodoro, org-project-capture, org-recur, org-super-agenda, org-tidy,
 ;; pdf-tools
 
 ;;; Commentary:

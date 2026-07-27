@@ -1,7 +1,7 @@
 ;;; 01-environment.el --- Startup & Core Packages -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; avy, cape, consult, corfu, emacs, embark, embark-consult, envrc,
+;; avy, cape, consult, corfu, elpaca, emacs, embark, embark-consult, envrc,
 ;; exec-path-from-shell, gcmh, helpful, marginalia, orderless, savehist,
 ;; tempel, tempel-collection, transient, vertico
 
