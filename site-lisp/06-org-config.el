@@ -237,6 +237,8 @@ Add this function to `org-mode-hook'."
    (directory-files (expand-file-name "tasks" org-directory) t
                     directory-files-no-dot-files-regexp))
   (org-agenda-diary-file (expand-file-name "diary" org-directory))
+  (org-archive-location
+   (expand-file-name "archive/2026.org::datetree/* %s" org-directory))
   (org-confirm-babel-evaluate nil)
   (org-default-notes-file (expand-file-name "notes" org-directory))
   (org-edit-src-content-indentation 0)
