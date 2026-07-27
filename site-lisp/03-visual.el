@@ -57,7 +57,6 @@
 
 ;; DON'T MOVE THE MOUSE!
 (use-package inhibit-mouse
-  (when (eq system-type 'android) :ensure t)
   :demand t
   :unless (eq system-type 'android)
   :functions (inhibit-mouse-mode)
