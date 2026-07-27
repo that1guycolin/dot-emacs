@@ -57,6 +57,7 @@
 
 ;; DON'T MOVE THE MOUSE!
 (use-package inhibit-mouse
+  :ensure (if (eq system-type 'android) nil t)
   :demand t
   :unless (eq system-type 'android)
   :functions (inhibit-mouse-mode)

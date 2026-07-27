@@ -22,14 +22,15 @@
 ;; Excellent terminal shell buffer
 ;; (based on libghostty)
 (use-package ghostel
-  :ensure (ghostel
-           :source nil :package "ghostel" :id ghostel :fetcher github
-           :repo "dakra/ghostel"
-           :files (:defaults
-                   "README.md" "etc" "src" "vendor" "build.zig" "build.zig.zon"
-                   "symbols.map" ("build" "Makefile"))
-           :type git :protocol https :inherit t :depth treeless)
+  :ensure (if (eq system-type 'android) nil
+            (ghostel :source nil :package "ghostel" :id ghostel
+                     :fetcher github :repo "dakra/ghostel" :type git
+                     :files (:defaults
+                             "README.md" "etc" "src" "vendor" "build.zig"
+                             "build.zig.zon" "symbols.map" ("build" "Makefile"))
+                     :protocol https :inherit t :depth treeless))
   :defer t
+  :unless (eq system-type 'android)
   :bind ("C-c t g" . ghostel)
   :custom (ghostel-module-auto-install 'compile)
   :config (with-eval-after-load 'disproject
@@ -376,22 +377,24 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
 
 ;;; Email:
 (use-package notmuch
+  :ensure (if (eq system-type 'android) nil t)
   :demand t
   :preface
-  (defvar that1guycolin/gmi-sendmail-path
-    (expand-file-name "bash/gmi-sendmail.sh" that1guycolin/scripts-directory)
-    "Location of the `gmi-sendmail' bash script on device.")
-  
-  (defun that1guycolin/sendmail-via-gmi ()
-    "Send mail using `gmi-sendmail' bash script as the `sendmail' program."
-    (let ((sendmail-program that1guycolin/gmi-sendmail-path)
-          (message-send-mail-with-sendmail))))
+  (unless (eq system-type 'android)
+    (defvar that1guycolin/gmi-sendmail-path
+      (expand-file-name "bash/gmi-sendmail.sh" that1guycolin/scripts-directory)
+      "Location of the `gmi-sendmail' bash script on device.")
+    
+    (defun that1guycolin/sendmail-via-gmi ()
+      "Send mail using `gmi-sendmail' bash script as the `sendmail' program."
+      (let ((sendmail-program that1guycolin/gmi-sendmail-path)
+            (message-send-mail-with-sendmail))))
 
-  (defun that1guycolin/notmuch-avoid-empty-subject ()
-    "Request confirmation before sending message with empty subject."
-    (when (and (null (message-field-value "Subject"))
-               (not (y-or-n-p "Subject is empty, send anyway? ")))
-      (error "Sending message cancelled: empty subject")))
+    (defun that1guycolin/notmuch-avoid-empty-subject ()
+      "Request confirmation before sending message with empty subject."
+      (when (and (null (message-field-value "Subject"))
+                 (not (y-or-n-p "Subject is empty, send anyway? ")))
+        (error "Sending message cancelled: empty subject"))))
 
   :unless (eq system-type 'android)
   :bind ((:map ctl-x-map
@@ -417,11 +420,13 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
   (add-hook 'notmuch-hello-mode-hook (lambda () (inhibit-mouse-mode -1))))
 
 (use-package notmuch-addr
+  :ensure (if (eq system-type 'android) nil t)
   :demand t
   :unless (eq system-type 'android)
   :config (with-eval-after-load 'notmuch-address (notmuch-addr-setup)))
 
 (use-package notmuch-transient
+  :ensure (if (eq system-type 'android) nil t)
   :after (notmuch)
   :defer t
   :unless (eq system-type 'android)
@@ -435,21 +440,24 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
                ("M-m" . notmuch-show-mode-transient))))
 
 (use-package notmuch-indicator
+  :ensure (if (eq system-type 'android) nil t)
   :after (notmuch)
   :demand t
   :unless (eq system-type 'android)
   :init (add-to-list 'minions-prominent-modes 'notmuch-indicator-mode))
 
 ;;; LLM:
-(unless (eq system-type 'android)
-  (use-package llm
-    :demand t)
+(use-package llm
+  :ensure (if (eq system-type 'android) nil t)
+  :demand t
+  :unless (eq system-type 'android))
 
-  (use-package llm-ollama
-    :ensure nil
-    :after (llm)
-    :demand t
-    :preface
+(use-package llm-ollama
+  :ensure nil
+  :after (llm)
+  :demand t
+  :preface
+  (unless (eq system-type 'android)
     (defvar that1guycolin/ollama-alist
       `((codegemma:2b              . ,(* 1  4096))
         (codegemma:7b              . ,(* 2  4096))
@@ -515,29 +523,38 @@ to the user's device.")
       (make-llm-ollama
        :chat-model (symbol-name model)
        :embedding-model "nomic-embed-text"
-       :default-chat-max-tokens (cdr (assoc model that1guycolin/ollama-alist))))
-    
-    :functions (make-llm-ollama))
+       :default-chat-max-tokens (cdr (assoc model
+                                            that1guycolin/ollama-alist)))))
+  :unless (eq system-type 'android)
+  :functions (make-llm-ollama))
 
-  ;; MCP:
-  (use-package mcp-server-lib
-    :defer t
-    :commands (mcp-server-lib-start mcp-server-lib-stop))
+;; MCP:
+(use-package mcp-server-lib
+  :ensure (if (eq system-type 'android) nil t)
+  :defer t
+  :unless (eq system-type 'android)
+  :commands (mcp-server-lib-start mcp-server-lib-stop))
 
-  (use-package org-mcp
-    :defer t
-    :commands (org-mcp-enable)
-    :custom (org-mcp-allowed-files
-             (directory-files-recursively org-directory "\\.org\\'")))
+(use-package org-mcp
+  :ensure (if (eq system-type 'android) nil t)
+  :defer t
+  :unless (eq system-type 'android)
+  :commands (org-mcp-enable)
+  :custom (org-mcp-allowed-files
+           (directory-files-recursively org-directory "\\.org\\'")))
 
-  (use-package elisp-dev-mcp
-    :defer t
-    :commands (elisp-dev-mcp-enable))
+(use-package elisp-dev-mcp
+  :ensure (if (eq system-type 'android) nil t)
+  :defer t
+  :unless (eq system-type 'android)
+  :commands (elisp-dev-mcp-enable))
 
-  ;; GPTel
-  (use-package gptel
-    :defer t
-    :preface
+;; GPTel
+(use-package gptel
+  :ensure (if (eq system-type 'android) nil t)
+  :defer t
+  :preface
+  (unless (eq system-type 'android)
     (declare-function auth-source-pick-first-password "auth-source")
 
     (defvar that1guycolin/gptel--backend-map
@@ -568,128 +585,128 @@ doubles as a model-switcher."
                                 (cdr (assoc model models))
                               (intern model)))
         (message "[gptel] Backend → %s | Model → %s"
-                 backend-name gptel-model)))
-    
-    :commands (gptel gptel-send)
-    :functions (gptel-get-backend gptel-make-ollama gptel-make-openai)
-    :defines (gptel-backend)
-    :config
-    (that1guycolin/ensure-ollama-system-service)
-    (setq
-     gptel-backend
-     (gptel-make-ollama "Ollama"
-       :host "localhost:11434"
-       :stream t
-       :models (mapcar #'car that1guycolin/ollama-alist))
-     gptel-model 'llama3.2:3b)
+                 backend-name gptel-model))))
+  :unless (eq system-type 'android)
+  :commands (gptel gptel-send)
+  :functions (gptel-get-backend gptel-make-ollama gptel-make-openai)
+  :defines (gptel-backend)
+  :config
+  (that1guycolin/ensure-ollama-system-service)
+  (setq
+   gptel-backend
+   (gptel-make-ollama "Ollama"
+     :host "localhost:11434" :stream t
+     :models (mapcar #'car that1guycolin/ollama-alist))
+   gptel-model 'llama3.2:3b)
 
-    (gptel-make-openai "OpenRouter"
-      :host "openrouter.ai"
-      :endpoint "/api/v1/chat/completions"
-      :stream t
-      :key (lambda ()
-             (auth-source-pick-first-password
-              :host "openrouter.ai"
-              :user "apikey"))
-      :models that1guycolin/openrouter-list))
+  (gptel-make-openai "OpenRouter"
+    :host "openrouter.ai" :endpoint "/api/v1/chat/completions" :stream t
+    :key (lambda () (auth-source-pick-first-password
+                     :host "openrouter.ai" :user "apikey"))
+    :models that1guycolin/openrouter-list))
 
-  (use-package gptel-forge-prs
-    :defer t
-    :hook (forge-pullreq-mode . gptel-forge-prs-install))
+(use-package gptel-forge-prs
+  :ensure (if (eq system-type 'android) nil t)
+  :defer t
+  :unless (eq system-type 'android)
+  :hook (forge-pullreq-mode . gptel-forge-prs-install))
 
-  ;; Ellama:
-  (use-package ellama
-    :defer t
-    :commands (ellama-transient-main-menu)
-    :functions (ellama-disable-scroll ellama-enable-scroll)
-    :init (setopt ellama-language "English")
-    :config
-    ;; -- Model Types --
-    ;; Fast:
-    (defvar that1guycolin/ellama-model-fast-chat
-      (that1guycolin/llm-ollama-model-setup 'lfm2.5-thinking:1.2b))
+;; Ellama:
+(use-package ellama
+  :ensure (if (eq system-type 'android) nil t)
+  :defer t
+  :unless (eq system-type 'android)
+  :commands (ellama-transient-main-menu)
+  :functions (ellama-disable-scroll ellama-enable-scroll)
+  :init (setopt ellama-language "English")
+  :config
+  ;; -- Model Types --
+  ;; Fast:
+  (defvar that1guycolin/ellama-model-fast-chat
+    (that1guycolin/llm-ollama-model-setup 'lfm2.5-thinking:1.2b))
 
-    (defvar that1guycolin/ellama-model-fast-code
-      (that1guycolin/llm-ollama-model-setup 'cogito:3b))
+  (defvar that1guycolin/ellama-model-fast-code
+    (that1guycolin/llm-ollama-model-setup 'cogito:3b))
 
-    ;; Balanced:
-    (defvar that1guycolin/ellama-model-balanced-chat
-      (that1guycolin/llm-ollama-model-setup 'llama3.2:3b))
+  ;; Balanced:
+  (defvar that1guycolin/ellama-model-balanced-chat
+    (that1guycolin/llm-ollama-model-setup 'llama3.2:3b))
 
-    (defvar that1guycolin/ellama-model-balanced-summary
-      (that1guycolin/llm-ollama-model-setup 'qwen3:4b))
+  (defvar that1guycolin/ellama-model-balanced-summary
+    (that1guycolin/llm-ollama-model-setup 'qwen3:4b))
 
-    (defvar that1guycolin/ellama-model-balanced-code
-      (that1guycolin/llm-ollama-model-setup 'codellama:7b-instruct))
+  (defvar that1guycolin/ellama-model-balanced-code
+    (that1guycolin/llm-ollama-model-setup 'codellama:7b-instruct))
 
-    ;; Heavy
-    (defvar that1guycolin/ellama-model-heavy-chat
-      (that1guycolin/llm-ollama-model-setup 'granite4.1:8b))
+  ;; Heavy
+  (defvar that1guycolin/ellama-model-heavy-chat
+    (that1guycolin/llm-ollama-model-setup 'granite4.1:8b))
 
-    (defvar that1guycolin/ellama-model-heavy-code
-      (that1guycolin/llm-ollama-model-setup 'cogito:8b))
+  (defvar that1guycolin/ellama-model-heavy-code
+    (that1guycolin/llm-ollama-model-setup 'cogito:8b))
 
-    ;; Cloud-Based
-    (defvar that1guycolin/ellama-model-cloud-chat
-      (that1guycolin/llm-ollama-model-setup 'gpt-oss:120b-cloud))
+  ;; Cloud-Based
+  (defvar that1guycolin/ellama-model-cloud-chat
+    (that1guycolin/llm-ollama-model-setup 'gpt-oss:120b-cloud))
 
-    (defvar that1guycolin/ellama-model-cloud-summary
-      (that1guycolin/llm-ollama-model-setup 'qwen3.5:cloud))
+  (defvar that1guycolin/ellama-model-cloud-summary
+    (that1guycolin/llm-ollama-model-setup 'qwen3.5:cloud))
 
-    (defvar that1guycolin/ellama-model-cloud-code
-      (that1guycolin/llm-ollama-model-setup 'qwen3-coder-next:cloud))
+  (defvar that1guycolin/ellama-model-cloud-code
+    (that1guycolin/llm-ollama-model-setup 'qwen3-coder-next:cloud))
 
-    ;; -- Functions --
-    (defun that1guycolin/ellama-set-tier (tier)
-      "Activate default models for TIER."
-      (interactive
-       (list
-        (completing-read "Tier: " '(fast heavy cloud balanced))))
-      (pcase tier
-        ('fast
-         (setopt
-          ellama-provider that1guycolin/ellama-model-fast-chat
-          ellama-coding-provider that1guycolin/ellama-model-fast-code
-          ellama-summarization-provider that1guycolin/ellama-model-fast-chat)
-         (message "Ellama tier → FAST"))
+  ;; -- Functions --
+  (defun that1guycolin/ellama-set-tier (tier)
+    "Activate default models for TIER."
+    (interactive
+     (list
+      (completing-read "Tier: " '(fast heavy cloud balanced))))
+    (pcase tier
+      ('fast
+       (setopt
+        ellama-provider that1guycolin/ellama-model-fast-chat
+        ellama-coding-provider that1guycolin/ellama-model-fast-code
+        ellama-summarization-provider that1guycolin/ellama-model-fast-chat)
+       (message "Ellama tier → FAST"))
 
-        ('balanced
-         (setopt
-          ellama-provider that1guycolin/ellama-model-balanced-chat
-          ellama-coding-provider that1guycolin/ellama-model-balanced-code
-          ellama-summarization-provider
-          that1guycolin/ellama-model-balanced-summary)
-         (message "Ellama tier → BALANCED"))
+      ('balanced
+       (setopt
+        ellama-provider that1guycolin/ellama-model-balanced-chat
+        ellama-coding-provider that1guycolin/ellama-model-balanced-code
+        ellama-summarization-provider
+        that1guycolin/ellama-model-balanced-summary)
+       (message "Ellama tier → BALANCED"))
 
-        ('heavy
-         (setopt
-          ellama-provider that1guycolin/ellama-model-heavy-chat
-          ellama-coding-provider that1guycolin/ellama-model-heavy-code
-          ellama-summarization-provider
-          that1guycolin/ellama-model-balanced-summary)
-         (message "Ellama tier → HEAVY"))
+      ('heavy
+       (setopt
+        ellama-provider that1guycolin/ellama-model-heavy-chat
+        ellama-coding-provider that1guycolin/ellama-model-heavy-code
+        ellama-summarization-provider
+        that1guycolin/ellama-model-balanced-summary)
+       (message "Ellama tier → HEAVY"))
 
-        ('cloud
-         (setopt
-          ellama-provider that1guycolin/ellama-model-cloud-chat
-          ellama-coding-provider that1guycolin/ellama-model-cloud-code
-          ellama-summarization-provider
-          that1guycolin/ellama-model-cloud-summary)
-         (message "Ellama tier → CLOUD"))))
-    
-    ;; -- Defaults --
-    (setopt
-     ellama-provider that1guycolin/ellama-model-fast-chat
-     ellama-coding-provider that1guycolin/ellama-model-fast-code
-     ellama-summarization-provider that1guycolin/ellama-model-balanced-summary
-     ;; Display
-     ellama-chat-display-action-function #'display-buffer-full-frame
-     ellama-instant-display-action-function #'display-buffer-at-bottom)
+      ('cloud
+       (setopt
+        ellama-provider that1guycolin/ellama-model-cloud-chat
+        ellama-coding-provider that1guycolin/ellama-model-cloud-code
+        ellama-summarization-provider
+        that1guycolin/ellama-model-cloud-summary)
+       (message "Ellama tier → CLOUD"))))
+  
+  ;; -- Defaults --
+  (setopt
+   ellama-provider that1guycolin/ellama-model-fast-chat
+   ellama-coding-provider that1guycolin/ellama-model-fast-code
+   ellama-summarization-provider that1guycolin/ellama-model-balanced-summary
+   ;; Display
+   ellama-chat-display-action-function #'display-buffer-full-frame
+   ellama-instant-display-action-function #'display-buffer-at-bottom)
 
-    (advice-add 'pixel-scroll-precision :before #'ellama-disable-scroll)
-    (advice-add 'end-of-buffer :after #'ellama-enable-scroll))
+  (advice-add 'pixel-scroll-precision :before #'ellama-disable-scroll)
+  (advice-add 'end-of-buffer :after #'ellama-enable-scroll))
 
-  ;; Transient:
+;; Transient:
+(unless (eq system-type 'android)
   (with-eval-after-load 'transient
     (declare-function transient-define-prefix "transient")
     (defvar that1guycolin/llm-dispatch nil)
@@ -709,10 +726,11 @@ doubles as a model-switcher."
 
 
 ;;; Media player (mpv):
-(unless (eq system-type 'android)
-  (use-package emms
-    :defer t
-    :preface
+(use-package emms
+  :ensure (if (eq system-type 'android) nil t)
+  :defer t
+  :preface
+  (unless (eq system-type 'android)
     (defun that1guycolin/emms-seek-backward-med ()
       "Seek backwards 30 seconds in EMMS."
       (interactive)
@@ -763,75 +781,80 @@ doubles as a model-switcher."
         "b" "EMMS Browser"
         "s" "Smart Browse"
         "g" "Playlist Mode Go"
-        "p" "Playlist Mode Popup"))
-    :bind (("<f6>" . emms-browser)
-           ("<f7>" . emms-smart-browse)
-           ("<f8>" . emms-playlist-mode-go)
-           ("<f9>" . emms-playlist-mode-go-popup)
-           (:map emms-playlist-mode-map
-                 ("SPC"     . that1guycolin/emms-toggle-play-pause)
-                 ("m"       . emms-next)
-                 ("n"       . emms-previous)
-                 ("s"       . emms-playlist-shuffle)
-                 ("j"       . emms-seek-backward)
-                 ("k"       . emms-seek-forward)
-                 ("J"       . that1guycolin/emms-seek-backward-med)
-                 ("K"       . that1guycolin/emms-seek-forward-med)
-                 ("M-j"     . that1guycolin/emms-seek-backward-long)
-                 ("M-k"     . that1guycolin/emms-seek-forward-long)
-                 ("p"       . emms-play-playlist)
-                 ("f"       . emms-play-file)
-                 ("d"       . emms-play-find)
-                 ("C-x C-s" . emms-playlist-save)
-                 ("C-x n"   . emms-playlist-new)
-                 ("C-x u"   . emms-playlist-mode-undo)
-                 ("i"       . emms-show)
-                 ("l"       . emms-sort)
-                 ("C-y"     . emms-playlist-mode-yank)))
-    :bind-keymap ("C-c m" . that1guycolin/emms-view-options-map)
-    :functions (emms-all
-                emms-seek emms-player-mpv-pause emms-player-mpv-resume
-                emms-playlist-mode-go emms-playlist-mode-go-popup emms-pause
-                emms-next emms-previous emms-playlist-shuffle emms-seek-backward
-                emms-seek-forward emms-play-playlist emms-play-file
-                emms-play-find emms-playlist-save emms-playlist-new emms-show
-                emms-sort emms-playlist-mode-undo emms-playlist-mode-yank)
-    :defines (emms-info-functions
-              emms-playlist-mode-map emms-player-mpv-command-name
-              emms-player-mpv-parameters emms-browser-default-browse-type
-              emms-browser-info-title-format)
-    :config
-    (require 'emms-setup)
-    (emms-all)
-    (setq
-     emms-info-functions '(emms-info-native emms-info-exiftool)
-     emms-player-list '(emms-player-mpv)
-     emms-player-mpv-command-name "mpv"
-     emms-player-mpv-parameters '("--force-window=yes"))
-    (advice-add 'emms-playlist-mode-play-smart :after
-                #'that1guycolin/emms-play))
+        "p" "Playlist Mode Popup")))
 
-  (use-package emms-info-mediainfo
-    :ensure (emms-info-mediainfo
+  :unless (eq system-type 'android)
+  :bind (("<f6>" . emms-browser)
+         ("<f7>" . emms-smart-browse)
+         ("<f8>" . emms-playlist-mode-go)
+         ("<f9>" . emms-playlist-mode-go-popup)
+         (:map emms-playlist-mode-map
+               ("SPC"     . that1guycolin/emms-toggle-play-pause)
+               ("m"       . emms-next)
+               ("n"       . emms-previous)
+               ("s"       . emms-playlist-shuffle)
+               ("j"       . emms-seek-backward)
+               ("k"       . emms-seek-forward)
+               ("J"       . that1guycolin/emms-seek-backward-med)
+               ("K"       . that1guycolin/emms-seek-forward-med)
+               ("M-j"     . that1guycolin/emms-seek-backward-long)
+               ("M-k"     . that1guycolin/emms-seek-forward-long)
+               ("p"       . emms-play-playlist)
+               ("f"       . emms-play-file)
+               ("d"       . emms-play-find)
+               ("C-x C-s" . emms-playlist-save)
+               ("C-x n"   . emms-playlist-new)
+               ("C-x u"   . emms-playlist-mode-undo)
+               ("i"       . emms-show)
+               ("l"       . emms-sort)
+               ("C-y"     . emms-playlist-mode-yank)))
+  :bind-keymap ("C-c m" . that1guycolin/emms-view-options-map)
+  :functions (emms-all
+              emms-seek emms-player-mpv-pause emms-player-mpv-resume
+              emms-playlist-mode-go emms-playlist-mode-go-popup emms-pause
+              emms-next emms-previous emms-playlist-shuffle emms-seek-backward
+              emms-seek-forward emms-play-playlist emms-play-file
+              emms-play-find emms-playlist-save emms-playlist-new emms-show
+              emms-sort emms-playlist-mode-undo emms-playlist-mode-yank)
+  :defines (emms-info-functions
+            emms-playlist-mode-map emms-player-mpv-command-name
+            emms-player-mpv-parameters emms-browser-default-browse-type
+            emms-browser-info-title-format)
+  :config
+  (require 'emms-setup)
+  (emms-all)
+  (setq
+   emms-info-functions '(emms-info-native emms-info-exiftool)
+   emms-player-list '(emms-player-mpv)
+   emms-player-mpv-command-name "mpv"
+   emms-player-mpv-parameters '("--force-window=yes"))
+  (advice-add 'emms-playlist-mode-play-smart :after
+              #'that1guycolin/emms-play))
+
+(use-package emms-info-mediainfo
+  :ensure (if (eq system-type 'android) nil
+            (emms-info-mediainfo
              :host github :repo "that1guycolin/emms-info-mediainfo"
-             :files (:defaults) :method https)
-    :after (emms)
-    :demand t
-    :custom (emms-info-functions
-             (append '(emms-info-mediainfo) emms-info-functions))))
+             :files (:defaults) :method https))
+  :after (emms)
+  :demand t
+  :unless (eq system-type 'android)
+  :custom (emms-info-functions
+           (append '(emms-info-mediainfo) emms-info-functions)))
 
 
 ;;; Miscellaneous:
 ;; Typing is better in Emacs
-(unless (eq system-type 'android)
-  (use-package emacs-everywhere
-    :demand t
-    :config
-    ;; Customizing the frame appearance for a "popup" feel
-    (setq emacs-everywhere-frame-parameters
-          '((name . "emacs-everywhere") (width . 80) (height . 20)
-            (menu-bar-lines . 0) (tool-bar-lines . 0)
-            (vertical-scroll-bars . nil)))))
+(use-package emacs-everywhere
+  :ensure (if (eq system-type 'android) nil t)
+  :demand t
+  :unless (eq system-type 'android)
+  :config
+  ;; Customizing the frame appearance for a "popup" feel
+  (setq emacs-everywhere-frame-parameters
+        '((name . "emacs-everywhere") (width . 80) (height . 20)
+          (menu-bar-lines . 0) (tool-bar-lines . 0)
+          (vertical-scroll-bars . nil))))
 
 ;; Podman/container integration
 (use-package docker
@@ -871,36 +894,39 @@ doubles as a model-switcher."
   :config (require 'rg-isearch))
 
 ;; Telegram in Emacs
-(unless (eq system-type 'android)
-  (use-package telega
-    :defer t
-    :bind ("C-M-g" . telega)
-    :functions (telega-mode-line-mode
-                telega-appindicator-mode telega-auto-download-mode
-                telega-autoplay-mode telega-chat-auto-fill-mode
-                telega-highlight-text-mode telega-notifications-mode
-                telega-root-auto-fill-mode telega-transient-keymaps-mode)
-    :init (setq
-           telega-use-images t
-           telega-server-libs-prefix "/home/colin-l/.guix-profile")
-    :config
-    (if (daemonp)
-        (add-hook 'after-make-frame-functions
-                  (lambda (frame)
-                    (with-selected-frame frame
-                      (unless telega-mode-line-mode
-                        (telega-mode-line-mode 1)))))
-      (telega-mode-line-mode 1))
-    (telega-appindicator-mode 1)
-    (telega-auto-download-mode 1)
-    (telega-autoplay-mode 1)
-    (telega-chat-auto-fill-mode 1)
-    (telega-highlight-text-mode 1)
-    (telega-notifications-mode 1)
-    (telega-root-auto-fill-mode 1)
-    (telega-transient-keymaps-mode 1)
-    
-    (message "Telega loaded successfully.")))
+(use-package telega
+  :ensure (if (eq system-type 'android) nil t)
+  :defer t
+  :preface
+  (unless (eq system-type 'android)
+    (defun that1guycolin/telega-new-frame-mode-line (frame)
+      "Ensure `telega-mode-line-mode' is active on new FRAMEs."
+      (with-selected-frame frame
+        (unless telega-mode-line-mode (telega-mode-line-mode 1)))))
+  :unless (eq system-type 'android)
+  :bind ("C-M-g" . telega)
+  :functions (telega-mode-line-mode
+              telega-appindicator-mode telega-auto-download-mode
+              telega-autoplay-mode telega-chat-auto-fill-mode
+              telega-highlight-text-mode telega-notifications-mode
+              telega-root-auto-fill-mode telega-transient-keymaps-mode)
+  :init (setq
+         telega-use-images t
+         telega-server-libs-prefix "/home/colin-l/.guix-profile")
+  :config
+  (if (daemonp)
+      (add-hook 'after-make-frame-functions
+                #'that1guycolin/telega-new-frame-mode-line frame)
+    (telega-mode-line-mode 1))
+  (telega-appindicator-mode 1)
+  (telega-auto-download-mode 1)
+  (telega-autoplay-mode 1)
+  (telega-chat-auto-fill-mode 1)
+  (telega-highlight-text-mode 1)
+  (telega-notifications-mode 1)
+  (telega-root-auto-fill-mode 1)
+  (telega-transient-keymaps-mode 1)
+  (message "Telega loaded successfully."))
 
 
 ;; Casual:
