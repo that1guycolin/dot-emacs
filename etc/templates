@@ -28,6 +28,11 @@ lisp-mode
 (s2o "((or (string-equal string \"" (p "name" method) "\")" n>
      "(string-equal string \":" method "\"))" n> ":" method ")")
 
+python-ts-mode
+(assign_mi "tags[\"" (p "item" item) "\"] = getattr(track, \"" item "\", "
+          (p "fallback") ")")
+(getat_mi "getattr(track, \"" (p "item") "\", " (p "fallback") ")")
+
 sh-mode
 (argparse "PARSED=$(getopt -o " (p "shortflags") " -l "
            (p "long-flags") " -- \"$@\") || { usage; exit 1; }" n>
