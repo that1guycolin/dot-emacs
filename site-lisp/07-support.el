@@ -22,13 +22,12 @@
 ;; Excellent terminal shell buffer
 ;; (based on libghostty)
 (use-package ghostel
-  :ensure (if (eq system-type 'android) nil
-            (ghostel :source nil :package "ghostel" :id ghostel
-                     :fetcher github :repo "dakra/ghostel" :type git
-                     :files (:defaults
-                             "README.md" "etc" "src" "vendor" "build.zig"
-                             "build.zig.zon" "symbols.map" ("build" "Makefile"))
-                     :protocol https :inherit t :depth treeless))
+  :ensure (ghostel :source nil :package "ghostel" :id ghostel
+                   :fetcher github :repo "dakra/ghostel" :type git
+                   :files (:defaults
+                           "README.md" "etc" "src" "vendor" "build.zig"
+                           "build.zig.zon" "symbols.map" ("build" "Makefile"))
+                   :protocol https :inherit t :depth treeless)
   :defer t
   :unless (eq system-type 'android)
   :bind ("C-c t g" . ghostel)
@@ -820,10 +819,9 @@ doubles as a model-switcher."
               #'that1guycolin/emms-play))
 
 (use-package emms-info-mediainfo
-  :ensure (if (eq system-type 'android) nil
-            (emms-info-mediainfo
-             :host github :repo "that1guycolin/emms-info-mediainfo"
-             :files (:defaults) :method https))
+  :ensure (emms-info-mediainfo
+           :host github :repo "that1guycolin/emms-info-mediainfo"
+           :files (:defaults) :method https)
   :after (emms)
   :demand t
   :unless (eq system-type 'android)
