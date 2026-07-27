@@ -213,7 +213,8 @@
   :mode ("\\.dockerignore\\'" . gitignore-mode))
 
 (use-package magit-todos
-  :after magit
+  :after (magit)
+  :demand t
   :config (magit-todos-mode 1))
 
 

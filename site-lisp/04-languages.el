@@ -346,6 +346,7 @@
 
 (use-package grip-mode
   :after (:any markdown-mode markdown-ts-mode)
+  :demand t
   :bind ((:map markdown-ts-mode-map
                ("C-c g" . grip-mode))
          (:map markdown-mode-map
