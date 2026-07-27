@@ -501,7 +501,7 @@ this function as `org-node-creation-fn'."
 ;; Annotate
 (use-package org-noter
   :defer t
-  :bind (("C-c n n". org-noter)
+  :bind (("C-c o n". org-noter)
          :map dired-mode-map
          ("N"      . org-noter-start-from-dired))
 
