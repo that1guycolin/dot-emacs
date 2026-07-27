@@ -162,10 +162,10 @@
       (defvar android-home "/data/data/com.termux/files/home"
         "Termux home directory on Android.")
       (setq
-       that1guycolin/projects-directory (expand-file-name "projects"
-                                                          android-home)
-       that1guycolin/scripts-directory (expand-file-name "scripts"
-                                                         android-home)))
+       that1guycolin/projects-directory
+       (expand-file-name "projects" android-home)
+       that1guycolin/scripts-directory
+       (expand-file-name "scripts" android-home)))
   (setq
    that1guycolin/projects-directory (expand-file-name "~/projects")
    that1guycolin/scripts-directory (expand-file-name "~/scripts")))
