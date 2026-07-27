@@ -374,6 +374,72 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
   :hook (dired-mode . ready-player-mode))
 
 
+;;; Email:
+(use-package notmuch
+  :demand t
+  :preface
+  (defvar that1guycolin/gmi-sendmail-path
+    (expand-file-name "bash/gmi-sendmail.sh" that1guycolin/scripts-directory)
+    "Location of the `gmi-sendmail' bash script on device.")
+  
+  (defun that1guycolin/sendmail-via-gmi ()
+    "Send mail using `gmi-sendmail' bash script as the `sendmail' program."
+    (let ((sendmail-program that1guycolin/gmi-sendmail-path)
+          (message-send-mail-with-sendmail))))
+
+  (defun that1guycolin/notmuch-avoid-empty-subject ()
+    "Request confirmation before sending message with empty subject."
+    (when (and (null (message-field-value "Subject"))
+               (not (y-or-n-p "Subject is empty, send anyway? ")))
+      (error "Sending message cancelled: empty subject")))
+
+  :unless (eq system-type 'android)
+  :bind ((:map ctl-x-map
+               ("m" . notmuch-hello))
+         (:map notmuch-hello-mode-map
+               ("C-c n" . notmuch-mua-new-mail)))
+  :hook ((message-send . notmuch-mua-attachment-check)
+         (message-send . that1guycolin/notmuch-avoid-empty-subject))
+  :custom
+  (notmuch-always-prompt-for-sender t)
+  (notmuch-fcc-dirs nil)
+  (notmuch-saved-searches
+   '((:name "inbox"    :query "tag:inbox"   :key "i" :sort-order newest-first)
+     (:name "unread"   :query "tag:unread"  :key "u" :sort-order newest-first)
+     (:name "flagged"  :query "tag:flagged" :key "f" :sort-order oldest-first)
+     (:name "sent"     :query "tag:sent"    :key "s" :sort-order oldest-first)
+     (:name "drafts"   :query "tag:draft"   :key "d" :sort-order oldest-first)
+     (:name "todo"     :query "tag:task"    :key "t" :sort-order oldest-first)
+     (:name "all mail" :query "*"           :key "a" :sort-order oldest-first)))
+  (sendmail-program that1guycolin/gmi-sendmail-path)
+  (sendmail-send-mail-function #'that1guycolin/sendmail-via-gmi)
+  :config
+  (add-hook 'notmuch-hello-mode-hook (lambda () (inhibit-mouse-mode -1))))
+
+(use-package notmuch-addr
+  :demand t
+  :unless (eq system-type 'android)
+  :config (with-eval-after-load 'notmuch-address (notmuch-addr-setup)))
+
+(use-package notmuch-transient
+  :after (notmuch)
+  :defer t
+  :unless (eq system-type 'android)
+  :bind ((:map notmuch-hello-mode-map
+               ("M-m" . notmuch-hello-mode-transient))
+         (:map notmuch-tree-mode-map
+               ("M-m" . notmuch-tree-mode-transient))
+         (:map notmuch-search-mode-map
+               ("M-m" . notmuch-search-mode-transient))
+         (:map notmuch-show-mode-map
+               ("M-m" . notmuch-show-mode-transient))))
+
+(use-package notmuch-indicator
+  :after (notmuch)
+  :demand t
+  :unless (eq system-type 'android)
+  :init (add-to-list 'minions-prominent-modes 'notmuch-indicator-mode))
+
 ;;; LLM:
 (unless (eq system-type 'android)
   (use-package llm
