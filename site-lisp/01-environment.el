@@ -1,9 +1,9 @@
 ;;; 01-environment.el --- Startup & Core Packages -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; avy, cape, consult, corfu, elpaca, emacs, embark, embark-consult, envrc,
-;; exec-path-from-shell, gcmh, helpful, marginalia, orderless, savehist,
-;; tempel, tempel-collection, transient, vertico
+;; avy, cape, consult, corfu, corfu-prescient, emacs, embark, embark-consult,
+;; envrc, exec-path-from-shell, gcmh, helpful, marginalia, orderless, prescient,
+;; savehist, tempel, tempel-collection, transient, vertico, vertico-prescient
 
 ;;; Commentary:
 ;; The packages in this file affect startup (gcmh), are designed to be loaded
@@ -249,6 +249,12 @@ If not in a side window, jump to the first found side window."
    completion-category-overrides '((file (styles basic partial-completion)))
    completion-category-defaults nil))
 
+;; Sort & filter completions
+(use-package prescient
+  :demand t
+  :init (add-to-list 'completion-styles 'prescient)
+  :custom (prescient-sort-full-matches-first t))
+
 ;; Minibuffer completions
 (use-package vertico
   :demand t
@@ -257,6 +263,11 @@ If not in a side window, jump to the first found side window."
   (vertico-resize t)
   (vertico-cycle t)
   :config (vertico-mode 1))
+
+(use-package vertico-prescient
+  :after (prescient vertico)
+  :demand t
+  :config (vertico-prescient-mode 1))
 
 ;; Rich annotations
 (use-package marginalia
@@ -297,6 +308,11 @@ If not in a side window, jump to the first found side window."
   (corfu-history-mode 1)
   (add-to-list 'savehist-additional-variables 'corfu-history)
   (corfu-popupinfo-mode 1))
+
+(use-package corfu-prescient
+  :after (corfu prescient)
+  :demand t
+  :config (corfu-prescient-mode 1))
 
 ;; Extend completion framework
 (use-package cape
