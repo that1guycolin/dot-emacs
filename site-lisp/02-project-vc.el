@@ -56,11 +56,13 @@
 
   :functions (project-remember-projects-under)
   :init (setq project-list-file
-              (no-littering-expand-etc-file-name "project-list.eld"))
+              (no-littering-expand-etc-file-name "project-list.eld")
+              project-list-exclude
+              (list (regexp-quote (expand-file-name elpaca-directory))
+                    (regexp-quote
+                     (expand-file-name "~/dotfiles/terminals/alacritty"))
+                    (regexp-quote (expand-file-name "~/projects/guix/source"))))
   :custom
-  (project-list-exclude
-   (list (regexp-quote (expand-file-name elpaca-directory))
-         (regexp-quote (expand-file-name "~/dotfiles/terminals/alacritty"))))
   (project-vc-ignores '("^node_modules$" "^\\.venv$" "^\\.uv$")))
 
 ;; transient dispatch for project.el
