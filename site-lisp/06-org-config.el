@@ -213,7 +213,7 @@ Add this function to `org-mode-hook'."
         (setq search-invisible t)
       (setq search-invisible nil)))
 
-;;;; Finnish use-package sexp
+;;;; Finish use-package sexp
   :bind (("C-c o o" . org-mode)
          ("C-c o a" . org-agenda)
          ("C-c c"   . org-capture)
@@ -415,6 +415,9 @@ The file is created if it doesn't exist."
   :demand t
   :functions (org-mem-updater-mode
               org-mem-reset org-mem-await org-mem-tip-if-empty)
+  :init
+  (add-to-list 'org-mem-exclude "/elpaca/")
+  (add-to-list 'org-mem-exclude "/archive/")
   :custom
   (org-mem-watch-dirs (list (expand-file-name org-directory)))
   (org-mem-do-look-everywhere nil)
