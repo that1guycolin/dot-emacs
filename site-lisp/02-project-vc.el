@@ -59,9 +59,8 @@
               (no-littering-expand-etc-file-name "project-list.eld")
               project-list-exclude
               (list (regexp-quote (expand-file-name elpaca-directory))
-                    (regexp-quote
-                     (expand-file-name "~/dotfiles/terminals/alacritty"))
-                    (regexp-quote (expand-file-name "~/projects/guix/source"))))
+                    (regexp-quote "~/dotfiles/terminals/alacritty")
+                    (regexp-quote  "~/projects/guix/source")))
   :custom
   (project-vc-ignores '("^node_modules$" "^\\.venv$" "^\\.uv$")))
 
