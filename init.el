@@ -65,23 +65,29 @@
 
 ;;; Code:
 ;;; Elpaca:
-;; Define redirected package paths to prevent directory clutter
+;; Define variables (paths for `no-littering')
 (defvar elpaca-directory (expand-file-name "var/elpaca/" user-emacs-directory))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
 (defvar elpaca-sources-directory (expand-file-name "sources/" elpaca-directory))
 
 ;; Avoid flycheck warnings
-(declare-function   elpaca-generate-autoloads    "elpaca")
-(declare-function   elpaca-process-queues        "elpaca")
-(declare-function   elpaca                       "elpaca")
-(declare-function   elpaca-wait                  "elpaca")
-(declare-function   elpaca-use-package           "elpaca-use-package")
-(declare-function   elpaca-use-package-mode      "elpaca-use-package")
-
-(defvar             elpaca-queue-limit)
-(defvar             no-littering)
-(defvar             elpaca-use-package)
-(defvar             use-package-always-ensure)
+(declare-function   elpaca-generate-autoloads             "elpaca")
+(declare-function   elpaca-process-queues                 "elpaca")
+(declare-function   elpaca                                "elpaca")
+(declare-function   elpaca-wait                           "elpaca")
+(declare-function   elpaca-update-menus                   "elpaca")
+(declare-function   elpaca-manager                        "elpaca")
+(declare-function   elpaca-fetch                          "elpaca")
+(declare-function   elpaca-fetch-all                      "elpaca")
+(declare-function   elpaca-merge                          "elpaca")
+(declare-function   elpaca-merge-all                      "elpaca")
+(declare-function   elpaca-rebuild                        "elpaca")
+(declare-function   elpaca-update                         "elpaca")
+(declare-function   elpaca-update-all                     "elpaca")
+(declare-function   elpaca-build-autoloads                "elpaca")
+(declare-function   elpaca-build-docs                     "elpaca")
+(declare-function   elpaca-build-docs-process-sentinel    "elpaca")
+(declare-function   elpaca-build-compile                  "elpaca")
 
 ;; Slightly modified version of {gh}/progfolio/elpaca/doc/installer.el
 (defvar elpaca-installer-version 0.12)
@@ -129,52 +135,184 @@
 (add-hook 'after-init-hook #'elpaca-process-queues)
 (elpaca `(,@elpaca-order))
 
+;;; Custom Functions & Keymaps:
+(defun that1guycolin/elpaca-update-menus ()
+  "Non-interactively run `elpaca-update-menus'."
+  (interactive)
+  (funcall #'elpaca-update-menus))
+
+(defvar-keymap that1guycolin/elpaca-options-map
+  :doc "Functions for Elpaca package manager."
+  "m"    #'elpaca-manager       "n"    #'that1guycolin/elpaca-update-menus
+  "f"    #'elpaca-fetch         "F"    #'elpaca-fetch-all
+  "e"    #'elpaca-merge         "E"    #'elpaca-merge-all
+  "r"    #'elpaca-rebuild       "u"    #'elpaca-update
+  "U"    #'elpaca-update-all    "b a"  #'elpaca-build-autoloads
+  "b d"  #'elpaca-build-docs    "b D"  #'elpaca-build-docs-process-sentinel
+  "b c"  #'elpaca-build-compile)
+
+(with-eval-after-load 'which-key
+  (which-key-add-keymap-based-replacements
+    that1guycolin/elpaca-options-map
+    "m"   "Elpaca Manager"     "n"   "Update Menus"
+    "f"   "Fetch"              "F"   "Fetch All"
+    "e"   "Merge"              "E"   "Merge All"
+    "r"   "Rebuild"            "u"   "Update"
+    "U"   "Update All"         "b a" "Build Autoloads"
+    "b d" "Build Docs"         "b D" "Build Docs (Process Sentinel)"
+    "b c" "Build Compile"))
+
+
 ;; Automatically load customization variables if they exist
 (when (file-exists-p custom-file)
   (add-hook 'elpaca-after-init-hook (lambda () (load custom-file 'noerror))))
 
-;; Enable use-package integration with Elpaca
-(elpaca (elpaca-use-package :wait t))
+;;; elpaca-use-package/no-littering:
+(declare-function elpaca-use-package      "elpaca-use-package")
+(declare-function elpaca-use-package-mode "elpaca-use-package")
+
+(defvar elpaca-use-package)
+(defvar use-package-always-ensure)
+
+(elpaca (elpaca-use-package :wait t)
+  (elpaca-use-package-mode 1))
 (elpaca-use-package-mode 1)
 (setq use-package-always-ensure t)
 
-;; Neat & tidy `user-emacs-directory'
 (use-package no-littering
   :ensure (:wait t)
   :demand t
-  :functions (no-littering-expand-etc-file-name))
-
-
-;;; Load Paths:
-(defvar that1guycolin/lisp-directory
-  (expand-file-name "site-lisp" user-emacs-directory)
-  "Directory from which init files are loaded.")
-
-(with-eval-after-load 'no-littering
+  :config
   (defvar that1guycolin/tools-directory
     (no-littering-expand-etc-file-name "tools")
     "Directory containing scripts, etc for editing this configuration."))
 
-(defvar that1guycolin/projects-directory nil
-  "Directory containing active projects.")
 
-(defvar that1guycolin/scripts-directory nil
-  "Directory containing custom \='one off' scripts.")
+;;; Global settings:
+(use-package emacs
+  :ensure nil
+  :demand t
+  :preface
+  (defun that1guycolin/desktop-mobile (desk termux &optional gui)
+    "Set different options depending on where Emacs is active.
+DESK    - Settings for Emacs on PC/laptop.
+TERMUX  - Settings for Emacs in the Android `termux' application.
+GUI     - Settings for the Emacs Android GUI application (only required when
+          the GUI and termux need different settings)."
+    (declare (indent defun))
+    (cond
+     ((and (eq system-type 'android) (null (getenv "TERMUX_VERSION")))
+      (if gui gui termux))
+     ((eq system-type 'android) termux)
+     (t desk)))
 
-(if (eq system-type 'android)
-    (progn
-      (defvar android-home "/data/data/com.termux/files/home"
-        "Termux home directory on Android.")
-      (setq
-       that1guycolin/projects-directory
-       (expand-file-name "projects" android-home)
-       that1guycolin/scripts-directory
-       (expand-file-name "scripts" android-home)))
-  (setq
-   that1guycolin/projects-directory (expand-file-name "~/projects")
-   that1guycolin/scripts-directory (expand-file-name "~/scripts")))
+;;;; Load paths:
+  (defvar that1guycolin/lisp-directory
+    (expand-file-name "site-lisp" user-emacs-directory)
+    "Directory from which init files are loaded.")
 
-(add-to-list 'load-path that1guycolin/lisp-directory)
+  (defvar that1guycolin/projects-directory nil
+    "Directory containing active projects.")
+
+  (defvar that1guycolin/scripts-directory nil
+    "Directory containing custom \='one off' scripts.")
+
+  (that1guycolin/desktop-mobile nil
+    (defvar that1guycolin/android-home
+      "/data/data/com.termux/files/home"
+      "Termux home directory on Android."))
+
+  (that1guycolin/desktop-mobile
+    (setq
+     that1guycolin/projects-directory (expand-file-name "~/projects")
+     that1guycolin/scripts-directory (expand-file-name "~/scripts"))
+    (setq
+     that1guycolin/projects-directory
+     (expand-file-name "projects" that1guycolin/android-home)
+     that1guycolin/scripts-directory
+     (expand-file-name "scripts" that1guycolin/android-home)))
+
+;;;; tabs-to-spaces
+  (defun that1guycolin/untabify-buffer ()
+    "Run `untabify' over current buffer."
+    (interactive)
+    (untabify (point-min) (point-max)))
+
+  (defvar that1guycolin/no-tab-modes
+    '(bash-ts-mode
+      emacs-lisp-mode lisp-mode lisp-data-mode python-mode python-ts-mode
+      sh-mode)
+    "Major modes indented by spaces and not by tabs.")
+
+  (defun that1guycolin/untabify-when-no-tab-mode ()
+    "Run `untabify-buffer' if `major-mode' in `no-tab-modes'."
+    (when (member major-mode that1guycolin/no-tab-modes)
+      (that1guycolin/untabify-buffer)))
+
+;;;; side window
+  (defun that1guycolin/toggle-side-window ()
+    "Switch focus between a side window and the main window area.
+If in a side window, return to the last used window.
+If not in a side window, jump to the first found side window."
+    (interactive)
+    (let* ((side-window (cl-find-if
+                         (lambda (w)
+                           (window-parameter w 'window-side))
+                         (window-list))))
+      (cond
+       ((not side-window)
+        (message "No side window found in this frame."))
+       ((eq (selected-window) side-window)
+        (select-window (get-mru-window nil nil t)))
+       (t
+        (select-window side-window)))))
+
+;;;; misc.
+  (defun that1guycolin/check-parens-with-message ()
+    "Run `check-parens'.  Print a message when all parentheses match."
+    (interactive)
+    (when (not (check-parens))
+      (message "All parentheses match!")))
+
+  (defun that1guycolin/ibuffer-hook-functions ()
+    "Group of functions to include in `ibuffer-mode-hook'."
+    (hl-line-mode 1)
+    (ibuffer-auto-mode 1))
+
+  (defvar that1guycolin/emacs-load-libs '(bs cl-lib hl-line mouse seq subr-x)
+    "List of optional Emacs libraries to load at Emacs start.")
+
+;;;; use-package
+  :bind (("C-TAB"   . completion-at-point)
+         ("C-c C-x" . toggle-frame-maximized)
+         ("C-c ("   . that1guycolin/check-parens-with-message)
+         ("C-c #"   . display-line-numbers-mode)
+         ("C-c C-#" . global-display-line-numbers-mode)
+         ("C-c C-$" . restart-emacs)
+         ("M-0"     . that1guycolin/toggle-side-window))
+  :hook (after-save . that1guycolin/untabify-when-no-tab-mode)
+  :functions (ibuffer-auto-mode)
+  :init
+  (setq font-use-system-font t)
+  (add-to-list 'default-frame-alist '(fullscreen . maximized))
+  (add-to-list 'load-path that1guycolin/lisp-directory)
+  (dolist (lib that1guycolin/emacs-load-libs)
+    (require lib))
+  :custom
+  (auto-save-visited-interval 60)
+  (enable-recursive-minibuffers t)
+  (minibuffer-prompt-properties
+   '(read-only t cursor-intangible t face minibuffer-prompt))
+  (read-extended-command-predicate #'command-completion-default-include-p)
+  (tab-always-indent 'complete)
+  (text-mode-ispell-word-completion nil)
+  :config
+  (abbrev-mode 1)
+  (auto-save-visited-mode 1)
+  (context-menu-mode 1)
+  (global-display-fill-column-indicator-mode 1)
+  (which-key-mode 1)
+  (add-hook 'ibuffer-mode-hook #'that1guycolin/ibuffer-hook-functions))
 
 
 ;;; Modular Init:

@@ -1,8 +1,8 @@
 ;;; 01-environment.el --- Startup & Core Packages -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; avy, cape, consult, corfu, corfu-prescient, emacs, embark, embark-consult,
-;; envrc, exec-path-from-shell, gcmh, helpful, marginalia, orderless, prescient,
+;; avy, cape, consult, corfu, corfu-prescient, embark, embark-consult, envrc,
+;; exec-path-from-shell, gcmh, helpful, marginalia, orderless, prescient,
 ;; savehist, tempel, tempel-collection, transient, vertico, vertico-prescient
 
 ;;; Commentary:
@@ -18,150 +18,7 @@
 ;; called with `:demand t'.
 
 ;;; Code:
-;;; Global Settings:
-(use-package emacs
-  :ensure nil
-  :demand t
-  :preface
-  (defun that1guycolin/check-parens-with-message ()
-    "Run `check-parens'.  Print a message when all parentheses match."
-    (interactive)
-    (when (not (check-parens))
-      (message "All parentheses match!")))
-
-  (defun that1guycolin/ibuffer-hook-functions ()
-    "Group of functions to include in `ibuffer-mode-hook'."
-    (hl-line-mode 1)
-    (ibuffer-auto-mode 1))
-
-  (defun that1guycolin/untabify-buffer ()
-    "Run `untabify' over current buffer."
-    (interactive)
-    (untabify (point-min) (point-max)))
-
-  (defvar that1guycolin/no-tab-modes
-    '(bash-ts-mode
-      emacs-lisp-mode lisp-mode lisp-data-mode python-mode python-ts-mode
-      sh-mode)
-    "Major modes indented by spaces and not by tabs.")
-
-  (defun that1guycolin/untabify-when-no-tab-mode ()
-    "Run `untabify-buffer' if `major-mode' in `no-tab-modes'."
-    (when (member major-mode that1guycolin/no-tab-modes)
-      (that1guycolin/untabify-buffer)))
-
-  ;; Side window:
-  (defun that1guycolin/toggle-side-window ()
-    "Switch focus between a side window and the main window area.
-If in a side window, return to the last used window.
-If not in a side window, jump to the first found side window."
-    (interactive)
-    (let* ((side-window
-            (cl-find-if
-             (lambda (w)
-               (window-parameter w 'window-side))
-             (window-list))))
-      (cond
-       ((not side-window)
-        (message "No side window found in this frame."))
-       ((eq (selected-window) side-window)
-        (select-window (get-mru-window nil nil t)))
-       (t
-        (select-window side-window)))))
-
-  (defvar that1guycolin/emacs-load-libs '(bs cl-lib hl-line mouse seq subr-x)
-    "List of optional Emacs libraries to load at Emacs start.")
-
-  :bind (("C-TAB"   . completion-at-point)
-         ("C-c C-x" . toggle-frame-maximized)
-         ("C-c ("   . that1guycolin/check-parens-with-message)
-         ("C-c #"   . display-line-numbers-mode)
-         ("C-c C-#" . global-display-line-numbers-mode)
-         ("C-c C-$" . restart-emacs)
-         ("M-0"     . that1guycolin/toggle-side-window))
-  :hook (after-save . that1guycolin/untabify-when-no-tab-mode)
-  :functions (ibuffer-auto-mode)
-  :custom
-  (auto-save-visited-interval 60)
-  (enable-recursive-minibuffers t)
-  (minibuffer-prompt-properties
-   '(read-only t cursor-intangible t face minibuffer-prompt))
-  (read-extended-command-predicate #'command-completion-default-include-p)
-  (tab-always-indent 'complete)
-  (text-mode-ispell-word-completion nil)
-  :config
-  (dolist (lib that1guycolin/emacs-load-libs)
-    (require lib))
-  (add-hook 'ibuffer-mode-hook #'that1guycolin/ibuffer-hook-functions)
-  (abbrev-mode 1)
-  (auto-save-visited-mode 1)
-  (context-menu-mode 1)
-  (which-key-mode 1)
-  ;; UI
-  (add-to-list 'default-frame-alist '(fullscreen . maximized))
-  (setq font-use-system-font t)
-  (global-display-fill-column-indicator-mode 1))
-
-
-;;; Elpaca Functions/Keymap:
-(use-package elpaca
-  :ensure nil
-  :demand t
-  :preface
-  (declare-function elpaca-update-menus                   "elpaca")
-  (declare-function elpaca-manager                        "elpaca")
-  (declare-function elpaca-fetch                          "elpaca")
-  (declare-function elpaca-fetch-all                      "elpaca")
-  (declare-function elpaca-merge                          "elpaca")
-  (declare-function elpaca-merge-all                      "elpaca")
-  (declare-function elpaca-rebuild                        "elpaca")
-  (declare-function elpaca-update                         "elpaca")
-  (declare-function elpaca-update-all                     "elpaca")
-  (declare-function elpaca-build-autoloads                "elpaca")
-  (declare-function elpaca-build-docs                     "elpaca")
-  (declare-function elpaca-build-docs-process-sentinel    "elpaca")
-  (declare-function elpaca-build-compile                  "elpaca")
-  
-  (defun that1guycolin/elpaca-update-menus ()
-    "Non-interactively run `elpaca-update-menus'."
-    (interactive)
-    (funcall #'elpaca-update-menus))
-
-  (defvar-keymap that1guycolin/elpaca-options-map
-    :doc "Functions for Elpaca package manager."
-    "m"    #'elpaca-manager
-    "n"    #'that1guycolin/elpaca-update-menus
-    "f"    #'elpaca-fetch
-    "F"    #'elpaca-fetch-all
-    "e"    #'elpaca-merge
-    "E"    #'elpaca-merge-all
-    "r"    #'elpaca-rebuild
-    "u"    #'elpaca-update
-    "U"    #'elpaca-update-all
-    "b a"  #'elpaca-build-autoloads
-    "b d"  #'elpaca-build-docs
-    "b D"  #'elpaca-build-docs-process-sentinel
-    "b c"  #'elpaca-build-compile)
-
-  (with-eval-after-load 'which-key
-    (which-key-add-keymap-based-replacements
-      that1guycolin/elpaca-options-map
-      "m"   "Elpaca Manager"
-      "n"   "Update Menus"
-      "f"   "Fetch"
-      "F"   "Fetch All"
-      "e"   "Merge"
-      "E"   "Merge All"
-      "r"   "Rebuild"
-      "u"   "Update"
-      "U"   "Update All"
-      "b a" "Build Autoloads"
-      "b d" "Build Docs"
-      "b D" "Build Docs (Process Sentinel)"
-      "b c" "Build Compile"))
-  :bind-keymap ("C-c e" . that1guycolin/elpaca-options-map))
-
-;;; Other bootstraps:
+;;; Bootstraps:
 ;; Smart garbage collection
 (use-package gcmh
   :demand t
