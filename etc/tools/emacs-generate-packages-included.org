@@ -1,133 +1,78 @@
 :PROPERTIES:
 :ID:       tools:dou27p801zk0
-:header-args: :results output code
+:header-args: :results output list code
 :END:
 #+TITLE: Generate Packages Included
 #+AUTHOR: Colin Loeffler (that1guycolin)
 #+COMMENT: DO NOT COMMIT THIS FILE WITH EVALUATED RESULTS
 #+CREATED_DATE: [2026-06-13 Sat 05:08:11]
-#+LAST_EDIT: [2026-07-27 MON 15:31:14]
+#+LAST_EDIT: [2026-07-29 WED 00:05:57]
 #+ID: tools:dou27p801zk0
 #+FILETAGS: :Emacs:emacsd:elpaca:use_package:
 
 * DO NOT COMMIT THIS FILE WITH EVALUATED RESULTS
-:PROPERTIES:
-:TOC:      :include all :depth 3 :force (nothing) :ignore (this) :local (nothing)
-:END:
+
 DO NOT COMMIT THIS FILE WITH EVALUATED RESULTS
 
-* Init.el
-:PROPERTIES:
-:CUSTOM_ID: initel
-:END:
+* Functions
 
-#+NAME: all-packages
-#+begin_src bash
-IFS=$'\n\t'
+#+NAME: list-all-packages
+#+begin_src elisp
+(require 'cl-lib)
 
-TEMP="$(mktemp)"
-ESCRIPT="${HOME}/.config/emacs/etc/tools/list-use-packages.el"
-
-emacs --script "$ESCRIPT" \
-      "${XDG_CONFIG_HOME:-${HOME}/.config}/emacs/init.el" >"$TEMP"
-
-for elfile in "${HOME}/.config/emacs/site-lisp/"*.el; do 
-    emacs --script "$ESCRIPT" "$elfile" >>"$TEMP"
-done
-
-mapfile -t PACKAGES < <(
-    sort "$TEMP" | uniq
-)
-
-printf ';;; Packages included:\n'
-printf ';; '
-
-for i in "${!PACKAGES[@]}"; do
-    if ((i > 0)); then
-        printf ', '
-    fi
-    printf '%s' "${PACKAGES[i]}"
-done
-
-printf '\n'
+(let ((packages '()))
+  (dolist (file (directory-files "~/.config/emacs/site-lisp" t "\\.el"))
+   (with-temp-buffer
+    (insert-file-contents file)
+    (goto-char (point-min))
+    (condition-case nil
+        (while t
+          (let ((form (read (current-buffer))))
+            (when (and (listp form)
+                       (eq (car form) 'use-package))
+              (push (symbol-name (cadr form)) packages))))
+      (end-of-file))))
+  (sort packages #'string<)
+  (princ (concat ";; " (s-join ", " packages))))
 #+end_src
-
-
-* site-lisp
-:PROPERTIES:
-:CUSTOM_ID: site-lisp
-:HEADER_ARGS: :session list-packages
-:END:
 
 #+NAME: list-packages
-#+begin_src bash :session list-pkgs
-lisp_dir="${XDG_CONFIG_HOME:-${HOME}/.config}/emacs/site-lisp"
-export lisp_dir
+#+begin_src elisp :var file=""
+(require 'cl-lib)
 
-function list-packages {
-    escript="${HOME}/.config/emacs/etc/tools/list-use-packages.el"
-    local temp="$(mktemp)"
-    local elfile="$1"
-    shift
-    local packages
+(unless file
+  (error "Please provide an `.el` file"))
 
-    if [[ $# -ge 1 ]]; then
-	local xtra_pkgs=("$@")
-	for pkg in "${xtra_pkgs[@]}"; do
-	    echo "$pkg" >>"$temp"
-	done
-    fi
-    
-    emacs --script "$escript" "$elfile" >>"$temp"
-
-    mapfile -t packages < <(sort "$temp" | uniq)
-
-    printf ';;; Packages included:\n'
-    printf ';; '
-
-    for i in "${!packages[@]}"; do
-	if ((i > 0)); then
-	    printf ', '
-	fi
-	printf '%s' "${packages[i]}"
-    done
-    
-    printf '\n'
-}
+(let ((packages '()))
+  (with-temp-buffer
+    (insert-file-contents file)
+    (goto-char (point-min))
+    (condition-case nil
+        (while t
+          (let ((form (read (current-buffer))))
+            (when (and (listp form)
+                       (eq (car form) 'use-package))
+              (push (symbol-name (cadr form)) packages))))
+      (end-of-file)))
+  (sort packages #'string<)
+  (princ (concat ";; " (s-join ", " packages))))
 #+end_src
 
-#+NAME: 01-environment
-#+begin_src bash :session list-pkgs
-list-packages "${lisp_dir}/01-environment.el"
-#+end_src
+* Results
 
-#+NAME: 02-project-vc
-#+begin_src bash :session list-pkgs
-list-packages "${lisp_dir}/02-project-vc.el"
-#+end_src
+#+CALL: list-all-packages()
 
-#+NAME: 03-visual
-#+begin_src bash :session list-pkgs
-list-packages "${lisp_dir}/03-visual.el"
-#+end_src
+#+CALL: list-packages(file="~/.config/emacs/site-lisp/01-environment.el")
 
-#+NAME: 04-languages
-#+begin_src bash :session list-pkgs
-list-packages "${lisp_dir}/04-languages.el"
-#+end_src
+#+CALL: list-packages(file="~/.config/emacs/site-lisp/02-project-vc.el")
 
-#+NAME: 05-coding
-#+begin_src bash :session list-pkgs
-list-packages "${lisp_dir}/05-coding.el"
-#+end_src
+#+CALL: list-packages(file="~/.config/emacs/site-lisp/03-visual.el")
 
-#+NAME: 06-org-config
-#+begin_src bash :session list-pkgs
-list-packages "${lisp_dir}/06-org-config.el"
-#+end_src
+#+CALL: list-packages(file="~/.config/emacs/site-lisp/04-languages.el")
 
-#+NAME: 07-support
-#+begin_src bash :session list-pkgs
-list-packages "${lisp_dir}/07-support.el"
-#+end_src
+#+CALL: list-packages(file="~/.config/emacs/site-lisp/05-coding.el")
+
+#+CALL: list-packages(file="~/.config/emacs/site-lisp/06-org-config.el")
+
+#+CALL: list-packages(file="~/.config/emacs/site-lisp/07-support.el")
 
