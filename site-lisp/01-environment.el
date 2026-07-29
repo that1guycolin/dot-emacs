@@ -81,7 +81,9 @@
   :functions (tempel-complete tempel-abbrev-mode)
 
   :init
-  (setq tempel-path (expand-file-name "templates" no-littering-etc-directory))
+  (setq tempel-path
+        (directory-files (no-littering-expand-etc-file-name "templates")
+                         t directory-files-no-dot-files-regexp))
   (tempel-abbrev-mode 1))
 
 ;; tempel library
