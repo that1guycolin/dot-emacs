@@ -196,7 +196,7 @@ underneath it.  The header block will contain the following fields:
       "d" "Properties Drawer"
       "s" "Source Block"))
 
-;;;; Miscellaneous
+;;;; misc.
   (defun that1guycolin/org-convert-md-links ()
     "Convert all md-style links in the current buffer to org-style."
     (interactive)
@@ -213,7 +213,7 @@ Add this function to `org-mode-hook'."
         (setq search-invisible t)
       (setq search-invisible nil)))
 
-;;;; Finish use-package sexp
+;;;; finish use-package sexp
   :bind (("C-c o o" . org-mode)
          ("C-c o a" . org-agenda)
          ("C-c c"   . org-capture)
@@ -670,7 +670,7 @@ Values are mapped to informative strings."
   :hook (org-mode . org-appear-mode))
 
 
-;;; Miscellaneous
+;;; Misc:
 ;; .org from .el
 (use-package el2org
   :after (org)
