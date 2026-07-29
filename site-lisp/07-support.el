@@ -21,8 +21,7 @@
   :bind ("C-c t e"   . eat)
   :hook (eshell-mode . eat-eshell-visual-command-mode))
 
-;; Excellent terminal shell buffer
-;; (based on libghostty)
+;; Libghostty-based terminal shell
 (use-package ghostel
   :ensure (ghostel :source nil :package "ghostel" :id ghostel
                    :fetcher github :repo "dakra/ghostel" :type git
@@ -831,7 +830,7 @@ doubles as a model-switcher."
            (append '(emms-info-mediainfo) emms-info-functions)))
 
 
-;;; Miscellaneous:
+;;; Misc:
 ;; Typing is better in Emacs
 (use-package emacs-everywhere
   :demand t
@@ -869,8 +868,7 @@ doubles as a model-switcher."
 ;; Global rg integration
 (use-package deadgrep
   :defer t
-  :bind (("<f5>"    . deadgrep)
-         ("C-c C-d" . deadgrep)))
+  :bind (("C-c C-d" . deadgrep)))
 
 ;; Project rg integration & more
 (use-package rg
@@ -975,29 +973,29 @@ doubles as a model-switcher."
   (defvar reb-mode-map)
 
   :bind (("C-o" . casual-editkit-main-tmenu)
-         :map org-agenda-mode-map      ("C-o"  . casual-agenda-tmenu)
-         :map calc-mode-map            ("C-o"  . casual-calc-tmenu)
-         :map calc-alg-ent-map         ("C-o"  . casual-calc-tmenu)
-         :map calendar-mode-map        ("C-o"  . casual-calendar)
-         :map compilation-mode-map     ("C-o"  . casual-compile-tmenu)
-         :map grep-mode-map            ("C-o"  . casual-compile-tmenu)
-         :map css-mode-map             ("M-m"  . casual-css-tmenu)
-         :map csv-mode-map             ("M-m"  . casual-csv-tmenu)
-         :map emacs-lisp-mode-map      ("M-m"  . casual-elisp-tmenu)
-         :map eshell-mode-map          ("C-o"  . casual-eshell-tmenu)
-         :map eww-mode-map             ("C-o"  . casual-eww-tmenu)
-         :map eww-bookmark-mode-map    ("C-o"  . casual-eww-bookmarks-tmenu)
-         :map ibuffer-mode-map         ("C-o"  . casual-ibuffer-tmenu)
-         :map ibuffer-mode-map         ("F"    . casual-ibuffer-filter-tmenu)
-         :map ibuffer-mode-map         ("s"    . casual-ibuffer-sortby-tmenu)
-         :map image-mode-map           ("C-o"  . casual-image-tmenu)
-         :map Info-mode-map            ("C-o"  . casual-info-tmenu)
-         :map isearch-mode-map         ("C-o"  . casual-isearch-tmenu)
-         :map makefile-mode-map        ("M-m"  . casual-make-tmenu)
-         :map org-mode-map             ("M-m"  . casual-org-tmenu)
-         :map org-table-fedit-map      ("M-m"  . casual-org-table-fedit-tmenu)
-         :map reb-mode-map             ("C-o"  . casual-re-builder-tmenu)
-         :map reb-lisp-mode-map        ("C-o"  . casual-re-builder-tmenu))
+         (:map org-agenda-mode-map      ("C-o"  . casual-agenda-tmenu))
+         (:map calc-mode-map            ("C-o"  . casual-calc-tmenu))
+         (:map calc-alg-ent-map         ("C-o"  . casual-calc-tmenu))
+         (:map calendar-mode-map        ("C-o"  . casual-calendar))
+         (:map compilation-mode-map     ("C-o"  . casual-compile-tmenu))
+         (:map grep-mode-map            ("C-o"  . casual-compile-tmenu))
+         (:map css-mode-map             ("M-m"  . casual-css-tmenu))
+         (:map csv-mode-map             ("M-m"  . casual-csv-tmenu))
+         (:map emacs-lisp-mode-map      ("M-m"  . casual-elisp-tmenu))
+         (:map eshell-mode-map          ("C-o"  . casual-eshell-tmenu))
+         (:map eww-mode-map             ("C-o"  . casual-eww-tmenu))
+         (:map eww-bookmark-mode-map    ("C-o"  . casual-eww-bookmarks-tmenu))
+         (:map ibuffer-mode-map         ("C-o"  . casual-ibuffer-tmenu))
+         (:map ibuffer-mode-map         ("F"    . casual-ibuffer-filter-tmenu))
+         (:map ibuffer-mode-map         ("s"    . casual-ibuffer-sortby-tmenu))
+         (:map image-mode-map           ("C-o"  . casual-image-tmenu))
+         (:map Info-mode-map            ("C-o"  . casual-info-tmenu))
+         (:map isearch-mode-map         ("C-o"  . casual-isearch-tmenu))
+         (:map makefile-mode-map        ("M-m"  . casual-make-tmenu))
+         (:map org-mode-map             ("M-m"  . casual-org-tmenu))
+         (:map org-table-fedit-map      ("M-m"  . casual-org-table-fedit-tmenu))
+         (:map reb-mode-map             ("C-o"  . casual-re-builder-tmenu))
+         (:map reb-lisp-mode-map        ("C-o"  . casual-re-builder-tmenu)))
   :functions (casual-ediff-install
               casual-ediff-tmenu casual-editkit-windows-tmenu
               casual-editkit-rectangle-tmenu casual-editkit-registers-tmenu
