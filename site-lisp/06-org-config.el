@@ -415,13 +415,13 @@ The file is created if it doesn't exist."
   :demand t
   :functions (org-mem-updater-mode
               org-mem-reset org-mem-await org-mem-tip-if-empty)
-  :init
-  (add-to-list 'org-mem-exclude "/elpaca/")
-  (add-to-list 'org-mem-exclude "/archive/")
   :custom
   (org-mem-watch-dirs (list (expand-file-name org-directory)))
   (org-mem-do-look-everywhere nil)
-  :config (org-mem-updater-mode 1))
+  :config
+  (add-to-list 'org-mem-exclude "/elpaca/")
+  (add-to-list 'org-mem-exclude "/archive/")
+  (org-mem-updater-mode 1))
 
 ;; Fast & simple note management
 (use-package org-node
