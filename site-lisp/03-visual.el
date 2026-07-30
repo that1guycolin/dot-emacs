@@ -102,29 +102,7 @@
 (defvar that1guycolin/font-alist nil
   "Alist mapping human-readable font names to non-directory filenames.")
 
-(if (eq system-type 'android)
-    (setq that1guycolin/font-alist
-          '(("Anonymice Pro NF"          . "AnonymicePro Nerd Font")
-            ("Anonymice Pro NFM"         . "AnonymicePro Nerd Font Mono")
-            ("Anonymice Pro NFP"         . "AnonymicePro Nerd Font Propo")
-            ("Blex NF"                   . "BlexMono Nerd Font")
-            ("Blex NFM"                  . "BlexMono Nerd Font Mono")
-            ("Blex NFP"                  . "BlexMono Nerd Font Propo")
-            ("DaddyTime NF"              . "DaddyTimeMono Nerd Font")
-            ("DaddyTime NFM"             . "DaddyTimeMono Nerd Font Mono")
-            ("DaddyTime NFP"             . "DaddyTimeMono Nerd Font Propo")
-            ("Droid Sans NF"             . "DroidSansM Nerd Font")
-            ("Droid Sans NFM"            . "DroidSansM Nerd Font Mono")
-            ("Droid Sans NFP"            . "DroidSansM Nerd Font Propo")
-            ("Fantasque Sans NF"         . "FantasqueSansM Nerd Font")
-            ("Fantasque Sans NFM"        . "FantasqueSansM Nerd Font Mono")
-            ("Fantasque Sans NFP"        . "FantasqueSansM Nerd Font Propo")
-            ("Go NF"                     . "GoMono Nerd Font")
-            ("Go NFM"                    . "GoMono Nerd Font Mono")
-            ("Go NFP"                    . "GoMono Nerd Font Propo")
-            ("Space NF"                  . "SpaceMono Nerd Font")
-            ("Space NFM"                 . "SpaceMono Nerd Font Mono")
-            ("Space NFP"                 . "SpaceMono Nerd Font Propo")))
+(that1guycolin/desktop-mobile
   (setq that1guycolin/font-alist
         '(("0xProto"                   . "0xProtoNerdFontMono")
           ("3270"                      . "3270NerdFontMono")
@@ -202,8 +180,31 @@
           ("Terminess"                 . "TerminessNerdFontMono")
           ("Ubuntu"                    . "UbuntuMonoNerdFontMono")
           ("Victor"                    . "VictorMonoNerdFontMono")
-          ("Zed"                       . "ZedMonoNerdFontMono"))))
-
+          ("Zed"                       . "ZedMonoNerdFontMono")))
+  (setq that1guycolin/font-alist
+	'(("Anonymice Pro NF"          . "AnonymicePro Nerd Font")
+	  ("Anonymice Pro NFM"         . "AnonymicePro Nerd Font Mono")
+	  ("Anonymice Pro NFP"         . "AnonymicePro Nerd Font Propo")
+	  ("Blex NF"                   . "BlexMono Nerd Font")
+	  ("Blex NFM"                  . "BlexMono Nerd Font Mono")
+	  ("Blex NFP"                  . "BlexMono Nerd Font Propo")
+	  ("DaddyTime NF"              . "DaddyTimeMono Nerd Font")
+	  ("DaddyTime NFM"             . "DaddyTimeMono Nerd Font Mono")
+	  ("DaddyTime NFP"             . "DaddyTimeMono Nerd Font Propo")
+	  ("Droid Sans NF"             . "DroidSansM Nerd Font")
+	  ("Droid Sans NFM"            . "DroidSansM Nerd Font Mono")
+	  ("Droid Sans NFP"            . "DroidSansM Nerd Font Propo")
+	  ("Fantasque Sans NF"         . "FantasqueSansM Nerd Font")
+	  ("Fantasque Sans NFM"        . "FantasqueSansM Nerd Font Mono")
+	  ("Fantasque Sans NFP"        . "FantasqueSansM Nerd Font Propo")
+	  ("Go NF"                     . "GoMono Nerd Font")
+	  ("Go NFM"                    . "GoMono Nerd Font Mono")
+	  ("Go NFP"                    . "GoMono Nerd Font Propo")
+	  ("Space NF"                  . "SpaceMono Nerd Font")
+	  ("Space NFM"                 . "SpaceMono Nerd Font Mono")
+	  ("Space NFP"                 . "SpaceMono Nerd Font Propo"))))
+	
+	
 (defvar that1guycolin/keep-frame-size-on-font-switch-p t
   "If non-nil, attempt to keep frame size fixed when changing font.
 If nil, the number of frame lines and columns remains fixed.")
