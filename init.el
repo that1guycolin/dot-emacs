@@ -71,23 +71,24 @@
 (defvar elpaca-sources-directory (expand-file-name "sources/" elpaca-directory))
 
 ;; Avoid flycheck warnings
-(declare-function   elpaca-generate-autoloads             "elpaca")
-(declare-function   elpaca-process-queues                 "elpaca")
 (declare-function   elpaca                                "elpaca")
-(declare-function   elpaca-wait                           "elpaca")
-(declare-function   elpaca-update-menus                   "elpaca")
-(declare-function   elpaca-manager                        "elpaca")
+(declare-function   elpaca--read-queued                   "elpaca")
+(declare-function   elpaca-build-autoloads                "elpaca")
+(declare-function   elpaca-build-compile                  "elpaca")
+(declare-function   elpaca-build-docs                     "elpaca")
+(declare-function   elpaca-build-docs-process-sentinel    "elpaca")
 (declare-function   elpaca-fetch                          "elpaca")
 (declare-function   elpaca-fetch-all                      "elpaca")
+(declare-function   elpaca-generate-autoloads             "elpaca")
+(declare-function   elpaca-manager                        "elpaca")
 (declare-function   elpaca-merge                          "elpaca")
 (declare-function   elpaca-merge-all                      "elpaca")
+(declare-function   elpaca-process-queues                 "elpaca")
 (declare-function   elpaca-rebuild                        "elpaca")
 (declare-function   elpaca-update                         "elpaca")
 (declare-function   elpaca-update-all                     "elpaca")
-(declare-function   elpaca-build-autoloads                "elpaca")
-(declare-function   elpaca-build-docs                     "elpaca")
-(declare-function   elpaca-build-docs-process-sentinel    "elpaca")
-(declare-function   elpaca-build-compile                  "elpaca")
+(declare-function   elpaca-update-menus                   "elpaca")
+(declare-function   elpaca-wait                           "elpaca")
 
 ;; Slightly modified version of {gh}/progfolio/elpaca/doc/installer.el
 (defvar elpaca-installer-version 0.12)
@@ -141,6 +142,11 @@
   (interactive)
   (funcall #'elpaca-update-menus))
 
+(defun that1guycolin/elpaca-build-docs (e)
+  "Build the documentation for package E."
+  (interactive (list (elpaca--read-queued "Build documentation for: ") t))
+  (elpaca-build-docs e))
+
 (defvar-keymap that1guycolin/elpaca-options-map
   :doc "Functions for Elpaca package manager."
   "m"    #'elpaca-manager       "n"    #'that1guycolin/elpaca-update-menus
@@ -148,9 +154,8 @@
   "e"    #'elpaca-merge         "E"    #'elpaca-merge-all
   "r"    #'elpaca-rebuild       "u"    #'elpaca-update
   "U"    #'elpaca-update-all    "b a"  #'elpaca-build-autoloads
-  "b d"  #'elpaca-build-docs    "b D"  #'elpaca-build-docs-process-sentinel
+  "b d"  #'(lambda () (call-interactively #'that1guycolin/elpaca-build-docs))
   "b c"  #'elpaca-build-compile)
-
 (with-eval-after-load 'which-key
   (which-key-add-keymap-based-replacements
     that1guycolin/elpaca-options-map
@@ -159,9 +164,7 @@
     "e"   "Merge"              "E"   "Merge All"
     "r"   "Rebuild"            "u"   "Update"
     "U"   "Update All"         "b a" "Build Autoloads"
-    "b d" "Build Docs"         "b D" "Build Docs (Process Sentinel)"
-    "b c" "Build Compile"))
-
+    "b d" "Build Docs"         "b c" "Build Compile"))
 
 ;; Automatically load customization variables if they exist
 (when (file-exists-p custom-file)
@@ -290,6 +293,7 @@ If not in a side window, jump to the first found side window."
          ("C-c C-#" . global-display-line-numbers-mode)
          ("C-c C-$" . restart-emacs)
          ("M-0"     . that1guycolin/toggle-side-window))
+  :bind-keymap ("C-c e"   . that1guycolin/elpaca-options-map)
   :hook (after-save . that1guycolin/untabify-when-no-tab-mode)
   :functions (ibuffer-auto-mode)
   :init
