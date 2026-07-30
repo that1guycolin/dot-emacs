@@ -60,7 +60,7 @@
               project-list-exclude
               (list (regexp-quote (expand-file-name elpaca-directory))
                     (regexp-quote "~/dotfiles/terminals/alacritty")
-                    (regexp-quote  "~/projects/guix/source")))
+                    (regexp-quote  "~/projects/guix-base/source")))
   :custom
   (project-vc-ignores '("^node_modules$" "^\\.venv$" "^\\.uv$")))
 
