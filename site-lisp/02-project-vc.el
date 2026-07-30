@@ -140,7 +140,7 @@
   :custom
   (magit-refresh-status-buffer t)
   (magit-define-global-key-bindings 'default)
-  (magit-save-repository-buffers t))
+  :config (magit-save-repository-buffers))
 
 (use-package forge
   :defer t
@@ -150,7 +150,7 @@
     (interactive)
     (call-interactively #'forge-pull))
   :hook (magit-status-mode . that1guycolin/interactive-forge-pull)
-  :functions (forge-pull)
+  :commands (forge-pull)
   :custom (forge-pull-notifications t))
 
 (use-package diff-hl
