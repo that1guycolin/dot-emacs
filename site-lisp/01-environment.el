@@ -63,12 +63,30 @@
     (setq-local completion-at-point-functions
                 (cons #'tempel-complete completion-at-point-functions)))
 
+  (defun that1guycolin/select-file-from-list (files prompt &optional other-win)
+    "Request the user select a file from FILES to open.
+Provide a custom PROMPT to display to the user.  If `other-win' is non-nil,
+open the file in another window."
+    (when (= 1 (length files))
+      (let ((file (car files)))
+        (warn "Only one file in provided, opening %s..." (car files))
+        (if other-win (find-file-other-window (car files))
+          (find-file (car files)))))
+    (let* ((choices (mapcar
+                     (lambda (f) (cons (abbreviate-file-name f) f))
+                     files))
+           (choice (completing-read prompt choices nil t))
+           (file (cdr (assoc choice choices))))
+      (if other-win
+          (find-file-other-window file)
+        (find-file file))))
+  
   (defun that1guycolin/tempel-edit-custom-templates ()
     "Open tempel template file(s) in another window."
     (interactive)
     (if (listp tempel-path)
-        (dolist (file tempel-path)
-          (find-file-other-window file))
+        (that1guycolin/select-file-from-list
+         tempel-path "Template file to open? " t)
       (find-file-other-window tempel-path)))
   
   :bind (("M-+"   . tempel-insert)
@@ -79,11 +97,11 @@
          ("C-TAB" . tempel-previous))
   :hook ((text-mode prog-mode conf-mode) . that1guycolin/tempel-setup-capf)
   :functions (tempel-complete tempel-abbrev-mode)
-
   :init
   (setq tempel-path
-        (directory-files (no-littering-expand-etc-file-name "templates")
-                         t directory-files-no-dot-files-regexp))
+        (directory-files
+         (no-littering-expand-etc-file-name "templates") t
+         directory-files-no-dot-files-regexp))
   (tempel-abbrev-mode 1))
 
 ;; tempel library
