@@ -196,18 +196,18 @@
   :ensure nil
   :demand t
   :preface
-  (defun that1guycolin/desktop-mobile (desk termux &optional gui)
+  (defmacro that1guycolin/desktop-mobile (desk termux &optional gui)
     "Set different options depending on where Emacs is active.
 DESK    - Settings for Emacs on PC/laptop.
 TERMUX  - Settings for Emacs in the Android `termux' application.
 GUI     - Settings for the Emacs Android GUI application (only required when
           the GUI and termux need different settings)."
     (declare (indent defun))
-    (cond
-     ((and (eq system-type 'android) (null (getenv "TERMUX_VERSION")))
-      (if gui gui termux))
-     ((eq system-type 'android) termux)
-     (t desk)))
+    `(cond
+      ((and (eq system-type 'android) (null (getenv "TERMUX_VERSION")))
+       ,(or gui termux))
+      ((eq system-type 'android) ,termux)
+      (t ,desk)))
 
 ;;;; Load paths:
   (defvar that1guycolin/lisp-directory
@@ -220,10 +220,9 @@ GUI     - Settings for the Emacs Android GUI application (only required when
   (defvar that1guycolin/scripts-directory nil
     "Directory containing custom \='one off' scripts.")
 
-  (that1guycolin/desktop-mobile nil
-    (defvar that1guycolin/android-home
-      "/data/data/com.termux/files/home"
-      "Termux home directory on Android."))
+  (defvar that1guycolin/android-home
+    "/data/data/com.termux/files/home"
+    "Termux home directory on Android.")
 
   (that1guycolin/desktop-mobile
     (setq
