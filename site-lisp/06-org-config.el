@@ -258,15 +258,12 @@ Add this function to `org-mode-hook'."
   (require 'ox-texinfo)
   (keymap-set org-mode-map "C-c b" that1guycolin/org-insert-block-map)
   (add-hook 'org-mode-hook #'that1guycolin/org-search-folded)
-  (let* ((lang-mode-cons '(("bash" . bash-ts) ("bash2" . bash-ts)
-                           ("cmake" . cmake-ts) ("json" . json-ts)
-                           ("lua"   . lua-ts) ("python" . python-ts)
-                           ("toml"  . toml-ts) ("yaml"  . yaml-ts)))
-         (langs (assoc #'car lang-mode-cons)))
-    (dolist (lang langs)
-      (setq org-src-lang-modes (assoc-delete-all lang org-src-lang-modes)))
-    (dolist (cell lang-mode-cons)
-      (add-to-list 'org-src-lang-modes cell)))
+  (dolist (lang-mode-cons '(("bash"  . bash-ts) ("bash2" . bash-ts)
+			    ("cmake" . cmake-ts) ("json" . json-ts)
+			    ("lua"   . lua-ts) ("python" . python-ts)
+			    ("toml"  . toml-ts) ("yaml"  . yaml-ts)))
+    (assoc-delete-all (car lang-mode-cons) org-src-lang-modes)
+    (add-to-list 'org-src-lang-modes lang-mode-cons))
 
   (with-eval-after-load 'ob
     (setq org-babel-default-header-args
