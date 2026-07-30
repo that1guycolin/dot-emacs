@@ -260,16 +260,18 @@ If nil, the number of frame lines and columns remains fixed.")
     "Display functions that change how the user-interface looks."
     ["Modify UI"
      ["Fonts"
-      ("f s" "Switch font"         that1guycolin/switch-font)
-      ("f r" "Random font"         that1guycolin/random-font :transient t)
-      ("f b" "Font size behaviour" that1guycolin/set-font-size-behaviour
+      ("s" "Switch font"         that1guycolin/switch-font)
+      ("r" "Random font"         that1guycolin/random-font :transient t)
+      ("b" "Font size behaviour" that1guycolin/set-font-size-behaviour
        :transient t)
-      ("f f" "Show Font Family"    show-font-select-preview)
-      ("f a" "Show Fonts (All)"    show-font-tabulated)]
+      ("f" "Show Font Family"    show-font-select-preview)
+      ("a" "Show Fonts (All)"    show-font-tabulated)]
      ["Theme"
-      ("t s" "Switch theme"        modus-themes-select-dark)
-      ("t r" "Random theme"        modus-themes-load-random-dark :transient t)
-      ("t n" "Rotate theme"        modus-themes-rotate)]])
+      ("t" "Switch theme"        modus-themes-select)
+      ("o" "Rotate theme"        modus-themes-rotate)
+      ("l" "Random light theme"  modus-themes-load-random-light :transient t)
+      ("d" "Random dark theme"   modus-themes-load-random-dark :transient t)
+      ("x" "Random theme"        modus-themes-load-random :transient t)]])
   (keymap-global-set "C-c u" 'that1guycolin/visual-settings-dispatch))
 
 
