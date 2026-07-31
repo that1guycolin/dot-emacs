@@ -34,6 +34,7 @@
       (json-mode              . json-ts-mode)
       (js-json-mode           . json-ts-mode)
       (lua-mode               . lua-ts-mode)
+      (markdown-mode          . markdown-ts-mode)
       (rust-mode              . rust-ts-mode)
       (typescript-mode        . typescript-ts-mode)
       (conf-toml-mode         . toml-ts-mode)
@@ -267,90 +268,17 @@
 
 
 ;;; Markdown:
-(use-package markdown-mode
-  :defer t
-  :preface
-  (defun that1guycolin/markdown-toggle-ts-mode ()
-    "Switch between `markdown-mode' & `markdown-ts-mode'."
-    (interactive)
-    (cond
-     ((eq major-mode 'markdown-mode)
-      (progn (markdown-ts-mode) (message "Activated %s" major-mode)))
-     ((eq major-mode 'markdown-ts-mode)
-      (progn (markdown-mode) (message "Activated %s" major-mode)))
-     (t
-      (user-error "not a markdown buffer"))))
-
-  (defvar-keymap that1guycolin/markdown-toggle-map
-    :doc "Functions to toggle the display of elements in markdown."
-    "RET" #'markdown-toggle-markup-hiding
-    "TAB" #'markdown-toggle-inline-images
-    "d"   #'markdown-move-down
-    "u"   #'markdown-move-up
-    "r"   #'markdown-demote
-    "l"   #'markdown-promote
-    "m"   #'markdown-insert-list-item
-    "w"   #'markdown-insert-wiki-link
-    "C-e" #'markdown-toggle-math
-    "C-f" #'markdown-toggle-fontify-code-blocks-natively
-    "C-l" #'markdown-toggle-url-hiding
-    "C-x" #'markdown-toggle-gfm-checkbox)
-  (with-eval-after-load 'which-key
-    (which-key-add-keymap-based-replacements that1guycolin/markdown-toggle-map
-      "RET" "Toggle Markup Hiding"
-      "TAB" "Toggle Inline Images"
-      "d"   "Move Down"
-      "u"   "Move Up"
-      "r"   "Demote"
-      "l"   "Promote"
-      "m"   "Insert List Item"
-      "w"   "Insert Wiki Link"
-      "C-e" "Toggle Math"
-      "C-f" "Toggle Code Block Fontification"
-      "C-l" "Toggle URL Hiding"
-      "C-x" "Toggle GFM Checkbox"))
-  :bind (:map markdown-mode-map
-              ("C-c C-l" . markdown-insert-link)
-              ("C-c v"   . that1guycolin/markdown-toggle-ts-mode))
-  :commands (markdown-mode)
-  :custom (markdown-fontify-code-blocks-natively t)
-  :config
-  (keymap-set markdown-mode-map "C-c w"      that1guycolin/markdown-toggle-map)
-  (keymap-set markdown-mode-map "C-c C-x"  #'toggle-frame-maximized)
-  (keymap-set markdown-mode-map "C-c C-="  #'free-keys))
-
 (use-package markdown-ts-mode
   :ensure nil
   :defer t
-  :preface
-  (defvar-keymap that1guycolin/markdown-ts-toggle-map
-    :doc "Functions to toggle the display of markdown elements."
-    "RET" #'markdown-ts-toggle-hide-markup
-    "C-f" #'markdown-ts-emphasize
-    "C-v" #'markdown-ts-toggle-inline-images)
-  (with-eval-after-load 'which-key
-    (which-key-add-keymap-based-replacements
-      that1guycolin/markdown-ts-toggle-map
-      "RET" "Toggle Hide Markup"
-      "C-f" "Emphasize"
-      "C-v" "Toggle Inline Images"))
-  :bind (:map markdown-ts-mode-map
-              ("C-c C-l" . markdown-insert-link)
-              ("C-c v"   . that1guycolin/markdown-toggle-ts-mode))
   :mode ("\\.md\\'" "README\\'" "INSTALL\\'")
-  :defines (markdown-ts-mode-map)
-  :config
-  (keymap-set markdown-ts-mode-map "C-c w"
-              that1guycolin/markdown-ts-toggle-map)
-  (keymap-set markdown-ts-mode-map "C-c C-x" #'toggle-frame-maximized))
+  :config (keymap-set markdown-ts-mode-map "C-c C-x" #'toggle-frame-maximized))
 
 (use-package grip-mode
-  :after (:any markdown-mode markdown-ts-mode)
+  :after (markdown-ts-mode)
   :demand t
-  :bind ((:map markdown-ts-mode-map
-               ("C-c g" . grip-mode))
-         (:map markdown-mode-map
-               ("C-c g" . grip-mode)))
+  :bind (:map markdown-ts-mode-map
+              ("C-c g" . grip-mode))
   :custom (grip-command 'auto))
 
 
