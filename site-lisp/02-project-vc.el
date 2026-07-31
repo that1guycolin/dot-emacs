@@ -143,7 +143,8 @@
   :config (magit-save-repository-buffers))
 
 (use-package forge
-  :defer t
+  :after (magit)
+  :demand t
   :preface
   (defun that1guycolin/interactive-forge-pull ()
     "Call forge-pull interactively."
