@@ -27,6 +27,11 @@ json-ts-mode
 python-ts-mode
 (getat_mi "getattr(track, \"" (p "item") "\", " (p "fallback") ")")
 
+scheme-mode
+(use-mod "#:use-module (" (p "module") ")")
+(use-mguix "#:use-module (guix " (p "module") ")")
+(use-mgnu "#:use-module (gnu " (p "module") ")")
+
 sh-mode
 (argparse "PARSED=$(getopt -o " (p "shortflags") " -l "
            (p "long-flags") " -- \"$@\") || { usage; exit 1; }" n>
@@ -41,12 +46,12 @@ sh-mode
 (flag "-" (p "s") " | --" (p "long") ")" n>
       (p "FLAG") "=" (p "VALUE") n> "shift" (p "shiftn") n> ";;")
 (fusage "function usage {" n> "cat <<EOF" n
-        "USAGE: ${funcstack[2]} [OPTIONS] " (p "req arguments") n n
+        "USAGE: ${funcstack[3]} [OPTIONS] " (p "req arguments") n n
         (p "description") n n "OPTIONS:" n "  " (p "flag") n
         "      " (p "flag description") n n "  -h, --help" n
         "      Display this message and exit." n n "EOF" n "}")
 (fargparse "PARSED=$(getopt -o " (p "shortflags") " -l "
-           (p "long-flags") " -- \"@\") || { usage; return 1; }" n>
+           (p "long-flags") " -- \"$@\") || { usage; return 1; }" n>
            "eval set -- \"$PARSED\"" n> "while true; do" n
            "case \"$1\" in" n n> "-h | --help) usage; return ;;" n>
            "--) shift; break ;;" n>
