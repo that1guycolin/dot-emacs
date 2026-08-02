@@ -260,9 +260,9 @@ Add this function to `org-mode-hook'."
   (keymap-set org-mode-map "C-c b" that1guycolin/org-insert-block-map)
   (add-hook 'org-mode-hook #'that1guycolin/org-search-folded)
   (dolist (lang-mode-cons '(("bash"  . bash-ts) ("bash2" . bash-ts)
-			    ("cmake" . cmake-ts) ("json" . json-ts)
-			    ("lua"   . lua-ts) ("python" . python-ts)
-			    ("toml"  . toml-ts) ("yaml"  . yaml-ts)))
+                            ("cmake" . cmake-ts) ("json" . json-ts)
+                            ("lua"   . lua-ts) ("python" . python-ts)
+                            ("toml"  . toml-ts) ("yaml"  . yaml-ts)))
     (assoc-delete-all (car lang-mode-cons) org-src-lang-modes)
     (add-to-list 'org-src-lang-modes lang-mode-cons))
 

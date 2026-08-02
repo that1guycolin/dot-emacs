@@ -380,6 +380,10 @@
 (use-package geiser
   :defer t
   :bind ("C-c C-s" . geiser)
+  :hook (scheme-mode . geiser)
+  :init
+  (setenv "LC_ALL" "en_US.UTF-8")
+  (setenv "LANG" "en_US.UTF-8")
   :custom (geiser-repl-use-other-window nil))
 
 (use-package geiser-guile
@@ -391,7 +395,8 @@
   :bind ((:map geiser-mode-map
                ("C-c j" . macrostep-geiser))
          (:map geiser-repl-mode-map
-               ("C-c j" . macrostep-geiser))))
+               ("C-c j" . macrostep-geiser)))
+  :config (macrostep-geiser-setup))
 
 
 ;;; Shell scripts:
