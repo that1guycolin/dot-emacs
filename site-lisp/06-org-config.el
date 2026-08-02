@@ -222,6 +222,7 @@ Add this function to `org-mode-hook'."
          (:map org-mode-map
                ("C-c l"   . org-toggle-link-display)
                ("C-c C-q" . org-set-tags-command)))
+  :hook (org-mode . (lambda () (inhibit-mouse-mode -1)))
   :mode (("\\.org\\'"   . org-mode)
          ("\\.notes\\'" . org-mode))
   :functions (org-before-first-heading-p

@@ -59,6 +59,7 @@
 (use-package inhibit-mouse
   :demand t
   :unless (eq system-type 'android)
+  :hook (Info-mode . (lambda () (inhibit-mouse-mode -1)))
   :functions (inhibit-mouse-mode)
   :custom
   (inhibit-mouse-adjust-mouse-highlight t)
