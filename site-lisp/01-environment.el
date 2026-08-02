@@ -30,9 +30,9 @@
   :demand t
   :preface
   (defvar that1guycolin/exec-path-from-shell-vars
-    '("CC"
-      "CXX" "INFOPATH" "LSP_USE_PLISTS" "PKG_CONFIG_PATH" "SSH_AGENT_PID"
-      "SSH_AUTH_SOCK" "WAYLAND_DISPLAY")
+    '("CC" "CXX" "GUILE_LOAD_PATH" "GUILE_LOAD_COMPILED_PATH" "INFOPATH"
+      "LSP_USE_PLISTS" "PKG_CONFIG_PATH" "SSH_AGENT_PID" "SSH_AUTH_SOCK"
+      "WAYLAND_DISPLAY")
     "List of environment variables to load at Emacs start.")
   :functions (exec-path-from-shell-initialize)
   :custom (exec-path-from-shell-shell-name "zsh")
