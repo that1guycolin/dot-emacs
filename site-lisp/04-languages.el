@@ -379,16 +379,13 @@
 
 (use-package geiser
   :defer t
-  :bind ("C-c C-s" . geiser)
-  :hook (scheme-mode . geiser)
-  :init
-  (setenv "LC_ALL" "en_US.UTF-8")
-  (setenv "LANG" "en_US.UTF-8")
-  :custom (geiser-repl-use-other-window nil))
+  :hook (scheme-mode . turn-on-geiser-mode)
+  :custom (geiser-repl-use-other-window t))
 
 (use-package geiser-guile
   :after (geiser)
-  :demand t)
+  :demand t
+  :bind ("C-c C-s" . geiser-guile-switch))
 
 (use-package macrostep-geiser
   :defer t
