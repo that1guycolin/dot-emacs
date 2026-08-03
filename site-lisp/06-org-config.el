@@ -496,6 +496,7 @@ this function as `org-node-creation-fn'."
            :files (:defaults "README" ("build" "Makefile") ("build" "server"))
            :type git :protocol https :inherit t :depth treeless)
   :defer t
+  :hook (pdf-view-mode . (lambda () (inhibit-mouse-mode -1)))
   :magic ("%PDF" . pdf-view-mode)
   :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)
   :functions (pdf-tools-install)
