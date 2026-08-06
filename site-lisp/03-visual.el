@@ -93,10 +93,52 @@
 
 ;; Line-length:
 (use-package visual-fill-column
-  :defer t
-  :hook ((prog-mode text-mode conf-mode) . visual-line-mode)
+  :preface
+  (defvar that1guycolin/mode-fill-column-alist
+    '((bash-ts-mode           . 80)    (c-ts-mode              . 100)
+      (c++-ts-mode            . 100)   (cmake-ts-mode          . 100)
+      (conf-toml-mode         . nil)   (css-mode               . 80)
+      (css-ts-mode            . 80)    (csv-mode               . nil)
+      (dashboard-mode         . nil)   (emacs-lisp-mode        . 80)
+      (fish-mode              . 80)    (docker-compose-mode    . 100)
+      (dockerfile-ts-mode     . 100)   (geiser-repl-mode       . nil)
+      (glsl-mode              . 100)   (go-ts-mode             . 80)
+      (ini-mode               . 100)   (java-ts-mode           . 100)
+      (js-json-mode           . 80)    (js-ts-mode             . 100)
+      (json-ts-mode           . 80)    (just-ts-mode           . 100)
+      (kdl-mode               . 100)   (lisp-mode              . 80)
+      (lua-ts-mode            . 100)   (makefile-mode          . 100)
+      (markdown-ts-mode       . 80)    (nxml-mode              . nil)
+      (python-mode            . 88)    (python-ts-mode         . 88)
+      (rust-ts-mode           . 100)   (rustic-mode            . 100)
+      (scheme-mode            . 80)    (sh-mode                . 80)
+      (sly-mrepl-mode         . nil)   (systemd-mode           . 100)
+      (telega-root-mode       . 100)   (toml-ts-mode           . nil)
+      (typescript-ts-mode     . 80)    (yaml-mode              . nil)
+      (yaml-ts-mode           . nil))
+    "Alist mapping major-modes to their default `fill-column' value.")
+
+  (defun that1guycolin/fill-column-from-mode ()
+    "Set the local value of `fill-column' based on file's `major-mode'.
+Values are mapped to modes in `that1guycolin/mode-fill-column-alist'."
+    (let ((fc (cdr (assoc major-mode that1guycolin/mode-fill-column-alist))))
+      (if fc (setq-local fill-column fc)
+        (progn
+          (setq-local fill-column 1000)
+          (auto-fill-mode -1)
+          (display-fill-column-indicator-mode -1)))))
+
+  (defun that1guycolin/auto-set-fill-column ()
+    "Add to `find-file-hook' to automatically set `fill-column'."
+    (interactive)
+    (if (member major-mode (mapcar #'car that1guycolin/mode-fill-column-alist))
+        (that1guycolin/fill-column-from-mode)
+      (setq-local fill-column 80)))
+  
+  :demand t
+  :hook (visual-line-mode . visual-fill-column-for-vline)
   :functions (visual-fill-column-for-vline)
-  :init (add-hook 'visual-line-mode-hook #'visual-fill-column-for-vline))
+  :init (add-hook 'find-file-hook #'that1guycolin/auto-set-fill-column))
 
 
 ;;; Font:

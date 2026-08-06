@@ -108,10 +108,7 @@
 (use-package dockerfile-ts-mode
   :ensure nil
   :defer t
-  :mode ("Dockerfile\\'" "Containerfile\\'")
-  :config
-  (add-hook 'dockerfile-ts-mode-hook
-            (lambda () (setq-local fill-column 1000))))
+  :mode ("Dockerfile\\'" "Containerfile\\'"))
 
 
 ;;; Shaders:
@@ -486,7 +483,6 @@
 (use-package nxml-mode
   :ensure nil
   :defer t
-  :hook (nxml-mode . (lambda () (setq-local fill-column 250)))
   :mode ("\\.xml\\'"
          "\\.xsd\\'" "\\.xslt\\'" "\\.svg\\'" "\\.rss\\'" "\\.pom\\'")
   :custom
@@ -503,10 +499,7 @@
   :ensure nil
   :defer t
   :preface
-  :mode ("\\.yml\\'" "\\.yaml\\'")
-  :config
-  (add-hook 'yaml-ts-mode-hook
-            (lambda () (setq-local fill-column 1000))))
+  :mode ("\\.yml\\'" "\\.yaml\\'"))
 
 (use-package yaml-pro
   :defer t
