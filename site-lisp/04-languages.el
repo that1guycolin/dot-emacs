@@ -209,6 +209,8 @@
                ("C-c j" . macrostep-geiser))
          (:map geiser-repl-mode-map
                ("C-c j" . macrostep-geiser)))
+  :functions (macrostep-geiser-setup)
+  :defines (geiser-mode-map)
   :config (macrostep-geiser-setup))
 
 ;; Additional font hl (elisp)
@@ -263,6 +265,9 @@
       "w" "Describe symbol"))
   :bind-keymap ("C-c s" . that1guycolin/sly-functions-map)
   :hook (lisp-mode . sly-editing-mode)
+  :functions (sly sly-connected-p sly-mrepl sly-mrepl-new sly-mrepl-sync
+                  sly-mrepl-set-directory sly-cd sly-inspect sly-apropos
+                  sly-describe-symbol)
   :init (setq inferior-lisp-program "sbcl")
   :custom
   (sly-lisp-implementations

@@ -58,6 +58,7 @@
   :demand t
   :preface
   (defvar no-littering-etc-directory)
+  (declare-function no-littering-expand-etc-file-name "no-littering")
   (defun that1guycolin/tempel-setup-capf ()
     "Locally add relevant tempel items to `completion-at-point-functions'."
     (setq-local completion-at-point-functions
@@ -144,6 +145,7 @@ open the file in another window."
 (use-package vertico-prescient
   :after (prescient vertico)
   :demand t
+  :functions (vertico-prescient-mode)
   :config (vertico-prescient-mode 1))
 
 ;; Rich annotations
@@ -189,6 +191,7 @@ open the file in another window."
 (use-package corfu-prescient
   :after (corfu prescient)
   :demand t
+  :functions (corfu-prescient-mode)
   :config (corfu-prescient-mode 1))
 
 ;; Extend completion framework

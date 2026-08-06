@@ -26,6 +26,7 @@
   :preface
   (declare-function no-littering-expand-etc-file-name "no-littering")
   (defvar android-home)
+  (defvar elpaca-directory)
   (defvar that1guycolin/projects-directory)
   (defvar that1guycolin/scripts-directory)
   (defvar org-directory)
@@ -136,6 +137,7 @@
   :bind (("C-x g"   . magit-status)
          ("C-x M-g" . magit-dispatch)
          ("C-c M-g" . magit-file-dispatch))
+  :functions (magit-save-repository-buffers)
   :defines (magit-mode-map)
   :custom
   (magit-refresh-status-buffer t)
@@ -217,6 +219,7 @@
 (use-package magit-todos
   :after (magit)
   :demand t
+  :functions magit-todos-mode
   :config (magit-todos-mode 1))
 
 

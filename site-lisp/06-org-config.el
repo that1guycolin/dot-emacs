@@ -33,6 +33,9 @@ Their implementation in this config is far less strict than traditional GTD.")
   (defconst that1guycolin/org-keywords--media-download
     '(sequence "TAGGED(g)" "|" "DOWNLOADED(w)" "IGNORED(I)"))
   
+  (declare-function inhibit-mouse-mode "inhibit-mouse-mode")
+  (declare-function that1guycolin/desktop-mobile "init.el")
+  (declare-function sly-eval "sly")
 ;;;; Helper function
   (defun that1guycolin/org-check ()
     "User-error if buffer is not in `org-mode'."
@@ -292,8 +295,6 @@ Add this function to `org-mode-hook'."
 (use-package org-project-capture
   :demand t
   :preface
-  (defvar org-refile-targets)
-
   (defun that1guycolin/remove-org-todo ()
     "If a TODO.org file exists in the org directory, delete it.
 Because the org-directory is a git repo, there is a possibility of
@@ -389,6 +390,7 @@ The file is created if it doesn't exist."
 (use-package org-super-agenda
   :after (org)
   :demand t
+  :functions (org-super-agenda-mode)
   :init (org-super-agenda-mode)
   :config
   (setq

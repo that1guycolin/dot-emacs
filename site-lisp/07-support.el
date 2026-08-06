@@ -388,6 +388,8 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
       "Send mail using `gmi-sendmail' bash script as the `sendmail' program."
       (let ((sendmail-program that1guycolin/gmi-sendmail-path)
             (message-send-mail-with-sendmail))))
+  (declare-function inhibit-mouse-mode "03-visual.el")
+  (defvar that1guycolin/scripts-directory)
 
     (defun that1guycolin/notmuch-avoid-empty-subject ()
       "Request confirmation before sending message with empty subject."
@@ -402,6 +404,7 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
                ("C-c n" . notmuch-mua-new-mail)))
   :hook ((message-send . notmuch-mua-attachment-check)
          (message-send . that1guycolin/notmuch-avoid-empty-subject))
+  :functions (message-field-value notmuch-addr-setup)
   :custom
   (notmuch-always-prompt-for-sender t)
   (notmuch-fcc-dirs nil)
@@ -414,7 +417,7 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
      (:name "todo"     :query "tag:task"    :key "t" :sort-order oldest-first)
      (:name "all mail" :query "*"           :key "a" :sort-order oldest-first)))
   (sendmail-program that1guycolin/gmi-sendmail-path)
-  (sendmail-send-mail-function #'that1guycolin/sendmail-via-gmi)
+  (sendmail-send-mail-function #'message-send-mail-with-sendmail)
   :config
   (add-hook 'notmuch-hello-mode-hook (lambda () (inhibit-mouse-mode -1))))
 
@@ -437,6 +440,7 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
                ("M-m" . notmuch-show-mode-transient))))
 
 (use-package notmuch-indicator
+  :preface (defvar minions-prominent-modes)
   :after (notmuch)
   :demand t
   :unless (eq system-type 'android)
@@ -901,7 +905,8 @@ doubles as a model-switcher."
   :config
   (if (daemonp)
       (add-hook 'after-make-frame-functions
-                #'(lambda () (that1guycolin/telega-new-frame-mode-line frame)))
+                #'(lambda (frame)
+                    (that1guycolin/telega-new-frame-mode-line frame)))
     (telega-mode-line-mode 1))
   (telega-appindicator-mode 1)
   (telega-auto-download-mode 1)
@@ -956,6 +961,7 @@ doubles as a model-switcher."
   (defvar calendar-mode-map)
   (defvar compilation-mode-map)
   (defvar css-mode-map)
+  (defvar css-ts-mode-map)
   (defvar csv-mode-map)
   (defvar emacs-lisp-mode-map)
   (defvar eshell-mode-map)
@@ -981,6 +987,7 @@ doubles as a model-switcher."
          (:map compilation-mode-map     ("C-o"  . casual-compile-tmenu))
          (:map grep-mode-map            ("C-o"  . casual-compile-tmenu))
          (:map css-mode-map             ("M-m"  . casual-css-tmenu))
+         (:map css-ts-mode-map          ("M-m"  . casual-css-tmenu))
          (:map csv-mode-map             ("M-m"  . casual-csv-tmenu))
          (:map emacs-lisp-mode-map      ("M-m"  . casual-elisp-tmenu))
          (:map eshell-mode-map          ("C-o"  . casual-eshell-tmenu))

@@ -144,6 +144,7 @@ If `major-mode' "
 
 
 ;;; Font:
+(declare-function that1guycolin/desktop-mobile "init.el")
 (defvar that1guycolin/font-alist nil
   "Alist mapping human-readable font names to non-directory filenames.")
 

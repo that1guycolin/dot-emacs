@@ -321,11 +321,13 @@ See URL `https://vale.sh'."
 (use-package flycheck-eask
   :after (eask-mode)
   :demand t
+  :functions (flycheck-eask-setup)
   :config (flycheck-eask-setup))
 
 (use-package flycheck-package
   :after (elisp-mode)
   :defer t
+  :functions (flycheck-package-setup)
   :config (flycheck-package-setup))
 
 (use-package flycheck-guile
@@ -369,6 +371,11 @@ See URL `https://vale.sh'."
 (use-package apheleia
   :defer t
   :preface
+  (defvar docker-compose-mode-map)
+  (defvar js-json-mode-map)
+  (defvar json-ts-mode-map)
+  (defvar yaml-mode-map)
+  (defvar yaml-ts-mode-map)
   (defun that1guycolin/apheleia-set-json-formatter (fmtr)
     "Get user-input on which FMTR they want for JSON files."
     (interactive
