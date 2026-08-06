@@ -1010,61 +1010,70 @@ doubles as a model-switcher."
   (add-hook 'ediff-keymap-setup-hook
             (lambda () (keymap-set ediff-mode-map "C-o" #'casual-ediff-tmenu)))
   (bind-keys
-   ("C-c w"                      . casual-editkit-windows-tmenu)
-   ("M-r"                        . casual-editkit-rectangle-tmenu)
-   ("C-c g"                      . casual-editkit-registers-tmenu)
-   ("C-c p"                      . casual-editkit-project-tmenu)
-   :map org-agenda-mode-map
-   ("M-j"                        . org-agenda-clock-goto)
-   ("J"                          . bookmark-jump)
+   :map global-map
+   ("C-c w"     . casual-editkit-windows-tmenu)
+   ("M-r"       . casual-editkit-rectangle-tmenu)
    :map compilation-mode-map
-   ("k"                          . compilation-previous-error)
-   ("j"                          . compilation-next-error)
-   ("o"                          . compilation-display-error)
-   ("["                          . compilation-previous-file)
-   ("]"                          . compilation-next-file)
+   ("k"         . compilation-previous-error)
+   ("j"         . compilation-next-error)
+   ("o"         . compilation-display-error)
+   ("["         . compilation-previous-file)
+   ("]"         . compilation-next-file)
    :map grep-mode-map
-   ("k"                          . compilation-previous-error)
-   ("j"                          . compilation-next-error)
-   ("o"                          . compilation-display-error)
-   ("["                          . compilation-previous-file)
-   ("]"                          . compilation-next-file)
-   :map eww-mode-map
-   ("C-c C-o"                    . eww-browse-with-external-browser)
-   ("j"                          . shr-next-link)
-   ("k"                          . shr-previous-link)
-   ("["                          . eww-previous-url)
-   ("]"                          . eww-next-url)
-   ("M-]"                        . eww-forward-url)
-   ("M-["                        . eww-back-url)
-   ("n"                          . casual-lib-browse-forward-paragraph)
-   ("p"                          . casual-lib-browse-backward-paragraph)
-   ("P"                          . casual-eww-backward-paragraph-link)
-   ("N"                          . casual-eww-forward-paragraph-link)
-   ("M-l"                        . eww)
-   :map eww-bookmark-mode-map
-   ("p"                          . previous-line)
-   ("n"                          . next-line)
-   ("<double-mouse-1>"           . eww-bookmark-browse)
+   ("k"         . compilation-previous-error)
+   ("j"         . compilation-next-error)
+   ("o"         . compilation-display-error)
+   ("["         . compilation-previous-file)
+   ("]"         . compilation-next-file)
    :map ibuffer-mode-map
-   ("{"                          . ibuffer-backwards-next-marked)
-   ("}"                          . ibuffer-forward-next-marked)
-   ("["                          . ibuffer-backward-filter-group)
-   ("]"                          . ibuffer-forward-filter-group)
-   ("$"                          . ibuffer-toggle-filter-group)
-   ("<double-mouse-1>"           . ibuffer-visit-buffer)
-   ("M-<double-mouse-1>"         . ibuffer-visit-buffer-other-window)
+   ("{"         . ibuffer-backwards-next-marked)
+   ("}"         . ibuffer-forward-next-marked)
+   ("["         . ibuffer-backward-filter-group)
+   ("]"         . ibuffer-forward-filter-group)
+   ("$"         . ibuffer-toggle-filter-group)
    :map Info-mode-map
-   ("M-["                        . Info-history-back)
-   ("M-]"                        . Info-history-forward)
-   ("p"                          . casual-info-browse-backward-paragraph)
-   ("n"                          . casual-info-browse-forward-paragraph)
-   ("h"                          . Info-prev)
-   ("j"                          . Info-next-reference)
-   ("k"                          . Info-prev-reference)
-   ("l"                          . Info-next)
-   ("/"                          . Info-search)
-   ("B"                          . bookmark-set)))
+   ("M-["       . Info-history-back)
+   ("M-]"       . Info-history-forward)
+   ("p"         . casual-info-browse-backward-paragraph)
+   ("n"         . casual-info-browse-forward-paragraph)
+   ("h"         . Info-prev)
+   ("j"         . Info-next-reference)
+   ("k"         . Info-prev-reference)
+   ("l"         . Info-next)
+   ("/"         . Info-search)
+   ("B"         . bookmark-set))
+  (with-eval-after-load 'org
+    (bind-keys
+     :map org-agenda-mode-map
+     ("M-j"     . org-agenda-clock-goto)
+     ("J"       . bookmark-jump)))
+  (with-eval-after-load 'eww
+    (bind-keys
+     :map eww-mode-map
+     ("C-c C-o" . eww-browse-with-external-browser)
+     ("j"       . shr-next-link)
+     ("k"       . shr-previous-link)
+     ("["       . eww-previous-url)
+     ("]"       . eww-next-url)
+     ("M-]"     . eww-forward-url)
+     ("M-["     . eww-back-url)
+     ("n"       . casual-lib-browse-forward-paragraph)
+     ("p"       . casual-lib-browse-backward-paragraph)
+     ("P"       . casual-eww-backward-paragraph-link)
+     ("N"       . casual-eww-forward-paragraph-link)
+     ("M-l"     . eww)
+     :map eww-bookmark-mode-map
+     ("p"       . previous-line)
+     ("n"       . next-line)))
+
+  (bind-keys
+   :map Info-mode-map
+   ("<double-mouse-1>"   . ibuffer-visit-buffer)
+   ("M-<double-mouse-1>" . ibuffer-visit-buffer-other-window))
+  (with-eval-after-load 'eww
+    (bind-keys
+     :map eww-mode-map
+     ("<double-mouse-1>" . eww-bookmark-browse))))
 
 (use-package casual-avy
   :after (casual avy)
