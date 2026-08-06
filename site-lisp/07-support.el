@@ -379,23 +379,14 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
 (use-package notmuch
   :demand t
   :preface
-  (unless (eq system-type 'android)
-    (defvar that1guycolin/gmi-sendmail-path
-      (expand-file-name "bash/gmi-sendmail.sh" that1guycolin/scripts-directory)
-      "Location of the `gmi-sendmail' bash script on device.")
-    
-    (defun that1guycolin/sendmail-via-gmi ()
-      "Send mail using `gmi-sendmail' bash script as the `sendmail' program."
-      (let ((sendmail-program that1guycolin/gmi-sendmail-path)
-            (message-send-mail-with-sendmail))))
   (declare-function inhibit-mouse-mode "03-visual.el")
   (defvar that1guycolin/scripts-directory)
 
-    (defun that1guycolin/notmuch-avoid-empty-subject ()
-      "Request confirmation before sending message with empty subject."
-      (when (and (null (message-field-value "Subject"))
-                 (not (y-or-n-p "Subject is empty, send anyway? ")))
-        (error "Sending message cancelled: empty subject"))))
+  (defun that1guycolin/notmuch-avoid-empty-subject ()
+    "Request confirmation before sending message with empty subject."
+    (when (and (null (message-field-value "Subject"))
+               (not (y-or-n-p "Subject is empty, send anyway? ")))
+      (error "Sending message cancelled: empty subject")))
 
   :unless (eq system-type 'android)
   :bind ((:map ctl-x-map
