@@ -129,7 +129,8 @@ Values are mapped to modes in `that1guycolin/mode-fill-column-alist'."
           (display-fill-column-indicator-mode -1)))))
 
   (defun that1guycolin/auto-set-fill-column ()
-    "Add to `find-file-hook' to automatically set `fill-column'."
+    "Add to `find-file-hook' to automatically set `fill-column'.
+If `major-mode' "
     (interactive)
     (if (member major-mode (mapcar #'car that1guycolin/mode-fill-column-alist))
         (that1guycolin/fill-column-from-mode)
@@ -137,8 +138,9 @@ Values are mapped to modes in `that1guycolin/mode-fill-column-alist'."
   
   :demand t
   :hook (visual-line-mode . visual-fill-column-for-vline)
-  :functions (visual-fill-column-for-vline)
-  :init (add-hook 'find-file-hook #'that1guycolin/auto-set-fill-column))
+  :functions (global-visual-fill-column-mode visual-fill-column-for-vline)
+  :init (add-hook 'find-file-hook #'that1guycolin/auto-set-fill-column)
+  :config (global-visual-fill-column-mode 1))
 
 
 ;;; Font:
