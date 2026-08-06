@@ -296,12 +296,14 @@ Their implementation in this config is far less strict than traditional GTD.")
   (require 'org-id)
   (require 'ox-texinfo)
   (keymap-set org-mode-map "C-c b" that1guycolin/org-insert-block-map)
-  (dolist (lang-mode-cons '(("bash"  . bash-ts) ("bash2" . bash-ts)
-                            ("cmake" . cmake-ts) ("json" . json-ts)
-                            ("lua"   . lua-ts) ("python" . python-ts)
-                            ("toml"  . toml-ts) ("yaml"  . yaml-ts)))
-    (assoc-delete-all (car lang-mode-cons) org-src-lang-modes)
-    (add-to-list 'org-src-lang-modes lang-mode-cons))
+  (let ((lang-mode-cells '(("bash"  . bash-ts) ("bash2" . bash-ts)
+                           ("cmake" . cmake-ts) ("json" . json-ts)
+                           ("lua"   . lua-ts) ("python" . python-ts)
+                           ("toml"  . toml-ts) ("yaml"  . yaml-ts))))
+    (setq org-src-lang-modes
+          (assoc-delete-all (car lang-mode-cells) org-src-lang-modes))
+    (dolist (lang-cons lang-mode-cells)
+      (add-to-list 'org-src-lang-modes lang-cons)))
 
   (with-eval-after-load 'ob
     (setq org-babel-default-header-args
