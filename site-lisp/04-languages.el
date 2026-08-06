@@ -129,12 +129,17 @@
   :interpreter "sbcl"
   :mode ("\\.lisp\\'" "\\.cl\\'" "\\.asd\\'"))
 
-;; Smart '()' (both)
+(use-package scheme-mode
+  :ensure nil
+  :defer t
+  :mode "\\.scm\\'")
+
+;; Smart '()' (all)
 (use-package adjust-parens
   :defer t
-  :hook ((emacs-lisp-mode lisp-mode) . adjust-parens-mode))
+  :hook ((emacs-lisp-mode lisp-mode scheme-mode) . adjust-parens-mode))
 
-;; Syntax highlighting (both)
+;; Syntax highlighting (emacs-lisp, lisp)
 (use-package lisp-semantic-hl
   :defer t
   :hook ((emacs-lisp-mode lisp-mode) . lisp-semantic-hl-mode))
@@ -159,6 +164,17 @@
 (use-package eros
   :defer t
   :hook (emacs-lisp-mode . eros-mode))
+
+;; Scheme REPL
+(use-package geiser
+  :defer t
+  :hook (scheme-mode . turn-on-geiser-mode)
+  :custom (geiser-repl-use-other-window t))
+
+(use-package geiser-guile
+  :after (geiser)
+  :demand t
+  :bind ("C-c C-s" . geiser-guile-switch))
 
 ;; Elisp REPL
 (use-package ielm
@@ -185,6 +201,15 @@
   :defer t
   :bind (:map emacs-lisp-mode-map
               ("C-c C-m" . macrostep-expand)))
+
+;; Interactively parse macros (scheme)
+(use-package macrostep-geiser
+  :defer t
+  :bind ((:map geiser-mode-map
+               ("C-c j" . macrostep-geiser))
+         (:map geiser-repl-mode-map
+               ("C-c j" . macrostep-geiser)))
+  :config (macrostep-geiser-setup))
 
 ;; Additional font hl (elisp)
 (use-package morlock
@@ -366,31 +391,6 @@
   (rustic-format-on-save-method 'rustic-format-buffer)
   (rustic-format-trigger 'on-save)
   (rustic-lsp-client 'eglot))
-
-
-;;; Scheme:
-(use-package scheme-mode
-  :ensure nil
-  :defer t
-  :mode "\\.scm\\'")
-
-(use-package geiser
-  :defer t
-  :hook (scheme-mode . turn-on-geiser-mode)
-  :custom (geiser-repl-use-other-window t))
-
-(use-package geiser-guile
-  :after (geiser)
-  :demand t
-  :bind ("C-c C-s" . geiser-guile-switch))
-
-(use-package macrostep-geiser
-  :defer t
-  :bind ((:map geiser-mode-map
-               ("C-c j" . macrostep-geiser))
-         (:map geiser-repl-mode-map
-               ("C-c j" . macrostep-geiser)))
-  :config (macrostep-geiser-setup))
 
 
 ;;; Shell scripts:
