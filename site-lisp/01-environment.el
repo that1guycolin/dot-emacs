@@ -70,9 +70,9 @@ Provide a custom PROMPT to display to the user.  If `other-win' is non-nil,
 open the file in another window."
     (when (= 1 (length files))
       (let ((file (car files)))
-        (warn "Only one file in provided, opening %s..." (car files))
-        (if other-win (find-file-other-window (car files))
-          (find-file (car files)))))
+        (warn "Only one file in provided, opening %s..." file)
+        (if other-win (find-file-other-window file)
+          (find-file file))))
     (let* ((choices (mapcar
                      (lambda (f) (cons (abbreviate-file-name f) f))
                      files))
