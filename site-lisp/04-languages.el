@@ -46,6 +46,7 @@
      (javascript . ("https://github.com/tree-sitter/tree-sitter-javascript"
                     "master" "src"))
      (json . ("https://github.com/tree-sitter/tree-sitter-json"))
+     (json5 . ("https://github.com/Joakker/tree-sitter-json5"))
      (kdl . ("https://github.com/tree-sitter-grammars/tree-sitter-kdl"))
      (lua . ("https://github.com/MunifTanjim/tree-sitter-lua"))
      (make . ("https://github.com/alemuller/tree-sitter-make"))
@@ -446,6 +447,10 @@
   :ensure nil
   :defer t
   :mode ("\\.json\\'" "\\.jsonc\\'"))
+
+(use-package json5-ts-mode
+  :defer t
+  :mode ("\\.json5\\'"))
 
 ;; KDL:
 (use-package kdl-mode
