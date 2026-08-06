@@ -134,7 +134,7 @@
 (setq-default
  cursor-type 'bar
  fill-column 80
- search-invisible nil)
+ search-invisible t)
 (when (fboundp 'tool-bar-mode)
   (if (equal system-type 'android)
       (tool-bar-mode 1)
