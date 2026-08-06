@@ -884,7 +884,7 @@ doubles as a model-switcher."
   :preface
   (unless (eq system-type 'android)
     (defun that1guycolin/telega-new-frame-mode-line (frame)
-      "Ensure `telega-mode-line-mode' is active on new FRAMEs."
+      "Ensure `telega-mode-line-mode' is active on new FRAME."
       (with-selected-frame frame
         (unless telega-mode-line-mode (telega-mode-line-mode 1)))))
   :unless (eq system-type 'android)
@@ -894,13 +894,14 @@ doubles as a model-switcher."
               telega-autoplay-mode telega-chat-auto-fill-mode
               telega-highlight-text-mode telega-notifications-mode
               telega-root-auto-fill-mode telega-transient-keymaps-mode)
-  :init (setq
-         telega-use-images t
-         telega-server-libs-prefix "/home/colin-l/.guix-profile")
+  :init (setq telega-use-images t)
+  :custom
+  (telega-server (expand-file-name "~/.guix/profile/bin/telega-server"))
+  (telega-server-libs-prefix "/home/colin-l/.guix-profile")
   :config
   (if (daemonp)
       (add-hook 'after-make-frame-functions
-                #'that1guycolin/telega-new-frame-mode-line frame)
+                #'(lambda () (that1guycolin/telega-new-frame-mode-line frame)))
     (telega-mode-line-mode 1))
   (telega-appindicator-mode 1)
   (telega-auto-download-mode 1)
