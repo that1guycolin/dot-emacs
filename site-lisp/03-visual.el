@@ -121,6 +121,10 @@
   (defun that1guycolin/fill-column-from-mode ()
     "Set the local value of `fill-column' based on file's `major-mode'.
 Values are mapped to modes in `that1guycolin/mode-fill-column-alist'."
+    (unless (member major-mode
+                    (mapcar #'car that1guycolin/mode-fill-column-alist))
+      (user-error "%s not in `that1guycolin/mode-fill-column-alist'"
+                  major-mode))
     (let ((fc (cdr (assoc major-mode that1guycolin/mode-fill-column-alist))))
       (if fc (setq-local fill-column fc)
         (progn
