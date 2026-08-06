@@ -22,30 +22,13 @@
 (use-package treesit
   :ensure nil
   :demand t
-  :preface
-  (declare-function no-littering-expand-var-file-name "no-littering")
-  (defvar that1guycolin/remapped-langs-alist
-    '((bash-mode              . bash-ts-mode)
-      (cmake-mode             . cmake-ts-mode)
-      (css-mode               . css-ts-mode)
-      (dockerfile-mode        . dockerfile-ts-mode)
-      (git-commit-mode        . git-commit-ts-mode)
-      (go-mode                . go-ts-mode)
-      (json-mode              . json-ts-mode)
-      (js-json-mode           . json-ts-mode)
-      (lua-mode               . lua-ts-mode)
-      (markdown-mode          . markdown-ts-mode)
-      (rust-mode              . rust-ts-mode)
-      (typescript-mode        . typescript-ts-mode)
-      (conf-toml-mode         . toml-ts-mode)
-      (xml-mode               . xml-ts-mode)
-      (yaml-mode              . yaml-ts-mode))
-    "Alist of cons cells mapping orig lang modes to their treesit versions.")
-  
+  :preface (declare-function no-littering-expand-var-file-name "no-littering")
   :mode ("\\.tsx\\'" . tsx-ts-mode)
   :init (setq treesit-extra-load-path
-              (list (no-littering-expand-var-file-name "tree-sitter")))
-  :custom (treesit-font-lock-level 4)
+              `(,(no-littering-expand-var-file-name "tree-sitter")))
+  :custom
+  (treesit-enabled-modes t)
+  (treesit-font-lock-level 4)
   :config
   (setq
    treesit-language-source-alist
@@ -80,9 +63,7 @@
                     "master" "typescript/src"))
      (xml . ("https://github.com/tree-sitter-grammars/tree-sitter-xml"))
      (yaml . ("https://github.com/ikatyang/tree-sitter-yaml"))
-     (zsh . ("https://github.com/georgeharker/tree-sitter-zsh"))))
-  (dolist (remaped that1guycolin/remapped-langs-alist)
-    (add-to-list 'major-mode-remap-alist remaped)))
+     (zsh . ("https://github.com/georgeharker/tree-sitter-zsh")))))
 
 
 ;;; CSV:
