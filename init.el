@@ -222,8 +222,8 @@ GUI     - Settings for the Emacs Android GUI application (only required when
 
   (that1guycolin/desktop-mobile
     (setq
-     that1guycolin/projects-directory (expand-file-name "~/projects")
-     that1guycolin/scripts-directory (expand-file-name "~/scripts"))
+     that1guycolin/projects-directory (expand-file-name "~/projects/")
+     that1guycolin/scripts-directory (expand-file-name "~/scripts/"))
     (setq
      that1guycolin/projects-directory
      (expand-file-name "projects" that1guycolin/android-home)
@@ -305,12 +305,17 @@ If not in a side window, jump to the first found side window."
   (read-extended-command-predicate #'command-completion-default-include-p)
   (tab-always-indent 'complete)
   (text-mode-ispell-word-completion nil)
+  (trusted-content
+   (list (expand-file-name "early-init.el" user-emacs-directory)
+         (expand-file-name "init.el" user-emacs-directory)))
   :config
   (abbrev-mode 1)
   (auto-save-visited-mode 1)
   (context-menu-mode 1)
   (global-display-fill-column-indicator-mode 1)
   (which-key-mode 1)
+  (dolist (elfile (directory-files user-lisp-directory t "\\.el\\'"))
+    (add-to-list 'trusted-content elfile))
   (add-hook 'ibuffer-mode-hook #'that1guycolin/ibuffer-hook-functions))
 
 
