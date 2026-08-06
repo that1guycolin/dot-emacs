@@ -14,25 +14,7 @@
 ;;; Code:
 (use-package org
   :defer t
-  :preface (declare-function sly-eval "sly")
-;;;; Org task sequences
-  (defconst that1guycolin/org-keywords--get-done
-    '(sequence "TODO(t)" "NEXT(n)" "WAIT(w)" "|" "DONE(d)" "CANCELLED(c)")
-    "Keyword sequence with names based on the getting-things-done method.
-Their implementation in this config is far less strict than traditional GTD.")
-
-  (defconst that1guycolin/org-keywords--ideas
-    '(sequence "THOUGHT(o)" "PLANNING(p)" "IMPLEMENTATION(i)" "|"
-               "COMPLETE(e)" "ABANDONED(a)")
-    "Keyword sequence for turning dreams into reality.")
-
-  (defconst that1guycolin/org-keywords--reading-list
-    '(sequence "TOREAD(r)" "READING(R)" "|" "FINISHED(f)")
-    "Keyword sequence to track what you're reading.")
-
-  (defconst that1guycolin/org-keywords--media-download
-    '(sequence "TAGGED(g)" "|" "DOWNLOADED(w)" "IGNORED(I)"))
-  
+  :preface
   (declare-function inhibit-mouse-mode "inhibit-mouse-mode")
   (declare-function that1guycolin/desktop-mobile "init.el")
   (declare-function sly-eval "sly")
@@ -113,18 +95,6 @@ For entire buffer, return the top of the buffer."
           (point-min)
         location)))
 
-  (defun that1guycolin/org-top-property-drawer-id ()
-    "Return ID from a top-of-file-property-drawer, or nil."
-    (that1guycolin/org-check)
-    (save-excursion
-      (goto-char (point-min))
-      (when (looking-at org-property-drawer-re)
-        (save-restriction
-          (narrow-to-region (match-beginning 0) (match-end 0))
-          (goto-char (point-min))
-          (when (re-search-forward "^:ID:[ \t]+\\(.+\\)$" nil t)
-            (string-trim (match-string 1)))))))
-
   (defun that1guycolin/org-update-last-edit-dt ()
     "Update value of `LAST_EDIT' header in the active Org buffer.
 The new value is the current date & time in this format:
@@ -138,17 +108,55 @@ YYYY-MM-DD DAY HH:MM:ss (e.g., 2026-03-15 SUN 14:24:06)"
             "#+LAST_EDIT: [%Y-%m-%d %a %H:%M:%S]"))))))
   (add-hook 'before-save-hook #'that1guycolin/org-update-last-edit-dt)
 
-;;;; Insert objects
-  (defun that1guycolin/org-insert-properties-drawer ()
-    "Create org properties drawer at an interactively-selected heading."
-    (interactive)
+  (defun that1guycolin/org-top-drawer-p ()
+    "Non-nil if the current file begins with a top-level property drawer."
     (that1guycolin/org-check)
-    (goto-char (that1guycolin/org-get-heading-location))
-    (org-id-get-create)
-    (unless (org-entry-get nil "CREATED")
-      (org-entry-put nil "CREATED"
-                     (format-time-string "[%Y-%m-%d %a %H:%M:%S]"))))
-  
+    (save-excursion
+      (goto-char (point-min))
+      (looking-at org-property-drawer-re)))
+
+  (defun that1guycolin/org-top-drawer-end ()
+    "Go to the end of a properties drawer and insert a new line.
+The function ends with the cursor on the new line."
+    (goto-char (point-min))
+    (while (looking-at org-property-drawer-re)
+      (search-forward ":END:")
+      (unless (bolp)
+        (insert "\n"))))
+
+  (defun that1guycolin/org-top-property-drawer-id ()
+    "Return ID from a top-of-file-property-drawer, or nil."
+    (if (that1guycolin/org-top-drawer-p)
+        (save-restriction
+          (narrow-to-region (match-beginning 0) (match-end 0))
+          (goto-char (point-min))
+          (when (re-search-forward "^:ID:[ \t]+\\(.+\\)$" nil t)
+            (string-trim (match-string 1))))
+      nil))
+
+  (defun that1guycolin/org-gen-header (ti au id)
+    "Insert a custom header block with TItle, AUthor & ID."
+    (insert "#+TITLE: " ti
+            "\n#+AUTHOR: " au
+            "\n#+CREATED_DATE: " (format-time-string "[%Y-%m-%d %a %H:%M:%S]")
+            "\n#+LAST_EDIT: "
+            "\n#+ID: " id
+            "\n#+FILETAGS: "))
+
+;;;; Insert objects
+  (defun that1guycolin/org-insert-properties-drawer (&optional interactivep)
+    "Create org properties drawer at an interactively-selected heading."
+    (interactive "p")
+    (that1guycolin/org-check)
+    (if interactivep
+        (goto-char (that1guycolin/org-get-heading-location))
+      (goto-char (point-min)))
+    (let ((id (org-id-get-create)))
+      (unless (org-entry-get nil "CREATED")
+        (org-entry-put nil "CREATED"
+                       (format-time-string "[%Y-%m-%d %a %H:%M:%S]")))
+      id))
+
   (defun that1guycolin/org-insert-header-block (title author)
     "Insert a header block at the top of the current document.
 If there is a properties drawer at the top, the header block will go
@@ -160,24 +168,13 @@ underneath it.  The header block will contain the following fields:
              (read-string (format "Author [DEFAULT: \"%s\"]: " default)
                           nil nil default))))
     (that1guycolin/org-check)
-    (save-excursion
-      (let ((id (or (that1guycolin/org-top-property-drawer-id)
-                    (org-id-new))))
-        (if (looking-at org-property-drawer-re)
-            (progn
-              (goto-char (match-end 0))
-              (unless (bolp)
-                (insert "\n")))
-          (insert ":PROPERTIES:\n"
-                  ":ID:       " id "\n"
-                  ":END:\n"))
-        (insert "#+TITLE: " title
-                "\n#+AUTHOR: " author
-                "\n#+CREATED_DATE: "
-                (format-time-string "[%Y-%m-%d %a %H:%M:%S]")
-                "\n#+LAST_EDIT: "
-                "\n#+ID: " id
-                "\n#+FILETAGS: \n"))))
+    (if (that1guycolin/org-top-drawer-p)
+        (let ((existing-id (that1guycolin/org-top-property-drawer-id)))
+          (that1guycolin/org-top-drawer-end)
+          (that1guycolin/org-gen-header title author existing-id))
+      (let ((new-id (that1guycolin/org-insert-properties-drawer)))
+        (that1guycolin/org-top-drawer-end)
+        (that1guycolin/org-gen-header title author new-id))))
 
   (defun that1guycolin/org-insert-src-block (lang)
     "Insert a block structure of the type #+begin_src LANG/#+end_src."
@@ -199,6 +196,46 @@ underneath it.  The header block will contain the following fields:
       "d" "Properties Drawer"
       "s" "Source Block"))
 
+;;;; Org custom templates
+  (defconst that1guycolin/org-templates--task
+    '("t" "Task" entry
+      (file "TODOs/tasks.org")
+      "* TODO %?\n"))
+  
+  (defconst that1guycolin/org-templates--idea
+    '("i" "Idea" entry
+      (file "TODOs/ideas.org")
+      "* THOUGHT %?\n"))
+
+  (defconst that1guycolin/org-templates--someday
+    '("s" "Someday" entry
+      (file "TODOs/someday.org")
+      "* SOMEDAY %?\n"))
+
+
+;;;; Org task sequences
+  (defconst that1guycolin/org-keywords--tasks
+    '(sequence "TODO(t)" "NEXT(n)" "WAIT(w)" "|" "DONE(d)" "CANCELLED(c)")
+    "Keyword sequence with names based on the getting-things-done method.
+Their implementation in this config is far less strict than traditional GTD.")
+
+  (defconst that1guycolin/org-keywords--ideas
+    '(sequence "THOUGHT(o)" "PLANNING(p)" "IMPLEMENTATION(i)" "|"
+               "COMPLETE(e)" "ABANDONED(a)")
+    "Keyword sequence for turning dreams into reality.")
+
+  (defconst that1guycolin/org-keywords--reading-list
+    '(sequence "TO READ(r)" "READING(R)" "|" "FINISHED(f)")
+    "Keyword sequence to track what you're reading.")
+
+  (defconst that1guycolin/org-keywords--media-download
+    '(sequence "TAGGED(g)" "|" "DOWNLOADED(w)" "IGNORED(I)")
+    "Keyword sequence to track media downloads.")
+
+  (defconst that1guycolin/org-keywords--someday
+    '(sequence "SOMEDAY(s)" "RESEARCH(h)" "|" "ACTIVE(v)" "DISCARD(D)")
+    "Keyword sequence to track things you might do \"someday\".")
+
 ;;;; misc.
   (defun that1guycolin/org-convert-md-links ()
     "Convert all md-style links in the current buffer to org-style."
@@ -208,13 +245,6 @@ underneath it.  The header block will contain the following fields:
       (goto-char (point-min))
       (while (re-search-forward "\\[\\([^]]+\\)\\](\\([^)]+\\))" nil t)
         (replace-match "[[\\2][\\1]]" nil nil))))
-
-  (defun that1guycolin/org-search-folded ()
-    "Set value of `search-invisible' to t in `org-mode' buffers.
-Add this function to `org-mode-hook'."
-    (if (derived-mode-p 'org-mode)
-        (setq search-invisible t)
-      (setq search-invisible nil)))
 
 ;;;; finish use-package sexp
   :bind (("C-c o o" . org-mode)
@@ -234,16 +264,20 @@ Add this function to `org-mode-hook'."
               org-id-get-create org-entry-get org-entry-put org-id-new
               org-insert-structure-template)
   :defines (org-babel-default-header-args:zsh org-babel-lisp-eval-fn)
-  :init (if (eq system-type 'android)
-            (setq org-directory "/storage/emulated/0/Documents/org")
-          (setq org-directory (expand-file-name "~/org")))
+  :init (that1guycolin/desktop-mobile
+          (setq org-directory (expand-file-name "~/org"))
+          (setq org-directory "/storage/emulated/0/Documents/org"))
   :custom
   (org-agenda-files
-   (directory-files (expand-file-name "tasks" org-directory) t
+   (directory-files (expand-file-name "TODOs/" org-directory) t
                     directory-files-no-dot-files-regexp))
   (org-agenda-diary-file (expand-file-name "diary" org-directory))
   (org-archive-location
    (expand-file-name "archive/2026.org::datetree/* %s" org-directory))
+  (org-capture-templates
+   (list that1guycolin/org-templates--task
+         that1guycolin/org-templates--idea
+         that1guycolin/org-templates--someday))
   (org-confirm-babel-evaluate nil)
   (org-default-notes-file (expand-file-name "tasks/tasks.org" org-directory))
   (org-edit-src-content-indentation 0)
@@ -253,15 +287,15 @@ Add this function to `org-mode-hook'."
   (org-insert-mode-line-in-empty-file t)
   (org-startup-folded 'show2levels)
   (org-todo-keywords
-   (list that1guycolin/org-keywords--get-done that1guycolin/org-keywords--ideas
+   (list that1guycolin/org-keywords--tasks that1guycolin/org-keywords--ideas
          that1guycolin/org-keywords--reading-list
-         that1guycolin/org-keywords--media-download))
+         that1guycolin/org-keywords--media-download
+         that1guycolin/org-keywords--someday))
   (org-use-sub-superscripts '{})
   :config
   (require 'org-id)
   (require 'ox-texinfo)
   (keymap-set org-mode-map "C-c b" that1guycolin/org-insert-block-map)
-  (add-hook 'org-mode-hook #'that1guycolin/org-search-folded)
   (dolist (lang-mode-cons '(("bash"  . bash-ts) ("bash2" . bash-ts)
                             ("cmake" . cmake-ts) ("json" . json-ts)
                             ("lua"   . lua-ts) ("python" . python-ts)
