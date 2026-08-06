@@ -242,7 +242,7 @@ Add this function to `org-mode-hook'."
   (org-archive-location
    (expand-file-name "archive/2026.org::datetree/* %s" org-directory))
   (org-confirm-babel-evaluate nil)
-  (org-default-notes-file (expand-file-name "notes" org-directory))
+  (org-default-notes-file (expand-file-name "tasks/tasks.org" org-directory))
   (org-edit-src-content-indentation 0)
   (org-id-locations-file (expand-file-name ".id-locations" org-directory))
   (org-id-method 'org)
