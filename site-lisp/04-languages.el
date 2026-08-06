@@ -395,7 +395,7 @@
     "Automatically set `sh-shell-file' based on `sh-shell'."
     (interactive)
     (unless (or (eq major-mode 'sh-mode) (eq major-mode 'bash-ts-mode))
-      (user-error) "Buffer not in a shell-script mode.")
+      (user-error "Buffer not in a shell-script mode"))
     (cond
      ((eq sh-shell 'sh)    (setq-local sh-shell-file "/usr/bin/bash"))
      ((eq sh-shell 'bash)  (setq-local sh-shell-file "/usr/bin/bash"))
