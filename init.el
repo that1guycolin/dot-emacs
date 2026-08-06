@@ -210,10 +210,6 @@ GUI     - Settings for the Emacs Android GUI application (only required when
       (t ,desk)))
 
 ;;;; Load paths:
-  (defvar that1guycolin/lisp-directory
-    (expand-file-name "site-lisp" user-emacs-directory)
-    "Directory from which init files are loaded.")
-
   (defvar that1guycolin/projects-directory nil
     "Directory containing active projects.")
 
@@ -296,9 +292,9 @@ If not in a side window, jump to the first found side window."
   :hook (after-save . that1guycolin/untabify-when-no-tab-mode)
   :functions (ibuffer-auto-mode)
   :init
-  (setq font-use-system-font t)
+  (setq
+   font-use-system-font t)
   (add-to-list 'default-frame-alist '(fullscreen . maximized))
-  (add-to-list 'load-path that1guycolin/lisp-directory)
   (dolist (lib that1guycolin/emacs-load-libs)
     (require lib))
   :custom

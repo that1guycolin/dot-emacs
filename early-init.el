@@ -45,7 +45,12 @@
  ;; Ignore `tramp' & `compressed'/`archive'
  file-name-handler-alist nil
  ;; Do not display messages
- inhibit-message t)
+ inhibit-message t
+ ;; Do not auto bytecompile custom elisp files
+ user-lisp-auto-scrape nil
+ ;; Set directory in which custom elisp files are stored
+ user-lisp-directory (expand-file-name "site-lisp" user-emacs-directory))
+(add-to-list 'user-lisp-ignored-directories "WIP")
 (add-hook 'emacs-startup-hook
           (lambda ()
             (setq
