@@ -209,7 +209,7 @@
       "l" "Link to current buffer"
       "c" "Link to specified commit"
       "h" "Link to repo homepage"))
-  :bind-keymap ("C-c C-y" . that1guycolin/git-link-functions-map)
+  :bind-keymap ("C-c g" . that1guycolin/git-link-functions-map)
   :functions (git-link git-link-commit git-link-homepage))
 
 (use-package git-modes
