@@ -126,11 +126,12 @@ Values are mapped to modes in `that1guycolin/mode-fill-column-alist'."
       (user-error "%s not in `that1guycolin/mode-fill-column-alist'"
                   major-mode))
     (let ((fc (cdr (assoc major-mode that1guycolin/mode-fill-column-alist))))
-      (if fc (setq-local fill-column fc)
+      (if fc (progn (setq-local fill-column fc) (visual-line-mode 1))
         (progn
           (setq-local fill-column 1000)
           (auto-fill-mode -1)
-          (display-fill-column-indicator-mode -1)))))
+          (display-fill-column-indicator-mode -1)
+          (visual-line-mode -1)))))
 
   (defun that1guycolin/auto-set-fill-column ()
     "Add to `find-file-hook' to automatically set `fill-column'.
@@ -138,13 +139,14 @@ If `major-mode' "
     (interactive)
     (if (member major-mode (mapcar #'car that1guycolin/mode-fill-column-alist))
         (that1guycolin/fill-column-from-mode)
-      (setq-local fill-column 80)))
+      (progn
+        (setq-local fill-column 80)
+        (visual-line-mode 1))))
   
   :demand t
   :hook (visual-line-mode . visual-fill-column-for-vline)
-  :functions (global-visual-fill-column-mode visual-fill-column-for-vline)
-  :init (add-hook 'find-file-hook #'that1guycolin/auto-set-fill-column)
-  :config (global-visual-fill-column-mode 1))
+  :functions (visual-line-mode visual-fill-column-for-vline)
+  :init (add-hook 'find-file-hook #'that1guycolin/auto-set-fill-column))
 
 
 ;;; Font:
