@@ -14,6 +14,14 @@
   (setenv "PKG_CONFIG_PATH"
           "/data/data/com.termux/files/usr/lib/pkgconfig/"))
 
+;;; no-littering
+(when (and (fboundp 'startup-redirect-eln-cache)
+           (fboundp 'native-comp-available-p)
+           (native-comp-available-p))
+  (startup-redirect-eln-cache
+   (convert-standard-filename
+    (expand-file-name "var/eln-cache/" user-emacs-directory))))
+
 ;;; Optionally Profile Startup
 (defvar that1guycolin/profile-startup nil
   "When non-nil, enable CPU profiling during startup.")
@@ -156,14 +164,6 @@
   (scroll-bar-mode -1))
 (when (fboundp 'tooltip-mode)
   (tooltip-mode -1))
-
-;;; no-littering
-(when (and (fboundp 'startup-redirect-eln-cache)
-           (fboundp 'native-comp-available-p)
-           (native-comp-available-p))
-  (startup-redirect-eln-cache
-   (convert-standard-filename
-    (expand-file-name "var/eln-cache/" user-emacs-directory))))
 
 
 (provide 'early-init)
