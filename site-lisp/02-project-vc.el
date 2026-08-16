@@ -192,8 +192,9 @@
 
 (use-package git-commit-ts-mode
   :after (treesit)
-  :defer t
-  :hook (git-commit-setup . git-commit-ts-mode))
+  :demand t
+  :hook (git-commit-setup . git-commit-ts-mode)
+  :custom (git-commit-major-mode #'git-commit-ts-mode))
 
 (use-package git-link
   :defer t
