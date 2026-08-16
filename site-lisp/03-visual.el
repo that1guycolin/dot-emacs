@@ -135,14 +135,14 @@ Values are mapped to modes in `that1guycolin/mode-fill-column-alist'."
 
   (defun that1guycolin/auto-set-fill-column ()
     "Add to `find-file-hook' to automatically set `fill-column'.
-If `major-mode' "
+If `major-mode' is a member of `that1guycolin/mode-fill-column-alist',
+use `that1guycolin/fill-column-from-mode'. If not, set the value to 80."
     (interactive)
     (if (member major-mode (mapcar #'car that1guycolin/mode-fill-column-alist))
         (that1guycolin/fill-column-from-mode)
       (progn
         (setq-local fill-column 80)
         (visual-line-mode 1))))
-  
   :demand t
   :hook (visual-line-mode . visual-fill-column-for-vline)
   :functions (visual-line-mode visual-fill-column-for-vline)

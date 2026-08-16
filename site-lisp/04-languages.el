@@ -70,16 +70,7 @@
 ;;; CSV:
 (use-package csv-mode
   :defer t
-  :preface
-  (defun that1guycolin/function-for-csv-mode-hook ()
-    "Use this as a the hook for `csv-mode'."
-    (visual-line-mode -1)
-    (toggle-truncate-lines 1)
-    (csv-guess-set-separator)
-    (csv-align-mode 1))
-  :hook (csv-mode . that1guycolin/function-for-csv-mode-hook)
-  :mode "\\.csv\\'"
-  :functions (csv-guess-set-separator csv-align-mode))
+  :mode "\\.csv\\'")
 
 
 ;;; Containers:
