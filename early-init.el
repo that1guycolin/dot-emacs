@@ -50,7 +50,8 @@
  user-lisp-auto-scrape nil
  ;; Set directory in which custom elisp files are stored
  user-lisp-directory (expand-file-name "site-lisp" user-emacs-directory))
-(add-to-list 'user-lisp-ignored-directories "WIP")
+(when (>= (string-to-number emacs-version) 31)
+  (add-to-list 'user-lisp-ignored-directories "WIP"))
 (add-hook 'emacs-startup-hook
           (lambda ()
             (setq
