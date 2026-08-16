@@ -843,10 +843,14 @@ doubles as a model-switcher."
   :unless (eq system-type 'android)
   :config
   ;; Customizing the frame appearance for a "popup" feel
-  (setq emacs-everywhere-frame-parameters
-        '((name . "emacs-everywhere") (width . 80) (height . 20)
-          (menu-bar-lines . 0) (tool-bar-lines . 0)
-          (vertical-scroll-bars . nil))))
+  (let ((alist-func
+         (alist-get '(wayland . KDE)
+                    emacs-everywhere-frame-parameters nil nil #'equal)))
+    (setf
+     alist-func
+     (plist-put
+      alist-func
+      :paste-command '("ydotool" "key" "42:1" "110:1" "42:0" "110:0")))))
 
 ;; Podman/container integration
 (use-package docker
