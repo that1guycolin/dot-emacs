@@ -45,19 +45,25 @@
  ;; Ignore `tramp' & `compressed'/`archive'
  file-name-handler-alist nil
  ;; Do not display messages
- inhibit-message t
- ;; Do not auto bytecompile custom elisp files
- user-lisp-auto-scrape nil
- ;; Set directory in which custom elisp files are stored
- user-lisp-directory (expand-file-name "site-lisp" user-emacs-directory))
-(when (>= (string-to-number emacs-version) 31)
-  (add-to-list 'user-lisp-ignored-directories "WIP"))
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (setq
-             file-name-handler-alist
-             that1guycolin/file-name-handler-alist-backup
-             inhibit-message nil)))
+ inhibit-message t)
+(add-hook
+ 'emacs-startup-hook
+ (lambda ()
+   (setq
+    file-name-handler-alist that1guycolin/file-name-handler-alist-backup
+    inhibit-message nil)))
+
+;; Handle `site-lisp' directory based on Emacs' version
+(let ((init-files (expand-file-name "site-lisp" user-emacs-directory)))
+  (if (>= (string-to-number emacs-version) 31)
+      (progn
+        (setq
+         ;; Do not auto bytecompile custom elisp files
+         user-lisp-auto-scrape nil
+         ;; Set directory in which custom elisp files are stored
+         user-lisp-directory init-files)
+        (add-to-list 'user-lisp-ignored-directories "WIP"))
+    (add-to-list 'load-path init-files)))
 
 ;;; Other Variable Mods
 (defvar package-quickstart)
