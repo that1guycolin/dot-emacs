@@ -294,6 +294,7 @@ Their implementation in this config is far less strict than traditional GTD.")
   (org-use-sub-superscripts '{})
   :config
   (require 'org-id)
+  (require 'org-protocol)
   (require 'ox-texinfo)
   (keymap-set org-mode-map "C-c b" that1guycolin/org-insert-block-map)
   (let ((lang-mode-cells '(("bash"  . bash-ts) ("bash2" . bash-ts)
@@ -630,9 +631,11 @@ With a prefix ARG, remove start location."
        "%(org-chef-get-recipe-string-from-url \"%:link\")"
        :empty-lines 1)
       ("m" "Manual Cookbook" entry (file "~/org/cookbook.org")
-       "* %^{Recipe title: }\n  :PROPERTIES:\n  :source-url:\n  :servings:\n
-:prep-time:\n  :cook-time:\n  :ready-in:\n  :END\n** Ingredients\n
-%?\n** Directions\n\n"))))
+       "* %^{Recipe title: }\n  :PROPERTIES:\n  :source-url:\n  :servings:\n  \
+:prep-time:\n  :cook-time:\n  :ready-in:\n  :END:\n** Ingredients\n \
+%?\n** Directions\n\n")))
+  :config (dolist (temp that1guycolin/org-recipe-templates)
+            (add-to-list 'org-capture-templates temp)))
 
 
 ;;; Babel
