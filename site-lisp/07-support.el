@@ -382,6 +382,14 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
   (declare-function inhibit-mouse-mode "03-visual.el")
   (defvar that1guycolin/scripts-directory)
 
+  (defvar that1guycolin/gmi-sendmail-path nil
+    "Location of the `gmi-sendmail' bash script on device.")
+  
+  (defun that1guycolin/sendmail-via-gmi ()
+    "Send mail using `gmi-sendmail' bash script as the `sendmail' program."
+    (let ((sendmail-program that1guycolin/gmi-sendmail-path))
+      (message-send-mail-with-sendmail)))
+
   (defun that1guycolin/notmuch-avoid-empty-subject ()
     "Request confirmation before sending message with empty subject."
     (when (and (null (message-field-value "Subject"))
@@ -395,7 +403,10 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
                ("C-c n" . notmuch-mua-new-mail)))
   :hook ((message-send . notmuch-mua-attachment-check)
          (message-send . that1guycolin/notmuch-avoid-empty-subject))
-  :functions (message-field-value notmuch-addr-setup)
+  :functions (message-field-value notmuch-addr-setup
+                                  message-send-mail-with-sendmail)
+  :init (setq that1guycolin/gmi-sendmail-path
+              (concat that1guycolin/scripts-directory "/bash/gmi-sendmail.sh"))
   :custom
   (notmuch-always-prompt-for-sender t)
   (notmuch-fcc-dirs nil)
@@ -415,7 +426,7 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
 (use-package notmuch-addr
   :demand t
   :unless (eq system-type 'android)
-  :config (with-eval-after-load 'notmuch-address (notmuch-addr-setup)))
+  :config (notmuch-addr-setup))
 
 (use-package notmuch-transient
   :after (notmuch)
