@@ -6,7 +6,7 @@
 ;; free-keys, ghostel, gptel, gptel-forge-prs, guix, htmlize, llm, llm-ollama,
 ;; mcp-server-lib, mistty, native-complete, notmuch, notmuch-addr,
 ;; notmuch-indicator, notmuch-transient, org-mcp, ready-player, recentf, rg,
-;; telega, vterm, with-editor
+;; telega, vterm
 
 ;;; Commentary:
 ;; This file contains use-package objects for packages that help integrate Emacs
@@ -53,11 +53,6 @@
   :bind (("C-c t v" . vterm)
          ("C-c t V" . vterm-other-window))
   :init (setq vterm-always-compile-module t))
-
-;; Set EDITOR to current Emacs session
-(use-package with-editor
-  :defer t
-  :hook ((eshell-mode shell-mode vterm-mode) . with-editor-export-editor))
 
 ;; Shell completion in shell buffers
 (use-package native-complete

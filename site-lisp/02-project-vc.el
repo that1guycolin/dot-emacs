@@ -3,7 +3,7 @@
 ;;; Packages included:
 ;; activities, consult-project-extra, diff-hl, disproject, forge,
 ;; git-commit-ts-mode, git-link, git-modes, magit, magit-todos, project,
-;; project-treemacs, treemacs, treemacs-magit
+;; project-treemacs, treemacs, treemacs-magit, with-editor
 
 ;;; Commentary:
 ;; Packages to assist with project management in Emacs.  The first section
@@ -132,6 +132,11 @@
 
 
 ;;; VC/Git:
+;; Set EDITOR to current Emacs session
+(use-package with-editor
+  :defer t
+  :hook ((eshell-mode shell-mode vterm-mode) . with-editor-export-editor))
+
 (use-package magit
   :defer t
   :bind (("C-x g"   . magit-status)
