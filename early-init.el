@@ -61,6 +61,11 @@
     file-name-handler-alist that1guycolin/file-name-handler-alist-backup
     inhibit-message nil)))
 
+;; no-littering
+(add-to-list 'load-path
+  (expand-file-name "var/no-littering/" user-emacs-directory))
+(require 'no-littering)
+
 ;; Handle `site-lisp' directory based on Emacs' version
 (let ((init-files (expand-file-name "site-lisp" user-emacs-directory)))
   (if (and (>= (string-to-number emacs-version) 31) (boundp 'user-lisp-ignored-directories))
