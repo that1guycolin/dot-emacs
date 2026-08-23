@@ -900,9 +900,6 @@ doubles as a model-switcher."
               telega-highlight-text-mode telega-notifications-mode
               telega-root-auto-fill-mode telega-transient-keymaps-mode)
   :init (setq telega-use-images t)
-  :custom
-  (telega-server (expand-file-name "~/.guix/profile/bin/telega-server"))
-  (telega-server-libs-prefix "/home/colin-l/.guix-profile")
   :config
   (if (daemonp)
       (add-hook 'after-make-frame-functions
