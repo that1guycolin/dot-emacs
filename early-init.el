@@ -63,7 +63,7 @@
 
 ;; Handle `site-lisp' directory based on Emacs' version
 (let ((init-files (expand-file-name "site-lisp" user-emacs-directory)))
-  (if (>= (string-to-number emacs-version) 31)
+  (if (and (>= (string-to-number emacs-version) 31) (boundp 'user-lisp-ignored-directories))
       (progn
         (setq
          ;; Do not auto bytecompile custom elisp files
