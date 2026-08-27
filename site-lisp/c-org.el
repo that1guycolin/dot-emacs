@@ -4,6 +4,8 @@
 ;; Load the latest version of Org before the built-in version is able to.
 
 ;;; Code:
+(defvar elpaca-menu-org-make-manual)
+(setq elpaca-menu-org-make-manual nil)
 (use-package org
   :ensure (:wait t)
   :demand t
