@@ -62,32 +62,31 @@
 
 ;;; Code:
 ;;; Global settings:
-(with-eval-after-load 'no-littering
-  (require 'a-elpaca)
-  (require 'b-emacs)
-  (require 'c-org)
+(require 'a-elpaca)
+(require 'b-emacs)
+(require 'c-org)
 
 ;;; Modular Init:
-  ;; Startup & Core Packages
-  (require '01-environment)
+;; Startup & Core Packages
+(require '01-environment)
 
-  ;; Projects & Workspaces
-  (require '02-project-vc)
+;; Projects & Workspaces
+(require '02-project-vc)
 
-  ;; Core UI Configuration
-  (require '03-visual)
+;; Core UI Configuration
+(require '03-visual)
 
-  ;; Language Specific Settings
-  (require '04-languages)
+;; Language Specific Settings
+(require '04-languages)
 
-  ;; Code Smarter, Not Harder
-  (require '05-coding)
+;; Code Smarter, Not Harder
+(require '05-coding)
 
-  ;; Org Config & Support Packages
-  (require '06-org-config)
+;; Org Config & Support Packages
+(require '06-org-config)
 
-  ;; Integrate or Emulate External Tools
-  (require '07-support))
+;; Integrate or Emulate External Tools
+(require '07-support)
 
 
 (provide 'init)

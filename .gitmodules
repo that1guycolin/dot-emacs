@@ -1,3 +1,0 @@
-[submodule "var/no-littering"]
-	path = var/no-littering
-	url = https://github.com/emacscollective/no-littering.git

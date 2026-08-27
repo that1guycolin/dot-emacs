@@ -114,14 +114,20 @@
 ;;; elpaca-use-package/no-littering:
 (declare-function elpaca-use-package      "elpaca-use-package")
 (declare-function elpaca-use-package-mode "elpaca-use-package")
-
 (defvar elpaca-use-package)
 (defvar use-package-always-ensure)
 
+;; elpaca-use-package
 (elpaca (elpaca-use-package :wait t)
   (elpaca-use-package-mode 1))
 (elpaca-use-package-mode 1)
 (setq use-package-always-ensure t)
+
+;; no-littering
+(use-package no-littering
+  :ensure (:wait t)
+  :demand t)
+
 
 (provide 'a-elpaca)
 ;;; a-elpaca.el ends here
