@@ -52,8 +52,8 @@
 ;; smartparens, suggest, systemd, tab-line-nerd-icons, telega, tempel,
 ;; tempel-collection, toml-ts-mode, transient, tree-inspector, treemacs,
 ;; treemacs-magit, treemacs-nerd-icons, treesit, treesit-fold, vertico,
-;; visual-fill-column, visual-regexp, visual-regexp-steroids, vterm,
-;; with-editor, yaml-pro, yaml-ts-mode
+;; visual-fill-column, visual-regexp, visual-regexp-steroids, with-editor,
+;; yaml-pro, yaml-ts-mode
 
 ;;; Commentary:
 ;; that1guycolin's personal Emacs configuration.  Reduces startup time by

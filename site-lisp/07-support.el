@@ -4,7 +4,7 @@
 ;; casual, casual-avy, deadgrep, dirvish, docker, dwim-shell-command, eat,
 ;; elisp-dev-mcp, ellama, emacs-everywhere, emms, emms-info-mediainfo,
 ;; free-keys, ghostel, gptel, gptel-forge-prs, guix, htmlize, llm, llm-ollama,
-;; mcp-server-lib, mistty, native-complete, notmuch, notmuch-addr,
+;; mcp-server-lib, mistty, mpv, native-complete, notmuch, notmuch-addr,
 ;; notmuch-indicator, notmuch-transient, org-mcp, ready-player, recentf, rg,
 ;; telega, vterm
 
@@ -46,13 +46,6 @@
                ("M-<down>"  . mistty-send-key)
                ("M-<left>"  . mistty-send-key)
                ("M-<right>" . mistty-send-key))))
-
-;; The old workhorse
-(use-package vterm
-  :defer t
-  :bind (("C-c t v" . vterm)
-         ("C-c t V" . vterm-other-window))
-  :init (setq vterm-always-compile-module t))
 
 ;; Shell completion in shell buffers
 (use-package native-complete
