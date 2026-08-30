@@ -284,6 +284,7 @@ open the file in another window."
          ("C-h B" . embark-bindings))
   :functions (embark-prefix-help-command embark-eldoc-first-target)
   :init (setq prefix-help-command #'embark-prefix-help-command)
+  :custom (eldoc-documentation-strategy #'eldoc-documentation-compose)
   :config
   (add-to-list
    'completion-category-overrides
@@ -295,8 +296,7 @@ open the file in another window."
      nil
      (window-parameters (mode-line-format . none))))
 
-  (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
-  (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly))
+  (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target))
 
 ;; Integrations
 (use-package embark-consult
