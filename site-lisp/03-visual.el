@@ -58,16 +58,26 @@
 ;; DON'T MOVE THE MOUSE!
 (use-package inhibit-mouse
   :demand t
+  :preface
+  (defun that1guycolin/inhibit-inhibit-mouse ()
+    "Deactivate `inhibit-mouse-mode'.
+Effective as hook for major-modes where you want to be able to use the mouse."
+    (interactive)
+    (inhibit-mouse-mode -1))
   :unless (eq system-type 'android)
-  :hook (Info-mode . (lambda () (inhibit-mouse-mode -1)))
-  :functions (inhibit-mouse-mode)
+  :bind ("C-c C-M-m" . inhibit-mouse-mode)
   :custom
   (inhibit-mouse-adjust-mouse-highlight t)
   (inhibit-mouse-adjust-show-help-function t)
   :config
   (if (daemonp)
-      (add-hook 'server-after-make-frame-hook #'inhibit-mouse-mode)
-    (inhibit-mouse-mode 1)))
+      (add-hook 'server-after-make-frame-hook
+                #'that1guycolin/inhibit-inhibit-mouse)
+    (inhibit-mouse-mode 1))
+  (add-hook 'Info-mode-hook #'that1guycolin/inhibit-inhibit-mouse)
+  (add-hook 'org-mode-hook #'that1guycolin/inhibit-inhibit-mouse))
+
+
 
 ;; Madeline:
 (use-package minions
