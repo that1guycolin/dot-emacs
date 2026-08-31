@@ -790,7 +790,6 @@ doubles as a model-switcher."
                ("i"       . emms-show)
                ("l"       . emms-sort)
                ("C-y"     . emms-playlist-mode-yank)))
-  :bind-keymap ("C-c m" . that1guycolin/emms-view-options-map)
   :functions (emms-all
               emms-seek emms-player-mpv-pause emms-player-mpv-resume
               emms-playlist-mode-go emms-playlist-mode-go-popup emms-pause
@@ -822,6 +821,28 @@ doubles as a model-switcher."
   :unless (eq system-type 'android)
   :custom (emms-info-functions
            (append '(emms-info-mediainfo) emms-info-functions)))
+
+(use-package mpv
+  :defer t
+  :preface
+  (defvar-keymap that1guycolin/mpv-func-map
+    :doc "Useful functions from mpv.el."
+    "a" #'mpv-play
+    "s" #'mpv-start
+    "." #'mpv-seek-forward
+    "," #'mpv-seek-backward
+    "o" #'mpv-volume-increase
+    "i" #'mpv-volume-decrease
+    "b" #'mpv-insert-playback-position
+    "l" #'mpv-seek-to-position-at-point
+    "m" #'mpv-playlist-next
+    "n" #'mpv-playlist-prev
+    "c" #'mpv-jump-to-chapter
+    "p" #'mpv-jump-to-playlist-entry
+    "k" #'mpv-chapter-next
+    "j" #'mpv-chapter-prev)
+  :unless (eq system-type 'android)
+  :bind-keymap ("C-c m" . that1guycolin/mpv-func-map))
 
 
 ;;; Misc:
