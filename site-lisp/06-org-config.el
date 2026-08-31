@@ -22,6 +22,7 @@
 
 ;; Project management via Org
 (use-package org-project-capture
+  :after (org-edna)
   :demand t
   :preface
   (declare-function project-root "project.el")
@@ -29,7 +30,7 @@
   (defvar org-directory)
   (defvar org-refile-targets)
   (defun that1guycolin/remove-org-todo ()
-    "If a TODO.org file exists in the org directory, delete it.
+    "If a \='TODO.org' file exists in the org directory, delete it.
 Because the org-directory is a git repo, there is a possibility of
 accidentally creating a TODO file.  A TODO file in the org-directory is
 by definition redundant, since any TODO items should go in the tasks
@@ -230,6 +231,8 @@ this function as `org-node-creation-fn'."
 ;; View PDFs in Emacs
 (use-package pdf-tools
   :defer t
+  :preface
+  (declare-function that1guycolin/inhibit-inhibit-mouse "03-visual.el")
   :magic ("%PDF" . pdf-view-mode)
   :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)
   :functions (pdf-tools-install)
@@ -237,23 +240,27 @@ this function as `org-node-creation-fn'."
   (pdf-view-display-size 'fit-page)
   (pdf-info-asynchronous t)
   :config (pdf-tools-install)
-  (add-hook 'pdf-view-mode-hook
-    #'(lambda () (inhibit-mouse-mode -1))))
+  (add-hook 'pdf-view-mode-hook #'that1guycolin/inhibit-inhibit-mouse))
 
 ;; Annotate
 (use-package org-noter
-  :preface (defvar dired-mode-map)
   :defer t
+  :preface
+  (defvar dired-mode-map)
+  (defvar dirvish-mode-map)
+  (defvar that1guycolin/notes-directory
+    (expand-file-name "notes" org-directory)
+    "Directory in which org-noter files are stored.")
   :bind (("C-c o n". org-noter)
-         :map dired-mode-map
-         ("N"      . org-noter-start-from-dired))
-
-  :init (let ((note-dir (expand-file-name "notes" org-directory)))
-          (unless (file-directory-p note-dir)
-            (make-directory note-dir t)))
+         (:map dired-mode-map
+               ("N" . org-noter-start-from-dired))
+         (:map dirvish-mode-map
+               ("N" . org-noter-start-from-dired)))
+  :init (unless (file-directory-p that1guycolin/notes-directory)
+          (mkdir that1guycolin/notes-directory t))
   :custom
   (org-noter-auto-save-last-location t)
-  (org-noter-notes-search-path (expand-file-name "notes" org-directory))
+  (org-noter-notes-search-path that1guycolin/notes-directory)
   (org-noter-default-notes-file-names '("notes.org")))
 
 ;; PDF Tools ext
@@ -262,7 +269,7 @@ this function as `org-node-creation-fn'."
 
 ;; Annotate PDFs
 (use-package org-pdftools
-  :after (org pdf-view-mode)
+  :after (org pdf-tools)
   :demand t
   :functions (org-pdftools-setup-link)
   :config (org-pdftools-setup-link))
@@ -324,8 +331,9 @@ With a prefix ARG, remove start location."
        "* %^{Recipe title: }\n  :PROPERTIES:\n  :source-url:\n  :servings:\n  \
 :prep-time:\n  :cook-time:\n  :ready-in:\n  :END:\n** Ingredients\n \
 %?\n** Directions\n\n")))
-  :config (dolist (temp that1guycolin/org-recipe-templates)
-            (add-to-list 'org-capture-templates temp)))
+  :config (setq org-capture-templates
+                (append org-capture-templates
+                        that1guycolin/org-recipe-templates)))
 
 
 ;;; Babel
@@ -419,8 +427,8 @@ Values are mapped to informative strings."
       "r" "Generate README"
       "h" "Generate html"
       "o" "Generate Orgfile"))
-  :bind-keymap ("C-c 2" . that1guycolin/el2orggen-map)
-  :defines el2org-gener)
+  :bind-keymap ("C-c 2" . that1guycolin/el2org-gen-map)
+  :functions (el2org-generate-readme el2org-generate-html el2org-generate-org))
 
 ;; Table-of-contents
 (use-package org-make-toc
@@ -443,4 +451,4 @@ Values are mapped to informative strings."
 (provide '06-org-config)
 ;;; 06-org-config.el ends here
 
-                                        ; LocalWords:  bolp dt alnum GTD
+                                        ; LocalWords: annot fF
