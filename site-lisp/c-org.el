@@ -1,17 +1,16 @@
 ;;; c-org.el --- Latest Org -*- lexical-binding: t -*-
 
 ;;; Commentary:
-;; Load the latest version of Org before the built-in version is able to.
+;; Load the latest version of Org rather than the built-in version.
 
 ;;; Code:
 (use-package org
   :ensure (:wait t)
   :demand t
   :preface
-  (declare-function inhibit-mouse-mode "inhibit-mouse-mode")
   (declare-function that1guycolin/desktop-mobile "init.el")
   (declare-function sly-eval "sly")
-;;; Helper function
+
   (defun that1guycolin/org-check ()
     "User-error if buffer is not in `org-mode'."
     (unless (derived-mode-p 'org-mode)
@@ -313,13 +312,11 @@ underneath."
 ;;; finish use-package sexp
   :bind (("C-c o o" . org-mode)
          ("C-c o a" . org-agenda)
-         ("C-c c"   . org-capture)
          ("C-c o c" . org-capture)
          ("C-c o l" . org-store-link)
          (:map org-mode-map
                ("C-c l"   . org-toggle-link-display)
                ("C-c C-q" . org-set-tags-command)))
-  :hook (org-mode . (lambda () (inhibit-mouse-mode -1)))
   :mode (("\\.org\\'"   . org-mode)
          ("\\.notes\\'" . org-mode))
   :functions (org-before-first-heading-p
@@ -328,7 +325,8 @@ underneath."
               org-id-get-create org-entry-get org-entry-put org-id-new
               org-insert-structure-template)
   :defines (org-agenda-files org-babel-default-header-args:zsh
-                             org-babel-lisp-eval-fn org-directory org-mode-map)
+                             org-babel-lisp-eval-fn org-directory
+                             org-mode-map)
   :init (that1guycolin/desktop-mobile
           (setq org-directory (expand-file-name "~/org"))
           (setq org-directory "/storage/emulated/0/Documents/org"))
@@ -336,9 +334,10 @@ underneath."
   (org-agenda-files
    (directory-files (expand-file-name "TODOs/" org-directory) t
                     directory-files-no-dot-files-regexp))
-  (org-agenda-diary-file (expand-file-name "diary" org-directory))
+  (org-agenda-diary-file (expand-file-name "diary.org" org-directory))
   (org-archive-location
-   (expand-file-name "archive/2026.org::datetree/* %s" org-directory))
+   (expand-file-name
+    (format-time-string "archive/%Y.org::datetree/* %%s") org-directory))
   (org-capture-templates
    (list that1guycolin/org-templates--task
          that1guycolin/org-templates--idea
