@@ -235,6 +235,71 @@ Their implementation in this config is far less strict than traditional GTD.")
   (defconst that1guycolin/org-keywords--someday
     '(sequence "SOMEDAY(s)" "RESEARCH(h)" "|" "ACTIVE(v)" "DISCARD(D)")
     "Keyword sequence to track things you might do \"someday\".")
+;;; Daily task functions
+  (defun that1guycolin/today-date ()
+    "Return a string containing today's date in the form YYYY-mm-dd."
+    (format-time-string "%Y-%m-%d"))
+
+  (defun that1guycolin/org-rollover-daily-tasks ()
+    "Archive completed tasks from yesterday, and roll over incomplete tasks.
+Create a new heading for today's date, and place the rolled over tasks
+underneath."
+    (interactive)
+    (let* ((yesterday (format-time-string "%Y-%m-%d"
+                                          (time-subtract nil (days-to-time 1))))
+           (today (format-time-string "%Y-%m-%d"))
+           (daily-task-file (expand-file-name "TODOs/today.org" org-directory))
+           (archive-file (expand-file-name
+                          (format-time-string "archive/%Y.org")
+                          org-directory))
+           (heading-regexp (format "^\\* %s[ \t]*$" (regexp-quote yesterday))))
+      (with-current-buffer
+          (find-file-noselect daily-task-file)
+        (goto-char (point-min))
+        (unless (re-search-forward heading-regexp nil t)
+          (user-error "Could not find yesterday's heading: %s" yesterday))
+        (org-back-to-heading t)
+        (let* ((heading-start (point))
+               (section-end (save-excursion
+                              (org-end-of-subtree t t)))
+               (heading-line (concat "*" (buffer-substring-no-properties
+                                          (line-beginning-position)
+                                          (line-end-position))))
+               completed
+               incomplete)
+          (save-excursion
+            (forward-line 1)
+            (while (< (point) section-end)
+              (when (looking-at "^[ \t]*- \\[\\([ Xx]\\)\\]\\(.*\\)$")
+                (let ((task (buffer-substring-no-properties
+                             (line-beginning-position)
+                             (line-end-position))))
+                  (if (member (match-string 1) '("X" "x"))
+                      (push task completed)
+                    (push task incomplete))))
+              (forward-line 1)))
+
+          (when completed
+            (with-temp-buffer
+              (insert heading-line "\n")
+              (dolist (task completed)
+                (insert task "\n"))
+              (insert "\n")
+              (if (file-exists-p archive-file)
+                  (progn
+                    (append-to-file (point-min) (point-max) archive-file)
+                    (unless (bolp)
+                      (write-region "\n" nil archive-file 'append)))
+                (write-file archive-file))))
+
+          (delete-region heading-start section-end)
+          (goto-char heading-start)
+          (insert "* " today "\n")
+          (dolist (task incomplete)
+            (insert task "\n"))
+          (save-buffer)))))
+
+  
 
 ;;; misc.
   (defun that1guycolin/org-convert-md-links ()

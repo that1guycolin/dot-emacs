@@ -107,9 +107,6 @@
     "U"   "Update All"         "b a" "Build Autoloads"
     "b d" "Build Docs"         "b c" "Build Compile"))
 
-;; Automatically load customization variables if they exist
-(when (file-exists-p custom-file)
-  (add-hook 'elpaca-after-init-hook (lambda () (load custom-file 'noerror))))
 
 ;;; elpaca-use-package/no-littering:
 (declare-function elpaca-use-package      "elpaca-use-package")

@@ -66,6 +66,12 @@
 (require 'b-emacs)
 (require 'c-org)
 
+;; Automatically load customization variables if they exist
+(when (file-exists-p custom-file)
+  (add-hook 'elpaca-after-init-hook
+            #'(lambda () (load custom-file 'noerror))))
+
+
 ;;; Modular Init:
 ;; Startup & Core Packages
 (require '01-environment)
