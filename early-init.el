@@ -61,22 +61,16 @@
     file-name-handler-alist that1guycolin/file-name-handler-alist-backup
     inhibit-message nil)))
 
-;; Handle `site-lisp' directory based on Emacs' version
-(let ((init-files (expand-file-name "site-lisp" user-emacs-directory)))
-  (if (and (>= (string-to-number emacs-version) 31) (boundp 'user-lisp-ignored-directories))
-      (progn
-        (setq
-         ;; Do not auto bytecompile custom elisp files
-         user-lisp-auto-scrape nil
-         ;; Set directory in which custom elisp files are stored
-         user-lisp-directory init-files)
-        (add-to-list 'user-lisp-ignored-directories "WIP"))
-    (add-to-list 'load-path init-files)))
-
 ;;; Other Variable Mods
 (defvar package-quickstart)
 (defvar auth-sources)
 (setq
+ ;; Do not auto bytecompile custom elisp files
+ user-lisp-auto-scrape nil
+ 
+ ;; Set directory in which custom elisp files are stored
+ user-lisp-directory (expand-file-name "site-lisp" user-emacs-directory)
+
  ;; No garbage collection during startup
  gc-cons-threshold most-positive-fixnum
 
