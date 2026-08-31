@@ -9,6 +9,7 @@
 (defvar elpaca-directory (expand-file-name "var/elpaca/" user-emacs-directory))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
 (defvar elpaca-sources-directory (expand-file-name "sources/" elpaca-directory))
+(defvar elpaca-org-make-manual nil)
 (defvar elpaca-queue-limit (num-processors))
 
 ;; Avoid flycheck warnings
