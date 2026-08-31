@@ -193,45 +193,37 @@ underneath it.  The header block will contain the following fields:
       "d" "Properties Drawer"
       "s" "Source Block"))
 
-;;; Org custom templates
-  (defconst that1guycolin/org-templates--task
-    '("t" "Task" entry
-      (file "TODOs/tasks.org")
-      "* TODO %?\n"))
-
-  (defconst that1guycolin/org-templates--idea
-    '("i" "Idea" entry
-      (file "TODOs/ideas.org")
-      "* THOUGHT %?\n"))
-
-  (defconst that1guycolin/org-templates--someday
-    '("s" "Someday" entry
-      (file "TODOs/someday.org")
-      "* SOMEDAY %?\n"))
-
-
 ;;; Org task sequences
   (defconst that1guycolin/org-keywords--tasks
-    '(sequence "TODO(t)" "NEXT(n)" "WAIT(w)" "|" "DONE(d)" "CANCELLED(c)")
+    '(sequence "TODO(t!)" "NEXT(n!)" "WAIT(w@/!)" "|"
+               "DONE(d!)" "CANCELLED(c@)")
     "Keyword sequence with names based on the getting-things-done method.
 Their implementation in this config is far less strict than traditional GTD.")
 
   (defconst that1guycolin/org-keywords--ideas
-    '(sequence "THOUGHT(o)" "PLANNING(p)" "IMPLEMENTATION(i)" "|"
-               "COMPLETE(e)" "ABANDONED(a)")
+    '(sequence "IDEA(i!)" "PLANNING(p!)" "IMPLEMENTATION(m!)" "|"
+               "COMPLETE(e!)" "ABANDONED(a@)")
     "Keyword sequence for turning dreams into reality.")
 
-  (defconst that1guycolin/org-keywords--reading-list
-    '(sequence "TO READ(r)" "READING(R)" "|" "FINISHED(f)")
-    "Keyword sequence to track what you're reading.")
-
-  (defconst that1guycolin/org-keywords--media-download
-    '(sequence "TAGGED(g)" "|" "DOWNLOADED(w)" "IGNORED(I)")
-    "Keyword sequence to track media downloads.")
+  (defconst that1guycolin/org-keywords--daily
+    '(sequence "TODAY(y!)" "|" "COMPLETE(e!)")
+    "Keyword sequence for daily tasks.")
 
   (defconst that1guycolin/org-keywords--someday
-    '(sequence "SOMEDAY(s)" "RESEARCH(h)" "|" "ACTIVE(v)" "DISCARD(D)")
-    "Keyword sequence to track things you might do \"someday\".")
+    '(sequence "SOMEDAY(s)" "RESEARCH(h!)" "|" "NEVER(v@)")
+    "Keyword sequence to track things you might do \"someday\".
+Note the absence of a \='completed' keyword; objects from this pipeline
+move to either the \"tasks\" or the \"ideas\" pipeline to then be
+completed.")
+
+  (defconst that1guycolin/org-keywords--reading-list
+    '(sequence "TO READ(r)" "READING(R!)" "|" "FINISHED(f)" "UNREAD(u@)")
+    "Keyword sequence to track books to read.")
+
+  (defconst that1guycolin/org-keywords--media-download
+    '(sequence "TAGGED(g)" "|" "DOWNLOADED(w)" "IGNORED(I@)")
+    "Keyword sequence to track media downloads.")
+
 ;;; Daily task functions
   (defun that1guycolin/today-date ()
     "Return a string containing today's date in the form YYYY-mm-dd."
@@ -297,6 +289,43 @@ underneath."
           (save-buffer)))))
 
   
+;;; Capture Templates
+  (defconst that1guycolin/org-templates--task
+    '("t" "Task" entry (file "TODOs/tasks.org")
+      "* TODO %^{Title}\n:PROPERTIES:\n:CREATED: %U\n:END:\n- %?"
+      :empty-lines 1
+      :kill-buffer t))
+
+  (defconst that1guycolin/org-templates--idea
+    '("i" "Idea" entry (file "TODOs/ideas.org")
+      "* IDEA %^{Title}\n:PROPERTIES:\n:CREATED: %U\n:END:\n** %?"
+      :empty-lines 1
+      :kill-buffer t))
+
+  (defconst that1guycolin/org-templates--daily
+    '("d" "Daily Task" checkitem
+      (file+headline "TODOs/today.org" that1guycolin/today-date)
+      "- [ ] %?"
+      :kill-buffer t))
+
+  (defconst that1guycolin/org-templates--someday
+    '("s" "Someday" entry
+      (file "TODOs/someday.org")
+      "* SOMEDAY %^{Title}\n:PROPERTIES:\n:CREATED: %U\n:END:\n- %?"
+      :empty-lines 1
+      :kill-buffer t))
+
+  (defconst that1guycolin/org-templates--reading-list
+    '("b" "Book" entry (file "TODOs/reading-list.org")
+      "* TO READ Title: %^{Title}\nAuthor: %?\nComments: "
+      :empty-lines 1
+      :kill-buffer t))
+
+  (defconst that1guycolin/org-templates--media-download
+    '("m" "Media" entry (file "TODOs/media-download.org")
+      "* TAGGED Title: %^{Title}\n- URL: %^{URL}\n- Actors: %?\n- Studio: "
+      :empty-lines 1
+      :kill-buffer t))
 
 ;;; misc.
   (defun that1guycolin/org-convert-md-links ()
@@ -341,7 +370,13 @@ underneath."
   (org-capture-templates
    (list that1guycolin/org-templates--task
          that1guycolin/org-templates--idea
-         that1guycolin/org-templates--someday))
+         that1guycolin/org-templates--daily
+         that1guycolin/org-templates--someday
+         that1guycolin/org-templates--reading-list
+         that1guycolin/org-templates--media-download))
+  (org-clock-clocked-in-display 'mode-line)
+  (org-clock-idle-time 15)
+  (org-clock-into-drawer t)
   (org-confirm-babel-evaluate nil)
   (org-default-notes-file (expand-file-name "tasks/tasks.org" org-directory))
   (org-edit-src-content-indentation 0)
@@ -349,12 +384,24 @@ underneath."
   (org-id-method 'org)
   (org-id-prefix "default")
   (org-insert-mode-line-in-empty-file t)
+  (org-log-done 'time)
+  (org-log-into-drawer t)
   (org-startup-folded 'show2levels)
   (org-todo-keywords
    (list that1guycolin/org-keywords--tasks that1guycolin/org-keywords--ideas
+         that1guycolin/org-keywords--daily that1guycolin/org-keywords--someday
          that1guycolin/org-keywords--reading-list
-         that1guycolin/org-keywords--media-download
-         that1guycolin/org-keywords--someday))
+         that1guycolin/org-keywords--media-download))
+  (org-todo-keyword-faces
+   '(("IDEA"           . (:foreground "gold"            :weight bold))
+     ("PLANNING"       . (:foreground "orange"          :weight bold))
+     ("IMPLEMENTATION" . (:foreground "cornflower blue" :weight bold))
+     ("TODO"           . (:foreground "purple"          :weight bold))
+     ("NEXT"           . (:foreground "deep sky blue"   :weight bold))
+     ("WAIT"           . (:foreground "plum"            :weight bold))
+     ("TODAY"          . (:foreground "pale green"      :weight bold))
+     ("DONE"           . (:foreground "dim gray"        :weight bold))
+     ("CANCELLED"      . (:foreground "dark gray"       :weight bold))))
   (org-use-sub-superscripts '{})
   :config
   (require 'org-id)
