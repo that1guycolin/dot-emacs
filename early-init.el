@@ -62,8 +62,6 @@
     inhibit-message nil)))
 
 ;;; Other Variable Mods
-(defvar package-quickstart)
-(defvar auth-sources)
 (setq
  ;; Do not auto bytecompile custom elisp files
  user-lisp-auto-scrape nil
@@ -79,7 +77,7 @@
 
  ;; Disable package.el
  package-enable-at-startup nil
- package-quickstart nil
+ package-quickstart-file nil
 
  ;; version-control
  version-control t
