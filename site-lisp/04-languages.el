@@ -208,39 +208,45 @@
 (use-package sly
   :defer t
   :preface
+  (require '00-macros)
   (declare-function corfu-mode "corfu")
 
   (defun that1guycolin/sly-load-if-not-connected ()
     "Connect to sly, unless an active connection exists already."
     (unless (sly-connected-p) (save-excursion (sly))))
 
-  (defvar-keymap that1guycolin/sly-functions-map
-    :doc "Common functions from the sly lisp implementation."
-    "s" #'sly
-    "r" #'sly-mrepl
-    "m" #'sly-mrepl-new
-    "y" #'sly-mrepl-sync
-    "d" #'sly-mrepl-set-directory
-    "c" #'sly-cd
-    "i" #'sly-inspect
-    "a" #'sly-apropos
-    "w" #'sly-describe-symbol)
+  (defun that1guycolin/sly-autoconnect ()
+    "Automatically connect to a running slynk instance @ localhost:4005."
+    (funcall #'(lambda () (sly-connect "localhost" 4005))))
+
+  (that1guycolin/desktop-mobile :desk
+    (defvar-keymap that1guycolin/sly-functions-map
+      :doc "Common functions from the sly lisp implementation."
+      "s" #'sly                     "r" #'sly-mrepl
+      "m" #'sly-mrepl-new           "y" #'sly-mrepl-sync
+      "d" #'sly-mrepl-set-directory "c" #'sly-cd
+      "i" #'sly-inspect             "a" #'sly-apropos
+      "w" #'sly-describe-symbol)
+    :gui
+    (defvar-keymap that1guycolin/sly-functions-map
+      :doc "Common functions from the sly lisp implementation."
+      "s" #'that1guycolin/sly-autoconnect "r" #'sly-mrepl
+      "m" #'sly-mrepl-new                 "y" #'sly-mrepl-sync
+      "d" #'sly-mrepl-set-directory       "c" #'sly-cd
+      "i" #'sly-inspect                   "a" #'sly-apropos
+      "w" #'sly-describe-symbol))
   (with-eval-after-load 'which-key
     (which-key-add-keymap-based-replacements that1guycolin/sly-functions-map
-      "s" "Start Sly"
-      "r" "Sly REPL"
-      "m" "New Sly REPL"
-      "y" "Set pkg & dir"
-      "d" "Set REPL dir"
-      "c" "Set lisp dir"
-      "i" "Eval & inspect expr"
-      "a" "Symbol match"
+      "s" "Start Sly"           "r" "Sly REPL"
+      "m" "New Sly REPL"        "y" "Set pkg & dir"
+      "d" "Set REPL dir"        "c" "Set lisp dir"
+      "i" "Eval & inspect expr" "a" "Symbol match"
       "w" "Describe symbol"))
   :bind-keymap ("C-c s" . that1guycolin/sly-functions-map)
   :hook (lisp-mode . sly-editing-mode)
-  :functions (sly sly-connected-p sly-mrepl sly-mrepl-new sly-mrepl-sync
-                  sly-mrepl-set-directory sly-cd sly-inspect sly-apropos
-                  sly-describe-symbol)
+  :functions (sly sly-connect sly-connected-p sly-mrepl sly-mrepl-new
+                  sly-mrepl-sync sly-mrepl-set-directory sly-cd sly-inspect
+                  sly-apropos sly-describe-symbol)
   :init (setq inferior-lisp-program "sbcl")
   :custom
   (sly-lisp-implementations

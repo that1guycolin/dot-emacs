@@ -62,6 +62,10 @@
 
 ;;; Code:
 ;;; Global settings:
+(dolist (lib '(bs cl-lib hl-line mouse seq subr-x))
+  (require lib))
+
+(require '00-macros)
 (require 'a-elpaca)
 (require 'b-emacs)
 (require 'c-org)

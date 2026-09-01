@@ -8,19 +8,6 @@
   :ensure nil
   :demand t
   :preface
-  (defmacro that1guycolin/desktop-mobile (desk termux &optional gui)
-    "Set different options depending on where Emacs is active.
-DESK    - Settings for Emacs on PC/laptop.
-TERMUX  - Settings for Emacs in the Android `termux' application.
-GUI     - Settings for the Emacs Android GUI application (only required when
-          the GUI and termux need different settings)."
-    (declare (indent defun))
-    `(cond
-      ((and (eq system-type 'android) (null (getenv "TERMUX_VERSION")))
-       ,(or gui termux))
-      ((eq system-type 'android) ,termux)
-      (t ,desk)))
-
 ;;;; Load paths:
   (defvar that1guycolin/projects-directory nil
     "Directory containing active projects.")
@@ -33,14 +20,14 @@ GUI     - Settings for the Emacs Android GUI application (only required when
     "Termux home directory on Android.")
 
   (that1guycolin/desktop-mobile
-    (setq
-     that1guycolin/projects-directory (expand-file-name "~/projects/")
-     that1guycolin/scripts-directory (expand-file-name "~/scripts/"))
-    (setq
-     that1guycolin/projects-directory
-     (expand-file-name "projects" that1guycolin/android-home)
-     that1guycolin/scripts-directory
-     (expand-file-name "scripts" that1guycolin/android-home)))
+    :desk (setq
+           that1guycolin/projects-directory (expand-file-name "~/projects/")
+           that1guycolin/scripts-directory (expand-file-name "~/scripts/"))
+    :termux (setq
+             that1guycolin/projects-directory
+             (expand-file-name "projects" that1guycolin/android-home)
+             that1guycolin/scripts-directory
+             (expand-file-name "scripts" that1guycolin/android-home)))
 
 ;;;; tabs-to-spaces
   (defun that1guycolin/untabify-buffer ()
@@ -89,9 +76,6 @@ If not in a side window, jump to the first found side window."
     (hl-line-mode 1)
     (ibuffer-auto-mode 1))
 
-  (defvar that1guycolin/emacs-load-libs '(bs cl-lib hl-line mouse seq subr-x)
-    "List of optional Emacs libraries to load at Emacs start.")
-
 ;;;; use-package
   :bind (("C-TAB"   . completion-at-point)
          ("C-c C-x" . toggle-frame-maximized)
@@ -107,8 +91,6 @@ If not in a side window, jump to the first found side window."
   (setq
    font-use-system-font t)
   (add-to-list 'default-frame-alist '(fullscreen . maximized))
-  (dolist (lib that1guycolin/emacs-load-libs)
-    (require lib))
   :custom
   (auto-save-visited-interval 60)
   (enable-recursive-minibuffers t)
