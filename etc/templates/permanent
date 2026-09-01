@@ -59,6 +59,14 @@ sh-mode
            "*) echo \"Invalid option: $1\"; usage; return 2 ;;" n>
            "esac" n> "done" n>)
 (shbang "#!/bin/sh")
+(sudo-chk "function check_if_root {
+    if ((EUID != 0)); then
+        error \"This script must be run as root.\"
+        echo \"Hint: re-run with sudo-rs ./${0##*/}\" >&2
+        usage >&2
+        exit 42
+    fi
+}")
 (usage "function usage {" n> "cat <<EOF" n
         "USAGE: ${0##*/} [OPTIONS] " (p "req arguments") n n
         (p "description") n n "OPTIONS:" n "  " (p "flag") n
