@@ -5,7 +5,7 @@
 ;; csv-mode, docker-compose-mode, dockerfile-ts-mode, eask-mode, eldoc-cmake,
 ;; elisp-def, emacs-lisp-mode, eros, eros-inspector, fish-mode, geiser,
 ;; geiser-guile, glsl-mode, grip-mode, ielm, ini-mode, inspector, json-ts-mode,
-;; just-ts-mode, kdl-mode, lisp-mode, lisp-semantic-hl, live-py-mode,
+;; just-ts-mode, kdl-mode, lisp-ts-mode, lisp-semantic-hl, live-py-mode,
 ;; lua-ts-mode, macrostep, macrostep-geiser, markdown-mode, markdown-ts-mode,
 ;; morlock, nxml-mode, pkgbuild-mode, python-pytest, python-ts-mode, python-x,
 ;; rustic, rust-ts-mode, scheme-mode, sh-mode, sly, suggest, systemd,
@@ -33,7 +33,7 @@
   (setq
    treesit-language-source-alist
    '((bash . ("https://github.com/tree-sitter/tree-sitter-bash"))
-     (lisp . ("https://github.com/tree-sitter-grammars/tree-sitter-commonlisp"))
+     (commonlisp . ("https://github.com/tree-sitter-grammars/tree-sitter-commonlisp"))
      (cmake . ("https://github.com/uyha/tree-sitter-cmake"))
      (css . ("https://github.com/tree-sitter/tree-sitter-css"))
      (cpp . ("https://github.com/tree-sitter/tree-sitter-cpp"))
@@ -91,16 +91,19 @@
 
 
 ;;; (E)Lisp:
+;; Base packages
 (use-package emacs-lisp-mode
   :ensure nil
   :defer t
   :mode "\\.el\\'")
 
-(use-package lisp-mode
-  :ensure nil
+(use-package lisp-ts-mode
   :defer t
   :interpreter "sbcl"
-  :mode ("\\.lisp\\'" "\\.cl\\'" "\\.asd\\'"))
+  :mode ("\\.lisp\\'" "\\.cl\\'" "\\.asd\\'")
+  :init (add-to-list 'major-mode-remap-alist '(lisp-mode . lisp-ts-mode))
+  :config (setf (alist-get 'lisp-ts-mode font-lock-ignore)
+                lisp-ts-mode-font-lock-ignore-keywords))
 
 (use-package scheme-mode
   :ensure nil
@@ -111,11 +114,6 @@
 (use-package adjust-parens
   :defer t
   :hook ((emacs-lisp-mode lisp-mode scheme-mode) . adjust-parens-mode))
-
-;; Syntax highlighting (emacs-lisp, lisp)
-(use-package lisp-semantic-hl
-  :defer t
-  :hook ((emacs-lisp-mode lisp-mode) . lisp-semantic-hl-mode))
 
 ;; Style checker (elisp)
 (use-package checkdoc
@@ -137,6 +135,18 @@
 (use-package eros
   :defer t
   :hook (emacs-lisp-mode . eros-mode))
+
+;; Improved syntax highlighting (cl)
+(use-package gaudy-cl
+  :ensure (gaudy-cl :host codeberg :repo "zshaftel/gaudy-cl"
+                    :files (:defaults "*.lisp" "*.asd"))
+  :defer t
+  :hook (lisp-ts-mode . gaudy-cl-mode)
+  :custom (gaudy-cl-backend 'sly)
+  :config
+  (setf (alist-get 'gaudy-cl-mode font-lock-ignore)
+        gaudy-cl-font-lock-ignore-keywords)
+  (add-hook 'gaudy-cl-mode-hook #'gaudy-cl-highlight-mode))
 
 ;; Scheme REPL
 (use-package geiser
@@ -168,6 +178,11 @@
   :bind (:map emacs-lisp-mode-map
               ([remap eros-eval-last-sexp] . eros-inspector-eval-last-sexp)
               ([remap eros-eval-defun]     . eros-inspector-eval-defun)))
+
+;; Syntax highlighting (elisp, cl)
+(use-package lisp-semantic-hl
+  :defer t
+  :hook ((emacs-lisp-mode lisp-mode) . lisp-semantic-hl-mode))
 
 ;; Interactively parse macros (elisp)
 (use-package macrostep
@@ -243,7 +258,7 @@
       "i" "Eval & inspect expr" "a" "Symbol match"
       "w" "Describe symbol"))
   :bind-keymap ("C-c s" . that1guycolin/sly-functions-map)
-  :hook (lisp-mode . sly-editing-mode)
+  :hook ((lisp-mode lisp-ts-mode) . sly-editing-mode)
   :functions (sly sly-connect sly-connected-p sly-mrepl sly-mrepl-new
                   sly-mrepl-sync sly-mrepl-set-directory sly-cd sly-inspect
                   sly-apropos sly-describe-symbol)
@@ -264,12 +279,12 @@
   (add-hook 'sly-mode-hook       #'that1guycolin/sly-load-if-not-connected))
 
 
-
 ;;; Lua:
 (use-package lua-ts-mode
   :ensure nil
   :defer t
   :mode "\\.lua\\'"
+  :init (add-to-list 'major-mode-remap-alist '(lua-mode . lua-ts-mode))
   :custom (lua-ts-inferior-lua "luajit"))
 
 
