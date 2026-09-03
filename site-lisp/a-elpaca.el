@@ -105,9 +105,8 @@
     "f"   "Fetch"              "F"   "Fetch All"
     "e"   "Merge"              "E"   "Merge All"
     "r"   "Rebuild"            "u"   "Update"
-    "U"   "Update All"         "b a" "Build Autoloads"
-    "b d" "Build Docs"         "b c" "Build Compile"))
-
+    "U"   "Update All"         "c"   "Complete Update Sequence"
+    "b a" "Build Autoloads"    "b d" "Build Docs"     "b c" "Build Compile"))
 
 ;;; elpaca-use-package/no-littering:
 (declare-function elpaca-use-package      "elpaca-use-package")
