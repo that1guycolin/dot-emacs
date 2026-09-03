@@ -357,8 +357,8 @@ underneath."
                              org-babel-lisp-eval-fn org-directory
                              org-mode-map)
   :init (that1guycolin/desktop-mobile
-          (setq org-directory (expand-file-name "~/org"))
-          (setq org-directory "/storage/emulated/0/Documents/org"))
+          :desk (setq org-directory (expand-file-name "~/org"))
+          :termux (setq org-directory "/storage/emulated/0/Documents/org"))
   :custom
   (org-agenda-files
    (directory-files (expand-file-name "TODOs/" org-directory) t
