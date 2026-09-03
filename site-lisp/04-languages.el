@@ -293,6 +293,8 @@
   :ensure nil
   :defer t
   :mode ("\\.md\\'" "README\\'" "INSTALL\\'")
+  :init (add-to-list 'major-mode-remap-alist
+                     '(markdown-mode . markdown-ts-mode))
   :config (keymap-set markdown-ts-mode-map "C-c C-x" #'toggle-frame-maximized))
 
 (use-package grip-mode
@@ -347,6 +349,7 @@
   :functions (python-skeleton-class
               python-skeleton-def python-skeleton-for python-skeleton-if
               python-skeleton-import python-skeleton-try python-skeleton-while)
+  :init (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
   :custom
   (python-indent-offset 4)
   (python-shell-interpreter "python3")
@@ -378,7 +381,8 @@
 (use-package rust-ts-mode
   :ensure nil
   :defer t
-  :mode "\\.rs\\'")
+  :mode "\\.rs\\'"
+  :init (add-to-list 'major-mode-remap-alist '(rust-mode . rust-ts-mode)))
 
 (use-package rustic
   :defer t
@@ -436,7 +440,8 @@
 (use-package cmake-ts-mode
   :ensure nil
   :defer t
-  :mode ("\\.cmake\\'" "CMakeLists\\.txt\\'"))
+  :mode ("\\.cmake\\'" "CMakeLists\\.txt\\'")
+  :init (add-to-list 'major-mode-remap-alist '(cmake-mode . cmake-ts-mode)))
 
 (use-package eldoc-cmake
   :defer t
@@ -474,13 +479,15 @@
   :defer t
   :mode (("\\.container\\'" . systemd-mode)
          ("\\.service\\'"   . systemd-mode)
-         ("\\.socket\\'"    . systemd-mode)))
+         ("\\.socket\\'"    . systemd-mode)
+         ("\\.timer\\'"     . systemd-mode)))
 
 ;; TOML:
 (use-package toml-ts-mode
   :ensure nil
   :defer t
-  :mode "\\.toml\\'")
+  :mode "\\.toml\\'"
+  :init (add-to-list 'major-mode-remap-alist '(conf-toml-mode . toml-ts-mode)))
 
 ;; XML:
 (use-package nxml-mode
@@ -502,7 +509,8 @@
   :ensure nil
   :defer t
   :preface
-  :mode ("\\.yml\\'" "\\.yaml\\'"))
+  :mode ("\\.yml\\'" "\\.yaml\\'")
+  :init (add-to-list 'major-mode-remap-alist '(yaml-mode . yaml-ts-mode)))
 
 (use-package yaml-pro
   :defer t
