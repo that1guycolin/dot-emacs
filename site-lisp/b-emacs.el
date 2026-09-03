@@ -38,7 +38,7 @@
   (defvar that1guycolin/no-tab-modes
     '(bash-ts-mode
       emacs-lisp-mode lisp-mode lisp-data-mode python-mode python-ts-mode
-      sh-mode)
+      scheme-mode sh-mode)
     "Major modes indented by spaces and not by tabs.")
 
   (defun that1guycolin/untabify-when-no-tab-mode ()
