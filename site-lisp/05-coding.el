@@ -110,7 +110,6 @@
 ;;; Linting (Flycheck):
 ;; bash:          'shellcheck'    (pacman -S shellcheck)
 ;; common-lisp:   'mallet'        (git clone)
-;; common-lisp:   'ocicl'         (pacman -S ocicl)
 ;; docker-compose 'dclint'        (npm install -g dclint)
 ;; emacs-lisp:    'emacs-lisp'    (built-in)
 ;; fish:          'fish-check'    (included with fish)
@@ -156,15 +155,6 @@
   (add-to-list 'minions-prominent-modes 'flycheck-mode)
   (add-to-list 'flycheck-shellcheck-supported-shells 'dash)
   (flycheck-add-mode 'yaml-yamllint 'docker-compose-mode)
-
-  (flycheck-define-checker cl-ocicl
-    "Common Lisp checker using `ocicl lint`."
-    :command ("ocicl" "lint" source)
-    :error-patterns
-    ((warning line-start (file-name) ":" line ":" column ": "
-              (id (one-or-more (not (any ":")))) ": " (message) line-end))
-    :modes (lisp-mode lisp-data-mode))
-  (add-to-list 'flycheck-checkers 'cl-ocicl)
   
   (flycheck-define-checker cl-mallet
     "A Common Lisp linter using Mallet.
@@ -483,28 +473,30 @@ See URL `https://vale.sh'."
 
 
 ;;; Language-Server-Protocol (eglot):
-;; bash:     'bash-language-server'
-;;           (pnpm i -g bash-language-server)
-;; cmake:    'neocmakelsp'
-;;           (cargo install neocmakelsp)
-;; compose:  'docker-compose-langserver'
-;;           (npm i -g @microsoft/container-language-service)
-;; fish:     'fish-lsp'
-;;           (npm install -g fish-lsp)
-;; json:     'json-language-server'
-;;           (pnpm i -g vscode-json-languageserver)
-;; lua:      'lua-language-server'
-;;           (pacman -S lua-language-server)
-;; markdown: 'rumdl'
-;;           (pacman -S rumdl)
-;; python:   'rass' [`ty'/`ruff']
-;;           (uv tool install rass ty ruff)
-;; toml:     'tombi'
-;;           (pacman -S tombi)
-;; xml:      'lemminx'
-;;           (install from AUR or see github.com/eclipse-lemminx/lemminx)
-;; yaml:     'yaml-language-server'
-;;           (npm i -g yaml-language-server)
+;; bash:        'bash-language-server'
+;;              (pnpm i -g bash-language-server)
+;; cmake:       'neocmakelsp'
+;;              (cargo install neocmakelsp)
+;; common-lisp: `sbcl-alive-lsp'
+;;              (guix package -i sbcl-alive-lsp)
+;; compose:     'docker-compose-langserver'
+;;              (npm i -g @microsoft/container-language-service)
+;; fish:        'fish-lsp'
+;;              (npm install -g fish-lsp)
+;; json:        'json-language-server'
+;;              (pnpm i -g vscode-json-languageserver)
+;; lua:         'lua-language-server'
+;;              (pacman -S lua-language-server)
+;; markdown:    'rumdl'
+;;              (pacman -S rumdl)
+;; python:      'rass' [`ty'/`ruff']
+;;              (uv tool install rass ty ruff)
+;; toml:        'tombi'
+;;              (pacman -S tombi)
+;; xml:         'lemminx'
+;;              (install from AUR or see github.com/eclipse-lemminx/lemminx)
+;; yaml:        'yaml-language-server'
+;;              (npm i -g yaml-language-server)
 (use-package eglot
   :ensure nil
   :defer t
