@@ -1,7 +1,8 @@
 ;;; b-emacs.el --- Global Settings -*- lexical-binding: t -*-
 
 ;;; Commentary:
-;; Define global settings using a use-package sexp for the dummy "emacs" package.
+;; Define global settings using a use-package sexp for the dummy "emacs"
+;; package.
 
 ;;; Code:
 (use-package emacs
@@ -9,6 +10,8 @@
   :demand t
   :preface
 ;;;; Load paths:
+  (require '00-macros)
+  
   (defvar that1guycolin/projects-directory nil
     "Directory containing active projects.")
 
@@ -35,16 +38,9 @@
     (interactive)
     (untabify (point-min) (point-max)))
 
-  (defvar that1guycolin/no-tab-modes
-    '(bash-ts-mode
-      emacs-lisp-mode lisp-mode lisp-data-mode python-mode python-ts-mode
-      scheme-mode sh-mode)
-    "Major modes indented by spaces and not by tabs.")
-
-  (defun that1guycolin/untabify-when-no-tab-mode ()
-    "Run `untabify-buffer' if `major-mode' in `no-tab-modes'."
-    (when (member major-mode that1guycolin/no-tab-modes)
-      (that1guycolin/untabify-buffer)))
+  (defun that1guycolin/setup-untabify-save ()
+    "Add `that1guycolin/untabify-buffer' to buffer-local hook."
+    (add-hook 'after-save-hook #'that1guycolin/untabify-buffer nil t))
 
 ;;;; side window
   (defun that1guycolin/toggle-side-window ()
@@ -85,7 +81,6 @@ If not in a side window, jump to the first found side window."
          ("C-c C-$" . restart-emacs)
          ("M-0"     . that1guycolin/toggle-side-window))
   :bind-keymap ("C-c e"   . that1guycolin/elpaca-options-map)
-  :hook (after-save . that1guycolin/untabify-when-no-tab-mode)
   :functions (ibuffer-auto-mode)
   :init
   (setq
@@ -115,6 +110,12 @@ If not in a side window, jump to the first found side window."
                  (expand-file-name "site-lisp" user-emacs-directory)
                  t "\\.el\\'"))
       (add-to-list 'trusted-content fl)))
+  (dolist (mode '(bash-ts-mode
+                  emacs-lisp-mode lisp-mode lisp-data-mode python-mode
+                  python-ts-mode scheme-mode sh-mode))
+    (let ((hook-var (intern (concat (symbol-name mode) "-hook"))))
+      (add-hook hook-var #'that1guycolin/setup-untabify-save)))
+
   (add-hook 'ibuffer-mode-hook #'that1guycolin/ibuffer-hook-functions))
 
 
