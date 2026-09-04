@@ -103,13 +103,10 @@ If not in a side window, jump to the first found side window."
   (context-menu-mode 1)
   (global-display-fill-column-indicator-mode 1)
   (which-key-mode 1)
-  (if (>= (string-to-number emacs-version) 31)
-      (dolist (elfile (directory-files user-lisp-directory t "\\.el\\'"))
-        (add-to-list 'trusted-content elfile))
-    (dolist (fl (directory-files
-                 (expand-file-name "site-lisp" user-emacs-directory)
-                 t "\\.el\\'"))
-      (add-to-list 'trusted-content fl)))
+  
+  (dolist (elfile (directory-files user-lisp-directory t "\\.el\\'"))
+    (add-to-list 'trusted-content elfile))
+  
   (dolist (mode '(bash-ts-mode
                   emacs-lisp-mode lisp-mode lisp-data-mode python-mode
                   python-ts-mode scheme-mode sh-mode))
