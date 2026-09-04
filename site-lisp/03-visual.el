@@ -28,7 +28,6 @@
   (modus-themes-italic-constructs t)
   :config (modus-themes-load-random 'dark))
 
-
 ;; Icons
 (use-package nerd-icons
   :demand t
@@ -77,8 +76,6 @@ Effective as hook for major-modes where you want to be able to use the mouse."
   (add-hook 'Info-mode-hook #'that1guycolin/inhibit-inhibit-mouse)
   (add-hook 'org-mode-hook #'that1guycolin/inhibit-inhibit-mouse))
 
-
-
 ;; Madeline:
 (use-package minions
   :demand t
@@ -107,52 +104,56 @@ Effective as hook for major-modes where you want to be able to use the mouse."
   (defvar that1guycolin/mode-fill-column-alist
     '((bash-ts-mode           . 80)    (c-ts-mode              . 100)
       (c++-ts-mode            . 100)   (cmake-ts-mode          . 100)
-      (conf-toml-mode         . nil)   (css-mode               . 80)
-      (css-ts-mode            . 80)    (csv-mode               . nil)
-      (dashboard-mode         . nil)   (emacs-lisp-mode        . 80)
+      (conf-toml-mode         . 0)     (css-mode               . 80)
+      (css-ts-mode            . 80)    (csv-mode               . 0)
+      (dashboard-mode         . 0)     (emacs-lisp-mode        . 80)
       (fish-mode              . 80)    (docker-compose-mode    . 100)
-      (dockerfile-ts-mode     . 100)   (geiser-repl-mode       . nil)
+      (dockerfile-ts-mode     . 100)   (geiser-repl-mode       . 0)
       (glsl-mode              . 100)   (go-ts-mode             . 80)
       (ini-mode               . 100)   (java-ts-mode           . 100)
       (js-json-mode           . 80)    (js-ts-mode             . 100)
       (json-ts-mode           . 80)    (just-ts-mode           . 100)
       (kdl-mode               . 100)   (lisp-mode              . 80)
       (lua-ts-mode            . 100)   (makefile-mode          . 100)
-      (markdown-ts-mode       . 80)    (nxml-mode              . nil)
+      (markdown-ts-mode       . 80)    (nxml-mode              . 0)
       (python-mode            . 88)    (python-ts-mode         . 88)
       (rust-ts-mode           . 100)   (rustic-mode            . 100)
       (scheme-mode            . 80)    (sh-mode                . 80)
-      (sly-mrepl-mode         . nil)   (systemd-mode           . 100)
-      (telega-root-mode       . 100)   (toml-ts-mode           . nil)
-      (typescript-ts-mode     . 80)    (yaml-mode              . nil)
-      (yaml-ts-mode           . nil))
+      (sly-mrepl-mode         . 0)     (systemd-mode           . 100)
+      (telega-root-mode       . 100)   (toml-ts-mode           . 0)
+      (typescript-ts-mode     . 80)    (yaml-mode              . 0)
+      (yaml-ts-mode           . 0))
     "Alist mapping major-modes to their default `fill-column' value.")
 
-  (defun that1guycolin/fill-column-from-mode ()
-    "Set the local value of `fill-column' based on file's `major-mode'.
-Values are mapped to modes in `that1guycolin/mode-fill-column-alist'."
-    (unless (member major-mode
-                    (mapcar #'car that1guycolin/mode-fill-column-alist))
-      (user-error "%s not in `that1guycolin/mode-fill-column-alist'"
-                  major-mode))
-    (let ((fc (cdr (assoc major-mode that1guycolin/mode-fill-column-alist))))
-      (if fc (progn (setq-local fill-column fc) (visual-line-mode 1))
-        (progn
-          (setq-local fill-column 1000)
-          (auto-fill-mode -1)
-          (display-fill-column-indicator-mode -1)
-          (visual-line-mode -1)))))
+  (defun that1guycolin/display-max-line-length (max)
+    "Set `fill-column' to MAX.
+Also toggle `auto-fill-mode', `display-fill-column-indicator-mode', and `visual-line-mode'."
+    (setq-local fill-column max)
+    (auto-fill-mode 1)
+    (display-fill-column-indicator-mode 1)
+    (visual-line-mode 1))
+
+  (defun that1guycolin/no-display-line-length ()
+    "Untoggle `minor-modes' that aid in the display of max line-length.
+Function also sets `fill-column' to 1000."
+    (setq-local fill-column 1000)
+    (auto-fill-mode -1)
+    (display-fill-column-indicator-mode -1)
+    (visual-line-mode -1))    
 
   (defun that1guycolin/auto-set-fill-column ()
-    "Add to `find-file-hook' to automatically set `fill-column'.
-If `major-mode' is a member of `that1guycolin/mode-fill-column-alist',
-use `that1guycolin/fill-column-from-mode'. If not, set the value to 80."
+    "Check if `major-mode' is a member of `that1guycolin/mode-fill-column-alist'.
+If yes, toggle display of max line-length depending on whether value its
+cdr is 0 or a positive integer. If not a member of the list, run
+`that1guycolin/display-max-line-length' using 80 as the \='max'
+argument."
     (interactive)
     (if (member major-mode (mapcar #'car that1guycolin/mode-fill-column-alist))
-        (that1guycolin/fill-column-from-mode)
-      (progn
-        (setq-local fill-column 80)
-        (visual-line-mode 1))))
+        (let ((fc (cdr (assoc major-mode that1guycolin/mode-fill-column-alist))))
+	  (if (= fc 0)
+	      (that1guycolin/no-display-line-length)
+	    (that1guycolin/display-max-line-length fc)))
+      (that1guycolin/display-max-line-length 80)))
   :demand t
   :hook (visual-line-mode . visual-fill-column-for-vline)
   :functions (visual-line-mode visual-fill-column-for-vline)
