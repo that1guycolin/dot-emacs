@@ -103,6 +103,8 @@
  frame-inhibit-implied-resize 'force
  ;; Don't compact font caches during GC
  inhibit-compacting-font-caches t
+ ;; Use-system-font
+ font-use-system-font t
  ;; Disable GNU startup message (to disable, value must be your username)
  inhibit-startup-echo-area-message "colin-l"
  ;; Don't display the Emacs' startup-screen

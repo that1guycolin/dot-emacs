@@ -83,8 +83,6 @@ If not in a side window, jump to the first found side window."
   :bind-keymap ("C-c e"   . that1guycolin/elpaca-options-map)
   :functions (ibuffer-auto-mode)
   :init
-  (setq
-   font-use-system-font t)
   (add-to-list 'default-frame-alist '(fullscreen . maximized))
   :custom
   (auto-save-visited-interval 60)
