@@ -138,6 +138,18 @@
       (unless (file-exists-p vale-install)
         (shell-command command))))
 
+  (defun that1guycolin/flycheck-yaml-linter ()
+    "Select the linter for .ya(m)l files based on `buffer-file-name'.
+If the current `buffer-file-name' is \='compose.ya(m)l' or
+\='docker-compose.ya(m)l, use `dclint'. Otherwise, use `yamllint'."
+    (unless (eq major-mode 'yaml-ts-mode)
+      (error "Buffer not in yaml-ts-mode"))
+    (if (string-match-p
+         "/\\(?:compose\\|docker-compose\\)\\.yam?ml\\'"
+         (buffer-file-name))
+        (flycheck-select-checker 'yaml-dclint)
+      (flycheck-select-checker 'yaml-yamllint)))
+
   :hook ((prog-mode text-mode) . flycheck-mode)
   :functions (flycheck-select-checker flycheck-add-mode)
   :custom
@@ -166,7 +178,7 @@
   :config
   (add-to-list 'minions-prominent-modes 'flycheck-mode)
   (add-to-list 'flycheck-shellcheck-supported-shells 'dash)
-  (flycheck-add-mode 'yaml-yamllint 'docker-compose-mode)
+  (add-hook 'yaml-ts-mode-hook #'that1guycolin/flycheck-yaml-linter)
   
   (flycheck-define-checker cl-mallet
     "A Common Lisp linter using Mallet.
@@ -196,7 +208,7 @@ See URL: `https://github.com/fukamachi/mallet'."
     :modes (lisp-mode lisp-data-mode))
   (add-to-list 'flycheck-checkers 'cl-mallet)
 
-  (flycheck-define-checker dc-dclint
+  (flycheck-define-checker yaml-dclint
     "A Docker Compose linter using dclint.
 See URL: https://github.com/zavoloklom/docker-compose-linter"
     :command ("dclint" source)
@@ -210,7 +222,7 @@ See URL: https://github.com/zavoloklom/docker-compose-linter"
      (info line-start (zero-or-more space) line ":" column
            (one-or-more space) "info" (one-or-more space) (message)
            (one-or-more space) (id (one-or-more (any alnum "-"))) line-end))
-    :modes (docker-compose-mode))
+    :modes (yaml-ts-mode))
   (add-to-list 'flycheck-checkers 'dc-dclint)
 
   (flycheck-define-checker fish-self
@@ -373,10 +385,8 @@ See URL `https://vale.sh'."
 (use-package apheleia
   :defer t
   :preface
-  (defvar docker-compose-mode-map)
   (defvar js-json-mode-map)
   (defvar json-ts-mode-map)
-  (defvar yaml-mode-map)
   (defvar yaml-ts-mode-map)
   (defun that1guycolin/apheleia-set-json-formatter (fmtr)
     "Get user-input on which FMTR they want for JSON files."
@@ -414,15 +424,13 @@ See URL `https://vale.sh'."
     (unless (memq fmtr '(yamlfmt prettier-yaml))
       (user-error "Formatter must be either yamlfmt or prettier-yaml"))
     (setf
-     (alist-get 'yaml-mode           apheleia-mode-alist) fmtr
-     (alist-get 'yaml-ts-mode        apheleia-mode-alist) fmtr
-     (alist-get 'docker-compose-mode apheleia-mode-alist) fmtr)
+     (alist-get 'yaml-ts-mode apheleia-mode-alist) fmtr)
     (message "Yaml formatter set to %s" fmtr))
 
   (defun that1guycolin/apheleia-toggle-yaml-formatter ()
     "Switch aphelia formatter between yamlfmt & prettier in yaml modes."
     (interactive)
-    (unless (memq major-mode '(yaml-mode yaml-ts-mode docker-compose-mode))
+    (unless (eq major-mode 'yaml-ts-mode)
       (error "Buffer not in a Yaml major-mode"))
     (let ((current-fmtr (alist-get major-mode apheleia-mode-alist)))
       (cond
@@ -453,7 +461,6 @@ See URL `https://vale.sh'."
    '("yamlfmt" "--in"  "-"))
   (setf
    (alist-get 'cmake-ts-mode       apheleia-mode-alist) 'neocmakelsp
-   (alist-get 'docker-compose-mode apheleia-mode-alist) 'yamlfmt
    (alist-get 'eask-mode           apheleia-mode-alist) 'lisp-indent
    (alist-get 'fish-mode           apheleia-mode-alist) 'fish-indent
    (alist-get 'js-json-mode        apheleia-mode-alist) 'jq
@@ -465,7 +472,6 @@ See URL `https://vale.sh'."
    (alist-get 'python-ts-mode      apheleia-mode-alist) 'ruff
    (alist-get 'toml-ts-mode        apheleia-mode-alist) 'tombi
    (alist-get 'conf-toml-mode      apheleia-mode-alist) 'tombi
-   (alist-get 'yaml-mode           apheleia-mode-alist) 'yamlfmt
    (alist-get 'yaml-ts-mode        apheleia-mode-alist) 'yamlfmt)
   (with-eval-after-load 'js-json-mode
     (keymap-set js-json-mode-map "C-c v"
@@ -473,12 +479,6 @@ See URL `https://vale.sh'."
   (with-eval-after-load 'json-ts-mode
     (keymap-set json-ts-mode-map "C-c v"
                 #'that1guycolin/apheleia-toggle-json-formatter))
-  (with-eval-after-load 'docker-compose-mode
-    (keymap-set docker-compose-mode-map "C-c w"
-                #'that1guycolin/apheleia-toggle-yaml-formatter))
-  (with-eval-after-load 'yaml-mode
-    (keymap-set yaml-mode-map "C-c v"
-                #'that1guycolin/apheleia-toggle-yaml-formatter))
   (with-eval-after-load 'yaml-ts-mode
     (keymap-set yaml-ts-mode-map "C-c v"
                 #'that1guycolin/apheleia-toggle-yaml-formatter)))
@@ -522,7 +522,7 @@ See URL `https://vale.sh'."
               (memq mode '(css-mode
                            css-ts-mode dockerfile-ts-mode js-json-mode
                            json-ts-mode markdown-mode markdown-ts-mode
-                           python-mode python-ts-mode)))
+                           python-mode python-ts-mode yaml-ts-mode)))
             (ensure-list (car cell))))
          eglot-server-programs))
 
@@ -530,14 +530,20 @@ See URL `https://vale.sh'."
          '(((css-mode css-ts-mode) .
             ("vscode-css-language-server" "--stdio"))
            ((dockerfile-ts-mode) . ("docker-language-server" "start" "--stdio"))
-           ((docker-compose-mode) . ("docker-compose-langserver" "--stdio"))
            ((fish-mode) . ("fish-lsp" "start"))
            ((js-json-mode json-ts-mode) .
             ("vscode-json-language-server" "--stdio"))
            ((markdown-mode markdown-ts-mode) . ("rumdl" "server"))
            ((nxml-mode) . ("lemminx"))
            ((pkgbuild-mode) . ("termux-language-server", "--check" ))
-           ((python-mode python-ts-mode) . ("uv" "run" "rass" "python")))))
+           ((python-mode python-ts-mode) . ("uv" "run" "rass" "python"))
+           ((yaml-ts-mode) .
+            (lambda (_interactive _project)
+              (if (string-match-p
+                   "/\\(?:compose\\|docker-compose\\)\\.yam?ml\\'"
+                   (buffer-file-name))
+                  '("docker-compose-langserver" "--stdio")
+                '("yaml-language-server" "--stdio")))))))
     (dolist (con lsp-cons-cells)
       (add-to-list 'eglot-server-programs con))))
 
