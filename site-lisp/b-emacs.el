@@ -72,6 +72,12 @@ If not in a side window, jump to the first found side window."
     (hl-line-mode 1)
     (ibuffer-auto-mode 1))
 
+  (defun that1guycolin/remove-eln-cache ()
+    "Remove an accidentally created eln-cache from `user-emacs-directory.'"
+    (let ((cache-file (expand-file-name "eln-cache" user-emacs-directory)))
+      (when (file-exists-p cache-file)
+        (delete-directory cache-file t))))
+
 ;;;; use-package
   :bind (("C-TAB"   . completion-at-point)
          ("C-c C-x" . toggle-frame-maximized)
@@ -110,7 +116,8 @@ If not in a side window, jump to the first found side window."
     (let ((hook-var (intern (concat (symbol-name mode) "-hook"))))
       (add-hook hook-var #'that1guycolin/setup-untabify-save)))
 
-  (add-hook 'ibuffer-mode-hook #'that1guycolin/ibuffer-hook-functions))
+  (add-hook 'ibuffer-mode-hook #'that1guycolin/ibuffer-hook-functions)
+  (add-hook 'emacs-startup-hook #'that1guycolin/remove-eln-cache))
 
 
 (provide 'b-emacs)
