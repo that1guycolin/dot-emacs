@@ -8,7 +8,9 @@
 ;;; Code:
 ;;; Set PATH so Emacs Android GUI can access Termux files
 (when (eq system-type 'android)
-  (setenv "PATH" (format "%s:%s" "/data/data/com.termux/files/usr/bin"
+  (setenv "PATH" (format "%s:%s:%s"
+                         "/data/data/com.termux/files/home/.local/bin"
+                         "/data/data/com.termux/files/usr/bin"
                          (getenv "PATH")))
   (push "/data/data/com.termux/files/usr/bin" exec-path)
   (setenv "PKG_CONFIG_PATH"
