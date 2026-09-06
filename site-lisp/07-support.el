@@ -913,7 +913,9 @@ doubles as a model-switcher."
               telega-autoplay-mode telega-chat-auto-fill-mode
               telega-highlight-text-mode telega-notifications-mode
               telega-root-auto-fill-mode telega-transient-keymaps-mode)
-  :init (setq telega-use-images t)
+  :init (setq
+         telega-use-images t
+         telega-highlight-text-regexp "that1guy_clouds")
   :config
   (if (daemonp)
       (add-hook 'after-make-frame-functions
