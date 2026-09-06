@@ -145,12 +145,24 @@
   (flycheck-disabled-checkers
    '(emacs-lisp-elsa rpm-rpmlint yaml-jsyaml yaml-ruby))
   (flycheck-shellcheck-infer-shell t)
-  (flycheck-sh-bash-executable       "/usr/bin/bash")
-  (flycheck-sh-posix-bash-executable "/usr/bin/bash")
-  (flycheck-sh-posix-dash-executable "/usr/bin/dash")
-  (flycheck-sh-shellcheck-executable "/usr/bin/shellcheck")
-  (flycheck-sh-zsh-executable        "/usr/bin/zsh")
-  
+  (that1guycolin/desktop-mobile
+    :desk
+    (flycheck-sh-bash-executable       "/usr/bin/bash")
+    (flycheck-sh-posix-bash-executable "/usr/bin/bash")
+    (flycheck-sh-posix-dash-executable "/usr/bin/dash")
+    (flycheck-sh-shellcheck-executable "/usr/bin/shellcheck")
+    (flycheck-sh-zsh-executable        "/usr/bin/zsh")
+    :termux
+    (flycheck-sh-bash-executable
+     "/data/data/com.termux/files/user/bin/bash")
+    (flycheck-sh-posix-bash-executable
+     "/data/data/com.termux/files/user/bin/bash")
+    (flycheck-sh-posix-dash-executable
+     "/data/data/com.termux/files/user/bin/dash")
+    (flycheck-sh-shellcheck-executable
+     "/data/data/com.termux/files/user/bin/shellcheck")
+    (flycheck-sh-zsh-executable
+     "/data/data/com.termux/files/user/bin/zsh"))
   :config
   (add-to-list 'minions-prominent-modes 'flycheck-mode)
   (add-to-list 'flycheck-shellcheck-supported-shells 'dash)
