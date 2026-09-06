@@ -179,6 +179,11 @@
               ([remap eros-eval-last-sexp] . eros-inspector-eval-last-sexp)
               ([remap eros-eval-defun]     . eros-inspector-eval-defun)))
 
+;; Support completion for dynamic variables (elisp)
+(use-package let-completion
+  :defer t
+  :hook (emacs-lisp-mode . let-completion-mode))
+
 ;; Syntax highlighting (elisp, cl)
 (use-package lisp-semantic-hl
   :defer t
