@@ -285,7 +285,8 @@ See URL `https://vale.sh'."
 ;; Display flycheck errors in buffer
 (use-package flyover
   :after (flycheck)
-  :demand t
+  :defer t
+  :hook (flycheck-mode . flyover-mode)
   :functions (flyover-mode flyover-toggle flyover-flash-error-at-point)
   :defines (flyover-checkers)
   :init (setq flyover-checkers '(flycheck))
@@ -313,7 +314,6 @@ See URL `https://vale.sh'."
   (flyover-display-mode 'always)
   (flyover-hide-during-completion t)
   :config
-  (flyover-mode 1)
   (defvar-keymap that1guycolin/flyover-functions-map
     :doc "Useful functions for `flyover'."
     "m" #'flyover-mode
@@ -329,23 +329,24 @@ See URL `https://vale.sh'."
 
 ;; Buffer status
 (use-package flycheck-color-mode-line
+  :after (flycheck)
   :defer t
   :hook (flycheck-mode . flycheck-color-mode-line-mode))
 
 (use-package flycheck-eask
-  :after (eask-mode)
+  :after (flycheck eask-mode)
   :demand t
   :functions (flycheck-eask-setup)
   :config (flycheck-eask-setup))
 
 (use-package flycheck-package
-  :after (elisp-mode)
+  :after (flycheck elisp-mode)
   :defer t
   :functions (flycheck-package-setup)
   :config (flycheck-package-setup))
 
 (use-package flycheck-guile
-  :after (geiser)
+  :after (flycheck (:any scheme-mode geiser))
   :demand t)
 
 (use-package consult-flycheck
