@@ -107,6 +107,7 @@
     "r"   "Rebuild"            "u"   "Update"
     "U"   "Update All"         "c"   "Complete Update Sequence"
     "b a" "Build Autoloads"    "b d" "Build Docs"     "b c" "Build Compile"))
+(keymap-global-set "C-c e" that1guycolin/elpaca-options-map)
 
 ;;; elpaca-use-package/no-littering:
 (declare-function elpaca-use-package      "elpaca-use-package")

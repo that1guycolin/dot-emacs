@@ -80,7 +80,6 @@ If not in a side window, jump to the first found side window."
          ("C-c C-#" . global-display-line-numbers-mode)
          ("C-c C-$" . restart-emacs)
          ("M-0"     . that1guycolin/toggle-side-window))
-  :bind-keymap ("C-c e"   . that1guycolin/elpaca-options-map)
   :functions (ibuffer-auto-mode)
   :init
   (add-to-list 'default-frame-alist '(fullscreen . maximized))
