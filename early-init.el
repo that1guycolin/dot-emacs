@@ -122,8 +122,8 @@
  select-active-regions 'only
  ;; Use y/n instead of yes/no
  use-short-answers t
- ;; Don't display warnings for elpaca core or native-compiler
- warning-suppress-types '((bytecomp comp) (elpaca core)))
+ ;; Don't display warnings for elpaca core
+ warning-suppress-types '((elpaca core)))
 
 ;;; Variables depending on package load
 (defvar ffap-machine-p-known)

@@ -94,6 +94,7 @@ If not in a side window, jump to the first found side window."
   (enable-recursive-minibuffers t)
   (minibuffer-prompt-properties
    '(read-only t cursor-intangible t face minibuffer-prompt))
+  (native-comp-async-report-warnings-errors nil)
   (read-extended-command-predicate #'command-completion-default-include-p)
   (tab-always-indent 'complete)
   (text-mode-ispell-word-completion nil)
