@@ -92,17 +92,17 @@ If not in a side window, jump to the first found side window."
   (tab-always-indent 'complete)
   (text-mode-ispell-word-completion nil)
   (trusted-content
-   (list (expand-file-name "early-init.el" user-emacs-directory)
-         (expand-file-name "init.el" user-emacs-directory)))
+   `(,(expand-file-name "early-init.el" user-emacs-directory)
+     ,(expand-file-name "init.el" user-emacs-directory)))
   :config
   (abbrev-mode 1)
   (auto-save-visited-mode 1)
   (context-menu-mode 1)
   (global-display-fill-column-indicator-mode 1)
   (which-key-mode 1)
-  
-  (dolist (elfile (directory-files user-lisp-directory t "\\.el\\'"))
-    (add-to-list 'trusted-content elfile))
+
+  (dolist (lisp-file (directory-files user-lisp-directory t "\\.el\\'"))
+    (add-to-list 'trusted-content lisp-file))
   
   (dolist (mode '(bash-ts-mode
                   emacs-lisp-mode lisp-mode lisp-data-mode python-mode
