@@ -41,6 +41,10 @@ sh-mode
            "--) shift; break ;;" n>
            "*) echo \"Invalid option: $1\"; usage; exit 2 ;;" n>
            "esac" n> "done" n>)
+(arg-1 "-" (p "short") " | --" (p "long") ")" n> (p "variable") "=true" n>
+       "shift" n> ";;")
+(arg-2 "-" (p "short") " | --" (p "long") ")" n> (p "variable") "=\"$2\""
+       n> "shift 2" n> ";;")
 (bash-safe "#!/usr/bin/env bash" n "set -euo pipefail" n "IFS=$\'\\n\\t\'")
 (cmd-e "command -v " (p "cmd") " >/dev/null 2>&1")
 (env-chk "[ -" (p "dfe") " " (p "loc" loc) " ] && { " (p "var" var) "=" loc "; export " var "; }")
