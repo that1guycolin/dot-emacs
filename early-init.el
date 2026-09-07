@@ -17,7 +17,8 @@
           "/data/data/com.termux/files/usr/lib/pkgconfig/"))
 
 ;;; no-littering
-(when (fboundp 'startup-redirect-eln-cache)
+(when (and (fboundp 'startup-redirect-eln-cache)
+	   (not (eq system-type 'android)))
   (startup-redirect-eln-cache
    (convert-standard-filename
     (expand-file-name "var/eln-cache/" user-emacs-directory))))
