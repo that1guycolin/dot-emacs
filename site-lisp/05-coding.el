@@ -320,49 +320,12 @@ See URL: https://github.com/zavoloklom/docker-compose-linter"
   (add-hook 'yaml-ts-mode-hook #'that1guycolin/flycheck-yaml-linter))
 
 ;; Display flycheck errors in buffer
-(use-package flyover
+(use-package flycheck-posframe
   :after (flycheck)
   :defer t
-  :hook (flycheck-mode . flyover-mode)
-  :functions (flyover-mode flyover-toggle flyover-flash-error-at-point)
-  :defines (flyover-checkers)
-  :init (setq flyover-checkers '(flycheck))
-  :custom
-  (flyover-levels '(error warning info))
-  (flyover-use-theme-colors t)
-  (flyover-background-lightness 45)
-  (flyover-text-tint 'lighter)
-  (flyover-text-tint-percent 50)
-  (flyover-icon-tint 'lighter)
-  (flyover-icon-tint-percent 50)
-  (flyover-icon-background-tint 'darker)
-  (flyover-icon-background-tint-percent 50)
-  (flyover-border-style 'arrow)
-  (flyover-border-match-icon t)
-  (flyover-hide-checker-name nil)
-  (flyover-show-error-id t)
-  (flyover-show-virtual-line t)
-  (flyover-virtual-line-type 'curved-arrow)
-  (flyover-line-position-offset 0)
-  (flyover-wrap-messages t)
-  (flyover-max-line-length 120)
-  (flyover-debounce-interval 0.5)
-  (flyover-cursor-debounce-interval 0.5)
-  (flyover-display-mode 'always)
-  (flyover-hide-during-completion t)
-  :config
-  (defvar-keymap that1guycolin/flyover-functions-map
-    :doc "Useful functions for `flyover'."
-    "m" #'flyover-mode
-    "t" #'flyover-toggle
-    "P" #'flyover-flash-error-at-point)
-  (with-eval-after-load 'which-key
-    (which-key-add-keymap-based-replacements
-      that1guycolin/flyover-functions-map
-      "m" "(De)Activate Flyover-Mode"
-      "t" "Flyover Toggle"
-      "p" "Flash Error @ Point"))
-  (keymap-global-set "C-c y" that1guycolin/flyover-functions-map))
+  :hook (flycheck-mode . flycheck-posframe-mode)
+  :functions (flycheck-posframe-configure-pretty-defaults)
+  :config (flycheck-posframe-configure-pretty-defaults))
 
 ;; Buffer status
 (use-package flycheck-color-mode-line
