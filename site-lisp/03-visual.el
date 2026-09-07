@@ -124,12 +124,11 @@ Effective as hook for major-modes where you want to be able to use the mouse."
       (yaml-ts-mode           . 0))
     "Alist mapping major-modes to their default `fill-column' value.")
 
-  (defun that1guycolin/display-max-line-length (max)
-    "Set `fill-column' to MAX.
+  (defun that1guycolin/display-max-line-length (ll)
+    "Set `fill-column' to LL.
 Also toggle `auto-fill-mode', `display-fill-column-indicator-mode', and
 `visual-line-mode'."
-    
-    (setq-local fill-column max)
+    (setq-local fill-column ll)
     (auto-fill-mode 1)
     (display-fill-column-indicator-mode 1)
     (visual-line-mode 1))
