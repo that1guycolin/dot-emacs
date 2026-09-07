@@ -115,6 +115,8 @@
 ;; fish:          'fish-check'    (included with fish)
 ;; json:          'jsonlint'      (npm install -g jsonlint)
 ;; lua:           'luacheck'      (pacman -S luacheck)
+;; Makefile:      'checkmake'     (go install
+;;                github.com/checkmake/checkmake/cmd/checkmake@latest)
 ;; markdown:      'rumdl'         (pacman -S rumdl)
 ;; systemd:       'systemdlint'   (uv tool install systemdlint)
 ;; toml:          'tombi'         (pacman -S tombi)
@@ -127,6 +129,32 @@
   (defvar that1guycolin/lisp-directory)
   (defvar minions-prominent-modes)
   (defvar sh-shell)
+
+  (defun that1guycolin/flycheck-checkmake--read-json (output)
+    "Parse the leading JSON array out of OUTPUT, ignoring trailing text."
+    (with-temp-buffer
+      (insert output)
+      (goto-char (point-min))
+      (json-parse-buffer :object-type 'alist :array-type 'list)))
+
+  (defun that1guycolin/flycheck-checkmake-parse-json (output checker buffer)
+    "Parse checkmake's JSON OUTPUT into Flycheck errors for CHECKER/BUFFER."
+    (mapcar
+     (lambda (violation)
+       (flycheck-error-new-at
+        (alist-get 'line_number violation)
+        nil
+        (if (member (alist-get 'rule violation) '("miniphony"))
+            'error
+          'warning)
+        (format "[%s] %s"
+                (alist-get 'rule violation)
+                (alist-get 'violation violation))
+        :checker checker
+        :buffer buffer
+        :filename (buffer-file-name buffer)))
+     (that1guycolin/flycheck-checkmake--read-json output)))
+  
   (defun that1guycolin/setup-vale ()
     "If not setup, install the vale from the .ini file in site-lisp."
     (interactive)
@@ -151,7 +179,7 @@ If the current `buffer-file-name' is \='compose.ya(m)l' or
       (flycheck-select-checker 'yaml-yamllint)))
 
   :hook ((prog-mode text-mode) . flycheck-mode)
-  :functions (flycheck-select-checker flycheck-add-mode)
+  :functions (flycheck-error-new-at flycheck-select-checker flycheck-add-mode)
   :custom
   (flycheck-emacs-lisp-load-path 'inherit)
   (flycheck-disabled-checkers
@@ -178,7 +206,6 @@ If the current `buffer-file-name' is \='compose.ya(m)l' or
   :config
   (add-to-list 'minions-prominent-modes 'flycheck-mode)
   (add-to-list 'flycheck-shellcheck-supported-shells 'dash)
-  (add-hook 'yaml-ts-mode-hook #'that1guycolin/flycheck-yaml-linter)
   
   (flycheck-define-checker cl-mallet
     "A Common Lisp linter using Mallet.
@@ -208,23 +235,6 @@ See URL: `https://github.com/fukamachi/mallet'."
     :modes (lisp-mode lisp-data-mode))
   (add-to-list 'flycheck-checkers 'cl-mallet)
 
-  (flycheck-define-checker yaml-dclint
-    "A Docker Compose linter using dclint.
-See URL: https://github.com/zavoloklom/docker-compose-linter"
-    :command ("dclint" source)
-    :error-patterns
-    ((error line-start (zero-or-more space) line ":" column
-            (one-or-more space) "error" (one-or-more space) (message)
-            (one-or-more space) (id (one-or-more (any alnum "-"))) line-end)
-     (warning line-start (zero-or-more space) line ":" column
-              (one-or-more space) "warning" (one-or-more space) (message)
-              (one-or-more space) (id (one-or-more (any alnum "-"))) line-end)
-     (info line-start (zero-or-more space) line ":" column
-           (one-or-more space) "info" (one-or-more space) (message)
-           (one-or-more space) (id (one-or-more (any alnum "-"))) line-end))
-    :modes (yaml-ts-mode))
-  (add-to-list 'flycheck-checkers 'dc-dclint)
-
   (flycheck-define-checker fish-self
     "The shell for the 90's built-in syntax checker.
 See URL `https://fishshell.com'."
@@ -235,6 +245,15 @@ See URL `https://fishshell.com'."
      (info    line-start (file-name) " (line " line "): " (message) line-end))
     :modes (fish-mode))
   (add-to-list 'flycheck-checkers 'fish-self)
+
+  (flycheck-define-checker makefile-checkmake
+    "Makefile style-checker/linter written in Go.
+See URL `https://github.com/mrtazz/checkmake'."
+    :command ("checkmake" "-o" "json" source-inplace)
+    :error-parser that1guycolin/flycheck-checkmake-parse-json
+    :modes (makefile-mode makefile-automake-mode makefile-bsdmake-mode
+                          makefile-gmake-mode))
+  (add-to-list 'flycheck-checkers 'makefile-checkmake)
 
   (flycheck-define-checker markdown-rumdl
     "A fast Markdown linter written in Rust.
@@ -274,13 +293,31 @@ See URL `https://vale.sh'."
     :error-patterns
     ((warning line-start (file-name) ":" line ":" column ":"
               (id (one-or-more (not (any ":")))) ":" (message) line-end))
-    :modes (markdown-mode gfm-mode text-mode org-mode org-gtd-clarify-mode
-                          flycheck-error-message-mode))
+    :modes (text-mode))
+  (add-to-list 'flycheck-checkers 'text-vale)
 
+  (flycheck-define-checker yaml-dclint
+    "A Docker Compose linter using dclint.
+See URL: https://github.com/zavoloklom/docker-compose-linter"
+    :command ("dclint" source)
+    :error-patterns
+    ((error line-start (zero-or-more space) line ":" column
+            (one-or-more space) "error" (one-or-more space) (message)
+            (one-or-more space) (id (one-or-more (any alnum "-"))) line-end)
+     (warning line-start (zero-or-more space) line ":" column
+              (one-or-more space) "warning" (one-or-more space) (message)
+              (one-or-more space) (id (one-or-more (any alnum "-"))) line-end)
+     (info line-start (zero-or-more space) line ":" column
+           (one-or-more space) "info" (one-or-more space) (message)
+           (one-or-more space) (id (one-or-more (any alnum "-"))) line-end))
+    :modes (yaml-ts-mode))
+  (add-to-list 'flycheck-checkers 'yaml-dclint)
+
+  (add-hook 'bash-ts-mode-hook #'(lambda ()
+                                   (flycheck-select-checker 'sh-shellcheck)))
   (add-hook 'org-mode-hook #'(lambda ()
                                (flycheck-select-checker 'org-lint)))
-  (add-hook 'bash-ts-mode-hook #'(lambda ()
-                                   (flycheck-select-checker 'sh-shellcheck))))
+  (add-hook 'yaml-ts-mode-hook #'that1guycolin/flycheck-yaml-linter))
 
 ;; Display flycheck errors in buffer
 (use-package flyover
