@@ -9,7 +9,7 @@
 (defvar elpaca-directory (expand-file-name "var/elpaca/" user-emacs-directory))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
 (defvar elpaca-sources-directory (expand-file-name "sources/" elpaca-directory))
-(defvar elpaca-org-make-manual nil)
+(defvar elpaca-menu-org-make-manual nil)
 (defvar elpaca-queue-limit (num-processors))
 
 ;; Avoid flycheck warnings
@@ -29,7 +29,6 @@
 (declare-function   elpaca-rebuild                        "elpaca")
 (declare-function   elpaca-update                         "elpaca")
 (declare-function   elpaca-update-all                     "elpaca")
-(declare-function   elpaca-update-menus                   "elpaca")
 (declare-function   elpaca-wait                           "elpaca")
 
 ;; Slightly modified version of {gh}/progfolio/elpaca/doc/installer.el
@@ -82,20 +81,39 @@
 (defun that1guycolin/elpaca-update-menus ()
   "Non-interactively run `elpaca-update-menus'."
   (interactive)
-  (funcall #'elpaca-update-menus))
+  (run-hook-with-args 'elpaca-menu-functions 'update))
 
 (defun that1guycolin/elpaca-build-docs (e)
   "Build the documentation for package E."
   (interactive (list (elpaca--read-queued "Build documentation for: ") t))
   (elpaca-build-docs e))
 
+(defun that1guycolin/elpaca-rebuild-all ()
+  "Rebuild all queued Elpaca packages."
+  (interactive)
+  (let ((packages
+         (sort (cl-delete-duplicates (mapcar #'car (elpaca--queued)))
+               #'string<)))
+    (dolist (pkg packages)
+      (funcall #'elpaca-rebuild pkg))))
+
+(defun that1guycolin/elpaca-rebuild-all ()
+  "Rebuild all queued Elpaca packages."
+  (interactive)
+  (let ((packages
+         (sort (cl-delete-duplicates (mapcar #'car (elpaca--queued)))
+               #'string<)))
+    (dolist (pkg packages)
+      (elpaca-rebuild pkg))))
+
 (defvar-keymap that1guycolin/elpaca-options-map
   :doc "Functions for Elpaca package manager."
   "m"    #'elpaca-manager       "n"    #'that1guycolin/elpaca-update-menus
   "f"    #'elpaca-fetch         "F"    #'elpaca-fetch-all
   "e"    #'elpaca-merge         "E"    #'elpaca-merge-all
-  "r"    #'elpaca-rebuild       "u"    #'elpaca-update
-  "U"    #'elpaca-update-all    "b a"  #'elpaca-build-autoloads
+  "r"    #'elpaca-rebuild       "R"    #'that1guycolin/elpaca-rebuild-all
+  "u"    #'elpaca-update        "U"    #'elpaca-update-all
+  "b a"  #'elpaca-build-autoloads
   "b d"  #'(lambda () (call-interactively #'that1guycolin/elpaca-build-docs))
   "b c"  #'elpaca-build-compile)
 (with-eval-after-load 'which-key
