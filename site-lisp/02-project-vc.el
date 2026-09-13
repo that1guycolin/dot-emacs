@@ -268,7 +268,7 @@ Wait two seconds before activating the mode."
 
   :bind (("C-c t t"     . treemacs)
          :map treemacs-mode-map
-         ("C-x j"       . treemacs-project-follow-mode)
+         ("t p"         . treemacs-project-follow-mode)
          ("<backspace>" . treemacs-root-up))
   :commands (treemacs treemacs-refresh)
   :functions (treemacs-filewatch-mode
