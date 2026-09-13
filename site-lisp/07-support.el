@@ -430,9 +430,9 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
                ("M-m" . notmuch-show-mode-transient))))
 
 (use-package notmuch-indicator
-  :preface (defvar minions-prominent-modes)
   :after (notmuch)
   :demand t
+  :preface (defvar minions-prominent-modes)
   :unless (eq system-type 'android)
   :init (add-to-list 'minions-prominent-modes 'notmuch-indicator-mode))
 
