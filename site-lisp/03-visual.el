@@ -100,6 +100,7 @@ Effective as hook for major-modes where you want to be able to use the mouse."
 
 ;; Line-length:
 (use-package visual-fill-column
+  :demand t
   :preface
   (defvar that1guycolin/mode-fill-column-alist
     '((bash-ts-mode           . 80)    (c-ts-mode              . 100)
@@ -155,7 +156,6 @@ argument."
               (that1guycolin/no-display-line-length)
             (that1guycolin/display-max-line-length fc)))
       (that1guycolin/display-max-line-length 80)))
-  :demand t
   :hook (visual-line-mode . visual-fill-column-for-vline)
   :functions (visual-line-mode visual-fill-column-for-vline)
   :init (add-hook 'find-file-hook #'that1guycolin/auto-set-fill-column))
