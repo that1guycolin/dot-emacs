@@ -497,7 +497,7 @@ See URL: https://github.com/zavoloklom/docker-compose-linter"
 ;; cmake:       'neocmakelsp'
 ;;              (cargo install neocmakelsp)
 ;; common-lisp: `sbcl-alive-lsp'
-;;              (guix package -i sbcl-alive-lsp)
+;;              (guix package -i sbcl-alive-lsp) or from git
 ;; compose:     'docker-compose-langserver'
 ;;              (npm i -g @microsoft/container-language-service)
 ;; fish:        'fish-lsp'
@@ -518,6 +518,25 @@ See URL: https://github.com/zavoloklom/docker-compose-linter"
 ;;              (npm i -g yaml-language-server)
 (use-package eglot
   :ensure nil
+  :preface
+  (defcustom that1guycolin/eglot-lisp-alive-port 8006
+    "Port used to connect to the alive-lsp Common Lisp language server."
+    :type 'integer
+    :group 'eglot)
+
+  (defun that1guycolin/eglot-lisp-alive--port-available-p (port)
+    "Return nil if PORT is not free to bind on localhost."
+    (condition-case nil
+        (let ((probe (make-network-process
+                      :name "eglot-lisp-alive-port-probe"
+                      :server t
+                      :host "localhost"
+                      :service port
+                      :noquery t)))
+          (delete-process probe)
+          t)
+      (file-error nil)))
+  
   :defer t
   :bind (:map ctl-x-map ("e" . eglot))
   :config
@@ -528,8 +547,9 @@ See URL: https://github.com/zavoloklom/docker-compose-linter"
             (lambda (mode)
               (memq mode '(css-mode
                            css-ts-mode dockerfile-ts-mode js-json-mode
-                           json-ts-mode markdown-mode markdown-ts-mode
-                           python-mode python-ts-mode yaml-ts-mode)))
+                           json-ts-mode lisp-mode lisp-ts-mode markdown-mode
+                           markdown-ts-mode python-mode python-ts-mode
+                           yaml-ts-mode)))
             (ensure-list (car cell))))
          eglot-server-programs))
 
@@ -540,6 +560,26 @@ See URL: https://github.com/zavoloklom/docker-compose-linter"
            ((fish-mode) . ("fish-lsp" "start"))
            ((js-json-mode json-ts-mode) .
             ("vscode-json-language-server" "--stdio"))
+           ((lisp-mode lisp-ts-mode) .
+            (lambda (_interactive _project)
+              (unless (that1guycolin/eglot-lisp-alive--port-available-p
+                       that1guycolin/eglot-lisp-alive-port)
+                (error "Port %d is already in use"
+                       that1guycolin/eglot-lisp-alive-port))
+              (make-process
+               :name "alive-lsp"
+               :buffer (get-buffer-create "*alive-lsp*")
+               :noquery t
+               :sentinel #'ignore
+               :filter #'ignore
+               :command (list "sbcl"
+                              "--eval" "(require :asdf)"
+                              "--eval" "(asdf:load-system :alive-lsp)"
+                              "--eval"
+                              (format "(alive/server::start :port %d)"
+                                      that1guycolin/eglot-lisp-alive-port)))
+              (sleep-for 1)
+              (list "localhost" that1guycolin/eglot-lisp-alive-port)))
            ((markdown-mode markdown-ts-mode) . ("rumdl" "server"))
            ((nxml-mode) . ("lemminx"))
            ((pkgbuild-mode) . ("termux-language-server", "--check" ))
