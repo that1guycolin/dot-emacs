@@ -339,15 +339,21 @@ See URL: https://github.com/zavoloklom/docker-compose-linter"
   :functions (flycheck-eask-setup)
   :config (flycheck-eask-setup))
 
+(use-package flycheck-guile
+  :after (flycheck (:any scheme-mode geiser))
+  :demand t)
+
 (use-package flycheck-package
   :after (flycheck elisp-mode)
   :defer t
   :functions (flycheck-package-setup)
   :config (flycheck-package-setup))
 
-(use-package flycheck-guile
-  :after (flycheck (:any scheme-mode geiser))
-  :demand t)
+(use-package flycheck-relint
+  :after (flycheck elisp-mode)
+  :demand t
+  :functions (flycheck-relint-setup)
+  :config (flycheck-relint-setup))
 
 (use-package consult-flycheck
   :after (consult flycheck)
