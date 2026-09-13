@@ -218,7 +218,9 @@ this function as `org-node-creation-fn'."
   :custom
   (pdf-view-display-size 'fit-page)
   (pdf-info-asynchronous t)
-  :config (pdf-tools-install)
+  :config
+  (unless (file-exists-p pdf-info-epdfinfo-program)
+    (pdf-tools-install))
   (add-hook 'pdf-view-mode-hook #'that1guycolin/inhibit-inhibit-mouse))
 
 ;; Annotate
