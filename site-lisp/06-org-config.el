@@ -124,27 +124,6 @@ The file is created if it doesn't exist."
   (org-recur-finish-done t)
   (org-recur-finish-archive t))
 
-(use-package org-super-agenda
-  :after (org)
-  :demand t
-  :functions (org-super-agenda-mode)
-  :init (org-super-agenda-mode)
-  :custom
-  (org-super-agenda-groups
-   '((:name "Overdue"         :deadline past                 :order 0)
-     (:name "Today"           :time-grid t                 :date today
-            :deadline today   :scheduled today               :order 1)
-     (:name "High Priority"   :priority "A"                  :order 2)
-     (:name "Project Next Actions"                                :and
-            (:todo "NEXT"     :tag "project")                :order 3)
-     (:name "Projects"        :todo "PROJECT"                :order 4)
-     (:name "Emacs"           :tag ("Emacs" "elisp")         :order 5)
-     (:name "org Mode"         :tag "Org"                    :order 6)
-     (:name "Waiting"         :todo "WAITING"                :order 9)
-     (:name "To Read"         :todo "TO-READ" :tag "read"    :order 10)
-     (:name "Someday"         :todo "SOMEDAY"                :order 11)
-     (:name "Remaining Tasks" :anything t                    :order 99))))
-
 
 ;;; Knowledge
 ;; Org metadata index
