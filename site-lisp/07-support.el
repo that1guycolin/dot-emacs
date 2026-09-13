@@ -912,7 +912,8 @@ doubles as a model-switcher."
     (defun that1guycolin/telega-new-frame-mode-line (frame)
       "Ensure `telega-mode-line-mode' is active on new FRAME."
       (with-selected-frame frame
-        (unless telega-mode-line-mode (telega-mode-line-mode 1)))))
+        (unless (bound-and-true-p telega-mode-line-mode)
+          (telega-mode-line-mode 1)))))
   :unless (eq system-type 'android)
   :bind ("C-M-g" . telega)
   :functions (telega-mode-line-mode
@@ -920,6 +921,7 @@ doubles as a model-switcher."
               telega-autoplay-mode telega-chat-auto-fill-mode
               telega-highlight-text-mode telega-notifications-mode
               telega-root-auto-fill-mode telega-transient-keymaps-mode)
+  :defines (telega-use-images telega-highlight-text-regexp)
   :init (setq
          telega-use-images t
          telega-highlight-text-regexp "that1guy_clouds")
