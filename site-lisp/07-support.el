@@ -842,7 +842,14 @@ doubles as a model-switcher."
     "k" #'mpv-chapter-next
     "j" #'mpv-chapter-prev)
   :unless (eq system-type 'android)
-  :bind-keymap ("C-c m" . that1guycolin/mpv-func-map))
+  :bind-keymap ("C-c m" . that1guycolin/mpv-func-map)
+  :functions (mpv-play mpv-start mpv-seek-forward mpv-seek-backward
+                       mpv-volume-increase mpv-volume-decrease
+                       mpv-insert-playback-position
+                       mpv-seek-to-position-at-point
+                       mpv-playlist-next mpv-playlist-prev mpv-jump-to-chapter
+                       mpv-jump-to-playlist-entry mpv-chapter-next
+                       mpv-chapter-prev))
 
 
 ;;; Misc:
