@@ -232,7 +232,7 @@ See URL: `https://github.com/fukamachi/mallet'."
            (message (minimal-match (one-or-more not-newline)))
            (one-or-more space) (id (one-or-more not-newline))
            line-end))
-    :modes (lisp-mode lisp-data-mode))
+    :modes (lisp-mode lisp-ts-mode lisp-data-mode))
   (add-to-list 'flycheck-checkers 'cl-mallet)
 
   (flycheck-define-checker fish-self
