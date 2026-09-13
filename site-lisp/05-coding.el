@@ -345,7 +345,7 @@ See URL: https://github.com/zavoloklom/docker-compose-linter"
 
 (use-package flycheck-package
   :after (flycheck elisp-mode)
-  :defer t
+  :demand t
   :functions (flycheck-package-setup)
   :config (flycheck-package-setup))
 
