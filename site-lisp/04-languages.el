@@ -277,7 +277,15 @@
     (add-to-list 'sly-contribs contrib))
   (setq sly-auto-start 'always)
   (add-hook 'sly-mrepl-mode-hook #'corfu-mode)
-  (add-hook 'sly-mode-hook       #'that1guycolin/sly-load-if-not-connected))
+  (add-hook 'sly-mode-hook #'that1guycolin/sly-load-if-not-connected))
+
+(use-package sly-quicklisp
+  :after (sly)
+  :demand t)
+
+(use-package sly-asdf
+  :after (sly)
+  :demand t)
 
 
 ;;; Lua:
