@@ -16,26 +16,36 @@
 ;;; Code:
 ;;; Terminals:
 ;; Emulate A Terminal
+(require '00-macros)
 (use-package eat
   :defer t
   :bind ("C-c t e"   . eat)
   :hook (eshell-mode . eat-eshell-visual-command-mode))
 
 ;; Libghostty-based terminal shell
-(use-package ghostel
-  :ensure (ghostel :source nil :package "ghostel" :id ghostel
-                   :fetcher github :repo "dakra/ghostel" :type git
-                   :files (:defaults
-                           "README.md" "etc" "src" "vendor" "build.zig"
-                           "build.zig.zon" "symbols.map" ("build" "Makefile"))
-                   :protocol https :inherit t :depth treeless)
-  :defer t
-  :unless (eq system-type 'android)
-  :bind ("C-c t g" . ghostel)
-  :custom (ghostel-module-auto-install 'compile)
-  :config (with-eval-after-load 'disproject
-            (transient-append-suffix 'disproject-dispatch
-              "s" '("o" "Ghostel" ghostel-project))))
+(that1guycolin/desktop-mobile
+  :desk
+  (use-package ghostel
+    :ensure (ghostel :source nil :package "ghostel" :id ghostel
+                     :fetcher github :repo "dakra/ghostel" :type git
+                     :files (:defaults
+                             "README.md" "etc" "src" "vendor" "build.zig"
+                             "build.zig.zon" "symbols.map" ("build" "Makefile"))
+                     :protocol https :inherit t :depth treeless)
+    :defer t
+    :bind ("C-c t g" . ghostel)
+    :init (setq ghostel-module-auto-install 'compile)
+    :config (with-eval-after-load 'disproject
+              (transient-append-suffix 'disproject-dispatch
+                "s" '("o" "Ghostel" ghostel-project))))
+  :termux
+  (use-package ghostel
+    :defer t
+    :bind ("C-c t g" . ghostel)
+    :init (setq ghostel-module-auto-install 'download)
+    :config (with-eval-after-load 'disproject
+              (transient-append-suffix 'disproject-dispatch
+                "s" '("o" "Ghostel" ghostel-project)))))
 
 ;; Commit shell layer
 (use-package mistty
