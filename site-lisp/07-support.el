@@ -370,7 +370,8 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
 ;; Launch media directly from `dirvish'
 (use-package ready-player
   :defer t
-  :hook (dired-mode . ready-player-mode))
+  :hook ((dired-mode . ready-player-mode)
+         (dirvish-mode . ready-player-mode)))
 
 
 ;;; Email:
