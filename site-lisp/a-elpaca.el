@@ -22,6 +22,7 @@
 (declare-function   elpaca-build-compile                  "elpaca")
 (declare-function   elpaca-build-docs                     "elpaca")
 (declare-function   elpaca-build-docs-process-sentinel    "elpaca")
+(declare-function   elpaca-delete                         "elpaca")
 (declare-function   elpaca-fetch                          "elpaca")
 (declare-function   elpaca-fetch-all                      "elpaca")
 (declare-function   elpaca-generate-autoloads             "elpaca")
@@ -91,31 +92,13 @@
   (interactive (list (elpaca--read-queued "Build documentation for: ") t))
   (elpaca-build-docs e))
 
-(defun that1guycolin/elpaca-rebuild-all ()
-  "Rebuild all queued Elpaca packages."
-  (interactive)
-  (let ((packages
-         (sort (cl-delete-duplicates (mapcar #'car (elpaca--queued)))
-               #'string<)))
-    (dolist (pkg packages)
-      (funcall #'elpaca-rebuild pkg))))
-
-(defun that1guycolin/elpaca-rebuild-all ()
-  "Rebuild all queued Elpaca packages."
-  (interactive)
-  (let ((packages
-         (sort (cl-delete-duplicates (mapcar #'car (elpaca--queued)))
-               #'string<)))
-    (dolist (pkg packages)
-      (elpaca-rebuild pkg))))
-
 (defvar-keymap that1guycolin/elpaca-options-map
   :doc "Functions for Elpaca package manager."
   "m"    #'elpaca-manager       "n"    #'that1guycolin/elpaca-update-menus
   "f"    #'elpaca-fetch         "F"    #'elpaca-fetch-all
   "e"    #'elpaca-merge         "E"    #'elpaca-merge-all
-  "r"    #'elpaca-rebuild       "R"    #'that1guycolin/elpaca-rebuild-all
   "u"    #'elpaca-update        "U"    #'elpaca-update-all
+  "r"    #'elpaca-rebuild       "d"    #'elpaca-delete
   "b a"  #'elpaca-build-autoloads
   "b d"  #'(lambda () (call-interactively #'that1guycolin/elpaca-build-docs))
   "b c"  #'elpaca-build-compile)
@@ -125,8 +108,8 @@
     "m"   "Elpaca Manager"     "n"   "Update Menus"
     "f"   "Fetch"              "F"   "Fetch All"
     "e"   "Merge"              "E"   "Merge All"
-    "r"   "Rebuild"            "u"   "Update"
-    "U"   "Update All"         "c"   "Complete Update Sequence"
+    "u"   "Update"             "U"   "Update All"
+    "r"   "Rebuild"            "d"   "Delete"
     "b a" "Build Autoloads"    "b d" "Build Docs"     "b c" "Build Compile"))
 (keymap-global-set "C-c e" that1guycolin/elpaca-options-map)
 
