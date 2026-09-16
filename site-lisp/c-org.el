@@ -4,6 +4,9 @@
 ;; Load the latest version of Org rather than the built-in version.
 
 ;;; Code:
+(defvar elpaca-menu-org-make-manual nil)
+(setq   elpaca-menu-org-make-manual nil)
+
 (use-package org
   :ensure (:wait t)
   :demand t
@@ -96,7 +99,7 @@ YYYY-MM-DD DAY HH:MM:ss (e.g., 2026-03-15 SUN 14:24:06)"
     (when (derived-mode-p 'org-mode)
       (save-excursion
         (goto-char (point-min))
-        (when (re-search-forward "^#\\+LAST_EDIT:[ \t]*.*$" nil t)
+        (when (re-search-forward "^#\\+LAST_EDIT:[ \t].*$" nil t)
           (replace-match
            (format-time-string
             "#+LAST_EDIT: [%Y-%m-%d %a %H:%M:%S]"))))))
@@ -212,7 +215,7 @@ Their implementation in this config is far less strict than traditional GTD.")
   (defconst that1guycolin/org-keywords--someday
     '(sequence "SOMEDAY(s)" "RESEARCH(h!)" "|" "NEVER(v@)")
     "Keyword sequence to track things you might do \"someday\".
-Note the absence of a \='completed' keyword; objects from this pipeline
+Note the absence of a \\='completed' keyword; objects from this pipeline
 move to either the \"tasks\" or the \"ideas\" pipeline to then be
 completed.")
 
