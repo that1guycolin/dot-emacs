@@ -1,8 +1,16 @@
 emacs-lisp-mode
+(basic-elfile ";;; " (p (file-name-base (or (buffer-file-name) (buffer-name)))
+                        file) ".el --- " (p "summary")
+                        " -*- lexical-binding: t -*-" n n
+                        ";;; Commentary:" n ";; " (p "commentary") n n
+                        ";;; Code:" n n n n "(provide '" file ")" n
+                        ";;; " file ".el ends here")
 (conf-head ";;; " (p "Heading") ":")
-(conf-meta ";;; " (p (file-name-base (or (buffer-file-name) (buffer-name))) file) ".el --- " (p "summary" summary) " -*- lexical-binding: t -*-" n n
+(conf-meta ";;; " (p (file-name-base (or (buffer-file-name) (buffer-name)))
+                     file) ".el --- " (p "summary")
+                     " -*- lexical-binding: t -*-" n n
            ";;; Packages included:" n n
-           ";;; Commentary:" n n
+           ";;; Commentary:" n  ";; " (p "commentary") n
            ";;; Code:" n n n n
            "(provide '" file ")" n
            ";;; " file ".el ends here")
