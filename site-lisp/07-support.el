@@ -457,74 +457,73 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
   :after (llm)
   :demand t
   :preface
-  (unless (eq system-type 'android)
-    (defvar that1guycolin/ollama-alist
-      `((codegemma:2b              . ,(* 1  4096))
-        (codegemma:7b              . ,(* 2  4096))
-        (codellama:7b-instruct     . ,(* 2  4096))
-        (cogito:3b                 . ,(* 1  4096))
-        (cogito:8b                 . ,(* 2  4096))
-        (gemma4:e2b                . ,(* 1  4096))
-        (gemma4:e4b                . ,(* 2  4096))
-        (gpt-oss:120b-cloud        . ,(* 16 4096))
-        (granite4.1:3b             . ,(* 1  4096))
-        (granite4.1:8b             . ,(* 2  4096))
-        (granite-code:3b           . ,(* 1  4096))
-        (granite-code:8b           . ,(* 2  4096))
-        (lfm2.5-thinking:1.2b      . ,(* 2  4096))
-        (llama3.1:8b               . ,(* 2  4096))
-        (llama3.2:1b               . ,(* 1  4096))
-        (llama3.2:3b               . ,(* 2  4096))
-        (nomic-embed-text:latest   . ,(* 2  4096))
-        (opencoder:1.5b            . ,(* 1  4096))
-        (opencoder:8b              . ,(* 2  4096))
-        (qwen3:0.6b                . ,(* 1  4096))
-        (qwen3:1.7b                . ,(* 1  4096))
-        (qwen3:4b                  . ,(* 2  4096))
-        (qwen3.5:cloud             . ,(* 16 4096))
-        (qwen3:8b                  . ,(* 2  4096))
-        (qwen3-coder:480b-cloud    . ,(* 16 4096))
-        (qwen3-coder-next:cloud    . ,(* 16 4096))
-        (stable-code:3b            . ,(* 1  4096)))
-      "Alist containing Ollama models and their context length.
+  (defvar that1guycolin/ollama-alist
+    `((codegemma:2b              . ,(* 1  4096))
+      (codegemma:7b              . ,(* 2  4096))
+      (codellama:7b-instruct     . ,(* 2  4096))
+      (cogito:3b                 . ,(* 1  4096))
+      (cogito:8b                 . ,(* 2  4096))
+      (gemma4:e2b                . ,(* 1  4096))
+      (gemma4:e4b                . ,(* 2  4096))
+      (gpt-oss:120b-cloud        . ,(* 16 4096))
+      (granite4.1:3b             . ,(* 1  4096))
+      (granite4.1:8b             . ,(* 2  4096))
+      (granite-code:3b           . ,(* 1  4096))
+      (granite-code:8b           . ,(* 2  4096))
+      (lfm2.5-thinking:1.2b      . ,(* 2  4096))
+      (llama3.1:8b               . ,(* 2  4096))
+      (llama3.2:1b               . ,(* 1  4096))
+      (llama3.2:3b               . ,(* 2  4096))
+      (nomic-embed-text:latest   . ,(* 2  4096))
+      (opencoder:1.5b            . ,(* 1  4096))
+      (opencoder:8b              . ,(* 2  4096))
+      (qwen3:0.6b                . ,(* 1  4096))
+      (qwen3:1.7b                . ,(* 1  4096))
+      (qwen3:4b                  . ,(* 2  4096))
+      (qwen3.5:cloud             . ,(* 16 4096))
+      (qwen3:8b                  . ,(* 2  4096))
+      (qwen3-coder:480b-cloud    . ,(* 16 4096))
+      (qwen3-coder-next:cloud    . ,(* 16 4096))
+      (stable-code:3b            . ,(* 1  4096)))
+    "Alist containing Ollama models and their context length.
 Models on this list are either cloud-based or have already been downloaded
 to the user's device.")
 
-    (defvar that1guycolin/ollama-models (mapcar #'car
-                                                that1guycolin/ollama-alist)
-      "List of ollama-models (without their context lengths).")
+  (defvar that1guycolin/ollama-models (mapcar #'car
+                                              that1guycolin/ollama-alist)
+    "List of ollama-models (without their context lengths).")
 
-    (defvar that1guycolin/openrouter-list
-      '(google/gemma-3-27b-it:free
-        meta-llama/llama-3.3-70b-instruct:free openai/gpt-oss-120b:free
-        openrouter/free qwen/qwen3-4b:free qwen/qwen3-coder:free)
-      "A list of user-selected LLMs available through OpenRouter.")
+  (defvar that1guycolin/openrouter-list
+    '(google/gemma-3-27b-it:free
+      meta-llama/llama-3.3-70b-instruct:free openai/gpt-oss-120b:free
+      openrouter/free qwen/qwen3-4b:free qwen/qwen3-coder:free)
+    "A list of user-selected LLMs available through OpenRouter.")
 
-    (defun that1guycolin/ensure-ollama-system-service ()
-      "Check if the system-wide Ollama service is active and start it if not."
-      (interactive)
-      (let ((status (shell-command-to-string "systemctl is-active ollama")))
-        (if (string-prefix-p "active" (string-trim status))
-            (message "Ollama system service is already running.")
-          (progn
-            (message "Ollama is down. Requesting system start...")
-            (shell-command "systemctl start ollama &")
-            (message "Ollama service start command sent.")
-            (kill-buffer "*Async Shell Command*")))))
-    
-    (defun that1guycolin/llm-ollama-model-setup (model)
-      "Setup Ollama MODEL for use with llm, ellama, etc..."
-      (interactive
-       (list
-        (completing-read "Model: " (mapcar #'car that1guycolin/ollama-alist)
-                         nil t)))
-      (unless (member model (mapcar #'car that1guycolin/ollama-alist))
-        (error "Model not in `that1guycolin/ollama-alist'"))
-      (make-llm-ollama
-       :chat-model (symbol-name model)
-       :embedding-model "nomic-embed-text"
-       :default-chat-max-tokens (cdr (assoc model
-                                            that1guycolin/ollama-alist)))))
+  (defun that1guycolin/ensure-ollama-system-service ()
+    "Check if the system-wide Ollama service is active and start it if not."
+    (interactive)
+    (let ((status (shell-command-to-string "systemctl is-active ollama")))
+      (if (string-prefix-p "active" (string-trim status))
+          (message "Ollama system service is already running.")
+        (progn
+          (message "Ollama is down. Requesting system start...")
+          (shell-command "systemctl start ollama &")
+          (message "Ollama service start command sent.")
+          (kill-buffer "*Async Shell Command*")))))
+  
+  (defun that1guycolin/llm-ollama-model-setup (model)
+    "Setup Ollama MODEL for use with llm, ellama, etc..."
+    (interactive
+     (list
+      (completing-read "Model: " (mapcar #'car that1guycolin/ollama-alist)
+                       nil t)))
+    (unless (member model (mapcar #'car that1guycolin/ollama-alist))
+      (error "Model not in `that1guycolin/ollama-alist'"))
+    (make-llm-ollama
+     :chat-model (symbol-name model)
+     :embedding-model "nomic-embed-text"
+     :default-chat-max-tokens (cdr (assoc model
+                                          that1guycolin/ollama-alist))))
   :unless (eq system-type 'android)
   :functions (make-llm-ollama))
 
@@ -550,38 +549,37 @@ to the user's device.")
 (use-package gptel
   :defer t
   :preface
-  (unless (eq system-type 'android)
-    (declare-function auth-source-pick-first-password "auth-source")
+  (declare-function auth-source-pick-first-password "auth-source")
 
-    (defvar that1guycolin/gptel--backend-map
-      `(("Ollama"     . (name "Ollama"  models
-                              ,(mapcar #'car that1guycolin/ollama-alist)))
-        ("OpenRouter" . (name "OpenRouter"  models
-                              that1guycolin/openrouter-list)))
-      "Alist mapping display names to backend metadata plists.")
+  (defvar that1guycolin/gptel--backend-map
+    `(("Ollama"     . (name "Ollama"  models
+                            ,(mapcar #'car that1guycolin/ollama-alist)))
+      ("OpenRouter" . (name "OpenRouter"  models
+                            that1guycolin/openrouter-list)))
+    "Alist mapping display names to backend metadata plists.")
 
-    (defun that1guycolin/gptel-switch-backend ()
-      "Interactively select a gptel backend, then select a model for it.
+  (defun that1guycolin/gptel-switch-backend ()
+    "Interactively select a gptel backend, then select a model for it.
 The user is allowed to select their already-active backend, so this function
 doubles as a model-switcher."
-      (interactive)
-      (let* ((backend-name
-              (completing-read
-               (format "Backend (current: %s): "
-                       (gptel-backend-name gptel-backend))
-               that1guycolin/gptel--backend-map nil t))
-             (meta  (cdr (assoc backend-name that1guycolin/gptel--backend-map)))
-             (gptel-name (plist-get meta 'name))
-             (models (plist-get meta 'models))
-             (model
-              (completing-read
-               (format "Model [%s]: " backend-name) models nil t)))
-        (setq gptel-backend (gptel-get-backend gptel-name)
-              gptel-model   (if (consp (car models))
-                                (cdr (assoc model models))
-                              (intern model)))
-        (message "[gptel] Backend → %s | Model → %s"
-                 backend-name gptel-model))))
+    (interactive)
+    (let* ((backend-name
+            (completing-read
+             (format "Backend (current: %s): "
+                     (gptel-backend-name gptel-backend))
+             that1guycolin/gptel--backend-map nil t))
+           (meta  (cdr (assoc backend-name that1guycolin/gptel--backend-map)))
+           (gptel-name (plist-get meta 'name))
+           (models (plist-get meta 'models))
+           (model
+            (completing-read
+             (format "Model [%s]: " backend-name) models nil t)))
+      (setq gptel-backend (gptel-get-backend gptel-name)
+            gptel-model   (if (consp (car models))
+                              (cdr (assoc model models))
+                            (intern model)))
+      (message "[gptel] Backend → %s | Model → %s"
+               backend-name gptel-model)))
   :unless (eq system-type 'android)
   :commands (gptel gptel-send)
   :functions (gptel-get-backend gptel-make-ollama gptel-make-openai)
@@ -723,58 +721,57 @@ doubles as a model-switcher."
 (use-package emms
   :defer t
   :preface
-  (unless (eq system-type 'android)
-    (defun that1guycolin/emms-seek-backward-med ()
-      "Seek backwards 30 seconds in EMMS."
-      (interactive)
-      (emms-seek -30))
+  (defun that1guycolin/emms-seek-backward-med ()
+    "Seek backwards 30 seconds in EMMS."
+    (interactive)
+    (emms-seek -30))
 
-    (defun that1guycolin/emms-seek-forward-med ()
-      "Seek forward 30 seconds in EMMS."
-      (interactive)
-      (emms-seek 30))
+  (defun that1guycolin/emms-seek-forward-med ()
+    "Seek forward 30 seconds in EMMS."
+    (interactive)
+    (emms-seek 30))
 
-    (defun that1guycolin/emms-seek-backward-long ()
-      "Seek backwards 2 minutes in EMMS."
-      (interactive)
-      (emms-seek (* -2 60)))
+  (defun that1guycolin/emms-seek-backward-long ()
+    "Seek backwards 2 minutes in EMMS."
+    (interactive)
+    (emms-seek (* -2 60)))
 
-    (defun that1guycolin/emms-seek-forward-long ()
-      "Seek forward 2 minutes in EMMS."
-      (interactive)
-      (emms-seek (* 2 60)))
+  (defun that1guycolin/emms-seek-forward-long ()
+    "Seek forward 2 minutes in EMMS."
+    (interactive)
+    (emms-seek (* 2 60)))
 
-    (defvar that1guycolin/emms-is-paused t
-      "Non-nil if EMMS player is paused.")
+  (defvar that1guycolin/emms-is-paused t
+    "Non-nil if EMMS player is paused.")
 
-    (defun that1guycolin/emms-play ()
-      "Set that1guycolin/emms-is-paused to nil."
-      (setq that1guycolin/emms-is-paused nil))
+  (defun that1guycolin/emms-play ()
+    "Set that1guycolin/emms-is-paused to nil."
+    (setq that1guycolin/emms-is-paused nil))
 
-    (defun that1guycolin/emms-toggle-play-pause ()
-      "If EMMS player is playing, pause it.  If it is paused, start playing."
-      (interactive)
-      (if that1guycolin/emms-is-paused
-          (progn
-            (emms-player-mpv-resume)
-            (setq that1guycolin/emms-is-paused nil))
+  (defun that1guycolin/emms-toggle-play-pause ()
+    "If EMMS player is playing, pause it.  If it is paused, start playing."
+    (interactive)
+    (if that1guycolin/emms-is-paused
         (progn
-          (emms-player-mpv-pause)
-          (setq that1guycolin/emms-is-paused t))))
+          (emms-player-mpv-resume)
+          (setq that1guycolin/emms-is-paused nil))
+      (progn
+        (emms-player-mpv-pause)
+        (setq that1guycolin/emms-is-paused t))))
 
-    (defvar-keymap that1guycolin/emms-view-options-map
-      :doc "Different options for viewing & interacting with EMMS."
-      "b" #'emms-browser
-      "s" #'emms-smart-browse
-      "g" #'emms-playlist-mode-go
-      "p" #'emms-playlist-mode-go-popup)
-    (with-eval-after-load 'which-key
-      (which-key-add-keymap-based-replacements
-        that1guycolin/emms-view-options-map
-        "b" "EMMS Browser"
-        "s" "Smart Browse"
-        "g" "Playlist Mode Go"
-        "p" "Playlist Mode Popup")))
+  (defvar-keymap that1guycolin/emms-view-options-map
+    :doc "Different options for viewing & interacting with EMMS."
+    "b" #'emms-browser
+    "s" #'emms-smart-browse
+    "g" #'emms-playlist-mode-go
+    "p" #'emms-playlist-mode-go-popup)
+  (with-eval-after-load 'which-key
+    (which-key-add-keymap-based-replacements
+      that1guycolin/emms-view-options-map
+      "b" "EMMS Browser"
+      "s" "Smart Browse"
+      "g" "Playlist Mode Go"
+      "p" "Playlist Mode Popup"))
 
   :unless (eq system-type 'android)
   :bind (("<f6>" . emms-browser)
@@ -882,6 +879,7 @@ doubles as a model-switcher."
 ;; Podman/container integration
 (use-package docker
   :defer t
+  :unless (eq system-type 'android)
   :bind ("C-c d" . docker)
   :custom (docker-command "podman"))
 
@@ -893,6 +891,7 @@ doubles as a model-switcher."
 ;; GUIX
 (use-package guix
   :defer t
+  :unless (eq system-type 'android)
   :bind ("C-c x" . guix))
 
 ;; Convert to html
@@ -919,12 +918,11 @@ doubles as a model-switcher."
 (use-package telega
   :defer t
   :preface
-  (unless (eq system-type 'android)
-    (defun that1guycolin/telega-new-frame-mode-line (frame)
-      "Ensure `telega-mode-line-mode' is active on new FRAME."
-      (with-selected-frame frame
-        (unless (bound-and-true-p telega-mode-line-mode)
-          (telega-mode-line-mode 1)))))
+  (defun that1guycolin/telega-new-frame-mode-line (frame)
+    "Ensure `telega-mode-line-mode' is active on new FRAME."
+    (with-selected-frame frame
+      (unless (bound-and-true-p telega-mode-line-mode)
+        (telega-mode-line-mode 1))))
   :unless (eq system-type 'android)
   :bind ("C-M-g" . telega)
   :functions (telega-mode-line-mode
