@@ -5,12 +5,15 @@
 
 ;;; Code:
 ;;; Elpaca:
+(require '00-macros)
 ;; Define variables (paths for `no-littering')
 (defvar elpaca-directory (expand-file-name "var/elpaca/" user-emacs-directory))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
 (defvar elpaca-sources-directory (expand-file-name "sources/" elpaca-directory))
+(that1guycolin/desktop-mobile
+  :desk   (defvar elpaca-queue-limit 8)
+  :termux (defvar elpaca-queue-limit 4))
 (defvar elpaca-menu-org-make-manual nil)
-(defvar elpaca-queue-limit (num-processors))
 
 ;; Avoid flycheck warnings
 (declare-function   elpaca                                "elpaca")
