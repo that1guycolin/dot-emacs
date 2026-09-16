@@ -3,4 +3,4 @@ set -euo pipefail
 IFS=$'\n\t'
 
 sbcl --load \
-    /data/data/com.termux/files/home/.config/emacs/etc/tools/start-slynk.lisp
+    "${XDG_CONFIG_HOME:-${HOME}/.config}/emacs/etc/tools/start-slynk.lisp"
