@@ -482,7 +482,8 @@ If nil, the number of frame lines and columns remains fixed.")
               dashboard-refresh-buffer dashboard-display-icons-p)
   :init
   (add-hook 'elpaca-after-init-hook #'that1guycolin/dashboard-setup)
-  (setq initial-buffer-choice #'dashboard-refresh-buffer)
+  (unless (eq system-type 'android)
+    (setq initial-buffer-choice #'dashboard-refresh-buffer))
   :custom
   (dashboard-startup-banner 'logo)
   (dashboard-icon-type 'nerd-icons)

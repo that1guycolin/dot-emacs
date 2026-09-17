@@ -15,7 +15,10 @@
                          (getenv "PATH")))
   (push "/data/data/com.termux/files/usr/bin" exec-path)
   (setenv "PKG_CONFIG_PATH"
-          "/data/data/com.termux/files/usr/lib/pkgconfig/"))
+          "/data/data/com.termux/files/usr/lib/pkgconfig/")
+  ;; Display scratch as initial buffer (changed when dashboard is loaded)
+  (setq
+   initial-buffer-choice t))
 
 ;;; no-littering
 (when (and (fboundp 'startup-redirect-eln-cache)
@@ -111,8 +114,6 @@
  inhibit-startup-echo-area-message "colin-l"
  ;; Don't display the Emacs' startup-screen
  inhibit-startup-screen t
- ;; Display scratch as initial buffer (changed when dashboard is loaded)
- initial-buffer-choice t
  ;; Don't display anything in the initial scratch buffer
  initial-scratch-message nil
  ;; Max # of bytes to read from subprocess in single chunk
