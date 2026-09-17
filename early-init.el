@@ -8,8 +8,9 @@
 ;;; Code:
 ;;; Set PATH so Emacs Android GUI can access Termux files
 (when (eq system-type 'android)
-  (setenv "PATH" (format "%s:%s:%s"
+  (setenv "PATH" (format "%s:%s:%s:%s"
                          "/data/data/com.termux/files/home/.local/bin"
+                         "/data/data/com.termux/files/usr/local/bin"
                          "/data/data/com.termux/files/usr/bin"
                          (getenv "PATH")))
   (push "/data/data/com.termux/files/usr/bin" exec-path)
@@ -18,7 +19,7 @@
 
 ;;; no-littering
 (when (and (fboundp 'startup-redirect-eln-cache)
-	   (not (eq system-type 'android)))
+           (not (eq system-type 'android)))
   (startup-redirect-eln-cache
    (convert-standard-filename
     (expand-file-name "var/eln-cache/" user-emacs-directory))))
