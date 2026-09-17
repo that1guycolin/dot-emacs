@@ -114,7 +114,7 @@ Effective as hook for major-modes where you want to be able to use the mouse."
       (java-ts-mode           . 100)   (js-json-mode           . 80)
       (json-ts-mode           . 80)    (js-ts-mode             . 100)
       (just-ts-mode           . 100)   (kdl-mode               . 100)
-      (lisp-mode              . 80)    (lua-ts-mode            . 100)
+      (lisp-mode              . 80)    (lua-ts-mode            . 120)
       (makefile-mode          . 100)   (markdown-ts-mode       . 80)
       (nxml-mode              . 0)     (python-mode            . 88)
       (python-ts-mode         . 88)    (rustic-mode            . 100)
