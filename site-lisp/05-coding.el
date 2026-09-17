@@ -462,6 +462,8 @@ See URL: https://github.com/zavoloklom/docker-compose-linter"
    '("pnpx" "prettier" "--stdin-filepath" filepath "--parser=json")
    (alist-get 'ruff          apheleia-formatters)
    '("ruff" "format" "-")
+   (alist-get 'stylua        apheleia-formatters)
+   '("stylua" "--stdin-filepath" filepath "-")
    (alist-get 'tombi         apheleia-formatters)
    '("tombi" "fmt" "-")
    (alist-get 'yamlfmt       apheleia-formatters)
