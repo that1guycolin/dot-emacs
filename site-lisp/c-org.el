@@ -19,183 +19,6 @@
     (unless (derived-mode-p 'org-mode)
       (user-error "This buffer is not in org mode")))
 
-;;; `org-id-prefix' functions
-  (defun that1guycolin/org-id-prefix-slug (s)
-    "Turn S into a safe(-ish) `org-id-prefix'."
-    (when s
-      (replace-regexp-in-string
-       "-+" "-"
-       (replace-regexp-in-string
-        "[^[:alnum:]_]+" "-"
-        (downcase s)))))
-
-  (defun that1guycolin/get-parent-directory ()
-    "Return parent directory name for current buffer."
-    (when buffer-file-name
-      (file-name-nondirectory
-       (directory-file-name
-        (file-name-directory buffer-file-name)))))
-
-  (defun that1guycolin/org-id-context-prefix ()
-    "Return `org-id-prefix' based on node level."
-    (unless (derived-mode-p 'org-mode)
-      (user-error "This buffer is not in org mode"))
-    (cond
-     ((org-before-first-heading-p)
-      (that1guycolin/get-parent-directory))
-     ((save-excursion
-        (org-back-to-heading t)
-        (= (org-outline-level) 1))
-      (when buffer-file-name
-        (file-name-base buffer-file-name)))
-     (t
-      (save-excursion
-        (org-back-to-heading t)
-        (when (org-up-heading-safe)
-          (org-get-heading t t t t))))))
-
-  (defun that1guycolin/org-id-dynamic-prefix (orig-fn &rest args)
-    "Dynamically compute org-id-prefix' each time an ID is created.
-Designed to wrap around ORIG-FN `org-id-new' (accepting the same ARGS) when
-creating org nodes."
-    (defvar org-id-prefix)
-    (let ((org-id-prefix
-           (if (derived-mode-p 'org-mode)
-               (or (that1guycolin/org-id-prefix-slug
-                    (that1guycolin/org-id-context-prefix))
-                   org-id-prefix)
-             (that1guycolin/get-parent-directory))))
-      (apply orig-fn args)))
-  (advice-add 'org-id-new :around #'that1guycolin/org-id-dynamic-prefix)
-
-;;; Custom header settings
-  (defun that1guycolin/org-get-heading-location ()
-    "In an org-mode buffer, prompt user to pick a scope.
-The scope could be the entire buffer or a heading within that buffer.
-For entire buffer, return the top of the buffer."
-    (unless (derived-mode-p 'org-mode)
-      (user-error "This buffer is not in org mode"))
-    (let* ((doc-option `(,(buffer-name) . document))
-           (heading-options
-            (org-map-entries
-             (lambda ()
-               (let* ((path (org-get-outline-path t t))
-                      (heading (org-get-heading t t t t))
-                      (display (string-join
-                                (append path (list heading)) " / ")))
-                 (cons display (point))))
-             nil 'file))
-           (options (cons doc-option heading-options))
-           (choice (completing-read "Location: " options nil t))
-           (location (cdr (assoc choice options))))
-      (if (eq location 'document)
-          (point-min)
-        location)))
-
-  (defun that1guycolin/org-update-last-edit-dt ()
-    "Update value of `LAST_EDIT' header in the active Org buffer.
-The new value is the current date & time in this format:
-YYYY-MM-DD DAY HH:MM:ss (e.g., 2026-03-15 SUN 14:24:06)"
-    (when (derived-mode-p 'org-mode)
-      (save-excursion
-        (goto-char (point-min))
-        (when (re-search-forward "^#\\+LAST_EDIT:[ \t].*$" nil t)
-          (replace-match
-           (format-time-string
-            "#+LAST_EDIT: [%Y-%m-%d %a %H:%M:%S]"))))))
-  (add-hook 'before-save-hook #'that1guycolin/org-update-last-edit-dt)
-
-  (defun that1guycolin/org-top-drawer-p ()
-    "Non-nil if the current file begins with a top-level property drawer."
-    (unless (derived-mode-p 'org-mode)
-      (user-error "This buffer is not in org mode"))
-    (save-excursion
-      (goto-char (point-min))
-      (looking-at org-property-drawer-re)))
-
-  (defun that1guycolin/org-top-drawer-end ()
-    "Go to the end of a properties drawer and insert a new line.
-The function ends with the cursor on the new line."
-    (goto-char (point-min))
-    (while (looking-at org-property-drawer-re)
-      (search-forward ":END:")
-      (unless (bolp)
-        (insert "\n"))))
-
-  (defun that1guycolin/org-top-property-drawer-id ()
-    "Return ID from a top-of-file-property-drawer, or nil."
-    (if (that1guycolin/org-top-drawer-p)
-        (save-restriction
-          (narrow-to-region (match-beginning 0) (match-end 0))
-          (goto-char (point-min))
-          (when (re-search-forward "^:ID:[ \t]+\\(.+\\)$" nil t)
-            (string-trim (match-string 1))))
-      nil))
-
-  (defun that1guycolin/org-gen-header (ti au id)
-    "Insert a custom header block with TItle, AUthor & ID."
-    (insert "#+TITLE: " ti
-            "\n#+AUTHOR: " au
-            "\n#+CREATED_DATE: " (format-time-string "[%Y-%m-%d %a %H:%M:%S]")
-            "\n#+LAST_EDIT: "
-            "\n#+ID: " id
-            "\n#+FILETAGS: "))
-
-;;; Insert objects
-  (defun that1guycolin/org-insert-properties-drawer (&optional interactivep)
-    "Create org properties drawer at an interactively-selected heading."
-    (interactive "p")
-    (unless (derived-mode-p 'org-mode)
-      (user-error "This buffer is not in org mode"))
-    (if interactivep
-        (goto-char (that1guycolin/org-get-heading-location))
-      (goto-char (point-min)))
-    (let ((id (org-id-get-create)))
-      (unless (org-entry-get nil "CREATED")
-        (org-entry-put nil "CREATED"
-                       (format-time-string "[%Y-%m-%d %a %H:%M:%S]")))
-      id))
-
-  (defun that1guycolin/org-insert-header-block (title author)
-    "Insert a header block at the top of the current document.
-If there is a properties drawer at the top, the header block will go
-underneath it.  The header block will contain the following fields:
-\='TITLE:, AUTHOR: CREATED_DATE:, LAST_EDITED:, ID:, FILETAGS:'."
-    (interactive
-     (list (read-string "Title: " (file-name-base (buffer-name)))
-           (let ((default "Colin Loeffler (that1guycolin)"))
-             (read-string (format "Author [DEFAULT: \"%s\"]: " default)
-                          nil nil default))))
-    (unless (derived-mode-p 'org-mode)
-      (user-error "This buffer is not in org mode"))
-    (if (that1guycolin/org-top-drawer-p)
-        (let ((existing-id (that1guycolin/org-top-property-drawer-id)))
-          (that1guycolin/org-top-drawer-end)
-          (that1guycolin/org-gen-header title author existing-id))
-      (let ((new-id (that1guycolin/org-insert-properties-drawer)))
-        (that1guycolin/org-top-drawer-end)
-        (that1guycolin/org-gen-header title author new-id))))
-
-  (defun that1guycolin/org-insert-src-block (lang)
-    "Insert a block structure of the type #+begin_src LANG/#+end_src."
-    (interactive
-     (list
-      (completing-read "Language: "
-                       (mapcar #'car org-src-lang-modes) nil t)))
-    (org-insert-structure-template "src")
-    (insert lang "\n"))
-
-  (defvar-keymap that1guycolin/org-insert-block-map
-    :doc "Keymap of functions for inserting/editing headers, drawers, srcblocks"
-    "h" #'that1guycolin/org-insert-header-block
-    "d" #'that1guycolin/org-insert-properties-drawer
-    "s" #'that1guycolin/org-insert-src-block)
-  (with-eval-after-load 'which-key
-    (which-key-add-keymap-based-replacements that1guycolin/org-insert-block-map
-      "h" "Header Block"
-      "d" "Properties Drawer"
-      "s" "Source Block"))
-
 ;;; Org task sequences
   (defconst that1guycolin/org-keywords--tasks
     '(sequence "TODO(t!)" "NEXT(n!)" "WAIT(w@/!)" "|"
@@ -330,6 +153,229 @@ underneath."
       :empty-lines 1
       :kill-buffer t))
 
+  
+;;; `org-id-prefix' functions
+  (defun that1guycolin/org-id-prefix-slug (s)
+    "Turn S into a safe(-ish) `org-id-prefix'."
+    (when s
+      (replace-regexp-in-string
+       "-+" "-"
+       (replace-regexp-in-string
+        "[^[:alnum:]_]+" "-"
+        (downcase s)))))
+
+  (defun that1guycolin/get-parent-directory ()
+    "Return parent directory name for current buffer."
+    (when buffer-file-name
+      (file-name-nondirectory
+       (directory-file-name
+        (file-name-directory buffer-file-name)))))
+
+  (defun that1guycolin/org-id-context-prefix ()
+    "Return `org-id-prefix' based on node level."
+    (unless (derived-mode-p 'org-mode)
+      (user-error "This buffer is not in org mode"))
+    (cond
+     ((org-before-first-heading-p)
+      (that1guycolin/get-parent-directory))
+     ((save-excursion
+        (org-back-to-heading t)
+        (= (org-outline-level) 1))
+      (when buffer-file-name
+        (file-name-base buffer-file-name)))
+     (t
+      (save-excursion
+        (org-back-to-heading t)
+        (when (org-up-heading-safe)
+          (org-get-heading t t t t))))))
+
+  (defun that1guycolin/org-id-dynamic-prefix (orig-fn &rest args)
+    "Dynamically compute org-id-prefix' each time an ID is created.
+Designed to wrap around ORIG-FN `org-id-new' (accepting the same ARGS) when
+creating org nodes."
+    (defvar org-id-prefix)
+    (let ((org-id-prefix
+           (if (derived-mode-p 'org-mode)
+               (or (that1guycolin/org-id-prefix-slug
+                    (that1guycolin/org-id-context-prefix))
+                   org-id-prefix)
+             (that1guycolin/get-parent-directory))))
+      (apply orig-fn args)))
+  (advice-add 'org-id-new :around #'that1guycolin/org-id-dynamic-prefix)
+
+  
+;;; Custom header settings
+  (defun that1guycolin/org-get-heading-location ()
+    "In an org-mode buffer, prompt user to pick a scope.
+The scope could be the entire buffer or a heading within that buffer.
+For entire buffer, return the top of the buffer."
+    (unless (derived-mode-p 'org-mode)
+      (user-error "This buffer is not in org mode"))
+    (let* ((doc-option `(,(buffer-name) . document))
+           (heading-options
+            (org-map-entries
+             (lambda ()
+               (let* ((path (org-get-outline-path t t))
+                      (heading (org-get-heading t t t t))
+                      (display (string-join
+                                (append path (list heading)) " / ")))
+                 (cons display (point))))
+             nil 'file))
+           (options (cons doc-option heading-options))
+           (choice (completing-read "Location: " options nil t))
+           (location (cdr (assoc choice options))))
+      (if (eq location 'document)
+          (point-min)
+        location)))
+
+  (defun that1guycolin/org-update-last-edit-dt ()
+    "Update value of `LAST_EDIT' header in the active Org buffer.
+The new value is the current date & time in this format:
+YYYY-MM-DD DAY HH:MM:ss (e.g., 2026-03-15 SUN 14:24:06)"
+    (when (derived-mode-p 'org-mode)
+      (save-excursion
+        (goto-char (point-min))
+        (when (re-search-forward "^#\\+LAST_EDIT:[ \t].*$" nil t)
+          (replace-match
+           (format-time-string
+            "#+LAST_EDIT: [%Y-%m-%d %a %H:%M:%S]"))))))
+  (add-hook 'before-save-hook #'that1guycolin/org-update-last-edit-dt)
+
+  (defun that1guycolin/org-top-drawer-p ()
+    "Non-nil if the current file begins with a top-level property drawer."
+    (unless (derived-mode-p 'org-mode)
+      (user-error "This buffer is not in org mode"))
+    (save-excursion
+      (goto-char (point-min))
+      (looking-at org-property-drawer-re)))
+
+  (defun that1guycolin/org-top-drawer-end ()
+    "Go to the end of a properties drawer and insert a new line.
+The function ends with the cursor on the new line."
+    (goto-char (point-min))
+    (while (looking-at org-property-drawer-re)
+      (search-forward ":END:")
+      (unless (bolp)
+        (insert "\n"))))
+
+  (defun that1guycolin/org-top-property-drawer-id ()
+    "Return ID from a top-of-file-property-drawer, or nil."
+    (if (that1guycolin/org-top-drawer-p)
+        (save-restriction
+          (narrow-to-region (match-beginning 0) (match-end 0))
+          (goto-char (point-min))
+          (when (re-search-forward "^:ID:[ \t]+\\(.+\\)$" nil t)
+            (string-trim (match-string 1))))
+      nil))
+
+  (defun that1guycolin/org-gen-header (ti au id)
+    "Insert a custom header block with TItle, AUthor & ID."
+    (insert "#+TITLE: " ti
+            "\n#+AUTHOR: " au
+            "\n#+CREATED_DATE: " (format-time-string "[%Y-%m-%d %a %H:%M:%S]")
+            "\n#+LAST_EDIT: "
+            "\n#+ID: " id
+            "\n#+FILETAGS: "))
+
+  
+;;; Insert objects
+  (defun that1guycolin/org-insert-properties-drawer (&optional interactivep)
+    "Create org properties drawer at an interactively-selected heading."
+    (interactive "p")
+    (unless (derived-mode-p 'org-mode)
+      (user-error "This buffer is not in org mode"))
+    (if interactivep
+        (goto-char (that1guycolin/org-get-heading-location))
+      (goto-char (point-min)))
+    (let ((id (org-id-get-create)))
+      (unless (org-entry-get nil "CREATED")
+        (org-entry-put nil "CREATED"
+                       (format-time-string "[%Y-%m-%d %a %H:%M:%S]")))
+      id))
+
+  (defun that1guycolin/org-insert-header-block (title author)
+    "Insert a header block at the top of the current document.
+If there is a properties drawer at the top, the header block will go
+underneath it.  The header block will contain the following fields:
+\='TITLE:, AUTHOR: CREATED_DATE:, LAST_EDITED:, ID:, FILETAGS:'."
+    (interactive
+     (list (read-string "Title: " (file-name-base (buffer-name)))
+           (let ((default "Colin Loeffler (that1guycolin)"))
+             (read-string (format "Author [DEFAULT: \"%s\"]: " default)
+                          nil nil default))))
+    (unless (derived-mode-p 'org-mode)
+      (user-error "This buffer is not in org mode"))
+    (if (that1guycolin/org-top-drawer-p)
+        (let ((existing-id (that1guycolin/org-top-property-drawer-id)))
+          (that1guycolin/org-top-drawer-end)
+          (that1guycolin/org-gen-header title author existing-id))
+      (let ((new-id (that1guycolin/org-insert-properties-drawer)))
+        (that1guycolin/org-top-drawer-end)
+        (that1guycolin/org-gen-header title author new-id))))
+
+  (defun that1guycolin/org-insert-src-block (lang)
+    "Insert a block structure of the type #+begin_src LANG/#+end_src."
+    (interactive
+     (list
+      (completing-read "Language: "
+                       (mapcar #'car org-src-lang-modes) nil t)))
+    (org-insert-structure-template "src")
+    (insert lang "\n"))
+
+  (defvar-keymap that1guycolin/org-insert-block-map
+    :doc "Keymap of functions for inserting or editing org blocks.
+Blocks include headers, drawers, or source code."
+    "h" #'that1guycolin/org-insert-header-block
+    "d" #'that1guycolin/org-insert-properties-drawer
+    "s" #'that1guycolin/org-insert-src-block)
+  (with-eval-after-load 'which-key
+    (which-key-add-keymap-based-replacements that1guycolin/org-insert-block-map
+      "h" "Header Block"
+      "d" "Properties Drawer"
+      "s" "Source Block"))
+
+
+;;; Hide objects
+  (defvar-local that1guycolin/org-inline-source-hidden nil
+    "Non-nil when inline source blocks and results are currently hidden.")
+
+  (defconst that1guycolin/org-inline-source-regexp
+    (concat
+     "\\(?:^\\|[^[:alnum:]]\\)"    ; Must be preceded by non-word char (or bol)
+     "\\(src_[A-Za-z0-9-]+?"       ; (1) "src_" + language name...
+     "\\(?:\\[[^][\n]*\\]\\)?"     ;     ...+ optional [header args]...
+     "{\\)"                        ;     ...+ the opening brace
+     "\\([^}\n]*\\)"               ; (2) the inline code
+     "\\(}\\)")                    ; (3) the closing brace
+    "Matches an Org inline source block. Groups 1 and 3 are the delimiters to
+    conceal: Group 2 is the body to leave visible.")
+
+  (defun that1guycolin/org-inline-source-toggle-visibility ()
+    "If inline source blocks and results are currently visible, hide them.
+If they are currently hidden, make them visible.
+
+Thanks to Reddit user \\='hogmannn' for the basis of this function:
+\"https://www.reddit.com/r/emacs/comments/1i1exdt/hiding_inline_src_in_org/\"."
+    (interactive)
+    (if that1guycolin/org-inline-source-hidden
+        ;; Unhide if hidden
+        (progn
+          (remove-overlays (point-min) (point-max)
+                           'that1guycolin/org-inline-source t)
+          (setq that1guycolin/org-inline-source-hidden nil)
+          (message "Inline source block delimiters are now visible"))
+      (save-excursion
+        (goto-char (point-min))
+        ;; Hide if not hidden
+        (while (re-search-forward that1guycolin/org-inline-source-regexp nil t)
+          (dolist (grp '(1 3))
+            (let ((ov (make-overlay (match-beginning grp) (match-end grp))))
+              (overlay-put ov 'display "")
+              (overlay-put ov 'that1guycolin/org-inline-source t)))))
+      (setq that1guycolin/org-inline-source-hidden t)
+      (message "Inline source block delimiters are now hidden")))
+
+
 ;;; misc.
   (defun that1guycolin/org-convert-md-links ()
     "Convert all md-style links in the current buffer to org-style."
@@ -348,7 +394,8 @@ underneath."
          ("C-c o l" . org-store-link)
          (:map org-mode-map
                ("C-c l"   . org-toggle-link-display)
-               ("C-c C-q" . org-set-tags-command)))
+               ("C-c C-q" . org-set-tags-command)
+               ("C-c _"   . that1guycolin/org-inline-source-toggle-visibility)))
   :mode (("\\.org\\'"   . org-mode)
          ("\\.notes\\'" . org-mode))
   :functions (org-before-first-heading-p
@@ -360,8 +407,8 @@ underneath."
                              org-babel-lisp-eval-fn org-directory
                              org-mode-map)
   :init (that1guycolin/desktop-mobile
-          :desk (setq org-directory (expand-file-name "~/org"))
-          :termux (setq org-directory "/storage/emulated/0/Documents/org"))
+          :desk (setq org-directory (expand-file-name "~/org/"))
+          :termux (setq org-directory "/storage/emulated/0/Documents/org/"))
   :custom
   (org-agenda-files
    (directory-files (expand-file-name "TODOs/" org-directory) t
@@ -436,3 +483,6 @@ underneath."
 
 (provide 'c-org)
 ;;; c-org.el ends here
+
+                                        ; LocalWords:  ov grp i1exdt hogmannn Za
+                                        ; LocalWords:  nComments
