@@ -146,7 +146,7 @@ Function also sets `fill-column' to 1000."
     "Check if `major-mode' is in `that1guycolin/mode-fill-column-alist'.
 If yes, toggle display of max line-length depending on whether value its
 cdr is 0 or a positive integer. If not a member of the list, run
-`that1guycolin/display-max-line-length' using 80 as the \='max'
+`that1guycolin/display-max-line-length' using 80 as the \\='max'
 argument."
     (interactive)
     (if (member major-mode (mapcar #'car that1guycolin/mode-fill-column-alist))
@@ -162,39 +162,41 @@ argument."
 
 
 ;;; Font:
+;; Functions:
+(defvar that1guycolin/font-switch-retain-frame-size-p t
+  "If non-nil, attempt to keep frame size fixed when changing font.
+If nil, the number of frame lines and columns remains fixed.")
+
+(defun that1guycolin/font-switch-set-frame-resize-behaviour (input)
+  "Prompt the user for INPUT on handling frame resizing when switching font."
+  (declare (interactive-only t))
+  (interactive
+   (let ((frame-resizing-cons
+          (if that1guycolin/font-switch-retain-frame-size-p
+              '(("Attempt to keep frame size fixed (current)" . t)
+                ("Keep # of frame lines and columns fixed"    . nil))
+            '(("Attempt to keep frame size fixed"                  . t)
+              ("Keep # of frame lines and columns fixed (current)" . nil )))))
+     (list
+      (cdr
+       (assoc
+        (completing-read "How to handle frame-size when switching fonts: "
+                         frame-resizing-cons nil t)
+        frame-resizing-cons)))))
+  (setq that1guycolin/font-switch-retain-frame-size-p input))
+
+;; Packages:
 (use-package default-font-presets
   :demand t
   :preface
-  (defvar that1guycolin/keep-frame-size-on-font-switch-p t
-    "If non-nil, attempt to keep frame size fixed when changing font.
-If nil, the number of frame lines and columns remains fixed.")
-
-  (defun that1guycolin/random-font ()
-    "Activate a random font from `that1guycolin/font-alist'."
+  (defun that1guycolin/font-random ()
+    "Activate a random font from `default-fonts-presets-list'."
     (interactive)
     (let ((new-font (nth (random (length default-font-presets-list))
                          default-font-presets-list)))
-      (set-frame-font new-font that1guycolin/keep-frame-size-on-font-switch-p t t)
+      (set-frame-font new-font
+                      that1guycolin/font-switch-retain-frame-size-p t t)
       (message "Font set to %s" new-font)))
-
-  (defun that1guycolin/set-font-size-behaviour (input)
-    "Prompt the user for INPUT on handling frame resizing when switching font."
-    (declare (interactive-only t))
-    (interactive
-     (let ((frame-resizing-cons
-            (if that1guycolin/keep-frame-size-on-font-switch-p
-                '(("Attempt to keep frame size fixed (current)" . t)
-                  ("Keep # of frame lines and columns fixed"    . nil))
-              '(("Attempt to keep frame size fixed"                  . t)
-                ("Keep # of frame lines and columns fixed (current)" . nil )))))
-       (list
-        (cdr
-         (assoc
-          (completing-read "How to handle frame-size when switching fonts: "
-                           frame-resizing-cons nil t)
-          frame-resizing-cons)))))
-    (setq that1guycolin/keep-frame-size-on-font-switch-p input))
-
   :unless (eq system-type 'android)
   :bind (("C-=" . default-font-presets-scale-increase)
          ("C--" . default-font-presets-scale-decrease)
@@ -454,9 +456,9 @@ If nil, the number of frame lines and columns remains fixed.")
      ["Fonts"
       ("n" "Next font"           default-font-presets-forward :transient t)
       ("p" "Previous font"       default-font-presets-backward :transient t)
-      ("r" "Random font"         that1guycolin/random-font :transient t)
-      ("b" "Font size behaviour" that1guycolin/set-font-size-behaviour
-       :transient t)
+      ("r" "Random font"         that1guycolin/font-random :transient t)
+      ("b" "Font size behaviour"
+       that1guycolin/font-switch-set-frame-resize-behaviour :transient t)
       ("f" "Show Font Family"    show-font-select-preview)
       ("a" "Show Fonts (All)"    show-font-tabulated)]
      ["Theme"
@@ -471,12 +473,10 @@ If nil, the number of frame lines and columns remains fixed.")
 ;;; Dashboard:
 (use-package dashboard
   :demand t
-  :preface
-  (defun that1guycolin/dashboard-setup ()
-    "Correctly start dashboard during Elpaca-managed init."
-    (dashboard-insert-startupify-lists)
-    (dashboard-initialize))
-  
+  :preface (defun that1guycolin/dashboard-setup ()
+             "Correctly start dashboard during Elpaca-managed init."
+             (dashboard-insert-startupify-lists)
+             (dashboard-initialize))
   :functions (dashboard-insert-startupify-lists
               dashboard-initialize dashboard-setup-startup-hook
               dashboard-refresh-buffer dashboard-display-icons-p)
