@@ -148,9 +148,9 @@
         (shell-command command))))
 
   (defun that1guycolin/flycheck-yaml-linter ()
-    "Select the linter for .ya(m)l files based on `buffer-file-name'.
-If the current `buffer-file-name' is \='compose.ya(m)l' or
-\='docker-compose.ya(m)l, use `dclint'. Otherwise, use `yamllint'."
+    "Select the linter for \\='.ya(m)l' files.
+If the current `buffer-file-name' is \\='compose.ya(m)l' or
+\\='docker-compose.ya(m)l', use \"dclint\".  Otherwise, use \"yamllint\"."
     (unless (eq major-mode 'yaml-ts-mode)
       (error "Buffer not in yaml-ts-mode"))
     (if (string-match-p
