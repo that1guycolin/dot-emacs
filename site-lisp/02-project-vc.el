@@ -35,23 +35,27 @@
     "Return the current project's root directory or nil if not in project."
     (when-let* ((project (project-current nil)))
       (project-root project)))
+
+  (defun that1guycolin/project-clear-projects ()
+    "Remove all projects from `project-known-project-roots'."
+    (interactive)
+    (if (boundp 'project-known-project-roots)
+        (progn
+          (mapc #'project-forget-project project-known-project-roots)
+          (message "Cleared all projects"))
+      (message "Projects list is already empty")))
   
   (defun that1guycolin/project-reset-projects ()
     "Clear the project list and repopulate it."
     (interactive)
-    (dolist (project (project-known-project-roots))
-      (project-forget-project project))
-    (message "Cleared all projects")
+    (that1guycolin/project-clear-projects)
     ;; Scan these directories recursively
     (dolist (dir (list that1guycolin/projects-directory
                        that1guycolin/scripts-directory))
       (project-remember-projects-under dir t))
     ;; Scan these directories (but not their subdirectories)
-    (let ((dotfiles-dir
-           (if (equal system-type 'android)
-               (concat android-home "/dotfiles")
-             "~/dotfiles")))
-      (dolist (dir (list user-emacs-directory org-directory dotfiles-dir))
+    (dolist (dir (list user-emacs-directory org-directory "~/dotfiles"))
+      (when (file-exists-p dir)
         (project-remember-projects-under (expand-file-name dir))))
     (message "Successfully repopulated projects list"))
 
