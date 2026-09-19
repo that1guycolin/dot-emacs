@@ -70,7 +70,7 @@ Provide a custom PROMPT to display to the user.  If `other-win' is non-nil,
 open the file in another window."
     (when (= 1 (length files))
       (let ((file (car files)))
-        (warn "Only one file in provided, opening %s..." file)
+        (message "Only one file in provided, opening %s..." file)
         (if other-win (find-file-other-window file)
           (find-file file))))
     (let* ((choices (mapcar
@@ -93,9 +93,9 @@ open the file in another window."
   :bind (("M-+"   . tempel-insert)
          ("M-*"   . tempel-complete)
          ("C-M-+" . that1guycolin/tempel-edit-custom-templates)
-         :map tempel-map
-         ("TAB"   . tempel-next)
-         ("C-TAB" . tempel-previous))
+         (:map tempel-map
+               ("TAB"   . tempel-next)
+               ("C-TAB" . tempel-previous)))
   :hook ((text-mode prog-mode conf-mode) . that1guycolin/tempel-setup-capf)
   :functions (tempel-complete tempel-abbrev-mode)
   :init
