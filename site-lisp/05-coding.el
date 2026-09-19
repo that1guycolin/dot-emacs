@@ -60,6 +60,7 @@
 
 ;; Integrate with editorconfig
 (use-package editorconfig
+  :ensure nil
   :defer t
   :hook ((prog-mode text-mode conf-mode) . editorconfig-mode))
 
