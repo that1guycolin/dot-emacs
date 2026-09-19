@@ -162,48 +162,41 @@ argument."
 
 
 ;;; Font:
-;; Functions:
-(defvar that1guycolin/font-switch-retain-frame-size-p t
-  "If non-nil, attempt to keep frame size fixed when changing font.
-If nil, the number of frame lines and columns remains fixed.")
-
-(defun that1guycolin/font-switch-set-frame-resize-behaviour (input)
-  "Prompt the user for INPUT on handling frame resizing when switching font."
-  (declare (interactive-only t))
-  (interactive
-   (let ((frame-resizing-cons
-          (if that1guycolin/font-switch-retain-frame-size-p
-              '(("Attempt to keep frame size fixed (current)" . t)
-                ("Keep # of frame lines and columns fixed"    . nil))
-            '(("Attempt to keep frame size fixed"                  . t)
-              ("Keep # of frame lines and columns fixed (current)" . nil )))))
-     (list
-      (cdr
-       (assoc
-        (completing-read "How to handle frame-size when switching fonts: "
-                         frame-resizing-cons nil t)
-        frame-resizing-cons)))))
-  (setq that1guycolin/font-switch-retain-frame-size-p input))
-
 ;; Packages:
 (use-package default-font-presets
   :demand t
   :preface
-  (defun that1guycolin/font-random ()
+  (defun that1guycolin/default-font-random ()
     "Activate a random font from `default-fonts-presets-list'."
     (interactive)
-    (let ((new-font (nth (random (length default-font-presets-list))
-                         default-font-presets-list)))
-      (set-frame-font new-font
-                      that1guycolin/font-switch-retain-frame-size-p t t)
-      (message "Font set to %s" new-font)))
+    (default-font-presets--ensure-once)
+    (let* ((fonts-idx-cons (list))
+           (index 0))
+      (dolist (font-name default-font-presets-list)
+        (push (cons font-name index) fonts-idx-cons)
+        (incf index))
+      (let* ((new-cons (nth (random (length fonts-idx-cons))
+                            fonts-idx-cons))
+             (new-font (car new-cons))
+             (new-index (cdr new-cons)))
+        (default-font-presets--switch-pre)
+        (setq default-font-presets--index new-index)
+        (condition-case _err
+            (default-font-presets--index-update-on-switch)
+          (error nil))
+        (message "New Font: %s" new-font))))
+
   :unless (eq system-type 'android)
-  :bind (("C-=" . default-font-presets-scale-increase)
+  :bind (("C-+" . default-font-presets-scale-increase)
          ("C--" . default-font-presets-scale-decrease)
+         ("C-=" . default-font-presets-scale-fit)
          ("C-0" . default-font-presets-scale-reset)
          ("M-<up>" . default-font-presets-forward)
          ("M-<down>" . default-font-presets-backward))
-  :custom
+  :functions (default-font-presets--ensure-once
+              default-font-presets--switch-pre
+              default-font-presets--index-update-on-switch)
+  :custom 
   (default-font-presets-list
    (list
     "0x Proto Nerd Font"
@@ -453,20 +446,26 @@ If nil, the number of frame lines and columns remains fixed.")
     that1guycolin/visual-settings-dispatch ()
     "Display functions that change how the user-interface looks."
     ["Modify UI"
-     ["Fonts"
-      ("n" "Next font"           default-font-presets-forward :transient t)
-      ("p" "Previous font"       default-font-presets-backward :transient t)
-      ("r" "Random font"         that1guycolin/font-random :transient t)
-      ("b" "Font size behaviour"
-       that1guycolin/font-switch-set-frame-resize-behaviour :transient t)
-      ("f" "Show Font Family"    show-font-select-preview)
-      ("a" "Show Fonts (All)"    show-font-tabulated)]
      ["Theme"
-      ("t" "Switch theme"        modus-themes-select)
-      ("o" "Rotate theme"        modus-themes-rotate)
-      ("l" "Random light theme"  modus-themes-load-random-light :transient t)
-      ("d" "Random dark theme"   modus-themes-load-random-dark :transient t)
-      ("x" "Random theme"        modus-themes-load-random :transient t)]])
+      ("t" "Switch theme"       modus-themes-select)
+      ("o" "Rotate theme"       modus-themes-rotate)
+      ("l" "Random light theme" modus-themes-load-random-light :transient t)
+      ("d" "Random dark theme"  modus-themes-load-random-dark :transient t)
+      ("x" "Random theme"       modus-themes-load-random :transient t)]
+     ["Fonts"
+      ("n" "Next font"          default-font-presets-forward :transient t)
+      ("p" "Previous font"      default-font-presets-backward :transient t)
+      ("c" "Choose font"        default-font-presets-choose)
+      ("r" "Random font"        that1guycolin/default-font-random :transient t)
+      ("f" "Show font family"   show-font-select-preview)]
+     [""
+      ("+" "Incr. font scale"
+       default-font-presets-scale-increase :transient t)
+      ("-" "Decr. font scale"
+       default-font-presets-scale-decrease :transient t)
+      ("=" "Scale font to fit"  default-font-presets-scale-fit)
+      ("0" "Reset font scale"   default-font-presets-scale-reset)
+      ("a" "Show Fonts (All)"   show-font-tabulated)]])
   (keymap-global-set "C-c u" 'that1guycolin/visual-settings-dispatch))
 
 
