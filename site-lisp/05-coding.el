@@ -32,41 +32,21 @@
   (defun that1guycolin/print-docstr-hooks ()
     "Print the `use-package' \":key\" values for `docstr'."
     (interactive)
-    (insert ":hook (")
-    (dolist (mode (docstr-major-modes))
-      (let ((mode-str (symbol-name mode)))
-        (insert "\n(" mode-str " . docstr-mode)")))
-    (insert ")"))
-  :hook
-  ((actionscript-mode   . docstr-mode)
-   (c-mode              . docstr-mode)
-   (c++-mode            . docstr-mode)
-   (csharp-mode         . docstr-mode)
-   (go-mode             . docstr-mode)
-   (go-ts-mode          . docstr-mode)
-   (groovy-mode         . docstr-mode)
-   (java-mode           . docstr-mode)
-   (javascript-mode     . docstr-mode)
-   (js-mode             . docstr-mode)
-   (js2-mode            . docstr-mode)
-   (js3-mode            . docstr-mode)
-   (lua-mode            . docstr-mode)
-   (lua-ts-mode         . docstr-mode)
-   (objc-mode           . docstr-mode)
-   (php-mode            . docstr-mode)
-   (python-mode         . docstr-mode)
-   (python-ts-mode      . docstr-mode)
-   (rjsx-mode           . docstr-mode)
-   (ruby-mode           . docstr-mode)
-   (rust-mode           . docstr-mode)
-   (rust-ts-mode        . docstr-mode)
-   (scala-mode          . docstr-mode)
-   (swift-mode          . docstr-mode)
-   (typescript-ts-mode  . docstr-mode)
-   (web-mode            . docstr-mode))
-  :functions docstr-major-modes
-  :custom
-  (docstr-python-style 'google))
+    (let ((modes-str
+           (mapconcat (lambda (bol)
+                        (if (eq bol (car (docstr-major-modes)))
+                            (symbol-name bol)
+                          (concat " " (symbol-name bol))))
+                      (docstr-major-modes))))
+      (insert ":hook ((" modes-str ") . docstr-mode)")))
+
+  :hook ((actionscript-mode
+          c-mode c++-mode csharp-mode go-mode groovy-mode java-mode
+          javascript-mode js-mode js2-mode js3-mode lua-mode objc-mode php-mode
+          python-mode rjsx-mode ruby-mode rust-mode scala-mode swift-mode
+          typescript-mode web-mode) . docstr-mode)
+  :functions (docstr-major-modes)
+  :custom (docstr-python-style 'google))
 
 ;; Jump-to-def/find-refs
 (use-package dumb-jump
