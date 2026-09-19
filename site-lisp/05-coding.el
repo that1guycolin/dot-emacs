@@ -159,31 +159,29 @@ If the current `buffer-file-name' is \\='compose.ya(m)l' or
         (flycheck-select-checker 'yaml-dclint)
       (flycheck-select-checker 'yaml-yamllint)))
 
-  :hook ((prog-mode text-mode) . flycheck-mode)
+  :hook ((prog-mode conf-mode text-mode) . flycheck-mode)
   :functions (flycheck-error-new-at flycheck-select-checker flycheck-add-mode)
   :custom
   (flycheck-emacs-lisp-load-path 'inherit)
   (flycheck-disabled-checkers
    '(emacs-lisp-elsa rpm-rpmlint yaml-jsyaml yaml-ruby))
   (flycheck-shellcheck-infer-shell t)
-  (that1guycolin/desktop-mobile
-    :desk
-    (flycheck-sh-bash-executable       "/usr/bin/bash")
-    (flycheck-sh-posix-bash-executable "/usr/bin/bash")
-    (flycheck-sh-posix-dash-executable "/usr/bin/dash")
-    (flycheck-sh-shellcheck-executable "/usr/bin/shellcheck")
-    (flycheck-sh-zsh-executable        "/usr/bin/zsh")
-    :termux
-    (flycheck-sh-bash-executable
-     "/data/data/com.termux/files/user/bin/bash")
-    (flycheck-sh-posix-bash-executable
-     "/data/data/com.termux/files/user/bin/bash")
-    (flycheck-sh-posix-dash-executable
-     "/data/data/com.termux/files/user/bin/dash")
-    (flycheck-sh-shellcheck-executable
-     "/data/data/com.termux/files/user/bin/shellcheck")
-    (flycheck-sh-zsh-executable
-     "/data/data/com.termux/files/user/bin/zsh"))
+  (flycheck-sh-bash-executable
+   (that1guycolin/desktop-mobile
+     :desk "/usr/bin/bash"
+     :termux "/data/data/com.termux/files/usr/bin/bash"))
+  (flycheck-sh-posix-bash-executable
+   (that1guycolin/desktop-mobile
+     :desk "/usr/bin/bash"
+     :termux "/data/data/com.termux/files/usr/bin/bash"))
+  (flycheck-sh-posix-dash-executable
+   (that1guycolin/desktop-mobile
+     :desk "/usr/bin/shellcheck"
+     :termux "/data/data/com.termux/files/usr/bin/shellcheck"))
+  (flycheck-sh-zsh-executable
+   (that1guycolin/desktop-mobile
+     :desk "/usr/bin/zsh"
+     :termux "/data/data/com.termux/files/usr/bin/zsh"))
   :config
   (add-to-list 'minions-prominent-modes 'flycheck-mode)
   (add-to-list 'flycheck-shellcheck-supported-shells 'dash)
