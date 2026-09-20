@@ -29,8 +29,8 @@
 (use-package docstr
   :defer t
   :preface
-  (defun that1guycolin/print-docstr-hooks ()
-    "Print the `use-package' \":key\" values for `docstr'."
+  (defun that1guycolin/docstr-print-hooks ()
+    "Print the `use-package' \":hook\" values for `docstr'."
     (interactive)
     (let ((modes-str
            (mapconcat (lambda (bol)
