@@ -136,16 +136,12 @@
         :filename (buffer-file-name buffer)))
      (that1guycolin/flycheck-checkmake--read-json output)))
   
-  (defun that1guycolin/setup-vale ()
-    "If not setup, install the vale from the .ini file in site-lisp."
-    (interactive)
-    (let* ((vale-config (expand-file-name ".vale.ini"
-                                          that1guycolin/lisp-directory))
-           (vale-install (expand-file-name ".vale-styles"
-                                           that1guycolin/lisp-directory))
-           (command (format "vale --config %s sync >/dev/null" vale-config)))
-      (unless (file-exists-p vale-install)
-        (shell-command command))))
+  (defun that1guycolin/flycheck-vale-setup ()
+    "If not setup, install the vale from the .ini file in user-lisp-directory."
+    (let* ((vale-config (expand-file-name ".vale.ini" user-lisp-directory))
+           (command (format "vale --config %s sync >/dev/null 2>&1"
+                            vale-config)))
+      (shell-command command)))
 
   (defun that1guycolin/flycheck-yaml-linter ()
     "Select the linter for \\='.ya(m)l' files.
@@ -266,13 +262,16 @@ See URL `https://github.com/priv-kweihmann/systemdlint'."
     "Tool to bring code-like linting to prose.
 See URL `https://vale.sh'."
     :command
-    ("vale" "--config" (eval
-                        (expand-file-name ".vale.ini" user-emacs-directory))
+    ("vale" "--config"
+     (eval (expand-file-name ".vale.ini" user-lisp-directory))
      "--no-global" "--output" "line" source)
     :error-patterns
     ((warning line-start (file-name) ":" line ":" column ":"
               (id (one-or-more (not (any ":")))) ":" (message) line-end))
     :modes (text-mode))
+  (let ((vale-install (expand-file-name ".vale-styles" user-lisp-directory)))
+    (unless (file-exists-p vale-install)
+      (that1guycolin/flycheck-vale-setup)))
   (add-to-list 'flycheck-checkers 'text-vale)
 
   (flycheck-define-checker yaml-dclint
