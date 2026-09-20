@@ -18,7 +18,7 @@
 ;; Smart wrapping
 (use-package adaptive-wrap
   :defer t
-  :hook ((prog-mode text-mode) . adaptive-wrap-prefix-mode))
+  :hook ((prog-mode text-mode conf-mode) . adaptive-wrap-prefix-mode))
 
 ;; Easily switch between comment types
 (use-package comment-dwim-2
@@ -67,12 +67,12 @@
 ;; Colorize "", {}, [], ()
 (use-package rainbow-delimiters
   :defer t
-  :hook ((prog-mode conf-mode) . rainbow-delimiters-mode))
+  :hook ((prog-mode text-mode conf-mode) . rainbow-delimiters-mode))
 
 ;; Auto-close "", {}, [], ()
 (use-package smartparens
   :defer t
-  :hook ((prog-mode text-mode) . smartparens-mode)
+  :hook ((prog-mode text-mode conf-mode) . smartparens-mode)
   :config (require 'smartparens-config))
 
 ;; Hl regexp while typing
