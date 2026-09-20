@@ -291,10 +291,10 @@ See URL: https://github.com/zavoloklom/docker-compose-linter"
     :modes (yaml-ts-mode))
   (add-to-list 'flycheck-checkers 'yaml-dclint)
 
-  (add-hook 'bash-ts-mode-hook #'(lambda ()
-                                   (flycheck-select-checker 'sh-shellcheck)))
-  (add-hook 'org-mode-hook #'(lambda ()
-                               (flycheck-select-checker 'org-lint)))
+  (add-hook 'bash-ts-mode-hook
+            (lambda () (flycheck-select-checker 'sh-shellcheck)))
+  (add-hook 'org-mode-hook
+            (lambda () (flycheck-select-checker 'org-lint)))
   (add-hook 'yaml-ts-mode-hook #'that1guycolin/flycheck-yaml-linter))
 
 ;; Display flycheck errors in buffer
