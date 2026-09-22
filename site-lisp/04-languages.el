@@ -273,11 +273,11 @@ a running slynk instance @ localhost:4005."
         ("D" "Sly Disconnect (All)" sly-disconnect-all)]
        ["REPL"
         ("r" "Open" sly-mrepl)
-        ("d" "Set Directory" sly-mrepl-set-directory :transient t)
+        ("m" "Set Directory" sly-mrepl-set-directory :transient t)
         ("n" "New" sly-mrepl-new)
         ("s" "Sync" sly-mrepl-sync :transient t)]
        ["Utilities"
-        ("c" "Change Directory" sly-cd :transient t)
+        ("h" "Change Directory" sly-cd :transient t)
         ("i" "Inspect" sly-inspect)
         ("a" "Match Symbol" sly-apropos)
         ("w" "Describe Symbol" sly-describe-symbol)]]))
