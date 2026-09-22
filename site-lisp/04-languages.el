@@ -241,30 +241,6 @@ a running slynk instance @ localhost:4005."
         (sly-connect "localhost" 4005)
       (sly)))
 
-  (that1guycolin/desktop-mobile :desk
-    (defvar-keymap that1guycolin/sly-functions-map
-      :doc "Common functions from the sly lisp implementation."
-      "s" #'sly                     "r" #'sly-mrepl
-      "m" #'sly-mrepl-new           "y" #'sly-mrepl-sync
-      "d" #'sly-mrepl-set-directory "c" #'sly-cd
-      "i" #'sly-inspect             "a" #'sly-apropos
-      "w" #'sly-describe-symbol)
-    :gui
-    (defvar-keymap that1guycolin/sly-functions-map
-      :doc "Common functions from the sly lisp implementation."
-      "s" #'that1guycolin/sly-autoconnect "r" #'sly-mrepl
-      "m" #'sly-mrepl-new                 "y" #'sly-mrepl-sync
-      "d" #'sly-mrepl-set-directory       "c" #'sly-cd
-      "i" #'sly-inspect                   "a" #'sly-apropos
-      "w" #'sly-describe-symbol))
-  (with-eval-after-load 'which-key
-    (which-key-add-keymap-based-replacements that1guycolin/sly-functions-map
-      "s" "Start Sly"           "r" "Sly REPL"
-      "m" "New Sly REPL"        "y" "Set pkg & dir"
-      "d" "Set REPL dir"        "c" "Set lisp dir"
-      "i" "Eval & inspect expr" "a" "Symbol match"
-      "w" "Describe symbol"))
-  :bind-keymap ("C-c s" . that1guycolin/sly-functions-map)
   :bind ("C-c s" . that1guycolin/sly-autoconnect)
   :hook ((lisp-mode lisp-ts-mode) . sly-editing-mode)
   :functions (sly sly-connect sly-connected-p sly-mrepl sly-mrepl-new
@@ -284,7 +260,28 @@ a running slynk instance @ localhost:4005."
     (add-to-list 'sly-contribs contrib))
   (setq sly-auto-start 'always)
   (add-hook 'sly-mrepl-mode-hook #'corfu-mode)
-  (add-hook 'sly-mode-hook #'that1guycolin/sly-load-if-not-connected))
+  (add-hook 'sly-mode-hook #'that1guycolin/sly-load-if-not-connected)
+  (with-eval-after-load 'transient
+    (defvar that1guycolin/sly-dispatch)
+    (transient-define-prefix that1guycolin/sly-dispatch ()
+      "Transient menu for functions related to `sly' & the `sly-mrepl'."
+      ["SLYvester the Cat's Common Lisp IDE"
+       ["Connection"
+        ("s" "Sly" that1guycolin/sly-autoconnect)
+        ("c" "Sly Connect" sly-connect)
+        ("d" "Sly Disconnect" sly-disconnect)
+        ("D" "Sly Disconnect (All)" sly-disconnect-all)]
+       ["REPL"
+        ("r" "Open" sly-mrepl)
+        ("d" "Set Directory" sly-mrepl-set-directory :transient t)
+        ("n" "New" sly-mrepl-new)
+        ("s" "Sync" sly-mrepl-sync :transient t)]
+       ["Utilities"
+        ("c" "Change Directory" sly-cd :transient t)
+        ("i" "Inspect" sly-inspect)
+        ("a" "Match Symbol" sly-apropos)
+        ("w" "Describe Symbol" sly-describe-symbol)]]))
+  (keymap-global-set "C-c s" 'that1guycolin/sly-dispatch))
 
 (use-package sly-quicklisp
   :after (sly)
