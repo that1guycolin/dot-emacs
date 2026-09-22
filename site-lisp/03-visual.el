@@ -166,25 +166,76 @@ argument."
 (use-package default-font-presets
   :demand t
   :preface
-  (defun that1guycolin/default-font-random ()
+  (defvar that1guycolin/default-font-presets--idx-fonts-alist nil
+    "An alist mapping fonts from `default-font-presets-list' to an index.")
+
+  (defun that1guycolin/default-font-presets-generate-font-index ()
+    "(Re)Generate the alist of cons cells mapping fonts to an index number.
+Uses `default-font-presets-list' as the backend for what fonts to include."
+    (interactive)
+    (let ((tmp-list (list))
+          (idx 0))
+      (dolist (font-name default-font-presets-list)
+        (push (cons idx font-name) tmp-list)
+        (incf idx))
+      (setq
+       that1guycolin/default-font-presets--idx-fonts-alist
+       (nreverse tmp-list))))
+
+  (defun that1guycolin/default-font-presets--get-font ()
+    "Return the current font."
+    (unless that1guycolin/default-font-presets--idx-fonts-alist
+      (that1guycolin/default-font-presets-generate-font-index))
+    (cdr (assoc default-font-presets--index
+                that1guycolin/default-font-presets--idx-fonts-alist)))
+  
+  (defcustom that1guycolin/default-font-presets--font-size nil
+    "A human-readable font-size that could be used in a standard office suite.
+The Emacs' `font-face' attribute `height' is the font size (this number)
+multiplied by 10.  Setting this value directly will nothing, it must be updated
+via the function `that1guycolin/default-font-presets-set-size'."
+    :type 'integer
+    :group 'default-font-presets)
+  
+  (defun that1guycolin/default-font-presets-set-size (new-size)
+    "Set the current font size to NEW-SIZE."
+    (interactive
+     (list
+      (read-number (format "Font Size (Current: %i): "
+                           that1guycolin/default-font-presets--font-size))))
+    (set-face-attribute
+     'default nil :font (concat (that1guycolin/default-font-presets--get-font)
+                                "-" (number-to-string new-size)))
+    (setf that1guycolin/default-font-presets--font-size new-size))
+
+  (defun that1guycolin/default-font-presets-random-font ()
     "Activate a random font from `default-fonts-presets-list'."
     (interactive)
     (default-font-presets--ensure-once)
-    (let* ((fonts-idx-cons (list))
-           (index 0))
-      (dolist (font-name default-font-presets-list)
-        (push (cons font-name index) fonts-idx-cons)
-        (incf index))
-      (let* ((new-cons (nth (random (length fonts-idx-cons))
-                            fonts-idx-cons))
-             (new-font (car new-cons))
-             (new-index (cdr new-cons)))
-        (default-font-presets--switch-pre)
-        (setq default-font-presets--index new-index)
-        (condition-case _err
-            (default-font-presets--index-update-on-switch)
-          (error nil))
-        (message "New Font: %s" new-font))))
+    (unless that1guycolin/default-font-presets--idx-fonts-alist
+      (that1guycolin/default-font-presets-generate-font-index))
+    (let* ((new-cons
+            (nth
+             (random
+              (length that1guycolin/default-font-presets--idx-fonts-alist))
+             that1guycolin/default-font-presets--idx-fonts-alist))
+           (new-font (cdr new-cons))
+           (new-index (car new-cons)))
+      (default-font-presets--switch-pre)
+      (setq default-font-presets--index new-index)
+      (condition-case _err
+          (default-font-presets--index-update-on-switch)
+        (error nil))
+      (message "New Font: %s" new-font)))
+
+  (defun that1guycolin/default-font-presets--new-frame (frame)
+    (with-selected-frame frame
+      (let ((font (that1guycolin/default-font-presets--get-font)))
+        (set-face-attribute
+         'default t
+         :font (concat font "-"
+                       (number-to-string
+                        that1guycolin/default-font-presets--font-size))))))
 
   :unless (eq system-type 'android)
   :bind (("C-+" . default-font-presets-scale-increase)
@@ -196,242 +247,65 @@ argument."
   :functions (default-font-presets--ensure-once
               default-font-presets--switch-pre
               default-font-presets--index-update-on-switch)
-  :custom 
-  (default-font-presets-list
-   (list
-    "0x Proto Nerd Font"
-    "0x Proto Nerd Font Mono"
-    "0x Proto Nerd Font Propo"
-    "3270 Nerd Font"
-    "3270 Nerd Font Mono"
-    "3270 Nerd Font Propo"
-    "Adwaita Mono Nerd Font"
-    "Adwaita Mono Nerd Font Mono"
-    "Adwaita Mono Nerd Font Propo"
-    "Agave Nerd Font"
-    "Agave Nerd Font Mono"
-    "Agave Nerd Font Propo"
-    "Anonymice Pro Nerd Font"
-    "Anonymice Pro Nerd Font Mono"
-    "Anonymice Pro Nerd Font Propo"
-    "Arimo Nerd Font"
-    "Arimo Nerd Font Propo"
-    "Big Blue Term437 Nerd Font"
-    "Big Blue Term437 Nerd Font Mono"
-    "Big Blue Term437 Nerd Font Propo"
-    "Big Blue Term Plus Nerd Font"
-    "Big Blue Term Plus Nerd Font Mono"
-    "Big Blue Term Plus Nerd Font Propo"
-    "Bitstrom Wera Nerd Font"
-    "Bitstrom Wera Nerd Font Mono"
-    "Bitstrom Wera Nerd Font Propo"
-    "Blex Mono Nerd Font"
-    "Blex Mono Nerd Font Mono"
-    "Blex Mono Nerd Font Propo"
-    "Caskaydia Cove Nerd Font"
-    "Caskaydia Cove Nerd Font Mono"
-    "Caskaydia Cove Nerd Font Propo"
-    "Caskaydia Mono Nerd Font"
-    "Caskaydia Mono Nerd Font Mono"
-    "Caskaydia Mono Nerd Font Propo"
-    "Cousine Nerd Font"
-    "Cousine Nerd Font Mono"
-    "Cousine Nerd Font Propo"
-    "D2 Koding Ligature Nerd Font"
-    "D2 Koding Ligature Nerd Font Mono"
-    "D2 Koding Ligature Nerd Font Propo"
-    "Daddy Time Mono Nerd Font"
-    "Daddy Time Mono Nerd Font Mono"
-    "Daddy Time Mono Nerd Font Propo"
-    "Deja Vu Sans M Nerd Font"
-    "Deja Vu Sans M Nerd Font Mono"
-    "Deja Vu Sans M Nerd Font Propo"
-    "Envy Code R Nerd Font"
-    "Envy Code R Nerd Font Mono"
-    "Envy Code R Nerd Font Propo"
-    "Fantasque Sans M Nerd Font"
-    "Fantasque Sans M Nerd Font Mono"
-    "Fantasque Sans M Nerd Font Propo"
-    "Fira Code Nerd Font"
-    "Fira Code Nerd Font Mono"
-    "Fira Code Nerd Font Propo"
-    "Gohu Font11 Nerd Font"
-    "Gohu Font11 Nerd Font Mono"
-    "Gohu Font11 Nerd Font Propo"
-    "Gohu Font14 Nerd Font"
-    "Gohu Font14 Nerd Font Mono"
-    "Gohu Font14 Nerd Font Propo"
-    "Gohu Fontuni11 Nerd Font"
-    "Gohu Fontuni11 Nerd Font Mono"
-    "Gohu Fontuni11 Nerd Font Propo"
-    "Gohu Fontuni14 Nerd Font"
-    "Gohu Fontuni14 Nerd Font Mono"
-    "Gohu Fontuni14 Nerd Font Propo"
-    "Go Mono Nerd Font"
-    "Go Mono Nerd Font Mono"
-    "Go Mono Nerd Font Propo"
-    "Hack Nerd Font"
-    "Hack Nerd Font Mono"
-    "Hack Nerd Font Propo"
-    "Heavy Data Nerd Font"
-    "Heavy Data Nerd Font Propo"
-    "i M Writing Duo Nerd Font"
-    "i M Writing Duo Nerd Font Propo"
-    "i M Writing Mono Nerd Font"
-    "i M Writing Mono Nerd Font Mono"
-    "i M Writing Mono Nerd Font Propo"
-    "i M Writing Quat Nerd Font"
-    "i M Writing Quat Nerd Font Propo"
-    "Inconsolata Go Nerd Font"
-    "Inconsolata Go Nerd Font Mono"
-    "Inconsolata Go Nerd Font Propo"
-    "Inconsolata LGC Nerd Font"
-    "Inconsolata LGC Nerd Font Mono"
-    "Inconsolata LGC Nerd Font Propo"
-    "Inconsolata Nerd Font"
-    "Inconsolata Nerd Font Mono"
-    "Inconsolata Nerd Font Propo"
-    "Intone Mono Nerd Font"
-    "Intone Mono Nerd Font Mono"
-    "Intone Mono Nerd Font Propo"
-    "Iosevka Nerd Font"
-    "Iosevka Nerd Font Mono"
-    "Iosevka Nerd Font Propo"
-    "Iosevka Term Nerd Font"
-    "Iosevka Term Nerd Font Mono"
-    "Iosevka Term Nerd Font Propo"
-    "Iosevka Term Slab Nerd Font"
-    "Iosevka Term Slab Nerd Font Mono"
-    "Iosevka Term Slab Nerd Font Propo"
-    "Jet Brains Mono Nerd Font"
-    "Jet Brains Mono Nerd Font Mono"
-    "Jet Brains Mono Nerd Font Propo"
-    "Jet Brains Mono NL Nerd Font"
-    "Jet Brains Mono NL Nerd Font Mono"
-    "Jet Brains Mono NL Nerd Font Propo"
-    "Lekton Nerd Font"
-    "Lekton Nerd Font Mono"
-    "Lekton Nerd Font Propo"
-    "Lilex Nerd Font"
-    "Lilex Nerd Font Mono"
-    "Lilex Nerd Font Propo"
-    "Literation Mono Nerd Font"
-    "Literation Mono Nerd Font Mono"
-    "Literation Mono Nerd Font Propo"
-    "Literation Sans Nerd Font"
-    "Literation Sans Nerd Font Propo"
-    "Literation Serif Nerd Font"
-    "Literation Serif Nerd Font Propo"
-    "M+1 Code Nerd Font"
-    "M+1 Code Nerd Font Mono"
-    "M+1 Code Nerd Font Propo"
-    "M+1 Nerd Font"
-    "M+1 Nerd Font Propo"
-    "M+2 Nerd Font"
-    "M+2 Nerd Font Propo"
-    "Martian Mono Nerd Font"
-    "Martian Mono Nerd Font Mono"
-    "Martian Mono Nerd Font Propo"
-    "M+Code Lat50 Nerd Font"
-    "M+Code Lat50 Nerd Font Mono"
-    "M+Code Lat50 Nerd Font Propo"
-    "M+Code Lat60 Nerd Font"
-    "M+Code Lat60 Nerd Font Mono"
-    "M+Code Lat60 Nerd Font Propo"
-    "Meslo LGLDZ Nerd Font"
-    "Meslo LGLDZ Nerd Font Mono"
-    "Meslo LGLDZ Nerd Font Propo"
-    "Meslo LGL Nerd Font"
-    "Meslo LGL Nerd Font Mono"
-    "Meslo LGL Nerd Font Propo"
-    "Meslo LGMDZ Nerd Font"
-    "Meslo LGMDZ Nerd Font Mono"
-    "Meslo LGMDZ Nerd Font Propo"
-    "Meslo LGM Nerd Font"
-    "Meslo LGM Nerd Font Mono"
-    "Meslo LGM Nerd Font Propo"
-    "Meslo LGSDZ Nerd Font"
-    "Meslo LGSDZ Nerd Font Mono"
-    "Meslo LGSDZ Nerd Font Propo"
-    "Meslo LGS Nerd Font"
-    "Meslo LGS Nerd Font Mono"
-    "Meslo LGS Nerd Font Propo"
-    "Monofur Nerd Font"
-    "Monofur Nerd Font Mono"
-    "Monofur Nerd Font Propo"
-    "Monoid Nerd Font"
-    "Monoid Nerd Font Mono"
-    "Monoid Nerd Font Propo"
-    "Mononoki Nerd Font"
-    "Mononoki Nerd Font Mono"
-    "Mononoki Nerd Font Propo"
-    "Noto Mono Nerd Font"
-    "Noto Mono Nerd Font Mono"
-    "Noto Mono Nerd Font Propo"
-    "Noto Sans M Nerd Font"
-    "Noto Sans M Nerd Font Mono"
-    "Noto Sans M Nerd Font Propo"
-    "Noto Sans Nerd Font"
-    "Noto Sans Nerd Font Propo"
-    "Noto Serif Nerd Font"
-    "Noto Serif Nerd Font Propo"
-    "Pro Font I Ix Nerd Font"
-    "Pro Font I Ix Nerd Font Mono"
-    "Pro Font I Ix Nerd Font Propo"
-    "Pro Font Windows Nerd Font"
-    "Pro Font Windows Nerd Font Mono"
-    "Pro Font Windows Nerd Font Propo"
-    "Proggy Clean CE Nerd Font"
-    "Proggy Clean CE Nerd Font Mono"
-    "Proggy Clean CE Nerd Font Propo"
-    "Proggy Clean Nerd Font"
-    "Proggy Clean Nerd Font Mono"
-    "Proggy Clean Nerd Font Propo"
-    "Proggy Clean SZ Nerd Font"
-    "Proggy Clean SZ Nerd Font Mono"
-    "Proggy Clean SZ Nerd Font Propo"
-    "Rec Mono Casual Nerd Font"
-    "Rec Mono Casual Nerd Font Mono"
-    "Rec Mono Casual Nerd Font Propo"
-    "Rec Mono Duotone Nerd Font"
-    "Rec Mono Duotone Nerd Font Mono"
-    "Rec Mono Duotone Nerd Font Propo"
-    "Rec Mono Linear Nerd Font"
-    "Rec Mono Linear Nerd Font Mono"
-    "Rec Mono Linear Nerd Font Propo"
-    "Rec Mono Sm Casual Nerd Font"
-    "Rec Mono Sm Casual Nerd Font Mono"
-    "Rec Mono Sm Casual Nerd Font Propo"
-    "Roboto Mono Nerd Font"
-    "Roboto Mono Nerd Font Mono"
-    "Roboto Mono Nerd Font Propo"
-    "Sauce Code Pro Nerd Font"
-    "Sauce Code Pro Nerd Font Mono"
-    "Sauce Code Pro Nerd Font Propo"
-    "Shure Tech Mono Nerd Font"
-    "Shure Tech Mono Nerd Font Mono"
-    "Shure Tech Mono Nerd Font Propo"
-    "Space Mono Nerd Font"
-    "Space Mono Nerd Font Mono"
-    "Space Mono Nerd Font Propo"
-    "Symbols Nerd Font"
-    "Symbols Nerd Font Mono"
-    "Terminess Nerd Font"
-    "Terminess Nerd Font Mono"
-    "Terminess Nerd Font Propo"
-    "Tinos Nerd Font"
-    "Tinos Nerd Font Propo"
-    "Ubuntu Mono Nerd Font"
-    "Ubuntu Mono Nerd Font Mono"
-    "Ubuntu Mono Nerd Font Propo"
-    "Ubuntu Nerd Font"
-    "Ubuntu Nerd Font Propo"
-    "Victor Mono Nerd Font"
-    "Victor Mono Nerd Font Mono"
-    "Victor Mono Nerd Font Propo"
-    "Zed Mono Nerd Font"
-    "Zed Mono Nerd Font Mono"
-    "Zed Mono Nerd Font Propo")))
+  :custom (default-font-presets-list
+           (list
+            "0x Proto Nerd Font Mono" "3270 Nerd Font Mono"
+            "Adwaita Mono Nerd Font Mono" "Agave Nerd Font Mono"
+            "Anonymice Pro Nerd Font Mono" "Arimo Nerd Font"
+            "Big Blue Term437 Nerd Font Mono"
+            "Big Blue Term Plus Nerd Font Mono" "Bitstrom Wera Nerd Font Mono"
+            "Blex Mono Nerd Font Mono" "Caskaydia Cove Nerd Font Mono"
+            "Caskaydia Mono Nerd Font Mono" "Cousine Nerd Font Mono"
+            "D2 Koding Ligature Nerd Font Mono" "Daddy Time Mono Nerd Font Mono"
+            "Deja Vu Sans M Nerd Font Mono" "Envy Code R Nerd Font Mono"
+            "Fantasque Sans M Nerd Font Mono" "Fira Code Nerd Font Mono"
+            "Gohu Font11 Nerd Font Mono" "Gohu Font14 Nerd Font Mono"
+            "Gohu Fontuni11 Nerd Font Mono" "Gohu Fontuni14 Nerd Font Mono"
+            "Go Mono Nerd Font Mono" "Hack Nerd Font Mono"
+            "Heavy Data Nerd Font" "i M Writing Duo Nerd Font"
+            "i M Writing Mono Nerd Font Mono" "i M Writing Quat Nerd Font"
+            "Inconsolata Go Nerd Font Mono" "Inconsolata LGC Nerd Font Mono"
+            "Inconsolata Nerd Font Mono" "Intone Mono Nerd Font Mono"
+            "Iosevka Nerd Font Mono" "Iosevka Term Nerd Font Mono"
+            "Iosevka Term Slab Nerd Font Mono" "Jet Brains Mono Nerd Font Mono"
+            "Jet Brains Mono NL Nerd Font Mono" "Lekton Nerd Font Mono"
+            "Lilex Nerd Font Mono" "Literation Mono Nerd Font Mono"
+            "M+1 Code Nerd Font Mono" "Martian Mono Nerd Font Mono"
+            "M+Code Lat50 Nerd Font Mono" "M+Code Lat60 Nerd Font Mono"
+            "Meslo LGLDZ Nerd Font Mono" "Meslo LGL Nerd Font Mono"
+            "Meslo LGMDZ Nerd Font Mono" "Meslo LGM Nerd Font Mono"
+            "Meslo LGSDZ Nerd Font Mono" "Meslo LGS Nerd Font Mono"
+            "Monofur Nerd Font Mono" "Monoid Nerd Font Mono"
+            "Mononoki Nerd Font Mono" "Noto Mono Nerd Font Mono"
+            "Noto Sans M Nerd Font Mono" "Pro Font I Ix Nerd Font Mono"
+            "Pro Font Windows Nerd Font Mono" "Proggy Clean CE Nerd Font Mono"
+            "Proggy Clean Nerd Font Mono" "Proggy Clean SZ Nerd Font Mono"
+            "Rec Mono Casual Nerd Font Mono" "Rec Mono Duotone Nerd Font Mono"
+            "Rec Mono Linear Nerd Font Mono" "Rec Mono Sm Casual Nerd Font Mono"
+            "Roboto Mono Nerd Font Mono" "Sauce Code Pro Nerd Font Mono"
+            "Shure Tech Mono Nerd Font Mono" "Space Mono Nerd Font Mono"
+            "Terminess Nerd Font Mono" "Tinos Nerd Font"
+            "Ubuntu Mono Nerd Font Mono" "Victor Mono Nerd Font Mono"
+            "Zed Mono Nerd Font Mono"))
+  :config
+  (let ((font "Blex Mono Nerd Font Mono")
+        (size 11)
+        (content (list)))
+    (unless (daemonp)
+      (set-face-attribute
+       'default t
+       :font (concat font "-" (number-to-string size))))
+    (setq that1guycolin/default-font-presets--font-size size)
+    (let ((index 0))
+      (dolist (font-name default-font-presets-list)
+        (push (cons font-name index) content)
+        (incf index)))
+    (setq content (nreverse content))
+    (default-font-presets--switch-pre)
+    (setq default-font-presets--index (cdr (assoc font content))))
+  (when (daemonp)
+    (add-hook 'after-make-frame-functions
+              #'that1guycolin/default-font-presets--new-frame)))
 
 ;; preview fonts prior to selection
 (use-package show-font
@@ -456,15 +330,12 @@ argument."
       ("n" "Next font"          default-font-presets-forward :transient t)
       ("p" "Previous font"      default-font-presets-backward :transient t)
       ("c" "Choose font"        default-font-presets-choose)
-      ("r" "Random font"        that1guycolin/default-font-random :transient t)
-      ("f" "Show font family"   show-font-select-preview)]
+      ("r" "Random font"        that1guycolin/default-font-presets-random-font
+       :transient t)]
      [""
-      ("+" "Incr. font scale"
-       default-font-presets-scale-increase :transient t)
-      ("-" "Decr. font scale"
-       default-font-presets-scale-decrease :transient t)
-      ("=" "Scale font to fit"  default-font-presets-scale-fit)
+      ("s" "Set font size"      that1guycolin/default-font-presets-set-size)
       ("0" "Reset font scale"   default-font-presets-scale-reset)
+      ("f" "Show font family"   show-font-select-preview)
       ("a" "Show Fonts (All)"   show-font-tabulated)]])
   (keymap-global-set "C-c u" 'that1guycolin/visual-settings-dispatch))
 
