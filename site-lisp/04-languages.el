@@ -229,11 +229,17 @@
 
   (defun that1guycolin/sly-load-if-not-connected ()
     "Connect to sly, unless an active connection exists already."
-    (unless (sly-connected-p) (save-excursion (sly))))
+    (unless (sly-connected-p)
+      (save-excursion (that1guycolin/sly-autoconnect))))
 
   (defun that1guycolin/sly-autoconnect ()
-    "Automatically connect to a running slynk instance @ localhost:4005."
-    (funcall #'(lambda () (sly-connect "localhost" 4005))))
+    "Start sly based on Emacs-type.
+If \\='desktop or \\='termux, run `sly'.  If \\='android-gui, connect to
+a running slynk instance @ localhost:4005."
+    (interactive)
+    (if (eq that1guycolin/emacs-type 'android-gui)
+        (sly-connect "localhost" 4005)
+      (sly)))
 
   (that1guycolin/desktop-mobile :desk
     (defvar-keymap that1guycolin/sly-functions-map
@@ -259,6 +265,7 @@
       "i" "Eval & inspect expr" "a" "Symbol match"
       "w" "Describe symbol"))
   :bind-keymap ("C-c s" . that1guycolin/sly-functions-map)
+  :bind ("C-c s" . that1guycolin/sly-autoconnect)
   :hook ((lisp-mode lisp-ts-mode) . sly-editing-mode)
   :functions (sly sly-connect sly-connected-p sly-mrepl sly-mrepl-new
                   sly-mrepl-sync sly-mrepl-set-directory sly-cd sly-inspect
@@ -269,8 +276,8 @@
    `((sbcl
       ("lisp-repl-core-dumper"
        "-s" "sb-bsd-sockets sb-posix sb-introspect sb-cltl2 asdf"
-       "-g" ,(format "--load %s" (expand-file-name "sly/slynk/slynk-loader.lisp"
-                                                   elpaca-sources-directory))
+       "-g" ,(format "--load %s" (expand-file-name"sly/slynk/slynk-loader.lisp"
+                                                  elpaca-sources-directory))
        "sbcl"))))
   :config
   (dolist (contrib '(sly-fancy sly-mrepl sly-indentation sly-package-fu))
