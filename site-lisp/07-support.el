@@ -937,8 +937,8 @@ doubles as a model-switcher."
   :config
   (if (daemonp)
       (add-hook 'after-make-frame-functions
-                #'(lambda (frame)
-                    (that1guycolin/telega-new-frame-mode-line frame)))
+                (lambda (frame)
+                  (that1guycolin/telega-new-frame-mode-line frame)))
     (telega-mode-line-mode 1))
   (telega-appindicator-mode 1)
   (telega-auto-download-mode 1)
