@@ -298,7 +298,10 @@ a running slynk instance @ localhost:4005."
   :defer t
   :mode "\\.lua\\'"
   :init (add-to-list 'major-mode-remap-alist '(lua-mode . lua-ts-mode))
-  :custom (lua-ts-inferior-lua "luajit"))
+  :custom (lua-ts-inferior-lua "luajit")
+  :config (add-hook 'lua-ts-mode-hook (lambda () (docstr-mode 1))))
+
+
 
 
 ;;; Markdown:
@@ -364,9 +367,12 @@ a running slynk instance @ localhost:4005."
               python-skeleton-import python-skeleton-try python-skeleton-while)
   :init (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
   :custom
+  (docstr-python-style 'google)
   (python-indent-offset 4)
   (python-shell-interpreter "python3")
-  :config (keymap-unset python-base-mode-map "C-c C-t"))
+  :config
+  (keymap-unset python-base-mode-map "C-c C-t")
+  (add-hook 'python-ts-mode-hook (lambda () (docstr-mode 1))))
 
 ;; Live coding
 (use-package live-py-mode
@@ -395,7 +401,8 @@ a running slynk instance @ localhost:4005."
   :ensure nil
   :defer t
   :mode "\\.rs\\'"
-  :init (add-to-list 'major-mode-remap-alist '(rust-mode . rust-ts-mode)))
+  :init (add-to-list 'major-mode-remap-alist '(rust-mode . rust-ts-mode))
+  :config (add-hook 'rust-ts-mode-hook (lambda () (docstr-mode 1))))
 
 (use-package rustic
   :defer t

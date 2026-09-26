@@ -28,25 +28,7 @@
 ;; docstring support
 (use-package docstr
   :defer t
-  :preface
-  (defun that1guycolin/docstr-print-hooks ()
-    "Print the `use-package' \":hook\" values for `docstr'."
-    (interactive)
-    (let ((modes-str
-           (mapconcat (lambda (bol)
-                        (if (eq bol (car (docstr-major-modes)))
-                            (symbol-name bol)
-                          (concat " " (symbol-name bol))))
-                      (docstr-major-modes))))
-      (insert ":hook ((" modes-str ") . docstr-mode)")))
-
-  :hook ((actionscript-mode
-          c-mode c++-mode csharp-mode go-mode groovy-mode java-mode
-          javascript-mode js-mode js2-mode js3-mode lua-mode objc-mode php-mode
-          python-mode rjsx-mode ruby-mode rust-mode scala-mode swift-mode
-          typescript-mode web-mode) . docstr-mode)
-  :functions (docstr-major-modes)
-  :custom (docstr-python-style 'google))
+  :commands (docstr-mode))
 
 ;; Jump-to-def/find-refs
 (use-package dumb-jump
