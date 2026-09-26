@@ -1,4 +1,4 @@
-;;; 04-languages.el --- Language Specific Settings -*- lexical-binding: t; -*-
+;;; 05-languages.el --- Language Specific Settings -*- lexical-binding: t; -*-
 
 ;;; Packages included:
 ;; adjust-parens, auto-rename-tag, bash-ts-mode, checkdoc, cmake-ts-mode,
@@ -530,5 +530,5 @@ a running slynk instance @ localhost:4005."
   :hook ((yaml-mode yaml-ts-mode) . yaml-pro-mode))
 
 
-(provide '04-languages)
-;;; 04-languages.el ends here
+(provide '05-languages)
+;;; 05-languages.el ends here

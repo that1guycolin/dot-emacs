@@ -1,4 +1,4 @@
-;;; 05-coding.el --- Code Smarter, Not Harder -*- lexical-binding: t -*-
+;;; 04-code-assist.el --- Code Smarter, Not Harder -*- lexical-binding: t -*-
 
 ;;; Packages included:
 ;; adaptive-wrap, apheleia, comment-dwim-2, consult-eglot,
@@ -709,5 +709,5 @@ See URL: https://github.com/zavoloklom/docker-compose-linter"
   :demand t)
 
 
-(provide '05-coding)
-;;; 05-coding.el ends here
+(provide '04-code-assist)
+;;; 04-code-assist.el ends here
