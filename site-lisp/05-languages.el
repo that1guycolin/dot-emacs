@@ -795,7 +795,7 @@ See URL `https://fishshell.com'."
      '("jq" "." "-M" "--indent" "2")
      (alist-get 'prettier-json apheleia-formatters)
      '("pnpx" "prettier" "--stdin-filepath" filepath "--parser=json")
-     (alist-get 'json-ts-mode apheleia-mode-alist) 'jq)o
+     (alist-get 'json-ts-mode apheleia-mode-alist) 'jq)
     (keymap-set json-ts-mode-map "C-c v"
                 #'that1guycolin/apheleia-toggle-json-formatter))
 
