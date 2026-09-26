@@ -436,6 +436,7 @@ Thanks to Reddit user \\='hogmannn' for the basis of this function:
   (org-insert-mode-line-in-empty-file t)
   (org-log-done 'time)
   (org-log-into-drawer t)
+  (org-startup-align-all-tables t)
   (org-startup-folded 'show2levels)
   (org-todo-keywords
    (list that1guycolin/org-keywords--tasks that1guycolin/org-keywords--ideas
