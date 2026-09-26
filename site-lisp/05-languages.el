@@ -32,6 +32,7 @@
   (treesit-enabled-modes t)
   (treesit-font-lock-level 4)
   :defer t
+  :hook (css-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)))
   :mode "\\.css\\'"
   :init
   (add-to-list 'major-mode-remap-alist '(css-mode . css-ts-mode))
@@ -88,7 +89,7 @@
 (use-package dockerfile-ts-mode
   :ensure nil
   :defer t
-  :mode ("Dockerfile\\'" "Containerfile\\'"))
+  :hook (dockerfile-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)))
   :mode ("Dockerfile\\'" "Containerfile\\'")
   :init (add-to-list 'that1guycolin/eglot-non-defaults 'dockerfile-ts-mode)
   :config
@@ -200,7 +201,8 @@ See URL: `https://github.com/fukamachi/mallet'."
 (use-package scheme-mode
   :ensure nil
   :defer t
-  :mode "\\.scm\\'")
+  :hook (scheme-mode . (lambda () (outline-minor-mode) (kirigami-mode)))
+  :mode "\\.scm\\'"
   :config
   (with-eval-after-load 'eglot
     (add-to-list 'eglot-server-programs
@@ -413,10 +415,19 @@ a running slynk instance @ localhost:4005."
   :demand t)
 
 
+;;; Go:
+(use-package go-ts-mode
+  :ensure nil
+  :defer t
+  :hook (go-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)))
+  :mode "\\.go\\'")
+
+
 ;;; Lua:
 (use-package lua-ts-mode
   :ensure nil
   :defer t
+  :hook (lua-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)))
   :mode "\\.lua\\'"
   :init (add-to-list 'major-mode-remap-alist '(lua-mode . lua-ts-mode))
   :custom (lua-ts-inferior-lua "luajit")
@@ -475,6 +486,7 @@ install github.com/checkmake/checkmake/cmd/checkmake@latest'."
 (use-package markdown-ts-mode
   :ensure nil
   :defer t
+  :hook (markdown-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)))
   :mode ("\\.md\\'" "README\\'" "INSTALL\\'")
   :init
   (add-to-list 'major-mode-remap-alist '(markdown-mode . markdown-ts-mode))
@@ -556,6 +568,8 @@ See URL `https://github.com/rvben/rumdl'."
               ("C-c C-k t" . python-skeleton-try)
               ("C-c C-k w" . python-skeleton-while)
               ("C-c C-r"   . that1guycolin/python-run-smart))
+  :hook (python-ts-mode . (lambda ()
+                            (outline-indent-minor-mode) (kirigami-mode)))
   :interpreter ("python3" "uv")
   :mode "\\.py\\'"
   :functions (python-skeleton-class
@@ -608,9 +622,10 @@ See URL `https://github.com/rvben/rumdl'."
 (use-package rust-ts-mode
   :ensure nil
   :defer t
+  :hook (rust-ts-mode . (lambda ()
+                          (docstr-mode -1) (treesit-fold-mode) (kirigami-mode)))
   :mode "\\.rs\\'"
-  :init (add-to-list 'major-mode-remap-alist '(rust-mode . rust-ts-mode))
-  :config (add-hook 'rust-ts-mode-hook (lambda () (docstr-mode 1))))
+  :init (add-to-list 'major-mode-remap-alist '(rust-mode . rust-ts-mode)))
 
 (use-package rustic
   :defer t
@@ -628,9 +643,10 @@ See URL `https://github.com/rvben/rumdl'."
 (use-package bash-ts-mode
   :ensure nil
   :defer t
+  :hook (bash-ts-mode . (lambda () (apheleia-mode -1) (treesit-fold-mode)
+                          (kirigami-mode)))
   :interpreter "bash"
   :mode "\\.bash\\'"
-  :config (add-hook 'bash-ts-mode-hook (lambda () (apheleia-mode -1))))
   :config (with-eval-after-load 'flycheck
             (flycheck-select-checker 'bash-ts-mode)))
 
@@ -654,7 +670,11 @@ See URL `https://github.com/rvben/rumdl'."
         (setq file (concat "/data/data/com.termux/files" file)))
       (setq-local sh-shell-file file)))
 
-  :hook (sh-mode . that1guycolin/sh-mode-shell-auto)
+  :hook (sh-mode . (lambda ()
+                     (that1guycolin/sh-mode-shell-auto)
+                     (apheleia-mode -1)
+                     (hs-minor-mode)
+                     (kirigami-mode)))
   :interpreter ("sh" "zsh" "dash")
   :mode ("\\.zsh\\'" "\\.dash\\'")
   :init (with-eval-after-load 'flycheck
@@ -676,8 +696,7 @@ See URL `https://github.com/rvben/rumdl'."
   (flycheck-sh-zsh-executable
    (that1guycolin/desktop-mobile
      :desk "/usr/bin/zsh"
-     :termux "/data/data/com.termux/files/usr/bin/zsh"))
-  :config (add-hook 'sh-mode-hook (lambda () (apheleia-mode -1))))
+     :termux "/data/data/com.termux/files/usr/bin/zsh")))
 
 (use-package shfmt
   :defer t
@@ -732,6 +751,7 @@ See URL `https://fishshell.com'."
 (use-package cmake-ts-mode
   :ensure nil
   :defer t
+  :hook (cmake-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)))
   :mode ("\\.cmake\\'" "CMakeLists\\.txt\\'")
   :init (add-to-list 'major-mode-remap-alist '(cmake-mode . cmake-ts-mode))
   :config
@@ -748,6 +768,7 @@ See URL `https://fishshell.com'."
 ;; Justfile:
 (use-package just-ts-mode
   :defer t
+  :hook (just-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)))
   :mode "justfile\\'")
 
 
@@ -761,6 +782,7 @@ See URL `https://fishshell.com'."
 (use-package json-ts-mode
   :ensure nil
   :defer t
+  :hook (json-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)))
   :mode ("\\.json\\'" "\\.jsonc\\'")
   :init (add-to-list 'that1guycolin/eglot-non-defaults 'json-ts-mode)
   :config
@@ -839,6 +861,7 @@ See URL `https://github.com/priv-kweihmann/systemdlint'."
 (use-package toml-ts-mode
   :ensure nil
   :defer t
+  :hook (toml-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)))
   :mode "\\.toml\\'"
   :init (add-to-list 'major-mode-remap-alist '(conf-toml-mode . toml-ts-mode))
   :config
@@ -851,6 +874,7 @@ See URL `https://github.com/priv-kweihmann/systemdlint'."
 (use-package nxml-mode
   :ensure nil
   :defer t
+  :hook (nxml-mode . (lambda () (hs-minor-mode) (kirigami-mode)))
   :mode ("\\.xml\\'"
          "\\.xsd\\'" "\\.xslt\\'" "\\.svg\\'" "\\.rss\\'" "\\.pom\\'")
   :init (add-to-list 'that1guycolin/eglot-non-defaults 'nxml-mode)
@@ -858,6 +882,9 @@ See URL `https://github.com/priv-kweihmann/systemdlint'."
   (nxml-child-indent 2)
   (nxml-attribute-indent 2)
   (nxml-slash-auto-complete-flag t)
+  :config
+  (with-eval-after-load 'eglot
+    (add-to-list 'eglot-server-programs '((nxml-mode) . ("lemminx")))))
 
 (use-package auto-rename-tag
   :defer t
@@ -867,6 +894,7 @@ See URL `https://github.com/priv-kweihmann/systemdlint'."
 (use-package yaml-ts-mode
   :ensure nil
   :defer t
+  :hook (yaml-ts-mode . (lambda () (outline-indent-minor-mode) (kirigami-mode)))
   :preface
   :mode ("\\.yml\\'" "\\.yaml\\'")
   :init

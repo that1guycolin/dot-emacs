@@ -203,33 +203,25 @@ their cons removed from `eglot-server-programs'."
 (use-package hideshow
   :ensure nil
   :defer t
-  :hook ((c-mode
-          c++-mode css-mode html-mode java-mode js-mode js-json-mode lua-mode
-          nxml-mode perl-mode ruby-mode rust-mode sh-mode) . hs-minor-mode))
+  :commands (hs-minor-mode))
 
 ;; Based on headings
 (use-package outline
   :ensure nil
   :defer t
-  :hook ((conf-mode
-          diff-mode emacs-lisp-mode lisp-interaction-mode lisp-mode
-          markdown-mode) . outline-minor-mode))
+  :hook ((conf-mode diff-mode lisp-interaction-mode markdown-mode) .
+         outline-minor-mode))
 
 ;; Based on indentation
 (use-package outline-indent
   :defer t
-  :hook ((python-mode python-ts-mode yaml-mode yaml-ts-mode) .
-         outline-indent-minor-mode)
+  :commands (outline-indent-minor-mode)
   :custom (outline-indent-ellipsis " …"))
 
 ;; Based on treesit language syntax
 (use-package treesit-fold
   :defer t
-  :hook ((bash-ts-mode
-          cmake-ts-mode csharp-ts-mode css-ts-mode c++-ts-mode c-ts-mode
-          dockerfile-ts-mode go-mod-ts-mode go-ts-mode java-ts-mode json-ts-mode
-          lua-ts-mode markdown-ts-mode php-ts-mode ruby-ts-mode rust-ts-mode
-          toml-ts-mode typescript-ts-mode) . treesit-fold-mode)
+  :commands (treesit-fold-mode)
   :custom
   (treesit-fold-line-count-show t)
   (treesit-fold-line-count-format " …")
@@ -242,15 +234,7 @@ their cons removed from `eglot-server-programs'."
 ;; Allows use of same keybindings across backends
 (use-package kirigami
   :defer t
-  :hook ((bash-ts-mode
-          cmake-ts-mode c++-mode c-mode conf-mode csharp-ts-mode css-mode
-          css-ts-mode c++-ts-mode c-ts-mode diff-mode dockerfile-ts-mode
-          emacs-lisp-mode go-mod-ts-mode go-ts-mode html-mode java-mode
-          java-ts-mode js-mode js-json-mode json-ts-mode lisp-interaction-mode
-          lisp-mode lua-mode lua-ts-mode markdown-mode markdown-ts-mode
-          nxml-mode perl-mode php-ts-mode python-base-mode ruby-mode
-          ruby-ts-mode rust-mode rust-ts-mode sh-mode toml-ts-mode
-          typescript-ts-mode yaml-ts-mode) . kirigami-mode)
+  :commands (kirigami-mode)
   :functions (kirigami-open-fold
               kirigami-open-fold-rec kirigami-open-folds kirigami-close-fold
               kirigami-close-folds kirigami-toggle-fold)
@@ -296,6 +280,55 @@ their cons removed from `eglot-server-programs'."
 (use-package flyspell-correct-avy-menu
   :after (flyspell-correct avy)
   :demand t)
+
+
+;;; Treesit:
+(use-package treesit
+  :ensure nil
+  :demand t
+  :preface (declare-function no-littering-expand-var-file-name "no-littering")
+  :mode ("\\.tsx\\'" . tsx-ts-mode)
+  :init (setq treesit-extra-load-path
+              `(,(no-littering-expand-var-file-name "tree-sitter")))
+  :custom
+  (treesit-enabled-modes t)
+  (treesit-font-lock-level 4)
+  :config
+  (setq
+   treesit-language-source-alist
+   '((bash . ("https://github.com/tree-sitter/tree-sitter-bash"))
+     (commonlisp . ("https://github.com/tree-sitter-grammars/tree-sitter-commonlisp"))
+     (cmake . ("https://github.com/uyha/tree-sitter-cmake"))
+     (css . ("https://github.com/tree-sitter/tree-sitter-css"))
+     (cpp . ("https://github.com/tree-sitter/tree-sitter-cpp"))
+     (dockerfile . ("https://github.com/camdencheek/tree-sitter-dockerfile"))
+     (fish . ("https://github.com/ram02z/tree-sitter-fish"))
+     (elisp . ("https://github.com/Wilfred/tree-sitter-elisp"))
+     (gitcommit . ("https://github.com/gbprod/tree-sitter-gitcommit"))
+     (go . ("https://github.com/tree-sitter/tree-sitter-go"))
+     (html . ("https://github.com/tree-sitter/tree-sitter-html"))
+     (javascript . ("https://github.com/tree-sitter/tree-sitter-javascript"
+                    "master" "src"))
+     (json . ("https://github.com/tree-sitter/tree-sitter-json"))
+     (json5 . ("https://github.com/Joakker/tree-sitter-json5"))
+     (kdl . ("https://github.com/tree-sitter-grammars/tree-sitter-kdl"))
+     (lua . ("https://github.com/MunifTanjim/tree-sitter-lua"))
+     (make . ("https://github.com/alemuller/tree-sitter-make"))
+     (markdown . ("https://github.com/tree-sitter-grammars/tree-sitter-markdown"
+                  "split_parser" "tree-sitter-markdown/src"))
+     (markdown-inline . ("https://github.com/tree-sitter-grammars/tree-sitter-markdown"
+                         "split_parser" "tree-sitter-markdown-inline/src"))
+     (powershell . ("https://github.com/airbus-cert/tree-sitter-powershell"))
+     (python . ("https://github.com/tree-sitter/tree-sitter-python"))
+     (rust . ("https://github.com/tree-sitter/tree-sitter-rust"))
+     (toml . ("https://github.com/ikatyang/tree-sitter-toml"))
+     (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript"
+             "master" "tsx/src"))
+     (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript"
+                    "master" "typescript/src"))
+     (xml . ("https://github.com/tree-sitter-grammars/tree-sitter-xml"))
+     (yaml . ("https://github.com/ikatyang/tree-sitter-yaml"))
+     (zsh . ("https://github.com/georgeharker/tree-sitter-zsh")))))
 
 
 (provide '04-code-assist)
