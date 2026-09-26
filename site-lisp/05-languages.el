@@ -25,7 +25,8 @@
 (use-package css-ts-mode
   :ensure nil
   :defer t
-  :hook (css-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)))
+  :hook (css-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)
+                         (setq-local fill-column 80)))
   :mode "\\.css\\'"
   :init
   (add-to-list 'major-mode-remap-alist '(css-mode . css-ts-mode))
@@ -40,6 +41,7 @@
 ;;; CSV:
 (use-package csv-mode
   :defer t
+  :hook (csv-mode-hook . (lambda () (setq-local fill-column 1000)))
   :mode "\\.csv\\'")
 
 
@@ -47,7 +49,8 @@
 (use-package dockerfile-ts-mode
   :ensure nil
   :defer t
-  :hook (dockerfile-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)))
+  :hook (dockerfile-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)
+                                (setq-local fill-column 100)))
   :mode ("Dockerfile\\'" "Containerfile\\'")
   :init (add-to-list 'that1guycolin/eglot-non-defaults 'dockerfile-ts-mode)
   :config
@@ -61,6 +64,7 @@
 ;;; Shaders:
 (use-package glsl-mode
   :defer t
+  :hook (glsl-mode . (lambda () (setq-local fill-column 100)))
   :mode "\\.glsl\\'")
 
 
@@ -69,13 +73,15 @@
 (use-package emacs-lisp-mode
   :ensure nil
   :defer t
-  :hook (emacs-lisp-mode . (lambda () (outline-minor-mode) (kirigami-mode)))
+  :hook (emacs-lisp-mode . (lambda () (outline-minor-mode) (kirigami-mode)
+                             (setq-local fill-column 80)))
   :mode "\\.el\\'"
   :custom (flycheck-emacs-lisp-load-path 'inherit))
 
 (use-package lisp-ts-mode
   :defer t
-  :hook (lisp-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)))
+  :hook (lisp-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)
+                          (setq-local fill-column 80)))
   :interpreter "sbcl"
   :mode ("\\.lisp\\'" "\\.cl\\'" "\\.asd\\'")
   :init
@@ -159,7 +165,8 @@ See URL: `https://github.com/fukamachi/mallet'."
 (use-package scheme-mode
   :ensure nil
   :defer t
-  :hook (scheme-mode . (lambda () (outline-minor-mode) (kirigami-mode)))
+  :hook (scheme-mode . (lambda () (outline-minor-mode) (kirigami-mode)
+                         (setq-local fill-column 80)))
   :mode "\\.scm\\'"
   :config
   (with-eval-after-load 'eglot
@@ -228,7 +235,8 @@ See URL: `https://github.com/fukamachi/mallet'."
 ;; Scheme REPL
 (use-package geiser
   :defer t
-  :hook (scheme-mode . turn-on-geiser-mode)
+  :hook ((scheme-mode . turn-on-geiser-mode)
+         (geiser-repl-mode . (lambda () (setq-local fill-column 1000))))
   :custom (geiser-repl-use-other-window t))
 
 (use-package geiser-guile
@@ -323,7 +331,8 @@ a running slynk instance @ localhost:4005."
       (sly)))
 
   :bind ("C-c s" . that1guycolin/sly-autoconnect)
-  :hook ((lisp-mode lisp-ts-mode) . sly-editing-mode)
+  :hook (((lisp-mode lisp-ts-mode) . sly-editing-mode)
+         (sly-mrepl-mode . (lambda () (setq-local fill-column 1000))))
   :functions (sly sly-connect sly-connected-p sly-mrepl sly-mrepl-new
                   sly-mrepl-sync sly-mrepl-set-directory sly-cd sly-inspect
                   sly-apropos sly-describe-symbol)
@@ -377,7 +386,8 @@ a running slynk instance @ localhost:4005."
 (use-package go-ts-mode
   :ensure nil
   :defer t
-  :hook (go-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)))
+  :hook (go-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)
+                        (setq-local fill-column 80)))
   :mode "\\.go\\'")
 
 
@@ -385,7 +395,8 @@ a running slynk instance @ localhost:4005."
 (use-package lua-ts-mode
   :ensure nil
   :defer t
-  :hook (lua-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)))
+  :hook (lua-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)
+                         (setq-local fill-column 120)))
   :mode "\\.lua\\'"
   :init (add-to-list 'major-mode-remap-alist '(lua-mode . lua-ts-mode))
   :custom (lua-ts-inferior-lua "luajit")
@@ -401,6 +412,7 @@ a running slynk instance @ localhost:4005."
 (use-package makefile-mode
   :ensure nil
   :defer t
+  :hook (makefile-mode . (lambda () (setq-local fill-column 100)))
   :mode "Makefile\\'"
   :config
   (with-eval-after-load 'flycheck
@@ -444,7 +456,8 @@ install github.com/checkmake/checkmake/cmd/checkmake@latest'."
 (use-package markdown-ts-mode
   :ensure nil
   :defer t
-  :hook (markdown-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)))
+  :hook (markdown-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)
+                              (setq-local fill-column 80)))
   :mode ("\\.md\\'" "README\\'" "INSTALL\\'")
   :init
   (add-to-list 'major-mode-remap-alist '(markdown-mode . markdown-ts-mode))
@@ -526,8 +539,8 @@ See URL `https://github.com/rvben/rumdl'."
               ("C-c C-k t" . python-skeleton-try)
               ("C-c C-k w" . python-skeleton-while)
               ("C-c C-r"   . that1guycolin/python-run-smart))
-  :hook (python-ts-mode . (lambda ()
-                            (outline-indent-minor-mode) (kirigami-mode)))
+  :hook (python-ts-mode . (lambda () (outline-indent-minor-mode)
+                            (kirigami-mode) (setq-local fill-column 88)))
   :interpreter ("python3" "uv")
   :mode "\\.py\\'"
   :functions (python-skeleton-class
@@ -580,14 +593,15 @@ See URL `https://github.com/rvben/rumdl'."
 (use-package rust-ts-mode
   :ensure nil
   :defer t
-  :hook (rust-ts-mode . (lambda ()
-                          (docstr-mode -1) (treesit-fold-mode) (kirigami-mode)))
+  :hook (rust-ts-mode . (lambda () (docstr-mode -1) (treesit-fold-mode)
+                          (kirigami-mode) (setq-local fill-column 100)))
   :mode "\\.rs\\'"
   :init (add-to-list 'major-mode-remap-alist '(rust-mode . rust-ts-mode)))
 
 (use-package rustic
   :defer t
-  :hook ((rust-mode rust-ts-mode) . rustic-mode)
+  :hook (((rust-mode rust-ts-mode) . rustic-mode)
+         (rustic-mode . (lambda () (setq-local fill-column 100))))
   :custom
   (compilation-ask-about-save t)
   (rustic-analyzer-command '("/usr/lib/rustup/bin/rust-analyzer"))
@@ -602,7 +616,8 @@ See URL `https://github.com/rvben/rumdl'."
   :ensure nil
   :defer t
   :hook (bash-ts-mode . (lambda () (apheleia-mode -1) (treesit-fold-mode)
-                          (kirigami-mode)))
+                          (kirigami-mode)
+                          (setq-local fill-column 80)))
   :interpreter "bash"
   :mode "\\.bash\\'"
   :config (with-eval-after-load 'flycheck
@@ -628,11 +643,9 @@ See URL `https://github.com/rvben/rumdl'."
         (setq file (concat "/data/data/com.termux/files" file)))
       (setq-local sh-shell-file file)))
 
-  :hook (sh-mode . (lambda ()
-                     (that1guycolin/sh-mode-shell-auto)
-                     (apheleia-mode -1)
-                     (hs-minor-mode)
-                     (kirigami-mode)))
+  :hook (sh-mode . (lambda ()  (that1guycolin/sh-mode-shell-auto)
+                     (apheleia-mode -1) (hs-minor-mode) (kirigami-mode)
+                     (setq-local fill-column 80)))
   :interpreter ("sh" "zsh" "dash")
   :mode ("\\.zsh\\'" "\\.dash\\'")
   :init (with-eval-after-load 'flycheck
@@ -681,6 +694,7 @@ See URL `https://github.com/rvben/rumdl'."
 ;; Fish shell:
 (use-package fish-mode
   :defer t
+  :hook (fish-mode . (lambda () (setq-local fill-column 80)))
   :interpreter "fish"
   :mode "\\.fish\\'"
   :custom (fish-enable-auto-indent t)
@@ -709,7 +723,8 @@ See URL `https://fishshell.com'."
 (use-package cmake-ts-mode
   :ensure nil
   :defer t
-  :hook (cmake-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)))
+  :hook (cmake-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)
+                           (setq-local fill-column 100)))
   :mode ("\\.cmake\\'" "CMakeLists\\.txt\\'")
   :init (add-to-list 'major-mode-remap-alist '(cmake-mode . cmake-ts-mode))
   :config
@@ -726,7 +741,8 @@ See URL `https://fishshell.com'."
 ;; Justfile:
 (use-package just-ts-mode
   :defer t
-  :hook (just-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)))
+  :hook (just-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)
+                          (setq-local fill-column 100)))
   :mode "justfile\\'")
 
 
@@ -734,13 +750,15 @@ See URL `https://fishshell.com'."
 ;; INI:
 (use-package ini-mode
   :defer t
+  :hook (ini-mode . (lambda () (setq-local fill-column 100)))
   :mode ("\\.ini\\'" "\\.desktop\\'" "\\.hook\\'"))
 
 ;; JSON:
 (use-package json-ts-mode
   :ensure nil
   :defer t
-  :hook (json-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)))
+  :hook (json-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)
+                          (setq-local fill-column 80)))
   :mode ("\\.json\\'" "\\.jsonc\\'")
   :init (add-to-list 'that1guycolin/eglot-non-defaults 'json-ts-mode)
   :config
@@ -793,11 +811,13 @@ See URL `https://fishshell.com'."
 ;; KDL:
 (use-package kdl-mode
   :defer t
+  :hook (kdl-mode . (lambda () (setq-local fill-column 100)))
   :mode "\\.kdl\\'")
 
 ;; Systemd:
 (use-package systemd
   :defer t
+  :hook (systemd-mode . (lambda () (setq-local fill-column 100)))
   :mode (("\\.container\\'" . systemd-mode)
          ("\\.service\\'"   . systemd-mode)
          ("\\.socket\\'"    . systemd-mode)
@@ -819,7 +839,8 @@ See URL `https://github.com/priv-kweihmann/systemdlint'."
 (use-package toml-ts-mode
   :ensure nil
   :defer t
-  :hook (toml-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)))
+  :hook (toml-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)
+                          (setq-local fill-column 1000)))
   :mode "\\.toml\\'"
   :init (add-to-list 'major-mode-remap-alist '(conf-toml-mode . toml-ts-mode))
   :config
@@ -832,7 +853,8 @@ See URL `https://github.com/priv-kweihmann/systemdlint'."
 (use-package nxml-mode
   :ensure nil
   :defer t
-  :hook (nxml-mode . (lambda () (hs-minor-mode) (kirigami-mode)))
+  :hook (nxml-mode . (lambda () (hs-minor-mode) (kirigami-mode)
+                       (setq-local fill-column 1000)))
   :mode ("\\.xml\\'"
          "\\.xsd\\'" "\\.xslt\\'" "\\.svg\\'" "\\.rss\\'" "\\.pom\\'")
   :init (add-to-list 'that1guycolin/eglot-non-defaults 'nxml-mode)
@@ -852,7 +874,8 @@ See URL `https://github.com/priv-kweihmann/systemdlint'."
 (use-package yaml-ts-mode
   :ensure nil
   :defer t
-  :hook (yaml-ts-mode . (lambda () (outline-indent-minor-mode) (kirigami-mode)))
+  :hook (yaml-ts-mode . (lambda () (outline-indent-minor-mode) (kirigami-mode)
+                          (setq-local fill-column 1000)))
   :preface
   :mode ("\\.yml\\'" "\\.yaml\\'")
   :init

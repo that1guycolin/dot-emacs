@@ -101,64 +101,12 @@ Effective as hook for major-modes where you want to be able to use the mouse."
 ;; Line-length:
 (use-package visual-fill-column
   :demand t
-  :preface
-  (defvar that1guycolin/mode-fill-column-alist
-    '((bash-ts-mode           . 80)    (c-ts-mode              . 100)
-      (c++-ts-mode            . 100)   (cmake-ts-mode          . 100)
-      (conf-toml-mode         . 0)     (css-mode               . 80)
-      (css-ts-mode            . 80)    (csv-mode               . 0)
-      (dashboard-mode         . 0)     (emacs-lisp-mode        . 80)
-      (fish-mode              . 80)    (dockerfile-ts-mode     . 100)
-      (geiser-repl-mode       . 0)     (glsl-mode              . 100)
-      (go-ts-mode             . 80)    (ini-mode               . 100)
-      (java-ts-mode           . 100)   (js-json-mode           . 80)
-      (json-ts-mode           . 80)    (js-ts-mode             . 100)
-      (just-ts-mode           . 100)   (kdl-mode               . 100)
-      (lisp-mode              . 80)    (lua-ts-mode            . 120)
-      (makefile-mode          . 100)   (markdown-ts-mode       . 80)
-      (nxml-mode              . 0)     (python-mode            . 88)
-      (python-ts-mode         . 88)    (rustic-mode            . 100)
-      (rust-ts-mode           . 100)   (scheme-mode            . 80)
-      (sh-mode                . 80)    (sly-mrepl-mode         . 0)
-      (systemd-mode           . 100)   (telega-root-mode       . 100)
-      (toml-ts-mode           . 0)     (typescript-ts-mode     . 80)
-      (yaml-ts-mode           . 0))
-    "Alist mapping major-modes to their default `fill-column' value.")
-
-  (defun that1guycolin/display-max-line-length (ll)
-    "Set `fill-column' to LL.
-Also toggle `auto-fill-mode', `display-fill-column-indicator-mode', and
-`visual-line-mode'."
-    (setq-local fill-column ll)
-    (auto-fill-mode 1)
-    (display-fill-column-indicator-mode 1)
-    (visual-line-mode 1))
-
-  (defun that1guycolin/no-display-line-length ()
-    "Untoggle `minor-modes' that aid in the display of max line-length.
-Function also sets `fill-column' to 1000."
-    (setq-local fill-column 1000)
-    (auto-fill-mode -1)
-    (display-fill-column-indicator-mode -1)
-    (visual-line-mode -1))
-
-  (defun that1guycolin/auto-set-fill-column ()
-    "Check if `major-mode' is in `that1guycolin/mode-fill-column-alist'.
-If yes, toggle display of max line-length depending on whether value its
-cdr is 0 or a positive integer. If not a member of the list, run
-`that1guycolin/display-max-line-length' using 80 as the \\='max'
-argument."
-    (interactive)
-    (if (member major-mode (mapcar #'car that1guycolin/mode-fill-column-alist))
-        (let ((fc (cdr (assoc major-mode
-                              that1guycolin/mode-fill-column-alist))))
-          (if (= fc 0)
-              (that1guycolin/no-display-line-length)
-            (that1guycolin/display-max-line-length fc)))
-      (that1guycolin/display-max-line-length 80)))
   :hook (visual-line-mode . visual-fill-column-for-vline)
   :functions (visual-line-mode visual-fill-column-for-vline)
-  :init (add-hook 'find-file-hook #'that1guycolin/auto-set-fill-column))
+  :init
+  (auto-fill-mode 1)
+  (display-fill-column-indicator-mode 1)
+  (visual-line-mode 1))
 
 
 ;;; Font:
@@ -355,6 +303,8 @@ via the function `that1guycolin/default-font-presets-set-size'."
     (setq-local default-directory "~")
     (cd "~"))
   
+  :hook (dasboard-mode . (lambda () (that1guycolin/dashboard-home-dir)
+                           (setq-local fill-column 1000)))
   :functions (dashboard-insert-startupify-lists
               dashboard-initialize dashboard-setup-startup-hook
               dashboard-refresh-buffer dashboard-display-icons-p)
@@ -376,8 +326,7 @@ via the function `that1guycolin/default-font-presets-set-size'."
   (dashboard-setup-startup-hook)
   (setq dashboard-items
         `((projects . ,(length (project-known-project-roots)))
-          (recents . 5)))
-  (add-hook 'dashboard-mode-hook #'that1guycolin/dashboard-home-dir))
+          (recents . 5))))
 
 
 (provide '03-visual)
