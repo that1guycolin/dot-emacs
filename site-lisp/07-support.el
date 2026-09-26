@@ -916,11 +916,10 @@ doubles as a model-switcher."
   (let ((alist-func
          (alist-get '(wayland . KDE)
                     emacs-everywhere-frame-parameters nil nil #'equal)))
-    (setf
-     alist-func
-     (plist-put
-      alist-func
-      :paste-command '("ydotool" "key" "42:1" "110:1" "42:0" "110:0")))))
+    (setf alist-func
+          (plist-put alist-func
+                     :paste-command
+                     '("ydotool" "key" "42:1" "110:1" "42:0" "110:0")))))
 
 ;; Podman/container integration
 (use-package docker

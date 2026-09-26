@@ -16,7 +16,7 @@
     "Directory containing active projects.")
 
   (defvar that1guycolin/scripts-directory nil
-    "Directory containing custom \='one off' scripts.")
+    "Directory containing custom \\='one off' scripts.")
 
   (defvar that1guycolin/android-home
     "/data/data/com.termux/files/home"
@@ -48,10 +48,10 @@
 If in a side window, return to the last used window.
 If not in a side window, jump to the first found side window."
     (interactive)
-    (let* ((side-window (cl-find-if
-                         (lambda (w)
-                           (window-parameter w 'window-side))
-                         (window-list))))
+    (let* ((side-window
+            (cl-find-if
+             (lambda (w) (window-parameter w 'window-side))
+             (window-list))))
       (cond
        ((not side-window)
         (message "No side window found in this frame."))
