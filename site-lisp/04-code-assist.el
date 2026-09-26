@@ -143,80 +143,25 @@ See URL `https://vale.sh'."
 (use-package eglot
   :ensure nil
   :preface
-  (defcustom that1guycolin/eglot-lisp-alive-port 8006
-    "Port used to connect to the alive-lsp Common Lisp language server."
-    :type 'integer
-    :group 'eglot)
-
-  (defun that1guycolin/eglot-lisp-alive--port-available-p (port)
-    "Return nil if PORT is not free to bind on localhost."
-    (condition-case nil
-        (let ((probe (make-network-process
-                      :name "eglot-lisp-alive-port-probe"
-                      :server t
-                      :host "localhost"
-                      :service port
-                      :noquery t)))
-          (delete-process probe)
-          t)
-      (file-error nil)))
+  (defvar that1guycolin/eglot-non-defaults (list)
+    "List of major-modes with a nonstandard `eglot' configuration.")
   
+  (defun that1guycolin/eglot-remove-non-default-programs ()
+    "Remove major-modes from `eglot-server-programs'.
+All major-modes that are members of `that1guycolin/eglot-non-defaults' will have
+their cons removed from `eglot-server-programs'."
+    (setq eglot-server-programs
+          (cl-remove-if
+           (lambda (cell)
+             (cl-some
+              (lambda (mode)
+                (memq mode that1guycolin/eglot-non-defaults
+                      (ensure-list (car cell))))
+              eglot-server-programs)))))
   :defer t
   :bind (:map ctl-x-map ("e" . eglot))
-  :config
-  (setq eglot-server-programs
-        (cl-remove-if
-         (lambda (cell)
-           (cl-some
-            (lambda (mode)
-              (memq mode '(css-mode
-                           css-ts-mode dockerfile-ts-mode js-json-mode
-                           json-ts-mode lisp-mode lisp-ts-mode markdown-mode
-                           markdown-ts-mode python-mode python-ts-mode
-                           yaml-ts-mode)))
-            (ensure-list (car cell))))
-         eglot-server-programs))
-
-  (let ((lsp-cons-cells
-         '(((css-mode css-ts-mode) .
-            ("vscode-css-language-server" "--stdio"))
-           ((dockerfile-ts-mode) . ("docker-language-server" "start" "--stdio"))
-           ((fish-mode) . ("fish-lsp" "start"))
-           ((js-json-mode json-ts-mode) .
-            ("vscode-json-language-server" "--stdio"))
-           ((lisp-mode lisp-ts-mode) .
-            (lambda (_interactive _project)
-              (unless (that1guycolin/eglot-lisp-alive--port-available-p
-                       that1guycolin/eglot-lisp-alive-port)
-                (error "Port %d is already in use"
-                       that1guycolin/eglot-lisp-alive-port))
-              (make-process
-               :name "alive-lsp"
-               :buffer (get-buffer-create "*alive-lsp*")
-               :noquery t
-               :sentinel #'ignore
-               :filter #'ignore
-               :command (list "sbcl"
-                              "--eval" "(require :asdf)"
-                              "--eval" "(asdf:load-system :alive-lsp)"
-                              "--eval"
-                              (format "(alive/server::start :port %d)"
-                                      that1guycolin/eglot-lisp-alive-port)))
-              (sleep-for 1)
-              (list "localhost" that1guycolin/eglot-lisp-alive-port)))
-           ((markdown-mode markdown-ts-mode) . ("rumdl" "server"))
-           ((nxml-mode) . ("lemminx"))
-           ((pkgbuild-mode) . ("termux-language-server", "--check" ))
-           ((python-mode python-ts-mode) . ("uv" "run" "rass" "python"))
-           ((yaml-ts-mode) .
-            (lambda (_interactive _project)
-              (if (string-match-p
-                   "/\\(?:compose\\|docker-compose\\)\\.yam?ml\\'"
-                   (buffer-file-name))
-                  '("docker-compose-langserver" "--stdio")
-                '("yaml-language-server" "--stdio")))))))
-    (dolist (con lsp-cons-cells)
-      (add-to-list 'eglot-server-programs con))))
+  :init (add-hook 'elpaca-after-init-hook #'
+                  that1guycolin/eglot-remove-non-default-programs))
 
 (use-package consult-eglot
   :after (consult eglot)
