@@ -145,23 +145,16 @@ See URL `https://vale.sh'."
   :preface
   (defvar that1guycolin/eglot-non-defaults (list)
     "List of major-modes with a nonstandard `eglot' configuration.")
-  
-  (defun that1guycolin/eglot-remove-non-default-programs ()
-    "Remove major-modes from `eglot-server-programs'.
-All major-modes that are members of `that1guycolin/eglot-non-defaults' will have
-their cons removed from `eglot-server-programs'."
-    (setq eglot-server-programs
-          (cl-remove-if
-           (lambda (cell)
-             (cl-some
-              (lambda (mode)
-                (memq mode that1guycolin/eglot-non-defaults
-                      (ensure-list (car cell))))
-              eglot-server-programs)))))
   :defer t
   :bind (:map ctl-x-map ("e" . eglot))
-  :init (add-hook 'elpaca-after-init-hook #'
-                  that1guycolin/eglot-remove-non-default-programs))
+  :config (setq eglot-server-programs
+                (cl-remove-if
+                 (lambda (cell)
+                   (cl-some
+                    (lambda (mode)
+                      (memq mode that1guycolin/eglot-non-defaults))
+                    (ensure-list (car cell))))
+                 eglot-server-programs)))
 
 (use-package consult-eglot
   :after (consult eglot)
