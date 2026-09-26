@@ -70,22 +70,7 @@
          ([remap isearch-backward-regexp] . vr/isearch-backward)))
 
 
-;;; Linting (Flycheck):
-;; bash:          'shellcheck'    (pacman -S shellcheck)
-;; common-lisp:   'mallet'        (git clone)
-;; docker-compose 'dclint'        (npm install -g dclint)
-;; emacs-lisp:    'emacs-lisp'    (built-in)
-;; fish:          'fish-check'    (included with fish)
-;; json:          'jsonlint'      (npm install -g jsonlint)
-;; lua:           'luacheck'      (pacman -S luacheck)
-;; Makefile:      'checkmake'     (go install
-;;                github.com/checkmake/checkmake/cmd/checkmake@latest)
-;; markdown:      'rumdl'         (pacman -S rumdl)
-;; systemd:       'systemdlint'   (uv tool install systemdlint)
-;; toml:          'tombi'         (pacman -S tombi)
-;; xml:           'xmllint'       (pacman -S libxml2)
-;; yaml:          'yamllint'      (pacman -S yamllint)
-
+;;; Linting (flycheck)
 (use-package flycheck
   :defer t
   :preface
@@ -147,164 +132,14 @@ See URL `https://vale.sh'."
   :demand t)
 
 
-;;; Formatting:
-;; bash:         'shfmt'         (pacman -S shfmt)
-;; cmake:        'neocmakelsp'   (cargo install neocmakelsp)
-;; fish:         'fish_indent'   (bundled with fish shell)
-;; emacs-lisp:   'lisp-indent'   (built-in)
-;; json:         'jq'            (pacman -S jq)
-;; lua:          'stylua'        (pacman -S stylua)
-;; markdown:     'rumdl'         (pacman -S rumdl)
-;; python:       'ruff'          (uv add ruff)
-;; toml:         'tombi'         (pacman -S tombi)
-;; xml:          'xmllint'       (pacman -S libxml2)
-;; yaml:         'yamlfmt'       (pacman -S yamlfmt)
-
-;; sh-mode/bash-ts-mode
-(use-package shfmt
-  :defer t
-  :preface
-  (defvar bash-ts-mode-map)
-  (defvar sh-mode-map)
-  :bind ((:map bash-ts-mode-map
-               ("C-c C-f" . shfmt-buffer))
-         (:map sh-mode-map
-               ("C-c C-f". shfmt-buffer)))
-  :hook ((bash-ts-mode sh-mode) . shfmt-on-save-mode)
-  :custom
-  (shfmt-command "shfmt")
-  (shfmt-arguments '("-i" "4" "-ci")))
-
-;; Everything else
+;;; Formatting (apheleia):
 (use-package apheleia
   :defer t
-  :preface
-  (defvar js-json-mode-map)
-  (defvar json-ts-mode-map)
-  (defvar yaml-ts-mode-map)
-  (defun that1guycolin/apheleia-set-json-formatter (fmtr)
-    "Get user-input on which FMTR they want for JSON files."
-    (interactive
-     (list (completing-read
-            "Which formatter do you want to use for JSON files? "
-            '(jq prettier-json) nil t)))
-    (unless (memq fmtr '(jq prettier-json))
-      (user-error "Formatter must be either jq or prettier-json"))
-    (setf
-     (alist-get 'js-json-mode apheleia-mode-alist) fmtr
-     (alist-get 'json-ts-mode apheleia-mode-alist) fmtr)
-    (message "JSON formatter set to %s" fmtr))
-  
-  (defun that1guycolin/apheleia-toggle-json-formatter ()
-    "Switch aphelia formatter between jq & prettier in json-modes."
-    (interactive)
-    (unless (memq major-mode '(json-ts-mode js-json-mode))
-      (error "Buffer not in a json major-mode"))
-    (let ((current-fmtr (alist-get major-mode apheleia-mode-alist)))
-      (cond
-       ((eq current-fmtr 'jq)
-        (that1guycolin/apheleia-set-json-formatter 'prettier-json))
-       ((eq current-fmtr 'prettier-json)
-        (that1guycolin/apheleia-set-json-formatter 'jq))
-       (t
-        (call-interactively #'that1guycolin/apheleia-set-json-formatter)))))
-
-  (defun that1guycolin/apheleia-set-yaml-formatter (fmtr)
-    "Get user-input on which FMTR they want for Yaml files."
-    (interactive
-     (list (completing-read
-            "Which formatter do you want to use for Yaml files? "
-            '(yamlfmt prettier-yaml) nil t)))
-    (unless (memq fmtr '(yamlfmt prettier-yaml))
-      (user-error "Formatter must be either yamlfmt or prettier-yaml"))
-    (setf
-     (alist-get 'yaml-ts-mode apheleia-mode-alist) fmtr)
-    (message "Yaml formatter set to %s" fmtr))
-
-  (defun that1guycolin/apheleia-toggle-yaml-formatter ()
-    "Switch aphelia formatter between yamlfmt & prettier in yaml modes."
-    (interactive)
-    (unless (eq major-mode 'yaml-ts-mode)
-      (error "Buffer not in a Yaml major-mode"))
-    (let ((current-fmtr (alist-get major-mode apheleia-mode-alist)))
-      (cond
-       ((eq current-fmtr 'yamlfmt)
-        (that1guycolin/apheleia-set-yaml-formatter 'prettier-yaml))
-       ((eq current-fmtr 'prettier-yaml)
-        (that1guycolin/apheleia-set-yaml-formatter 'yamlfmt))
-       (t
-        (call-interactively #'that1guycolin/apheleia-set-yaml-formatter)))))
-
   :bind ("C-c f" . apheleia-format-buffer)
-  :hook ((prog-mode text-mode) . apheleia-mode)
-  :config
-  (add-hook 'bash-ts-mode-hook (lambda () (apheleia-mode -1)))
-  (add-hook 'sh-mode-hook      (lambda () (apheleia-mode -1)))
-  (setf
-   (alist-get 'jq            apheleia-formatters)
-   '("jq" "." "-M" "--indent" "2")
-   (alist-get 'neocmakelsp   apheleia-formatters)
-   '("neocmakelsp" "format" "-")
-   (alist-get 'prettier-json apheleia-formatters)
-   '("pnpx" "prettier" "--stdin-filepath" filepath "--parser=json")
-   (alist-get 'ruff          apheleia-formatters)
-   '("ruff" "format" "-")
-   (alist-get 'stylua        apheleia-formatters)
-   '("stylua" "--stdin-filepath" filepath "-")
-   (alist-get 'tombi         apheleia-formatters)
-   '("tombi" "fmt" "-")
-   (alist-get 'yamlfmt       apheleia-formatters)
-   '("yamlfmt" "--in"  "-"))
-  (setf
-   (alist-get 'cmake-ts-mode       apheleia-mode-alist) 'neocmakelsp
-   (alist-get 'eask-mode           apheleia-mode-alist) 'lisp-indent
-   (alist-get 'fish-mode           apheleia-mode-alist) 'fish-indent
-   (alist-get 'js-json-mode        apheleia-mode-alist) 'jq
-   (alist-get 'json-ts-mode        apheleia-mode-alist) 'jq
-   (alist-get 'markdown-mode       apheleia-mode-alist) 'rumdl
-   (alist-get 'markdown-ts-mode    apheleia-mode-alist) 'rumdl
-   (alist-get 'gfm-mode            apheleia-mode-alist) 'rumdl
-   (alist-get 'python-mode         apheleia-mode-alist) 'ruff
-   (alist-get 'python-ts-mode      apheleia-mode-alist) 'ruff
-   (alist-get 'toml-ts-mode        apheleia-mode-alist) 'tombi
-   (alist-get 'conf-toml-mode      apheleia-mode-alist) 'tombi
-   (alist-get 'yaml-ts-mode        apheleia-mode-alist) 'yamlfmt)
-  (with-eval-after-load 'js-json-mode
-    (keymap-set js-json-mode-map "C-c v"
-                #'that1guycolin/apheleia-toggle-json-formatter))
-  (with-eval-after-load 'json-ts-mode
-    (keymap-set json-ts-mode-map "C-c v"
-                #'that1guycolin/apheleia-toggle-json-formatter))
-  (with-eval-after-load 'yaml-ts-mode
-    (keymap-set yaml-ts-mode-map "C-c v"
-                #'that1guycolin/apheleia-toggle-yaml-formatter)))
+  :hook ((prog-mode text-mode conf-mode) . apheleia-mode))
 
 
 ;;; Language-Server-Protocol (eglot):
-;; bash:        'bash-language-server'
-;;              (pnpm i -g bash-language-server)
-;; cmake:       'neocmakelsp'
-;;              (cargo install neocmakelsp)
-;; common-lisp: `sbcl-alive-lsp'
-;;              (guix package -i sbcl-alive-lsp) or from git
-;; compose:     'docker-compose-langserver'
-;;              (npm i -g @microsoft/container-language-service)
-;; fish:        'fish-lsp'
-;;              (npm install -g fish-lsp)
-;; json:        'json-language-server'
-;;              (pnpm i -g vscode-json-languageserver)
-;; lua:         'lua-language-server'
-;;              (pacman -S lua-language-server)
-;; markdown:    'rumdl'
-;;              (pacman -S rumdl)
-;; python:      'rass' [`ty'/`ruff']
-;;              (uv tool install rass ty ruff)
-;; toml:        'tombi'
-;;              (pacman -S tombi)
-;; xml:         'lemminx'
-;;              (install from AUR or see github.com/eclipse-lemminx/lemminx)
-;; yaml:        'yaml-language-server'
-;;              (npm i -g yaml-language-server)
 (use-package eglot
   :ensure nil
   :preface

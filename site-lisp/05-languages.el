@@ -150,7 +150,11 @@ See URL: `https://github.com/fukamachi/mallet'."
 ;; Emacs package assist
 (use-package eask-mode
   :defer t
-  :mode "Eask\\'")
+  :mode "Eask\\'"
+  :config
+  (with-eval-after-load 'apheleia
+    (setf
+     (alist-get 'eask-mode apheleia-mode-alist) 'lisp-indent)))
 
 ;; Go directly to symbol definition (elisp)
 (use-package elisp-def
@@ -345,7 +349,11 @@ a running slynk instance @ localhost:4005."
   :mode "\\.lua\\'"
   :init (add-to-list 'major-mode-remap-alist '(lua-mode . lua-ts-mode))
   :custom (lua-ts-inferior-lua "luajit")
-  :config (add-hook 'lua-ts-mode-hook (lambda () (docstr-mode 1))))
+  :config
+  (add-hook 'lua-ts-mode-hook (lambda () (docstr-mode 1)))
+  (with-eval-after-load 'apheleia
+    (setf
+     (alist-get 'stylua apheleia-formatters) '("stylua" "--stdin-filepath" filepath "-"))))
 
 
 ;;; Makefile:
@@ -382,7 +390,8 @@ a running slynk instance @ localhost:4005."
 
     (flycheck-define-checker makefile-checkmake
       "Makefile style-checker/linter written in Go.
-See URL `https://github.com/mrtazz/checkmake'."
+See URL `https://github.com/mrtazz/checkmake'.  Install with \\='go
+install github.com/checkmake/checkmake/cmd/checkmake@latest'."
       :command ("checkmake" "-o" "json" source-inplace)
       :error-parser that1guycolin/flycheck-checkmake-parse-json
       :modes (makefile-mode makefile-automake-mode makefile-bsdmake-mode
@@ -414,7 +423,13 @@ See URL `https://github.com/rvben/rumdl'."
              ":" line ":" column ": "
              (id (one-or-more (not (any " ")))) " " (message) line-end))
       :modes (markdown-ts-mode markdown-mode gfm-mode))
-    (add-to-list 'flycheck-checkers 'markdown-rumdl)))
+    (add-to-list 'flycheck-checkers 'markdown-rumdl))
+
+  (with-eval-after-load 'apheleia
+    (setf
+     (alist-get 'markdown-mode    apheleia-mode-alist) 'rumdl
+     (alist-get 'markdown-ts-mode apheleia-mode-alist) 'rumdl
+     (alist-get 'gfm-mode         apheleia-mode-alist) 'rumdl)))
 
 (use-package grip-mode
   :after (markdown-ts-mode)
@@ -475,7 +490,11 @@ See URL `https://github.com/rvben/rumdl'."
   (python-shell-interpreter "python3")
   :config
   (keymap-unset python-base-mode-map "C-c C-t")
-  (add-hook 'python-ts-mode-hook (lambda () (docstr-mode 1))))
+  (add-hook 'python-ts-mode-hook (lambda () (docstr-mode 1)))
+  (with-eval-after-load 'apheleia
+    (setf
+     (alist-get 'ruff apheleia-formatters) '("ruff" "format" "-")
+     (alist-get 'python-ts-mode apheleia-mode-alist) 'ruff)))
 
 ;; Live coding
 (use-package live-py-mode
@@ -524,7 +543,8 @@ See URL `https://github.com/rvben/rumdl'."
   :ensure nil
   :defer t
   :interpreter "bash"
-  :mode "\\.bash\\'")
+  :mode "\\.bash\\'"
+  :config (add-hook 'bash-ts-mode-hook (lambda () (apheleia-mode -1))))
 
 (use-package sh-mode
   :ensure nil
@@ -570,7 +590,22 @@ See URL `https://github.com/rvben/rumdl'."
   (flycheck-sh-zsh-executable
    (that1guycolin/desktop-mobile
      :desk "/usr/bin/zsh"
-     :termux "/data/data/com.termux/files/usr/bin/zsh")))
+     :termux "/data/data/com.termux/files/usr/bin/zsh"))
+  :config (add-hook 'sh-mode-hook (lambda () (apheleia-mode -1))))
+
+(use-package shfmt
+  :defer t
+  :preface
+  (defvar bash-ts-mode-map)
+  (defvar sh-mode-map)
+  :bind ((:map bash-ts-mode-map
+               ("C-c f" . shfmt-buffer))
+         (:map sh-mode-map
+               ("C-c f". shfmt-buffer)))
+  :hook ((bash-ts-mode sh-mode) . shfmt-on-save-mode)
+  :custom
+  (shfmt-command "shfmt")
+  (shfmt-arguments '("-i" "4" "-ci")))
 
 (use-package pkgbuild-mode
   :defer t
@@ -593,7 +628,10 @@ See URL `https://fishshell.com'."
        (warning line-start (file-name) " (line " line "): " (message) line-end)
        (info    line-start (file-name) " (line " line "): " (message) line-end))
       :modes (fish-mode))
-    (add-to-list 'flycheck-checkers 'fish-self)))
+    (add-to-list 'flycheck-checkers 'fish-self))
+
+  (with-eval-after-load 'apheleia
+    (alist-get 'fish-mode apheleia-mode-alist) 'fish-indent))
 
 
 ;;; Build File Modes:
@@ -602,7 +640,13 @@ See URL `https://fishshell.com'."
   :ensure nil
   :defer t
   :mode ("\\.cmake\\'" "CMakeLists\\.txt\\'")
-  :init (add-to-list 'major-mode-remap-alist '(cmake-mode . cmake-ts-mode)))
+  :init (add-to-list 'major-mode-remap-alist '(cmake-mode . cmake-ts-mode))
+  :config
+  (with-eval-after-load 'apheleia
+    (setf
+     (alist-get 'neocmakelsp apheleia-formatters) '("neocmakelsp"
+                                                    "format" "-")
+     (alist-get 'cmake-ts-mode apheleia-mode-alist) 'neocmakelsp)))
 
 (use-package eldoc-cmake
   :defer t
@@ -624,7 +668,44 @@ See URL `https://fishshell.com'."
 (use-package json-ts-mode
   :ensure nil
   :defer t
-  :mode ("\\.json\\'" "\\.jsonc\\'"))
+  :mode ("\\.json\\'" "\\.jsonc\\'")
+  :config
+  (with-eval-after-load 'apheleia
+    (defun that1guycolin/apheleia-set-json-formatter (fmtr)
+      "Get user-input on which FMTR they want for JSON files."
+      (interactive
+       (list (completing-read
+              "Which formatter do you want to use for JSON files? "
+              '(jq prettier-json) nil t)))
+      (unless (memq fmtr '(jq prettier-json))
+        (user-error "Formatter must be either jq or prettier-json"))
+      (setf
+       (alist-get 'js-json-mode apheleia-mode-alist) fmtr
+       (alist-get 'json-ts-mode apheleia-mode-alist) fmtr)
+      (message "JSON formatter set to %s" fmtr))
+    
+    (defun that1guycolin/apheleia-toggle-json-formatter ()
+      "Switch aphelia formatter between jq & prettier in json-modes."
+      (interactive)
+      (unless (memq major-mode '(json-ts-mode js-json-mode))
+        (error "Buffer not in a json major-mode"))
+      (let ((current-fmtr (alist-get major-mode apheleia-mode-alist)))
+        (cond
+         ((eq current-fmtr 'jq)
+          (that1guycolin/apheleia-set-json-formatter 'prettier-json))
+         ((eq current-fmtr 'prettier-json)
+          (that1guycolin/apheleia-set-json-formatter 'jq))
+         (t
+          (call-interactively #'that1guycolin/apheleia-set-json-formatter)))))
+    
+    (setf
+     (alist-get 'jq apheleia-formatters)
+     '("jq" "." "-M" "--indent" "2")
+     (alist-get 'prettier-json apheleia-formatters)
+     '("pnpx" "prettier" "--stdin-filepath" filepath "--parser=json")
+     (alist-get 'json-ts-mode apheleia-mode-alist) 'jq)o
+    (keymap-set json-ts-mode-map "C-c v"
+                #'that1guycolin/apheleia-toggle-json-formatter)))
 
 (use-package json5-ts-mode
   :defer t
@@ -660,7 +741,12 @@ See URL `https://github.com/priv-kweihmann/systemdlint'."
   :ensure nil
   :defer t
   :mode "\\.toml\\'"
-  :init (add-to-list 'major-mode-remap-alist '(conf-toml-mode . toml-ts-mode)))
+  :init (add-to-list 'major-mode-remap-alist '(conf-toml-mode . toml-ts-mode))
+  :config
+  (with-eval-after-load 'apheleia
+    (setf
+     (alist-get 'tombi apheleia-formatters) '("tombi" "fmt" "-")
+     (alist-get 'toml-ts-mode apheleia-mode-alist) 'tombi)))
 
 ;; XML:
 (use-package nxml-mode
@@ -714,7 +800,40 @@ If the current `buffer-file-name' is \\='compose.ya(m)l' or
            (buffer-file-name))
           (flycheck-select-checker 'yaml-dclint)
         (flycheck-select-checker 'yaml-yamllint)))
-    (add-hook 'yaml-ts-mode-hook #'that1guycolin/flycheck-yaml-linter)))
+    (add-hook 'yaml-ts-mode-hook #'that1guycolin/flycheck-yaml-linter))
+
+  (with-eval-after-load 'apheleia-mode
+    (setf
+     (alist-get 'yamlfmt apheleia-formatters) '("yamlfmt" "--in"  "-")
+     (alist-get 'yaml-ts-mode apheleia-mode-alist) 'yamlfmt)
+    
+    (defun that1guycolin/apheleia-set-yaml-formatter (fmtr)
+      "Get user-input on which FMTR they want for Yaml files."
+      (interactive
+       (list (completing-read
+              "Which formatter do you want to use for Yaml files? "
+              '(yamlfmt prettier-yaml) nil t)))
+      (unless (memq fmtr '(yamlfmt prettier-yaml))
+        (user-error "Formatter must be either yamlfmt or prettier-yaml"))
+      (setf
+       (alist-get 'yaml-ts-mode apheleia-mode-alist) fmtr)
+      (message "Yaml formatter set to %s" fmtr))
+
+    (defun that1guycolin/apheleia-toggle-yaml-formatter ()
+      "Switch aphelia formatter between yamlfmt & prettier in yaml modes."
+      (interactive)
+      (unless (eq major-mode 'yaml-ts-mode)
+        (error "Buffer not in a Yaml major-mode"))
+      (let ((current-fmtr (alist-get major-mode apheleia-mode-alist)))
+        (cond
+         ((eq current-fmtr 'yamlfmt)
+          (that1guycolin/apheleia-set-yaml-formatter 'prettier-yaml))
+         ((eq current-fmtr 'prettier-yaml)
+          (that1guycolin/apheleia-set-yaml-formatter 'yamlfmt))
+         (t
+          (call-interactively #'that1guycolin/apheleia-set-yaml-formatter)))))
+    (keymap-set yaml-ts-mode-map "C-c v"
+                #'that1guycolin/apheleia-toggle-yaml-formatter)))
 
 (use-package yaml-pro
   :defer t
