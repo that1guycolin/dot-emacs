@@ -89,156 +89,20 @@
 (use-package flycheck
   :defer t
   :preface
-  (defvar that1guycolin/lisp-directory)
   (defvar minions-prominent-modes)
-  (defvar sh-shell)
-
-  (defun that1guycolin/flycheck-checkmake--read-json (output)
-    "Parse the leading JSON array out of OUTPUT, ignoring trailing text."
-    (with-temp-buffer
-      (insert output)
-      (goto-char (point-min))
-      (json-parse-buffer :object-type 'alist :array-type 'list)))
-
-  (defun that1guycolin/flycheck-checkmake-parse-json (output checker buffer)
-    "Parse checkmake's JSON OUTPUT into Flycheck errors for CHECKER/BUFFER."
-    (mapcar
-     (lambda (violation)
-       (flycheck-error-new-at
-        (alist-get 'line_number violation)
-        nil
-        (if (member (alist-get 'rule violation) '("miniphony"))
-            'error
-          'warning)
-        (format "[%s] %s"
-                (alist-get 'rule violation)
-                (alist-get 'violation violation))
-        :checker checker
-        :buffer buffer
-        :filename (buffer-file-name buffer)))
-     (that1guycolin/flycheck-checkmake--read-json output)))
-  
   (defun that1guycolin/flycheck-vale-setup ()
     "If not setup, install the vale from the .ini file in user-lisp-directory."
     (let* ((vale-config (expand-file-name ".vale.ini" user-lisp-directory))
            (command (format "vale --config %s sync >/dev/null 2>&1"
                             vale-config)))
       (shell-command command)))
-
-  (defun that1guycolin/flycheck-yaml-linter ()
-    "Select the linter for \\='.ya(m)l' files.
-If the current `buffer-file-name' is \\='compose.ya(m)l' or
-\\='docker-compose.ya(m)l', use \"dclint\".  Otherwise, use \"yamllint\"."
-    (unless (eq major-mode 'yaml-ts-mode)
-      (error "Buffer not in yaml-ts-mode"))
-    (if (string-match-p
-         "/\\(?:compose\\|docker-compose\\)\\.yam?ml\\'"
-         (buffer-file-name))
-        (flycheck-select-checker 'yaml-dclint)
-      (flycheck-select-checker 'yaml-yamllint)))
-
   :hook ((prog-mode conf-mode text-mode) . flycheck-mode)
   :functions (flycheck-error-new-at flycheck-select-checker flycheck-add-mode)
   :custom
-  (flycheck-emacs-lisp-load-path 'inherit)
   (flycheck-disabled-checkers
    '(emacs-lisp-elsa rpm-rpmlint yaml-jsyaml yaml-ruby))
-  (flycheck-shellcheck-infer-shell t)
-  (flycheck-sh-bash-executable
-   (that1guycolin/desktop-mobile
-     :desk "/usr/bin/bash"
-     :termux "/data/data/com.termux/files/usr/bin/bash"))
-  (flycheck-sh-posix-bash-executable
-   (that1guycolin/desktop-mobile
-     :desk "/usr/bin/bash"
-     :termux "/data/data/com.termux/files/usr/bin/bash"))
-  (flycheck-sh-posix-dash-executable
-   (that1guycolin/desktop-mobile
-     :desk "/usr/bin/shellcheck"
-     :termux "/data/data/com.termux/files/usr/bin/shellcheck"))
-  (flycheck-sh-zsh-executable
-   (that1guycolin/desktop-mobile
-     :desk "/usr/bin/zsh"
-     :termux "/data/data/com.termux/files/usr/bin/zsh"))
   :config
   (add-to-list 'minions-prominent-modes 'flycheck-mode)
-  (add-to-list 'flycheck-shellcheck-supported-shells 'dash)
-  
-  (flycheck-define-checker cl-mallet
-    "A Common Lisp linter using Mallet.
-See URL: `https://github.com/fukamachi/mallet'."
-    :command ("mallet" source)
-    :error-patterns
-    ((error line-start (zero-or-more space)
-            line ":" column
-            (one-or-more space) "error" (one-or-more space)
-            (message (minimal-match (one-or-more not-newline)))
-            (one-or-more space) (id (one-or-more not-newline))
-            line-end)
-
-     (warning line-start (zero-or-more space)
-              line ":" column
-              (one-or-more space) "warning" (one-or-more space)
-              (message (minimal-match (one-or-more not-newline)))
-              (one-or-more space) (id (one-or-more not-newline))
-              line-end)
-
-     (info line-start (zero-or-more space)
-           line ":" column
-           (one-or-more space) "info" (one-or-more space)
-           (message (minimal-match (one-or-more not-newline)))
-           (one-or-more space) (id (one-or-more not-newline))
-           line-end))
-    :modes (lisp-mode lisp-ts-mode lisp-data-mode))
-  (add-to-list 'flycheck-checkers 'cl-mallet)
-
-  (flycheck-define-checker fish-self
-    "The shell for the 90's built-in syntax checker.
-See URL `https://fishshell.com'."
-    :command ("fish" "-n" source)
-    :error-patterns
-    ((error   line-start (file-name) " (line " line "): " (message) line-end)
-     (warning line-start (file-name) " (line " line "): " (message) line-end)
-     (info    line-start (file-name) " (line " line "): " (message) line-end))
-    :modes (fish-mode))
-  (add-to-list 'flycheck-checkers 'fish-self)
-
-  (flycheck-define-checker makefile-checkmake
-    "Makefile style-checker/linter written in Go.
-See URL `https://github.com/mrtazz/checkmake'."
-    :command ("checkmake" "-o" "json" source-inplace)
-    :error-parser that1guycolin/flycheck-checkmake-parse-json
-    :modes (makefile-mode makefile-automake-mode makefile-bsdmake-mode
-                          makefile-gmake-mode))
-  (add-to-list 'flycheck-checkers 'makefile-checkmake)
-
-  (flycheck-define-checker markdown-rumdl
-    "A fast Markdown linter written in Rust.
-See URL `https://github.com/rvben/rumdl'."
-    :command ("rumdl" "check" "--watch" "--stdin" source)
-    :error-patterns
-    ((error line-start (file-name)
-            ":" line ":" column ": "
-            (id (one-or-more (not (any " ")))) " " (message) line-end)
-     (warning line-start (file-name)
-              ":" line ":" column ": "
-              (id (one-or-more (not (any " ")))) " " (message) line-end)
-     (info line-start (file-name)
-           ":" line ":" column ": "
-           (id (one-or-more (not (any " ")))) " " (message) line-end))
-    :modes (markdown-ts-mode markdown-mode gfm-mode))
-  (add-to-list 'flycheck-checkers 'markdown-rumdl)
-
-  (flycheck-define-checker systemd-systemdlint
-    "A Systemd unit file linter.
-See URL `https://github.com/priv-kweihmann/systemdlint'."
-    :command ("systemdlint" source)
-    :error-patterns
-    ((error line-start (file-name) ":" line ":" (message) line-end)
-     (warning line-start (file-name) ":" line ":" (message) line-end)
-     (info line-start (file-name) ":" line ":" (message) line-end))
-    :modes systemd-mode)
-  (add-to-list 'flycheck-checkers 'systemd-systemdlint)
 
   (flycheck-define-checker text-vale
     "Tool to bring code-like linting to prose.
@@ -255,29 +119,8 @@ See URL `https://vale.sh'."
     (unless (file-exists-p vale-install)
       (that1guycolin/flycheck-vale-setup)))
   (add-to-list 'flycheck-checkers 'text-vale)
-
-  (flycheck-define-checker yaml-dclint
-    "A Docker Compose linter using dclint.
-See URL: https://github.com/zavoloklom/docker-compose-linter"
-    :command ("dclint" source)
-    :error-patterns
-    ((error line-start (zero-or-more space) line ":" column
-            (one-or-more space) "error" (one-or-more space) (message)
-            (one-or-more space) (id (one-or-more (any alnum "-"))) line-end)
-     (warning line-start (zero-or-more space) line ":" column
-              (one-or-more space) "warning" (one-or-more space) (message)
-              (one-or-more space) (id (one-or-more (any alnum "-"))) line-end)
-     (info line-start (zero-or-more space) line ":" column
-           (one-or-more space) "info" (one-or-more space) (message)
-           (one-or-more space) (id (one-or-more (any alnum "-"))) line-end))
-    :modes (yaml-ts-mode))
-  (add-to-list 'flycheck-checkers 'yaml-dclint)
-
-  (add-hook 'bash-ts-mode-hook
-            (lambda () (flycheck-select-checker 'sh-shellcheck)))
   (add-hook 'org-mode-hook
-            (lambda () (flycheck-select-checker 'org-lint)))
-  (add-hook 'yaml-ts-mode-hook #'that1guycolin/flycheck-yaml-linter))
+            (lambda () (flycheck-select-checker 'org-lint))))
 
 ;; Display flycheck errors in buffer
 (use-package flycheck-posframe
@@ -292,22 +135,6 @@ See URL: https://github.com/zavoloklom/docker-compose-linter"
   :after (flycheck)
   :defer t
   :hook (flycheck-mode . flycheck-color-mode-line-mode))
-
-(use-package flycheck-eask
-  :after (flycheck eask-mode)
-  :demand t
-  :functions (flycheck-eask-setup)
-  :config (flycheck-eask-setup))
-
-(use-package flycheck-guile
-  :after (flycheck (:any scheme-mode geiser))
-  :demand t)
-
-(use-package flycheck-package
-  :after (flycheck elisp-mode)
-  :demand t
-  :functions (flycheck-package-setup)
-  :config (flycheck-package-setup))
 
 (use-package flycheck-relint
   :after (flycheck elisp-mode)
