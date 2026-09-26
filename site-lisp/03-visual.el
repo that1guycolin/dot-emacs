@@ -343,10 +343,18 @@ via the function `that1guycolin/default-font-presets-set-size'."
 ;;; Dashboard:
 (use-package dashboard
   :demand t
-  :preface (defun that1guycolin/dashboard-setup ()
-             "Correctly start dashboard during Elpaca-managed init."
-             (dashboard-insert-startupify-lists)
-             (dashboard-initialize))
+  :preface
+  (defun that1guycolin/dashboard-setup ()
+    "Correctly start dashboard during Elpaca-managed init."
+    (dashboard-insert-startupify-lists)
+    (dashboard-initialize))
+  
+  (defun that1guycolin/dashboard-home-dir ()
+    "Change-directory to \"~\".  Add to `dashboard-mode-hook'."
+    (interactive)
+    (setq-local default-directory "~")
+    (cd "~"))
+  
   :functions (dashboard-insert-startupify-lists
               dashboard-initialize dashboard-setup-startup-hook
               dashboard-refresh-buffer dashboard-display-icons-p)
@@ -368,7 +376,8 @@ via the function `that1guycolin/default-font-presets-set-size'."
   (dashboard-setup-startup-hook)
   (setq dashboard-items
         `((projects . ,(length (project-known-project-roots)))
-          (recents . 5))))
+          (recents . 5)))
+  (add-hook 'dashboard-mode-hook #'that1guycolin/dashboard-home-dir))
 
 
 (provide '03-visual)
