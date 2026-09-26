@@ -830,34 +830,80 @@ doubles as a model-switcher."
   :custom (emms-info-functions
            (append '(emms-info-mediainfo) emms-info-functions)))
 
-(use-package mpv
+(use-package empv
   :defer t
   :preface
-  (defvar-keymap that1guycolin/mpv-func-map
-    :doc "Useful functions from mpv.el."
-    "a" #'mpv-play
-    "s" #'mpv-start
-    "." #'mpv-seek-forward
-    "," #'mpv-seek-backward
-    "o" #'mpv-volume-increase
-    "i" #'mpv-volume-decrease
-    "b" #'mpv-insert-playback-position
-    "l" #'mpv-seek-to-position-at-point
-    "m" #'mpv-playlist-next
-    "n" #'mpv-playlist-prev
-    "c" #'mpv-jump-to-chapter
-    "p" #'mpv-jump-to-playlist-entry
-    "k" #'mpv-chapter-next
-    "j" #'mpv-chapter-prev)
-  :unless (eq system-type 'android)
-  :bind-keymap ("C-c m" . that1guycolin/mpv-func-map)
-  :functions (mpv-play mpv-start mpv-seek-forward mpv-seek-backward
-                       mpv-volume-increase mpv-volume-decrease
-                       mpv-insert-playback-position
-                       mpv-seek-to-position-at-point
-                       mpv-playlist-next mpv-playlist-prev mpv-jump-to-chapter
-                       mpv-jump-to-playlist-entry mpv-chapter-next
-                       mpv-chapter-prev))
+  (require '02-project-vc)
+  (defvar empv-hydra)
+  (defhydra empv-hydra nil
+    "EMPV Hydra."
+    ("S" #'empv-start "start empv" :column "Play")
+    ("o" #'empv-play-or-enqueue "play or enqueue" :column "Play")
+    ("f" #'empv-play-file "play file" :column "Play")
+    ("d" #'empv-play-directory "play directory" :column "Play")
+    ("v" #'empv-play-video "play video" :column "Play")
+    ("a" #'empv-play-audio "play audio" :column "Play")
+    ("q" #'empv-exit "exit" :column "Play" :exit t)
+    ("0" #'empv-volume-up "volume up" :column "Playback")
+    ("9" #'empv-volume-down "volume down" :column "Playback")
+    ("(" #'empv-chapter-prev "chapter prev" :column "Playback")
+    (")" #'empv-chapter-next "chapter next" :column "Playback")
+    ("x" #'empv-chapter-select "chapter select" :column "Playback")
+    ("Q" #'empv-save-and-exit "save and exit" :column "Playback" :exit t)
+    ("p" #'empv-playlist-select "playlist select" :column "Playlist")
+    ("L" #'empv-playlist-load-from-file "playlist load" :column "Playlist")
+    ("s" #'empv-playlist-shuffle "playlist shuffle" :column "Playlist")
+    ("C" #'empv-playlist-clear "playlist clear" :column "Playlist")
+    ("m" #'empv-playlist-next "playlist next" :column "Playlist")
+    ("n" #'empv-playlist-prev "playlist prev" :column "Playlist")
+    ("y" #'empv-youtube "youtube" :column "Remote Play")
+    ("Y" #'empv-youtube-last-results "youtube last results"
+     :column "Remote Play")
+    ("t" #'empv-toggle "toggle" :column "Toggle")
+    ("_" #'empv-toggle-video "toggle video" :column "Toggle")
+    ("8" #'empv-toggle-current-loop "toggle current loop" :column "Toggle")
+    ("e" #'empv-toggle-event-display "toggle event display" :column "Toggle")
+    ("i" #'empv-display-current "display current" :column "Utility")
+    ("c" #'empv-copy-path "copy path" :column "Utility"))
+  :bind ("C-c m" . empv-hydra/body)
+  :functions(empv-start
+             empv-embark-initialize-extra-actions empv-override-quit-key
+             empv-play-or-enqueue empv-play-file empv-play-directory
+             empv-play-video empv-play-audio empv-exit empv-save-and-exit
+             empv-playback-speed-down empv-playback-speed-up empv-volume-up
+             empv-volume-down empv-chapter-prev empv-chapter-next
+             empv-chapter-select empv-playlist-select
+             empv-playlist-load-from-file empv-playlist-shuffle
+             empv-playlist-clear empv-playlist-next empv-playlist-prev
+             empv-play-radio empv-play-random-channel
+             empv-log-current-radio-song-name empv-youtube
+             empv-youtube-last-results empv-toggle empv-toggle-video
+             empv-toggle-current-loop empv-toggle-event-display
+             empv-display-current empv-copy-path)
+  :custom
+  (empv-default-dir "/mnt/that1Media/")
+  (empv-max-directory-search-depth 5)
+  (empv-playlist-dir "/mnt/that1Media/playlists/")
+  (empv-video-dir "/mnt/that1Media/")
+  :config
+  (add-to-list 'empv-mpv-args
+               "--ytdl-format=bestvideo+bestaudio/best[ext=mp4]/best")
+  (add-hook
+   'empv-media-title-changed-hook
+   (lambda (title)
+     (message "Media title changed: %s" title)))
+  (add-hook
+   'empv-player-state-changed-hook
+   (lambda (_state)
+     (message
+      (pcase empv-player-state
+        ('playing "empv is playing...")
+        ('paused "empv is paused...")
+        ('caching "empv is buffering...")
+        ('stopped "empv is stopped...")))))
+  (add-hook 'empv-init-hook #'empv-override-quit-key)
+  (with-eval-after-load 'embark
+    (empv-embark-initialize-extra-actions)))
 
 
 ;;; Misc:
