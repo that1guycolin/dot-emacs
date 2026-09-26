@@ -1,4 +1,4 @@
-;;; elpaca-pkg-update.el --- Updater script -*- lexical-binding: t -*-
+;;; elpaca-pkg-update-script.el --- Updater script -*- lexical-binding: t -*-
 
 ;;; Commentary:
 ;; This file contains a script for automatically updating Emacs packages
@@ -77,5 +77,5 @@ If PKG is \\='ghostel', run `ghostel-module-compile'.  If package is
     (elpaca-pkg-update--update-pkg package)))
 
 
-(provide 'elpaca-pkg-update)
-;;; elpaca-pkg-update.el ends here
+(provide 'elpaca-pkg-update-script)
+;;; elpaca-pkg-update-script.el ends here
