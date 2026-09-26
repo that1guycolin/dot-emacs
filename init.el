@@ -85,11 +85,11 @@
 ;; Core UI Configuration
 (require '03-visual)
 
-;; Language Specific Settings
-(require '04-languages)
-
 ;; Code Smarter, Not Harder
-(require '05-coding)
+(require '04-code-assist)
+
+;; Language Specific Settings
+(require '05-languages)
 
 ;; Org Config & Support Packages
 (require '06-org-config)
