@@ -234,6 +234,9 @@
 
 
 ;;; Treemacs:
+(use-package hydra
+  :demand t)
+
 (use-package treemacs
   :defer t
   :preface
