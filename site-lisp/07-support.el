@@ -2,21 +2,23 @@
 
 ;;; Packages included:
 ;; casual, casual-avy, deadgrep, dirvish, docker, dwim-shell-command, eat,
-;; elisp-dev-mcp, ellama, emacs-everywhere, emms, emms-info-mediainfo,
-;; free-keys, ghostel, gptel, gptel-forge-prs, guix, htmlize, llm, llm-ollama,
-;; mcp-server-lib, mistty, mpv, native-complete, notmuch, notmuch-addr,
+;; elisp-dev-mcp, ellama, emacs-everywhere, emms, emms-info-mediainfo, empv,
+;; free-keys, gptel, gptel-forge-prs, guix, htmlize, llm, llm-ollama,
+;; mcp-server-lib, mistty, native-complete, notmuch, notmuch-addr,
 ;; notmuch-indicator, notmuch-transient, org-mcp, ready-player, recentf, rg,
-;; telega, vterm
+;; telega
 
 ;;; Commentary:
 ;; This file contains use-package objects for packages that help integrate Emacs
 ;; with external applications (e.g., "docker") or packages that extend Emacs'
 ;; functionality to the extent it mirrors an external tool (e.g., "dirvish").
 
-;;; Code:
+;;; Code
+(require '00-macros)
+
+
 ;;; Terminals:
 ;; Emulate A Terminal
-(require '00-macros)
 (use-package eat
   :defer t
   :bind ("C-c t e"   . eat)

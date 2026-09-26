@@ -1,9 +1,9 @@
 ;;; 03-visual.el --- Core UI configuration -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; dashboard, ef-themes, inhibit-mouse, minions, modus-themes, nerd-icons,
-;; nerd-icons-corfu, popper, show-font, tab-line-nerd-icons,
-;; treemacs-nerd-icons, visual-fill-column
+;; dashboard, default-font-presets, ef-themes, inhibit-mouse, minions,
+;; modus-themes, nerd-icons, nerd-icons-corfu, popper, show-font,
+;; tab-line-nerd-icons, treemacs-nerd-icons, visual-fill-column
 
 ;;; Commentary:
 ;; Define the user-interface.  In the case of this configuration, start with

@@ -2,14 +2,16 @@
 
 ;;; Packages included:
 ;; adjust-parens, auto-rename-tag, bash-ts-mode, checkdoc, cmake-ts-mode,
-;; csv-mode, docker-compose-mode, dockerfile-ts-mode, eask-mode, eldoc-cmake,
-;; elisp-def, emacs-lisp-mode, eros, eros-inspector, fish-mode, geiser,
-;; geiser-guile, glsl-mode, grip-mode, ielm, ini-mode, inspector, json-ts-mode,
-;; just-ts-mode, kdl-mode, lisp-ts-mode, lisp-semantic-hl, live-py-mode,
-;; lua-ts-mode, macrostep, macrostep-geiser, markdown-mode, markdown-ts-mode,
-;; morlock, nxml-mode, pkgbuild-mode, python-pytest, python-ts-mode, python-x,
-;; rustic, rust-ts-mode, scheme-mode, sh-mode, sly, suggest, systemd,
-;; toml-ts-mode, tree-inspector, treesit, yaml-pro, yaml-ts-mode
+;; css-ts-mode, csv-mode, dockerfile-ts-mode, eask-mode, eldoc-cmake,
+;; elisp-def, emacs-lisp-mode, eros, eros-inspector, fish-mode, flycheck-eask,
+;; flycheck-guile, flycheck-package, gaudy-cl, geiser, geiser-guile, glsl-mode,
+;; go-ts-mode, grip-mode, ielm, ini-mode, inspector, json-ts-mode,
+;; json5-ts-mode, just-ts-mode, kdl-mode, let-completion, lisp-semantic-hl,
+;; lisp-ts-mode, live-py-mode, lua-ts-mode, macrostep, macrostep-geiser,
+;; makefile-mode, markdown-ts-mode, morlock, nxml-mode, pkgbuild-mode,
+;; python-pytest, python-ts-mode, python-x, rust-ts-mode, rustic, scheme-mode,
+;; sh-mode, shfmt, sly, sly-asdf, sly-quicklisp, suggest, systemd,
+;; toml-ts-mode, tree-inspector, yaml-pro, yaml-ts-mode
 
 ;;; Commentary:
 ;; The purpose of this file is to define how Emacs should behave in the
