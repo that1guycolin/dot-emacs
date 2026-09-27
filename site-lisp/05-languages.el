@@ -886,9 +886,10 @@ If the current `buffer-file-name' is \\='compose.ya(m)l' or
 \\='docker-compose.ya(m)l', use \"dclint\".  Otherwise, use \"yamllint\"."
     (unless (eq major-mode 'yaml-ts-mode)
       (error "Buffer not in yaml-ts-mode"))
-    (if (string-match-p
-         "/\\(?:compose\\|docker-compose\\)\\.yam?ml\\'"
-         (buffer-file-name))
+    (if (and (buffer-file-name)
+             (string-match-p
+              "/\\(?:compose\\|docker-compose\\)\\.yam?ml\\'"
+              (buffer-file-name)))
         (flycheck-select-checker 'yaml-dclint)
       (flycheck-select-checker 'yaml-yamllint)))
 
@@ -955,9 +956,10 @@ See URL: https://github.com/zavoloklom/docker-compose-linter"
     (add-to-list 'eglot-server-programs
                  '((yaml-ts-mode) .
                    (lambda (_interactive _project)
-                     (if (string-match-p
-                          "/\\(?:compose\\|docker-compose\\)\\.yam?ml\\'"
-                          (buffer-file-name))
+                     (if (and (buffer-file-name)
+                              (string-match-p
+                               "/\\(?:compose\\|docker-compose\\)\\.yam?ml\\'"
+                               (buffer-file-name)))
                          '("docker-compose-langserver" "--stdio")
                        '("yaml-language-server" "--stdio")))))))
 
