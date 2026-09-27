@@ -697,7 +697,7 @@ See URL `https://github.com/rvben/rumdl'."
   :config (with-eval-after-load 'eglot
             (add-to-list 'eglot-server-programs
                          '((pkgbuild-mode) .
-                           ("termux-language-server", "--check")))))
+                           ("termux-language-server" "--check")))))
 
 ;; Fish shell:
 (use-package fish-mode
