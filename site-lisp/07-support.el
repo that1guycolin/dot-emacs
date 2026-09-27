@@ -232,6 +232,31 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
     (setq-local that1guycolin/dirvish-preview-buffer t)
     (read-only-mode 1))
 
+  (defvar-keymap that1guycolin/dired-create-map
+    :doc "Create a file or directory while using `dirvish'."
+    "f" #'dired-create-empty-file
+    "d" #'dired-create-directory)
+  (with-eval-after-load 'which-key
+    (which-key-add-keymap-based-replacements that1guycolin/dired-create-map
+      "f" "Create File"
+      "d" "Create Directory"))
+
+  (defvar-keymap dired-mode-map
+    :keymap dired-mode-map
+    "C-p"       #'dired-previous-line
+    "C-n"       #'dired-next-line
+    "R"         #'that1guycolin/dirvish-rename-file
+    "m"         #'dired-do-rename
+    "c"           that1guycolin/dired-create-map
+    "C-w"       #'that1guycolin/dirvish-cut
+    "M-w"       #'that1guycolin/dirvish-copy
+    "C-y"       #'that1guycolin/dirvish-paste
+    "^"         #'dired-up-directory
+    "C-M-p"     #'dired-up-directory
+    "C-M-n"     #'that1guycolin/dirvish-down-directory
+    "TAB"       #'that1guycolin/dirvish-tab-dwim
+    "RET"       #'that1guycolin/dirvish-return-dwim
+    "?"         #'that1guycolin/dirvish-dispatch)
   :bind ("C-x d" . dirvish)
   :commands (dirvish-dwim)
   :functions (dired-create-directory
@@ -248,10 +273,8 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
   (dirvish-hide-details t)
   (dirvish-reuse-session nil)
   :config
-  (dolist (plugin '(dirvish-extras dirvish-subtree dirvish-yank))
-    (require plugin))
-  (dolist (optional-plugin '(dirvish-vc dirvish-emerge))
-    (require optional-plugin nil t))
+  (mapc #'require '(dirvish-extras dirvish-subtree dirvish-yank))
+  (mapc (lambda (pgn) (require pgn nil t)) '(dirvish-vc dirvish-emerge))
   
   (add-hook 'dirvish-preview-setup-hook
             #'that1guycolin/dirvish-preview-read-only)
@@ -295,26 +318,7 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
       ("M-f" "History forward"      dirvish-history-go-forward :transient t)
       ("M-e" "Emerge menu"          dirvish-emerge-menu)
       ("g"   "Revert"               revert-buffer :transient t)
-      ("q"   "Quit Dirvish"         dirvish-quit)]])
-  
-  (let ((map dirvish-mode-map)
-        (create-map (make-sparse-keymap)))
-    (keymap-set map "C-p"        #'dired-previous-line)
-    (keymap-set map "C-n"        #'dired-next-line)
-    (keymap-set map "R"          #'that1guycolin/dirvish-rename-file)
-    (keymap-set map "m"          #'dired-do-rename)
-    (keymap-set map "c"            create-map)
-    (keymap-set map "C-w"        #'that1guycolin/dirvish-cut)
-    (keymap-set map "M-w"        #'that1guycolin/dirvish-copy)
-    (keymap-set map "C-y"        #'that1guycolin/dirvish-paste)
-    (keymap-set map "^"          #'dired-up-directory)
-    (keymap-set map "C-M-p"      #'dired-up-directory)
-    (keymap-set map "C-M-n"      #'that1guycolin/dirvish-down-directory)
-    (keymap-set map "TAB"        #'that1guycolin/dirvish-tab-dwim)
-    (keymap-set map "RET"        #'that1guycolin/dirvish-return-dwim)
-    (keymap-set map "?"          #'that1guycolin/dirvish-dispatch)
-    (keymap-set create-map "f"   #'dired-create-empty-file)
-    (keymap-set create-map "d"   #'dired-create-directory)))
+      ("q"   "Quit Dirvish"         dirvish-quit)]]))
 
 ;; execute shell commands on marked files
 (use-package dwim-shell-command
@@ -365,8 +369,7 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
 ;; Launch media directly from `dirvish'
 (use-package ready-player
   :defer t
-  :hook ((dired-mode . ready-player-mode)
-         (dirvish-mode . ready-player-mode)))
+  :hook (dired-mode . ready-player-mode))
 
 
 ;;; Email:
