@@ -49,7 +49,7 @@
 ;;; CSV:
 (use-package csv-mode
   :defer t
-  :hook (csv-mode-hook . (lambda () (setq-local fill-column 1000)))
+  :hook (csv-mode . (lambda () (setq-local fill-column 1000)))
   :mode "\\.csv\\'")
 
 
