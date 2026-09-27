@@ -85,45 +85,7 @@
 
 (use-package lisp-ts-mode
   :defer t
-  :hook (lisp-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)
-                          (setq-local fill-column 80)))
-  :interpreter "sbcl"
-  :mode ("\\.lisp\\'" "\\.cl\\'" "\\.asd\\'")
-  :init
-  (add-to-list 'major-mode-remap-alist '(lisp-mode . lisp-ts-mode))
-  :config
-  (setf (alist-get 'lisp-ts-mode font-lock-ignore)
-        lisp-ts-mode-font-lock-ignore-keywords)
-
-  (with-eval-after-load 'flycheck
-    (flycheck-define-checker cl-mallet
-      "A Common Lisp linter using Mallet.
-See URL: `https://github.com/fukamachi/mallet'."
-      :command ("mallet" source)
-      :error-patterns
-      ((error line-start (zero-or-more space)
-              line ":" column
-              (one-or-more space) "error" (one-or-more space)
-              (message (minimal-match (one-or-more not-newline)))
-              (one-or-more space) (id (one-or-more not-newline))
-              line-end)
-
-       (warning line-start (zero-or-more space)
-                line ":" column
-                (one-or-more space) "warning" (one-or-more space)
-                (message (minimal-match (one-or-more not-newline)))
-                (one-or-more space) (id (one-or-more not-newline))
-                line-end)
-
-       (info line-start (zero-or-more space)
-             line ":" column
-             (one-or-more space) "info" (one-or-more space)
-             (message(minimal-match (one-or-more not-newline)))
-             (one-or-more space) (id (one-or-more not-newline))
-             line-end))
-      :modes (lisp-mode lisp-ts-mode lisp-data-mode))
-    (add-to-list 'flycheck-checkers 'cl-mallet))
-
+  :preface
   (defcustom that1guycolin/eglot-lisp-alive-port 8006
     "Port used to connect to the alive-lsp Common Lisp language server."
     :type 'integer
@@ -141,6 +103,44 @@ See URL: `https://github.com/fukamachi/mallet'."
           (delete-process probe)
           t)
       (file-error nil)))
+  
+  :hook (lisp-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)
+                          (setq-local fill-column 80)))
+  :interpreter "sbcl"
+  :mode ("\\.lisp\\'" "\\.cl\\'" "\\.asd\\'")
+  :init
+  (add-to-list 'major-mode-remap-alist '(lisp-mode . lisp-ts-mode))
+  :config
+  (setf (alist-get 'lisp-ts-mode font-lock-ignore)
+        lisp-ts-mode-font-lock-ignore-keywords)
+
+  (flycheck-define-checker cl-mallet
+    "A Common Lisp linter using Mallet.
+See URL: `https://github.com/fukamachi/mallet'."
+    :command ("mallet" source)
+    :error-patterns
+    ((error line-start (zero-or-more space)
+            line ":" column
+            (one-or-more space) "error" (one-or-more space)
+            (message (minimal-match (one-or-more not-newline)))
+            (one-or-more space) (id (one-or-more not-newline))
+            line-end)
+
+     (warning line-start (zero-or-more space)
+              line ":" column
+              (one-or-more space) "warning" (one-or-more space)
+              (message (minimal-match (one-or-more not-newline)))
+              (one-or-more space) (id (one-or-more not-newline))
+              line-end)
+
+     (info line-start (zero-or-more space)
+           line ":" column
+           (one-or-more space) "info" (one-or-more space)
+           (message(minimal-match (one-or-more not-newline)))
+           (one-or-more space) (id (one-or-more not-newline))
+           line-end))
+    :modes (lisp-mode lisp-ts-mode lisp-data-mode))
+  (add-to-list 'flycheck-checkers 'cl-mallet)
 
   (with-eval-after-load 'eglot
     (that1guycolin/eglot-remove-mode-servers 'lisp-mode)
@@ -417,35 +417,36 @@ a running slynk instance @ localhost:4005."
 (use-package makefile-mode
   :ensure nil
   :defer t
+  :preface
+  (defun that1guycolin/flycheck-checkmake--read-json (output)
+    "Parse the leading JSON array out of OUTPUT, ignoring trailing text."
+    (with-temp-buffer
+      (insert output)
+      (goto-char (point-min))
+      (json-parse-buffer :object-type 'alist :array-type 'list)))
+
+  (defun that1guycolin/flycheck-checkmake-parse-json (output checker buffer)
+    "Parse checkmake's JSON OUTPUT into Flycheck errors for CHECKER/BUFFER."
+    (mapcar
+     (lambda (violation)
+       (flycheck-error-new-at
+        (alist-get 'line_number violation)
+        nil
+        (if (member (alist-get 'rule violation) '("miniphony"))
+            'error
+          'warning)
+        (format "[%s] %s"
+                (alist-get 'rule violation)
+                (alist-get 'violation violation))
+        :checker checker
+        :buffer buffer
+        :filename (buffer-file-name buffer)))
+     (that1guycolin/flycheck-checkmake--read-json output)))
+  
   :hook (makefile-mode . (lambda () (setq-local fill-column 100)))
   :mode "Makefile\\'"
   :config
   (with-eval-after-load 'flycheck
-    (defun that1guycolin/flycheck-checkmake--read-json (output)
-      "Parse the leading JSON array out of OUTPUT, ignoring trailing text."
-      (with-temp-buffer
-        (insert output)
-        (goto-char (point-min))
-        (json-parse-buffer :object-type 'alist :array-type 'list)))
-
-    (defun that1guycolin/flycheck-checkmake-parse-json (output checker buffer)
-      "Parse checkmake's JSON OUTPUT into Flycheck errors for CHECKER/BUFFER."
-      (mapcar
-       (lambda (violation)
-         (flycheck-error-new-at
-          (alist-get 'line_number violation)
-          nil
-          (if (member (alist-get 'rule violation) '("miniphony"))
-              'error
-            'warning)
-          (format "[%s] %s"
-                  (alist-get 'rule violation)
-                  (alist-get 'violation violation))
-          :checker checker
-          :buffer buffer
-          :filename (buffer-file-name buffer)))
-       (that1guycolin/flycheck-checkmake--read-json output)))
-
     (flycheck-define-checker makefile-checkmake
       "Makefile style-checker/linter written in Go.
 See URL `https://github.com/mrtazz/checkmake'.  Install with \\='go
@@ -760,38 +761,39 @@ See URL `https://fishshell.com'."
 (use-package json-ts-mode
   :ensure nil
   :defer t
+  :preface
+  (defun that1guycolin/apheleia-set-json-formatter (fmtr)
+    "Get user-input on which FMTR they want for JSON files."
+    (interactive
+     (list (completing-read
+            "Which formatter do you want to use for JSON files? "
+            '(jq prettier-json) nil t)))
+    (unless (memq fmtr '(jq prettier-json))
+      (user-error "Formatter must be either jq or prettier-json"))
+    (setf
+     (alist-get 'js-json-mode apheleia-mode-alist) fmtr
+     (alist-get 'json-ts-mode apheleia-mode-alist) fmtr)
+    (message "JSON formatter set to %s" fmtr))
+  
+  (defun that1guycolin/apheleia-toggle-json-formatter ()
+    "Switch aphelia formatter between jq & prettier in json-modes."
+    (interactive)
+    (unless (memq major-mode '(json-ts-mode js-json-mode))
+      (error "Buffer not in a json major-mode"))
+    (let ((current-fmtr (alist-get major-mode apheleia-mode-alist)))
+      (cond
+       ((eq current-fmtr 'jq)
+        (that1guycolin/apheleia-set-json-formatter 'prettier-json))
+       ((eq current-fmtr 'prettier-json)
+        (that1guycolin/apheleia-set-json-formatter 'jq))
+       (t
+        (call-interactively #'that1guycolin/apheleia-set-json-formatter)))))
+  
   :hook (json-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)
                           (setq-local fill-column 80)))
   :mode ("\\.json\\'" "\\.jsonc\\'")
   :config
   (with-eval-after-load 'apheleia
-    (defun that1guycolin/apheleia-set-json-formatter (fmtr)
-      "Get user-input on which FMTR they want for JSON files."
-      (interactive
-       (list (completing-read
-              "Which formatter do you want to use for JSON files? "
-              '(jq prettier-json) nil t)))
-      (unless (memq fmtr '(jq prettier-json))
-        (user-error "Formatter must be either jq or prettier-json"))
-      (setf
-       (alist-get 'js-json-mode apheleia-mode-alist) fmtr
-       (alist-get 'json-ts-mode apheleia-mode-alist) fmtr)
-      (message "JSON formatter set to %s" fmtr))
-    
-    (defun that1guycolin/apheleia-toggle-json-formatter ()
-      "Switch aphelia formatter between jq & prettier in json-modes."
-      (interactive)
-      (unless (memq major-mode '(json-ts-mode js-json-mode))
-        (error "Buffer not in a json major-mode"))
-      (let ((current-fmtr (alist-get major-mode apheleia-mode-alist)))
-        (cond
-         ((eq current-fmtr 'jq)
-          (that1guycolin/apheleia-set-json-formatter 'prettier-json))
-         ((eq current-fmtr 'prettier-json)
-          (that1guycolin/apheleia-set-json-formatter 'jq))
-         (t
-          (call-interactively #'that1guycolin/apheleia-set-json-formatter)))))
-    
     (setf
      (alist-get 'jq apheleia-formatters)
      '("jq" "." "-M" "--indent" "2")
@@ -877,16 +879,57 @@ See URL `https://github.com/priv-kweihmann/systemdlint'."
 (use-package yaml-ts-mode
   :ensure nil
   :defer t
-  :hook (yaml-ts-mode . (lambda () (outline-indent-minor-mode) (kirigami-mode)
-                          (setq-local fill-column 1000)))
   :preface
+  (defun that1guycolin/flycheck-yaml-checker ()
+    "Select the linter for \\='.ya(m)l' files.
+If the current `buffer-file-name' is \\='compose.ya(m)l' or
+\\='docker-compose.ya(m)l', use \"dclint\".  Otherwise, use \"yamllint\"."
+    (unless (eq major-mode 'yaml-ts-mode)
+      (error "Buffer not in yaml-ts-mode"))
+    (if (string-match-p
+         "/\\(?:compose\\|docker-compose\\)\\.yam?ml\\'"
+         (buffer-file-name))
+        (flycheck-select-checker 'yaml-dclint)
+      (flycheck-select-checker 'yaml-yamllint)))
+
+  (defun that1guycolin/apheleia-set-yaml-formatter (fmtr)
+    "Get user-input on which FMTR they want for Yaml files."
+    (interactive
+     (list (completing-read
+            "Which formatter do you want to use for Yaml files? "
+            '(yamlfmt prettier-yaml) nil t)))
+    (unless (memq fmtr '(yamlfmt prettier-yaml))
+      (user-error "Formatter must be either yamlfmt or prettier-yaml"))
+    (setf
+     (alist-get 'yaml-ts-mode apheleia-mode-alist) fmtr)
+    (message "Yaml formatter set to %s" fmtr))
+
+  (defun that1guycolin/apheleia-toggle-yaml-formatter ()
+    "Switch aphelia formatter between yamlfmt & prettier in yaml modes."
+    (interactive)
+    (unless (eq major-mode 'yaml-ts-mode)
+      (error "Buffer not in a Yaml major-mode"))
+    (let ((current-fmtr (alist-get major-mode apheleia-mode-alist)))
+      (cond
+       ((eq current-fmtr 'yamlfmt)
+        (that1guycolin/apheleia-set-yaml-formatter 'prettier-yaml))
+       ((eq current-fmtr 'prettier-yaml)
+        (that1guycolin/apheleia-set-yaml-formatter 'yamlfmt))
+       (t
+        (call-interactively #'that1guycolin/apheleia-set-yaml-formatter)))))
+
+  :bind (:map yaml-ts-mode-map
+              ("C-c v" . that1guycolin/apheleia-toggle-yaml-formatter))
+  :hook (yaml-ts-mode . (lambda () (outline-indent-minor-mode) (kirigami-mode)
+                          (setq-local fill-column 1000)
+                          (that1guycolin/flycheck-yaml-checker)))
   :mode ("\\.yml\\'" "\\.yaml\\'")
   :init
   (add-to-list 'major-mode-remap-alist '(yaml-mode . yaml-ts-mode))
   :config
   (with-eval-after-load 'flycheck
     (flycheck-define-checker yaml-dclint
-      "A Docker Compose linter using dclint.
+      "A yaml linter for \\='compose.yaml' files using dclint.
 See URL: https://github.com/zavoloklom/docker-compose-linter"
       :command ("dclint" source)
       :error-patterns
@@ -900,53 +943,12 @@ See URL: https://github.com/zavoloklom/docker-compose-linter"
              (one-or-more space) "info" (one-or-more space) (message)
              (one-or-more space) (id (one-or-more (any alnum "-"))) line-end))
       :modes (yaml-ts-mode))
-    (add-to-list 'flycheck-checkers 'yaml-dclint)
-    
-    (defun that1guycolin/flycheck-yaml-linter ()
-      "Select the linter for \\='.ya(m)l' files.
-If the current `buffer-file-name' is \\='compose.ya(m)l' or
-\\='docker-compose.ya(m)l', use \"dclint\".  Otherwise, use \"yamllint\"."
-      (unless (eq major-mode 'yaml-ts-mode)
-        (error "Buffer not in yaml-ts-mode"))
-      (if (string-match-p
-           "/\\(?:compose\\|docker-compose\\)\\.yam?ml\\'"
-           (buffer-file-name))
-          (flycheck-select-checker 'yaml-dclint)
-        (flycheck-select-checker 'yaml-yamllint)))
-    (add-hook 'yaml-ts-mode-hook #'that1guycolin/flycheck-yaml-linter))
+    (add-to-list 'flycheck-checkers 'yaml-dclint))
 
-  (with-eval-after-load 'apheleia-mode
+  (with-eval-after-load 'apheleia
     (setf
      (alist-get 'yamlfmt apheleia-formatters) '("yamlfmt" "--in"  "-")
-     (alist-get 'yaml-ts-mode apheleia-mode-alist) 'yamlfmt)
-    
-    (defun that1guycolin/apheleia-set-yaml-formatter (fmtr)
-      "Get user-input on which FMTR they want for Yaml files."
-      (interactive
-       (list (completing-read
-              "Which formatter do you want to use for Yaml files? "
-              '(yamlfmt prettier-yaml) nil t)))
-      (unless (memq fmtr '(yamlfmt prettier-yaml))
-        (user-error "Formatter must be either yamlfmt or prettier-yaml"))
-      (setf
-       (alist-get 'yaml-ts-mode apheleia-mode-alist) fmtr)
-      (message "Yaml formatter set to %s" fmtr))
-
-    (defun that1guycolin/apheleia-toggle-yaml-formatter ()
-      "Switch aphelia formatter between yamlfmt & prettier in yaml modes."
-      (interactive)
-      (unless (eq major-mode 'yaml-ts-mode)
-        (error "Buffer not in a Yaml major-mode"))
-      (let ((current-fmtr (alist-get major-mode apheleia-mode-alist)))
-        (cond
-         ((eq current-fmtr 'yamlfmt)
-          (that1guycolin/apheleia-set-yaml-formatter 'prettier-yaml))
-         ((eq current-fmtr 'prettier-yaml)
-          (that1guycolin/apheleia-set-yaml-formatter 'yamlfmt))
-         (t
-          (call-interactively #'that1guycolin/apheleia-set-yaml-formatter)))))
-    (keymap-set yaml-ts-mode-map "C-c v"
-                #'that1guycolin/apheleia-toggle-yaml-formatter))
+     (alist-get 'yaml-ts-mode apheleia-mode-alist) 'yamlfmt))
 
   (with-eval-after-load 'eglot
     (that1guycolin/eglot-remove-mode-servers 'yaml-mode)
@@ -966,3 +968,5 @@ If the current `buffer-file-name' is \\='compose.ya(m)l' or
 
 (provide '05-languages)
 ;;; 05-languages.el ends here
+
+                                        ; LocalWords:  fmtr
