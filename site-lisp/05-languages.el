@@ -813,10 +813,6 @@ See URL `https://fishshell.com'."
                  '((js-json-mode json-ts-mode) .
                    ("vscode-json-language-server" "--stdio")))))
 
-(use-package json5-ts-mode
-  :defer t
-  :mode ("\\.json5\\'"))
-
 ;; KDL:
 (use-package kdl-mode
   :defer t
