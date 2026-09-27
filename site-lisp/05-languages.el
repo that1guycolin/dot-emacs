@@ -22,6 +22,8 @@
 
 ;;; Code:
 (require '04-code-assist)
+(declare-function treesit-fold-mode "treesit")
+(declare-function kirigami-mode "kirigami")
 (declare-function that1guycolin/eglot-remove-server "04-code-assist")
 
 (defvar eglot-server-programs)
@@ -220,7 +222,7 @@ See URL: `https://github.com/fukamachi/mallet'."
   :demand t)
 
 (use-package flycheck-package
-  :after (flycheck emacs-lisp-mode)
+  :after (flycheck elisp-mode)
   :demand t
   :functions (flycheck-package-setup)
   :config (flycheck-package-setup))
@@ -467,7 +469,8 @@ install github.com/checkmake/checkmake/cmd/checkmake@latest'."
   :mode ("\\.md\\'" "README\\'" "INSTALL\\'")
   :init
   (add-to-list 'major-mode-remap-alist '(markdown-mode . markdown-ts-mode))
-  :config (keymap-set markdown-ts-mode-map "C-c C-x" #'toggle-frame-maximized)
+  :config
+  (keymap-set markdown-ts-mode-map "C-c C-x" #'toggle-frame-maximized)
   (with-eval-after-load 'flycheck
     (flycheck-define-checker markdown-rumdl
       "A fast Markdown linter written in Rust.
@@ -545,7 +548,8 @@ See URL `https://github.com/rvben/rumdl'."
               ("C-c C-k w" . python-skeleton-while)
               ("C-c C-r"   . that1guycolin/python-run-smart))
   :hook (python-ts-mode . (lambda () (outline-indent-minor-mode)
-                            (kirigami-mode) (setq-local fill-column 88)))
+                            (kirigami-mode) (setq-local fill-column 88)
+                            (docstr-mode 1)))
   :interpreter ("python3" "uv")
   :mode "\\.py\\'"
   :functions (python-skeleton-class
@@ -716,14 +720,14 @@ See URL `https://fishshell.com'."
     (add-to-list 'flycheck-checkers 'fish-self))
 
   (with-eval-after-load 'apheleia
-    (alist-get 'fish-mode apheleia-mode-alist) 'fish-indent)
+    (setf (alist-get 'fish-mode apheleia-mode-alist) 'fish-indent))
 
   (with-eval-after-load 'eglot
     (add-to-list 'eglot-server-programs '((fish-mode) . ("fish-lsp" "start")))))
 
 
 ;;; Build File Modes:
-;;; CMake:
+;;;  CMake:
 (use-package cmake-ts-mode
   :ensure nil
   :defer t
