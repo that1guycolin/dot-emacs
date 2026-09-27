@@ -3,7 +3,7 @@
 ;;; Packages included:
 ;; casual, casual-avy, deadgrep, dirvish, docker, dwim-shell-command, eat,
 ;; elisp-dev-mcp, ellama, emacs-everywhere, emms, emms-info-mediainfo, empv,
-;; free-keys, gptel, gptel-forge-prs, guix, htmlize, llm, llm-ollama,
+;; free-keys, ghostel gptel, gptel-forge-prs, guix, htmlize, llm, llm-ollama,
 ;; mcp-server-lib, mistty, native-complete, notmuch, notmuch-addr,
 ;; notmuch-indicator, notmuch-transient, org-mcp, ready-player, recentf, rg,
 ;; telega
@@ -13,7 +13,7 @@
 ;; with external applications (e.g., "docker") or packages that extend Emacs'
 ;; functionality to the extent it mirrors an external tool (e.g., "dirvish").
 
-;;; Code
+;;; Code:
 (require '00-macros)
 
 
@@ -25,29 +25,21 @@
   :hook (eshell-mode . eat-eshell-visual-command-mode))
 
 ;; Libghostty-based terminal shell
-(that1guycolin/desktop-mobile
-  :desk
-  (use-package ghostel
-    :ensure (ghostel :source nil :package "ghostel" :id ghostel
-                     :fetcher github :repo "dakra/ghostel" :type git
-                     :files (:defaults
-                             "README.md" "etc" "src" "vendor" "build.zig"
-                             "build.zig.zon" "symbols.map" ("build" "Makefile"))
-                     :protocol https :inherit t :depth treeless)
-    :defer t
-    :bind ("C-c t g" . ghostel)
-    :init (setq ghostel-module-auto-install 'compile)
-    :config (with-eval-after-load 'disproject
-              (transient-append-suffix 'disproject-dispatch
-                "s" '("o" "Ghostel" ghostel-project))))
-  :termux
-  (use-package ghostel
-    :defer t
-    :bind ("C-c t g" . ghostel)
-    :init (setq ghostel-module-auto-install 'download)
-    :config (with-eval-after-load 'disproject
-              (transient-append-suffix 'disproject-dispatch
-                "s" '("o" "Ghostel" ghostel-project)))))
+(use-package ghostel
+  :ensure (ghostel :source "MELPA" :package "ghostel" :id ghostel
+                   :fetcher github :repo "dakra/ghostel" :type git :files
+                   (:defaults "README.md" "etc" "src" "vendor" "build.zig"
+                              "build.zig.zon" "symbols.map"
+                              ("build" "Makefile"))
+                   :protocol https :inherit t :depth treeless)
+  :defer t
+  :bind ("C-c t g" . ghostel)
+  :init (that1guycolin/desktop-mobile
+          :desk (setq ghostel-module-auto-install 'compile)
+          :termux (setq ghostel-module-auto-install 'download))
+  :config (with-eval-after-load 'disproject
+            (transient-append-suffix 'disproject-dispatch
+              "s" '("o" "Ghostel" ghostel-project))))
 
 ;; Commit shell layer
 (use-package mistty
@@ -163,7 +155,6 @@ Otherwise paste into the current Dired/Dirvish directory."
     (if (file-directory-p src)
         (copy-directory src dest t nil nil)
       (copy-file src dest nil t)))
-
   (defun that1guycolin/dirvish-paste ()
     "Paste staged files into the directory at point or current directory."
     (interactive)

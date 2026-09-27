@@ -34,7 +34,7 @@
 ;; flycheck-eask, flycheck-eglot, flycheck-guile, flycheck-package,
 ;; flycheck-posframe, flycheck-relint, flyspell, flyspell-correct,
 ;; flyspell-correct-avy-menu, forge, free-keys, gaudy-cl, gcmh, geiser,
-;; geiser-guile, git-commit-ts-mode, git-link, git-modes, glsl-mode,
+;; geiser-guile, ghostel, git-commit-ts-mode, git-link, git-modes, glsl-mode,
 ;; go-ts-mode, gptel, gptel-forge-prs, grip-mode, guix, helpful, hideshow,
 ;; htmlize, hydra, ielm, inhibit-mouse, ini-mode, inspector, json-ts-mode,
 ;; json5-ts-mode, just-ts-mode, kdl-mode, kirigami, let-completion,
