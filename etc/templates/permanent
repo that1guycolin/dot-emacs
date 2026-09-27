@@ -27,6 +27,7 @@ emacs-lisp-mode
 (kgbset "(keymap-global-set \"" (p "keys") "\" #'" (p "func") ")")
 (kset "(keymap-set " (p "keymap") " \"" (p "keys") "\" #'" (p "func") ")")
 (mll "(" (p "mode") "-mode . " (p "ll") ")")
+(req "(require '" (p "req") ")")
 
 json-ts-mode
 (scm-obj "\"" (p "name") "\": {" n>
