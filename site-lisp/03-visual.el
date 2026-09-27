@@ -291,10 +291,16 @@ via the function `that1guycolin/default-font-presets-set-size'."
 (use-package dashboard
   :demand t
   :preface
-  (defun that1guycolin/dashboard-setup ()
-    "Correctly start dashboard during Elpaca-managed init."
-    (dashboard-insert-startupify-lists)
-    (dashboard-initialize))
+  (require '00-macros)
+  (defun that1guycolin/dashboard-setup-startup-hook ()
+    "Setup post-init hooks unless a command line argument is provided."
+    (when (< (length command-line-args) 2)
+      (add-hook 'window-size-change-functions #'dashboard-resize-on-hook 100)
+      (add-hook 'window-setup-hook #'dashboard-resize-on-hook)
+      (add-hook 'elpaca-after-init-hook #'dashboard-insert-startupify-lists)
+      (when (eq that1guycolin/emacs-type 'desktop)
+        (add-hook 'emacs-startup-hook #'dashboard-initialize)
+        (setq-default initial-buffer-choice #'dashboard-refresh-buffer))))
   
   (defun that1guycolin/dashboard-home-dir ()
     "Change-directory to \"~\".  Add to `dashboard-mode-hook'."
@@ -302,30 +308,28 @@ via the function `that1guycolin/default-font-presets-set-size'."
     (setq-local default-directory "~")
     (cd "~"))
   
-  :hook (dasboard-mode . (lambda () (that1guycolin/dashboard-home-dir)
-                           (setq-local fill-column 1000)))
-  :functions (dashboard-insert-startupify-lists
-              dashboard-initialize dashboard-setup-startup-hook
-              dashboard-refresh-buffer dashboard-display-icons-p)
+  :functions (dashboard-resize-on-hook
+              dashboard-insert-startupify-lists dashboard-initialize
+              dashboard-setup-startup-hook dashboard-refresh-buffer
+              dashboard-display-icons-p)
   :init
-  (add-hook 'elpaca-after-init-hook #'that1guycolin/dashboard-setup)
-  (unless (eq system-type 'android)
-    (setq initial-buffer-choice #'dashboard-refresh-buffer))
+  (that1guycolin/dashboard-setup-startup-hook)
   :custom
-  (dashboard-startup-banner 'logo)
-  (dashboard-icon-type 'nerd-icons)
-  (dashboard-set-heading-icons t)
-  (dashboard-display-icons-p t)
-  (dashboard-set-file-icons t)
-  (dashboard-center-content t)
-  (dashboard-vertically-center-content t)
   (dashboard-banner-logo-title "Welcome back")
+  (dashboard-center-content t)
+  (dashboard-display-icons-p t)
+  (dashboard-icon-type 'nerd-icons)
+  (dashboard-items `((projects . ,(length (project-known-project-roots)))
+                     (recents . 5)))
   (dashboard-projects-backend 'project-el)
+  (dashboard-set-file-icons t)
+  (dashboard-set-heading-icons t)
+  (dashboard-startup-banner 'logo)
+  (dashboard-vertically-center-content t)
   :config
-  (dashboard-setup-startup-hook)
-  (setq dashboard-items
-        `((projects . ,(length (project-known-project-roots)))
-          (recents . 5))))
+  (add-hook 'dashboard-mode-hook (lambda ()
+                                   (that1guycolin/dashboard-home-dir)
+                                   (setq-local fill-column 1000))))
 
 
 (provide '03-visual)
