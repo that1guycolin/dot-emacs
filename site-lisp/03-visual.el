@@ -100,12 +100,16 @@ Effective as hook for major-modes where you want to be able to use the mouse."
 ;; Line-length:
 (use-package visual-fill-column
   :demand t
-  :hook (visual-line-mode . visual-fill-column-for-vline)
-  :functions (visual-line-mode visual-fill-column-for-vline)
-  :init
-  (auto-fill-mode 1)
-  (display-fill-column-indicator-mode 1)
-  (visual-line-mode 1))
+  :preface
+  (defun that1guycolin/visual-fill-column-setup ()
+    "Activate `visual-line-mode' & related minor-modes.
+Useful as a hook function."
+    (display-fill-column-indicator-mode 1)
+    (visual-line-mode 1)
+    (auto-fill-mode 1))
+  :hook ((visual-line-mode . visual-fill-column-for-vline)
+         ((prog-mode text-mode conf-mode) .
+          that1guycolin/visual-fill-column-setup)))
 
 
 ;;; Font:
