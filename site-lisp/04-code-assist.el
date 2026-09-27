@@ -142,19 +142,16 @@ See URL `https://vale.sh'."
 ;;; Language-Server-Protocol (eglot):
 (use-package eglot
   :ensure nil
+  :demand t
   :preface
-  (defvar that1guycolin/eglot-non-defaults (list)
-    "List of major-modes with a nonstandard `eglot' configuration.")
-  :defer t
-  :bind (:map ctl-x-map ("e" . eglot))
-  :config (setq eglot-server-programs
-                (cl-remove-if
-                 (lambda (cell)
-                   (cl-some
-                    (lambda (mode)
-                      (memq mode that1guycolin/eglot-non-defaults))
-                    (ensure-list (car cell))))
-                 eglot-server-programs)))
+  (defun that1guycolin/eglot-remove-mode-servers (mode)
+    "Remove servers for MODE from `eglot-server-programs'."
+    (setq eglot-server-programs
+          (cl-remove-if
+           (lambda (cell)
+             (memq mode(ensure-list (car cell))))
+           eglot-server-programs)))
+  :bind (:map ctl-x-map ("e" . eglot)))
 
 (use-package consult-eglot
   :after (consult eglot)

@@ -21,6 +21,12 @@
 ;; config).  Note how all packages are loaded with `:defer' or `:after'.
 
 ;;; Code:
+(require '04-code-assist)
+(declare-function that1guycolin/eglot-remove-server "04-code-assist")
+
+(defvar eglot-server-programs)
+
+
 ;;; CSS:
 (use-package css-ts-mode
   :ensure nil
@@ -30,9 +36,9 @@
   :mode "\\.css\\'"
   :init
   (add-to-list 'major-mode-remap-alist '(css-mode . css-ts-mode))
-  (add-to-list 'that1guycolin/eglot-non-defaults 'css-ts-mode)
   :config
   (with-eval-after-load 'eglot
+    (that1guycolin/eglot-remove-mode-servers 'css-mode)
     (add-to-list 'eglot-server-programs
                  '((css-ts-mode) .
                    ("vscode-css-language-server" "--stdio")))))
@@ -52,13 +58,12 @@
   :hook (dockerfile-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)
                                 (setq-local fill-column 100)))
   :mode ("Dockerfile\\'" "Containerfile\\'")
-  :init (add-to-list 'that1guycolin/eglot-non-defaults 'dockerfile-ts-mode)
   :config
   (with-eval-after-load 'eglot
+    (that1guycolin/eglot-remove-mode-servers 'dockerfile-mode)
     (add-to-list 'eglot-server-programs
                  '((dockerfile-ts-mode) .
-                   ("docker-language-server" "start" "--stdio"))))
-  (add-hook 'dockerfile-ts-mode-hook #'treesit-fold-mode))
+                   ("docker-language-server" "start" "--stdio")))))
 
 
 ;;; Shaders:
@@ -86,7 +91,6 @@
   :mode ("\\.lisp\\'" "\\.cl\\'" "\\.asd\\'")
   :init
   (add-to-list 'major-mode-remap-alist '(lisp-mode . lisp-ts-mode))
-  (add-to-list 'that1guycolin/eglot-non-defaults 'lisp-ts-mode)
   :config
   (setf (alist-get 'lisp-ts-mode font-lock-ignore)
         lisp-ts-mode-font-lock-ignore-keywords)
@@ -139,6 +143,7 @@ See URL: `https://github.com/fukamachi/mallet'."
       (file-error nil)))
 
   (with-eval-after-load 'eglot
+    (that1guycolin/eglot-remove-mode-servers 'lisp-mode)
     (add-to-list 'eglot-server-programs
                  '((lisp-mode lisp-ts-mode) .
                    (lambda (_interactive _project)
@@ -461,8 +466,6 @@ install github.com/checkmake/checkmake/cmd/checkmake@latest'."
   :mode ("\\.md\\'" "README\\'" "INSTALL\\'")
   :init
   (add-to-list 'major-mode-remap-alist '(markdown-mode . markdown-ts-mode))
-  (add-to-list 'that1guycolin/eglot-non-defaults
-               '(markdown-mode markdown-ts-mode))
   :config (keymap-set markdown-ts-mode-map "C-c C-x" #'toggle-frame-maximized)
   (with-eval-after-load 'flycheck
     (flycheck-define-checker markdown-rumdl
@@ -489,6 +492,7 @@ See URL `https://github.com/rvben/rumdl'."
      (alist-get 'gfm-mode         apheleia-mode-alist) 'rumdl))
 
   (with-eval-after-load 'eglot
+    (that1guycolin/eglot-remove-mode-servers 'markdown-mode)
     (add-to-list 'eglot-server-programs
                  '((markdown-mode markdown-ts-mode) . ("rumdl" "server")))))
 
@@ -548,14 +552,12 @@ See URL `https://github.com/rvben/rumdl'."
               python-skeleton-import python-skeleton-try python-skeleton-while)
   :init
   (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
-  (add-to-list 'that1guycolin/eglot-non-defaults '(python-mode python-ts-mode))
   :custom
   (docstr-python-style 'google)
   (python-indent-offset 4)
   (python-shell-interpreter "python3")
   :config
   (keymap-unset python-base-mode-map "C-c C-t")
-  (add-hook 'python-ts-mode-hook (lambda () (docstr-mode 1)))
   
   (with-eval-after-load 'apheleia
     (setf
@@ -563,6 +565,7 @@ See URL `https://github.com/rvben/rumdl'."
      (alist-get 'python-ts-mode apheleia-mode-alist) 'ruff))
 
   (with-eval-after-load 'eglot
+    (that1guycolin/eglot-remove-mode-servers 'python-mode)
     (add-to-list 'eglot-server-programs
                  '((python-mode python-ts-mode) .
                    ("uv" "run" "rass" "python")))))
@@ -760,7 +763,6 @@ See URL `https://fishshell.com'."
   :hook (json-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)
                           (setq-local fill-column 80)))
   :mode ("\\.json\\'" "\\.jsonc\\'")
-  :init (add-to-list 'that1guycolin/eglot-non-defaults 'json-ts-mode)
   :config
   (with-eval-after-load 'apheleia
     (defun that1guycolin/apheleia-set-json-formatter (fmtr)
@@ -800,6 +802,7 @@ See URL `https://fishshell.com'."
                 #'that1guycolin/apheleia-toggle-json-formatter))
 
   (with-eval-after-load 'eglot
+    (that1guycolin/eglot-remove-mode-servers 'json-mode)
     (add-to-list 'eglot-server-programs
                  '((js-json-mode json-ts-mode) .
                    ("vscode-json-language-server" "--stdio")))))
@@ -857,13 +860,13 @@ See URL `https://github.com/priv-kweihmann/systemdlint'."
                        (setq-local fill-column 1000)))
   :mode ("\\.xml\\'"
          "\\.xsd\\'" "\\.xslt\\'" "\\.svg\\'" "\\.rss\\'" "\\.pom\\'")
-  :init (add-to-list 'that1guycolin/eglot-non-defaults 'nxml-mode)
   :custom
   (nxml-child-indent 2)
   (nxml-attribute-indent 2)
   (nxml-slash-auto-complete-flag t)
   :config
   (with-eval-after-load 'eglot
+    (that1guycolin/eglot-remove-mode-servers 'nxml-mode)
     (add-to-list 'eglot-server-programs '((nxml-mode) . ("lemminx")))))
 
 (use-package auto-rename-tag
@@ -880,7 +883,6 @@ See URL `https://github.com/priv-kweihmann/systemdlint'."
   :mode ("\\.yml\\'" "\\.yaml\\'")
   :init
   (add-to-list 'major-mode-remap-alist '(yaml-mode . yaml-ts-mode))
-  (add-to-list 'that1guycolin/eglot-non-defaults 'yaml-ts-mode)
   :config
   (with-eval-after-load 'flycheck
     (flycheck-define-checker yaml-dclint
@@ -947,6 +949,7 @@ If the current `buffer-file-name' is \\='compose.ya(m)l' or
                 #'that1guycolin/apheleia-toggle-yaml-formatter))
 
   (with-eval-after-load 'eglot
+    (that1guycolin/eglot-remove-mode-servers 'yaml-mode)
     (add-to-list 'eglot-server-programs
                  '((yaml-ts-mode) .
                    (lambda (_interactive _project)
