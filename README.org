@@ -4,7 +4,7 @@
 #+TITLE: dot-Emacs README
 #+AUTHOR: Colin Loeffler (that1guycolin)
 #+CREATED_DATE: [2026-07-14 Tue 04:29:56]
-#+LAST_EDIT: [2026-09-26 Sat 16:17:37]
+#+LAST_EDIT: [2026-09-27 Sun 17:27:25]
 #+ID: emacs:zms5tnb090l0
 #+FILETAGS: :Emacs:elisp:config:GNU:
 
@@ -66,7 +66,7 @@
 - [[https://github.com/protesilaos/show-font][show-font]]
 - [[https://github.com/emacs-dashboard/dashboard][dashboard]]
 
-*** [[https://github.com/that1guycolin/dot-emacs/blob/languages-refactor/site-lisp/site-lisp/04-code-assist.el][04 code assist]]
+*** [[https://github.com/that1guycolin/dot-emacs/blob/languages-refactor/site-lisp/04-code-assist.el][04 code assist]]
 
 - [[https://github.com/emacsmirror/gnu_elpa][adaptive-wrap]]
 - [[https://github.com/remyferre/comment-dwim-2][comment-dwim-2]]
@@ -93,7 +93,7 @@
 - [[https://github.com/d12frosted/flyspell-correct][flyspell-correct]]
 - [[https://github.com/d12frosted/flyspell-correct][flyspell-correct-avy-menu]]
 
-*** [[https://github.com/that1guycolin/dot-emacs/blob/languages-refactor/site-lisp/site-lisp/05-languages.el][05 languages]]
+*** [[https://github.com/that1guycolin/dot-emacs/blob/languages-refactor/site-lisp/05-languages.el][05 languages]]
 
 - [[https://github.com/emacsmirror/gnu_elpa][csv-mode]]
 - [[https://github.com/jimhourihan/glsl-mode][glsl-mode]]
@@ -137,7 +137,7 @@
 - [[https://github.com/emacs-vs/auto-rename-tag][auto-rename-tag]]
 - [[https://github.com/zkry/yaml-pro][yaml-pro]]
 
-*** [[https://github.com/that1guycolin/dot-emacs/blob/languages-refactor/site-lisp/site-lisp/06-org-config.el][06 org config]]
+*** [[https://github.com/that1guycolin/dot-emacs/blob/languages-refactor/site-lisp/06-org-config.el][06 org config]]
 
 - [[https://github.com/emacsmirror/gnu_elpa][org-edna]]
 - [[https://github.com/colonelpanic8/org-project-capture][org-project-capture]]
@@ -160,7 +160,7 @@
 - [[https://github.com/alphapapa/org-make-toc][org-make-toc]]
 - [[https://github.com/marcinkoziej/org-pomodoro][org-pomodoro]]
 
-*** [[https://github.com/that1guycolin/dot-emacs/blob/languages-refactor/site-lisp/site-lisp/07-support.el][07 support]]
+*** [[https://github.com/that1guycolin/dot-emacs/blob/languages-refactor/site-lisp/07-support.el][07 support]]
 
 - [[[https://codeberg.org/akib/emacs-eat][eat]]
 - [[https://github.com/szermatt/mistty][mistty]]
