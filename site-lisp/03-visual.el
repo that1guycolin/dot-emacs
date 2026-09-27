@@ -92,8 +92,7 @@ Effective as hook for major-modes where you want to be able to use the mouse."
   :functions (popper-mode popper-echo-mode)
   :custom (popper-reference-buffers
            '("\\*Messages\\*" "Output\\*$" "\\*Async Shell Command\\*" help-mode
-             helpful-mode compilation-mode "^\\*vterm.*\\*$" vterm-mode
-             "^\\*eat.*\\*$" eat-mode free-keys-mode))
+             helpful-mode compilation-mode))
   :config
   (popper-mode +1)
   (popper-echo-mode +1))

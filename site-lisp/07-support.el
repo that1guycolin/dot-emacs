@@ -926,7 +926,9 @@ doubles as a model-switcher."
 ;; Show available keybinds
 (use-package free-keys
   :defer t
-  :bind ("C-c C-=" . free-keys))
+  :preface (defvar popper-reference-buffers)
+  :bind ("C-c C-=" . free-keys)
+  :config (add-to-list 'popper-reference-buffers 'free-keys))
 
 ;; GUIX
 (use-package guix
