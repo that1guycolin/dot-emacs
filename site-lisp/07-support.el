@@ -10,7 +10,7 @@
 
 ;;; Commentary:
 ;; This file contains use-package objects for packages that help integrate Emacs
-;; with external applications (e.g., "docker") or packages that extend Emacs'
+;; with external applications (e.g., "podman") or packages that extend Emacs'
 ;; functionality to the extent it mirrors an external tool (e.g., "dirvish").
 
 ;;; Code:

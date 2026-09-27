@@ -2,23 +2,23 @@
 
 ;;; Packages included:
 ;; adjust-parens, auto-rename-tag, bash-ts-mode, checkdoc, cmake-ts-mode,
-;; css-ts-mode, csv-mode, dockerfile-ts-mode, eask-mode, eldoc-cmake,
-;; elisp-def, emacs-lisp-mode, eros, eros-inspector, fish-mode, flycheck-eask,
+;; css-ts-mode, csv-mode, dockerfile-ts-mode, eask-mode, eldoc-cmake, elisp-def,
+;; emacs-lisp-mode, eros, eros-inspector, fish-mode, flycheck-eask,
 ;; flycheck-guile, flycheck-package, gaudy-cl, geiser, geiser-guile, glsl-mode,
-;; go-ts-mode, grip-mode, ielm, ini-mode, inspector, json-ts-mode,
-;; json5-ts-mode, just-ts-mode, kdl-mode, let-completion, lisp-semantic-hl,
-;; lisp-ts-mode, live-py-mode, lua-ts-mode, macrostep, macrostep-geiser,
-;; makefile-mode, markdown-ts-mode, morlock, nxml-mode, pkgbuild-mode,
-;; python-pytest, python-ts-mode, python-x, rust-ts-mode, rustic, scheme-mode,
-;; sh-mode, shfmt, sly, sly-asdf, sly-quicklisp, suggest, systemd,
-;; toml-ts-mode, tree-inspector, yaml-pro, yaml-ts-mode
+;; go-ts-mode, grip-mode, ielm, ini-mode, inspector, json-ts-mode, just-ts-mode,
+;; kdl-mode, let-completion, lisp-semantic-hl, lisp-ts-mode, live-py-mode,
+;; lua-ts-mode, macrostep, macrostep-geiser, makefile-mode, markdown-ts-mode,
+;; morlock, nxml-mode, pkgbuild-mode, python-pytest, python-ts-mode, python-x,
+;; rust-ts-mode, rustic, scheme-mode, sh-mode, shfmt, sly, sly-asdf,
+;; sly-quicklisp, suggest, systemd, toml-ts-mode, tree-inspector, yaml-pro,
+;; yaml-ts-mode
 
 ;;; Commentary:
 ;; The purpose of this file is to define how Emacs should behave in the
-;; major-modes of different coding/scripting languages.  Different languages
-;; obviously require different settings.  The use of Emacs' built-in treesitter
-;; modes is almost always preferred (in this config), and it's worth noting that
-;; the only package loaded with `:demand t' & not `:defer t' is treesit.
+;; major-modes of various coding/scripting languages; different languages
+;; require different settings.  The use of an Emacs built-in treesitter mode is
+;; almost always given preference over its non-treesitter counterpart (in this
+;; config).  Note how all packages are loaded with `:defer' or `:after'.
 
 ;;; Code:
 ;;; CSS:
