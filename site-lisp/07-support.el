@@ -22,7 +22,8 @@
 (use-package eat
   :defer t
   :bind ("C-c t e"   . eat)
-  :hook (eshell-mode . eat-eshell-visual-command-mode))
+  :hook ((eshell-mode . eat-eshell-visual-command-mode)
+         (eat-mode . (lambda () (setq-local fill-column 1000)))))
 
 ;; Libghostty-based terminal shell
 (use-package ghostel
@@ -34,6 +35,7 @@
                    :protocol https :inherit t :depth treeless)
   :defer t
   :bind ("C-c t g" . ghostel)
+  :hook (ghostel-mode . (lambda () (setq-local fill-column 1000)))
   :init (that1guycolin/desktop-mobile
           :desk (setq ghostel-module-auto-install 'compile)
           :termux (setq ghostel-module-auto-install 'download))
@@ -49,15 +51,15 @@
                ("M-<up>"    . mistty-send-key)
                ("M-<down>"  . mistty-send-key)
                ("M-<left>"  . mistty-send-key)
-               ("M-<right>" . mistty-send-key))))
+               ("M-<right>" . mistty-send-key)))
+  :hook (mistty-mode . (lambda () (setq-local fill-column 1000))))
 
 ;; Shell completion in shell buffers
 (use-package native-complete
   :defer t
   :hook (shell-mode . (lambda ()
-                        (add-to-list
-                         'completion-at-point-functions
-                         #'native-complete-at-point)))
+                        (add-to-list 'completion-at-point-functions
+                                     #'native-complete-at-point)))
   :commands native-complete-at-point)
 
 
