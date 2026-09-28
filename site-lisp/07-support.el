@@ -241,22 +241,23 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
       "f" "Create File"
       "d" "Create Directory"))
 
-  (defvar-keymap dired-mode-map
-    :keymap dired-mode-map
-    "C-p"       #'dired-previous-line
-    "C-n"       #'dired-next-line
-    "R"         #'that1guycolin/dirvish-rename-file
-    "m"         #'dired-do-rename
-    "c"           that1guycolin/dired-create-map
-    "C-w"       #'that1guycolin/dirvish-cut
-    "M-w"       #'that1guycolin/dirvish-copy
-    "C-y"       #'that1guycolin/dirvish-paste
-    "^"         #'dired-up-directory
-    "C-M-p"     #'dired-up-directory
-    "C-M-n"     #'that1guycolin/dirvish-down-directory
-    "TAB"       #'that1guycolin/dirvish-tab-dwim
-    "RET"       #'that1guycolin/dirvish-return-dwim
-    "?"         #'that1guycolin/dirvish-dispatch)
+  (with-eval-after-load 'dired
+    (defvar-keymap dired-mode-map
+      :keymap dired-mode-map
+      "C-p"       #'dired-previous-line
+      "C-n"       #'dired-next-line
+      "R"         #'that1guycolin/dirvish-rename-file
+      "m"         #'dired-do-rename
+      "c"           that1guycolin/dired-create-map
+      "C-w"       #'that1guycolin/dirvish-cut
+      "M-w"       #'that1guycolin/dirvish-copy
+      "C-y"       #'that1guycolin/dirvish-paste
+      "^"         #'dired-up-directory
+      "C-M-p"     #'dired-up-directory
+      "C-M-n"     #'that1guycolin/dirvish-down-directory
+      "TAB"       #'that1guycolin/dirvish-tab-dwim
+      "RET"       #'that1guycolin/dirvish-return-dwim
+      "?"         #'that1guycolin/dirvish-dispatch))
   :bind ("C-x d" . dirvish)
   :commands (dirvish-dwim)
   :functions (dired-create-directory
