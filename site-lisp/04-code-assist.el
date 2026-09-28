@@ -14,6 +14,54 @@
 ;; The packages configured in this file set up IDE-like features within Emacs.
 
 ;;; Code:
+;;; Treesit:
+(use-package treesit
+  :ensure nil
+  :demand t
+  :preface (declare-function no-littering-expand-var-file-name "no-littering")
+  :mode ("\\.tsx\\'" . tsx-ts-mode)
+  :init (setq treesit-extra-load-path
+              `(,(no-littering-expand-var-file-name "tree-sitter")))
+  :custom
+  (treesit-enabled-modes t)
+  (treesit-font-lock-level 4)
+  :config
+  (setq
+   treesit-language-source-alist
+   '((bash . ("https://github.com/tree-sitter/tree-sitter-bash"))
+     (commonlisp . ("https://github.com/tree-sitter-grammars/tree-sitter-commonlisp"))
+     (cmake . ("https://github.com/uyha/tree-sitter-cmake"))
+     (css . ("https://github.com/tree-sitter/tree-sitter-css"))
+     (cpp . ("https://github.com/tree-sitter/tree-sitter-cpp"))
+     (dockerfile . ("https://github.com/camdencheek/tree-sitter-dockerfile"))
+     (fish . ("https://github.com/ram02z/tree-sitter-fish"))
+     (elisp . ("https://github.com/Wilfred/tree-sitter-elisp"))
+     (gitcommit . ("https://github.com/gbprod/tree-sitter-gitcommit"))
+     (go . ("https://github.com/tree-sitter/tree-sitter-go"))
+     (html . ("https://github.com/tree-sitter/tree-sitter-html"))
+     (javascript . ("https://github.com/tree-sitter/tree-sitter-javascript"
+                    "master" "src"))
+     (json . ("https://github.com/tree-sitter/tree-sitter-json"))
+     (json5 . ("https://github.com/Joakker/tree-sitter-json5"))
+     (kdl . ("https://github.com/tree-sitter-grammars/tree-sitter-kdl"))
+     (lua . ("https://github.com/MunifTanjim/tree-sitter-lua"))
+     (make . ("https://github.com/alemuller/tree-sitter-make"))
+     (markdown . ("https://github.com/tree-sitter-grammars/tree-sitter-markdown"
+                  "split_parser" "tree-sitter-markdown/src"))
+     (markdown-inline . ("https://github.com/tree-sitter-grammars/tree-sitter-markdown"
+                         "split_parser" "tree-sitter-markdown-inline/src"))
+     (powershell . ("https://github.com/airbus-cert/tree-sitter-powershell"))
+     (python . ("https://github.com/tree-sitter/tree-sitter-python"))
+     (rust . ("https://github.com/tree-sitter/tree-sitter-rust"))
+     (toml . ("https://github.com/ikatyang/tree-sitter-toml"))
+     (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript"
+             "master" "tsx/src"))
+     (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript"
+                    "master" "typescript/src"))
+     (xml . ("https://github.com/tree-sitter-grammars/tree-sitter-xml"))
+     (yaml . ("https://github.com/ikatyang/tree-sitter-yaml"))
+     (zsh . ("https://github.com/georgeharker/tree-sitter-zsh")))))
+
 ;;; Text manipulation:
 ;; Smart wrapping
 (use-package adaptive-wrap
@@ -223,13 +271,10 @@ See URL `https://vale.sh'."
 
 ;; Allows use of same keybindings across backends
 (use-package kirigami
-  :defer t
-  :commands (kirigami-mode)
-  :functions (kirigami-open-fold
-              kirigami-open-fold-rec kirigami-open-folds kirigami-close-fold
-              kirigami-close-folds kirigami-toggle-fold)
-  :config
-  (defvar-keymap that1guycolin/kirigami-functions-map
+  :after (:any hideshow outline outline-indent treesit-fold)
+  :demand t
+  :preface
+    (defvar-keymap that1guycolin/kirigami-functions-map
     :doc "Common code folding functions from `kirigami'."
     "o" #'kirigami-open-fold
     "r" #'kirigami-open-fold-rec
@@ -246,7 +291,10 @@ See URL `https://vale.sh'."
       "c" "Close Fold"
       "f" "Close Folds"
       "a" "Toggle Folds"))
-  (keymap-global-set "C-c z" that1guycolin/kirigami-functions-map))
+  :bind-keymap ("C-c z" . that1guycolin/kirigami-functions-map)
+  :functions (kirigami-open-fold
+              kirigami-open-fold-rec kirigami-open-folds kirigami-close-fold
+              kirigami-close-folds kirigami-toggle-fold))
 
 
 ;;; Spellcheck:
@@ -270,55 +318,6 @@ See URL `https://vale.sh'."
 (use-package flyspell-correct-avy-menu
   :after (flyspell-correct avy)
   :demand t)
-
-
-;;; Treesit:
-(use-package treesit
-  :ensure nil
-  :demand t
-  :preface (declare-function no-littering-expand-var-file-name "no-littering")
-  :mode ("\\.tsx\\'" . tsx-ts-mode)
-  :init (setq treesit-extra-load-path
-              `(,(no-littering-expand-var-file-name "tree-sitter")))
-  :custom
-  (treesit-enabled-modes t)
-  (treesit-font-lock-level 4)
-  :config
-  (setq
-   treesit-language-source-alist
-   '((bash . ("https://github.com/tree-sitter/tree-sitter-bash"))
-     (commonlisp . ("https://github.com/tree-sitter-grammars/tree-sitter-commonlisp"))
-     (cmake . ("https://github.com/uyha/tree-sitter-cmake"))
-     (css . ("https://github.com/tree-sitter/tree-sitter-css"))
-     (cpp . ("https://github.com/tree-sitter/tree-sitter-cpp"))
-     (dockerfile . ("https://github.com/camdencheek/tree-sitter-dockerfile"))
-     (fish . ("https://github.com/ram02z/tree-sitter-fish"))
-     (elisp . ("https://github.com/Wilfred/tree-sitter-elisp"))
-     (gitcommit . ("https://github.com/gbprod/tree-sitter-gitcommit"))
-     (go . ("https://github.com/tree-sitter/tree-sitter-go"))
-     (html . ("https://github.com/tree-sitter/tree-sitter-html"))
-     (javascript . ("https://github.com/tree-sitter/tree-sitter-javascript"
-                    "master" "src"))
-     (json . ("https://github.com/tree-sitter/tree-sitter-json"))
-     (json5 . ("https://github.com/Joakker/tree-sitter-json5"))
-     (kdl . ("https://github.com/tree-sitter-grammars/tree-sitter-kdl"))
-     (lua . ("https://github.com/MunifTanjim/tree-sitter-lua"))
-     (make . ("https://github.com/alemuller/tree-sitter-make"))
-     (markdown . ("https://github.com/tree-sitter-grammars/tree-sitter-markdown"
-                  "split_parser" "tree-sitter-markdown/src"))
-     (markdown-inline . ("https://github.com/tree-sitter-grammars/tree-sitter-markdown"
-                         "split_parser" "tree-sitter-markdown-inline/src"))
-     (powershell . ("https://github.com/airbus-cert/tree-sitter-powershell"))
-     (python . ("https://github.com/tree-sitter/tree-sitter-python"))
-     (rust . ("https://github.com/tree-sitter/tree-sitter-rust"))
-     (toml . ("https://github.com/ikatyang/tree-sitter-toml"))
-     (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript"
-             "master" "tsx/src"))
-     (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript"
-                    "master" "typescript/src"))
-     (xml . ("https://github.com/tree-sitter-grammars/tree-sitter-xml"))
-     (yaml . ("https://github.com/ikatyang/tree-sitter-yaml"))
-     (zsh . ("https://github.com/georgeharker/tree-sitter-zsh")))))
 
 
 (provide '04-code-assist)
