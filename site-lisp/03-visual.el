@@ -1,9 +1,9 @@
 ;;; 03-visual.el --- Core UI configuration -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; dashboard, ef-themes, inhibit-mouse, minions, modus-themes, nerd-icons,
-;; nerd-icons-corfu, popper, show-font, tab-line-nerd-icons,
-;; treemacs-nerd-icons, visual-fill-column
+;; dashboard, default-font-presets, ef-themes, inhibit-mouse, minions,
+;; modus-themes, nerd-icons, nerd-icons-corfu, popper, show-font,
+;; tab-line-nerd-icons, treemacs-nerd-icons, visual-fill-column
 
 ;;; Commentary:
 ;; Define the user-interface.  In the case of this configuration, start with
@@ -92,8 +92,7 @@ Effective as hook for major-modes where you want to be able to use the mouse."
   :functions (popper-mode popper-echo-mode)
   :custom (popper-reference-buffers
            '("\\*Messages\\*" "Output\\*$" "\\*Async Shell Command\\*" help-mode
-             helpful-mode compilation-mode "^\\*vterm.*\\*$" vterm-mode
-             "^\\*eat.*\\*$" eat-mode free-keys-mode))
+             helpful-mode compilation-mode))
   :config
   (popper-mode +1)
   (popper-echo-mode +1))
@@ -102,63 +101,15 @@ Effective as hook for major-modes where you want to be able to use the mouse."
 (use-package visual-fill-column
   :demand t
   :preface
-  (defvar that1guycolin/mode-fill-column-alist
-    '((bash-ts-mode           . 80)    (c-ts-mode              . 100)
-      (c++-ts-mode            . 100)   (cmake-ts-mode          . 100)
-      (conf-toml-mode         . 0)     (css-mode               . 80)
-      (css-ts-mode            . 80)    (csv-mode               . 0)
-      (dashboard-mode         . 0)     (emacs-lisp-mode        . 80)
-      (fish-mode              . 80)    (dockerfile-ts-mode     . 100)
-      (geiser-repl-mode       . 0)     (glsl-mode              . 100)
-      (go-ts-mode             . 80)    (ini-mode               . 100)
-      (java-ts-mode           . 100)   (js-json-mode           . 80)
-      (json-ts-mode           . 80)    (js-ts-mode             . 100)
-      (just-ts-mode           . 100)   (kdl-mode               . 100)
-      (lisp-mode              . 80)    (lua-ts-mode            . 120)
-      (makefile-mode          . 100)   (markdown-ts-mode       . 80)
-      (nxml-mode              . 0)     (python-mode            . 88)
-      (python-ts-mode         . 88)    (rustic-mode            . 100)
-      (rust-ts-mode           . 100)   (scheme-mode            . 80)
-      (sh-mode                . 80)    (sly-mrepl-mode         . 0)
-      (systemd-mode           . 100)   (telega-root-mode       . 100)
-      (toml-ts-mode           . 0)     (typescript-ts-mode     . 80)
-      (yaml-ts-mode           . 0))
-    "Alist mapping major-modes to their default `fill-column' value.")
-
-  (defun that1guycolin/display-max-line-length (ll)
-    "Set `fill-column' to LL.
-Also toggle `auto-fill-mode', `display-fill-column-indicator-mode', and
-`visual-line-mode'."
-    (setq-local fill-column ll)
-    (auto-fill-mode 1)
+  (defun that1guycolin/visual-fill-column-setup ()
+    "Activate `visual-line-mode' & related minor-modes.
+Useful as a hook function."
     (display-fill-column-indicator-mode 1)
-    (visual-line-mode 1))
-
-  (defun that1guycolin/no-display-line-length ()
-    "Untoggle `minor-modes' that aid in the display of max line-length.
-Function also sets `fill-column' to 1000."
-    (setq-local fill-column 1000)
-    (auto-fill-mode -1)
-    (display-fill-column-indicator-mode -1)
-    (visual-line-mode -1))
-
-  (defun that1guycolin/auto-set-fill-column ()
-    "Check if `major-mode' is in `that1guycolin/mode-fill-column-alist'.
-If yes, toggle display of max line-length depending on whether value its
-cdr is 0 or a positive integer. If not a member of the list, run
-`that1guycolin/display-max-line-length' using 80 as the \\='max'
-argument."
-    (interactive)
-    (if (member major-mode (mapcar #'car that1guycolin/mode-fill-column-alist))
-        (let ((fc (cdr (assoc major-mode
-                              that1guycolin/mode-fill-column-alist))))
-          (if (= fc 0)
-              (that1guycolin/no-display-line-length)
-            (that1guycolin/display-max-line-length fc)))
-      (that1guycolin/display-max-line-length 80)))
-  :hook (visual-line-mode . visual-fill-column-for-vline)
-  :functions (visual-line-mode visual-fill-column-for-vline)
-  :init (add-hook 'find-file-hook #'that1guycolin/auto-set-fill-column))
+    (visual-line-mode 1)
+    (auto-fill-mode 1))
+  :hook ((visual-line-mode . visual-fill-column-for-vline)
+         ((prog-mode text-mode conf-mode) .
+          that1guycolin/visual-fill-column-setup)))
 
 
 ;;; Font:
@@ -344,10 +295,16 @@ via the function `that1guycolin/default-font-presets-set-size'."
 (use-package dashboard
   :demand t
   :preface
-  (defun that1guycolin/dashboard-setup ()
-    "Correctly start dashboard during Elpaca-managed init."
-    (dashboard-insert-startupify-lists)
-    (dashboard-initialize))
+  (require '00-macros)
+  (defun that1guycolin/dashboard-setup-startup-hook ()
+    "Setup post-init hooks unless a command line argument is provided."
+    (when (< (length command-line-args) 2)
+      (add-hook 'window-size-change-functions #'dashboard-resize-on-hook 100)
+      (add-hook 'window-setup-hook #'dashboard-resize-on-hook)
+      (add-hook 'elpaca-after-init-hook #'dashboard-insert-startupify-lists)
+      (when (eq that1guycolin/emacs-type 'desktop)
+        (add-hook 'emacs-startup-hook #'dashboard-initialize)
+        (setq-default initial-buffer-choice #'dashboard-refresh-buffer))))
   
   (defun that1guycolin/dashboard-home-dir ()
     "Change-directory to \"~\".  Add to `dashboard-mode-hook'."
@@ -355,29 +312,28 @@ via the function `that1guycolin/default-font-presets-set-size'."
     (setq-local default-directory "~")
     (cd "~"))
   
-  :functions (dashboard-insert-startupify-lists
-              dashboard-initialize dashboard-setup-startup-hook
-              dashboard-refresh-buffer dashboard-display-icons-p)
+  :functions (dashboard-resize-on-hook
+              dashboard-insert-startupify-lists dashboard-initialize
+              dashboard-setup-startup-hook dashboard-refresh-buffer
+              dashboard-display-icons-p)
   :init
-  (add-hook 'elpaca-after-init-hook #'that1guycolin/dashboard-setup)
-  (unless (eq system-type 'android)
-    (setq initial-buffer-choice #'dashboard-refresh-buffer))
+  (that1guycolin/dashboard-setup-startup-hook)
   :custom
-  (dashboard-startup-banner 'logo)
-  (dashboard-icon-type 'nerd-icons)
-  (dashboard-set-heading-icons t)
-  (dashboard-display-icons-p t)
-  (dashboard-set-file-icons t)
-  (dashboard-center-content t)
-  (dashboard-vertically-center-content t)
   (dashboard-banner-logo-title "Welcome back")
+  (dashboard-center-content t)
+  (dashboard-display-icons-p t)
+  (dashboard-icon-type 'nerd-icons)
+  (dashboard-items `((projects . ,(length (project-known-project-roots)))
+                     (recents . 5)))
   (dashboard-projects-backend 'project-el)
+  (dashboard-set-file-icons t)
+  (dashboard-set-heading-icons t)
+  (dashboard-startup-banner 'logo)
+  (dashboard-vertically-center-content t)
   :config
-  (dashboard-setup-startup-hook)
-  (setq dashboard-items
-        `((projects . ,(length (project-known-project-roots)))
-          (recents . 5)))
-  (add-hook 'dashboard-mode-hook #'that1guycolin/dashboard-home-dir))
+  (add-hook 'dashboard-mode-hook (lambda ()
+                                   (that1guycolin/dashboard-home-dir)
+                                   (setq-local fill-column 1000))))
 
 
 (provide '03-visual)

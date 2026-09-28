@@ -2,50 +2,46 @@
 
 ;;; Packages included:
 ;; casual, casual-avy, deadgrep, dirvish, docker, dwim-shell-command, eat,
-;; elisp-dev-mcp, ellama, emacs-everywhere, emms, emms-info-mediainfo,
-;; free-keys, ghostel, gptel, gptel-forge-prs, guix, htmlize, llm, llm-ollama,
-;; mcp-server-lib, mistty, mpv, native-complete, notmuch, notmuch-addr,
+;; elisp-dev-mcp, ellama, emacs-everywhere, emms, emms-info-mediainfo, empv,
+;; free-keys, ghostel gptel, gptel-forge-prs, guix, htmlize, llm, llm-ollama,
+;; mcp-server-lib, mistty, native-complete, notmuch, notmuch-addr,
 ;; notmuch-indicator, notmuch-transient, org-mcp, ready-player, recentf, rg,
-;; telega, vterm
+;; telega
 
 ;;; Commentary:
 ;; This file contains use-package objects for packages that help integrate Emacs
-;; with external applications (e.g., "docker") or packages that extend Emacs'
+;; with external applications (e.g., "podman") or packages that extend Emacs'
 ;; functionality to the extent it mirrors an external tool (e.g., "dirvish").
 
 ;;; Code:
+(require '00-macros)
+
+
 ;;; Terminals:
 ;; Emulate A Terminal
-(require '00-macros)
 (use-package eat
   :defer t
   :bind ("C-c t e"   . eat)
-  :hook (eshell-mode . eat-eshell-visual-command-mode))
+  :hook ((eshell-mode . eat-eshell-visual-command-mode)
+         (eat-mode . (lambda () (setq-local fill-column 1000)))))
 
 ;; Libghostty-based terminal shell
-(that1guycolin/desktop-mobile
-  :desk
-  (use-package ghostel
-    :ensure (ghostel :source nil :package "ghostel" :id ghostel
-                     :fetcher github :repo "dakra/ghostel" :type git
-                     :files (:defaults
-                             "README.md" "etc" "src" "vendor" "build.zig"
-                             "build.zig.zon" "symbols.map" ("build" "Makefile"))
-                     :protocol https :inherit t :depth treeless)
-    :defer t
-    :bind ("C-c t g" . ghostel)
-    :init (setq ghostel-module-auto-install 'compile)
-    :config (with-eval-after-load 'disproject
-              (transient-append-suffix 'disproject-dispatch
-                "s" '("o" "Ghostel" ghostel-project))))
-  :termux
-  (use-package ghostel
-    :defer t
-    :bind ("C-c t g" . ghostel)
-    :init (setq ghostel-module-auto-install 'download)
-    :config (with-eval-after-load 'disproject
-              (transient-append-suffix 'disproject-dispatch
-                "s" '("o" "Ghostel" ghostel-project)))))
+(use-package ghostel
+  :ensure (ghostel :source "MELPA" :package "ghostel" :id ghostel
+                   :fetcher github :repo "dakra/ghostel" :type git :files
+                   (:defaults "README.md" "etc" "src" "vendor" "build.zig"
+                              "build.zig.zon" "symbols.map"
+                              ("build" "Makefile"))
+                   :protocol https :inherit t :depth treeless)
+  :defer t
+  :bind ("C-c t g" . ghostel)
+  :hook (ghostel-mode . (lambda () (setq-local fill-column 1000)))
+  :init (that1guycolin/desktop-mobile
+          :desk (setq ghostel-module-auto-install 'compile)
+          :termux (setq ghostel-module-auto-install 'download))
+  :config (with-eval-after-load 'disproject
+            (transient-append-suffix 'disproject-dispatch
+              "s" '("o" "Ghostel" ghostel-project))))
 
 ;; Commit shell layer
 (use-package mistty
@@ -55,15 +51,15 @@
                ("M-<up>"    . mistty-send-key)
                ("M-<down>"  . mistty-send-key)
                ("M-<left>"  . mistty-send-key)
-               ("M-<right>" . mistty-send-key))))
+               ("M-<right>" . mistty-send-key)))
+  :hook (mistty-mode . (lambda () (setq-local fill-column 1000))))
 
 ;; Shell completion in shell buffers
 (use-package native-complete
   :defer t
   :hook (shell-mode . (lambda ()
-                        (add-to-list
-                         'completion-at-point-functions
-                         #'native-complete-at-point)))
+                        (add-to-list 'completion-at-point-functions
+                                     #'native-complete-at-point)))
   :commands native-complete-at-point)
 
 
@@ -161,7 +157,6 @@ Otherwise paste into the current Dired/Dirvish directory."
     (if (file-directory-p src)
         (copy-directory src dest t nil nil)
       (copy-file src dest nil t)))
-
   (defun that1guycolin/dirvish-paste ()
     "Paste staged files into the directory at point or current directory."
     (interactive)
@@ -237,6 +232,32 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
     (setq-local that1guycolin/dirvish-preview-buffer t)
     (read-only-mode 1))
 
+  (defvar-keymap that1guycolin/dired-create-map
+    :doc "Create a file or directory while using `dirvish'."
+    "f" #'dired-create-empty-file
+    "d" #'dired-create-directory)
+  (with-eval-after-load 'which-key
+    (which-key-add-keymap-based-replacements that1guycolin/dired-create-map
+      "f" "Create File"
+      "d" "Create Directory"))
+
+  (with-eval-after-load 'dired
+    (defvar-keymap dired-mode-map
+      :keymap dired-mode-map
+      "C-p"       #'dired-previous-line
+      "C-n"       #'dired-next-line
+      "R"         #'that1guycolin/dirvish-rename-file
+      "m"         #'dired-do-rename
+      "c"           that1guycolin/dired-create-map
+      "C-w"       #'that1guycolin/dirvish-cut
+      "M-w"       #'that1guycolin/dirvish-copy
+      "C-y"       #'that1guycolin/dirvish-paste
+      "^"         #'dired-up-directory
+      "C-M-p"     #'dired-up-directory
+      "C-M-n"     #'that1guycolin/dirvish-down-directory
+      "TAB"       #'that1guycolin/dirvish-tab-dwim
+      "RET"       #'that1guycolin/dirvish-return-dwim
+      "?"         #'that1guycolin/dirvish-dispatch))
   :bind ("C-x d" . dirvish)
   :commands (dirvish-dwim)
   :functions (dired-create-directory
@@ -253,10 +274,8 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
   (dirvish-hide-details t)
   (dirvish-reuse-session nil)
   :config
-  (dolist (plugin '(dirvish-extras dirvish-subtree dirvish-yank))
-    (require plugin))
-  (dolist (optional-plugin '(dirvish-vc dirvish-emerge))
-    (require optional-plugin nil t))
+  (mapc #'require '(dirvish-extras dirvish-subtree dirvish-yank))
+  (mapc (lambda (pgn) (require pgn nil t)) '(dirvish-vc dirvish-emerge))
   
   (add-hook 'dirvish-preview-setup-hook
             #'that1guycolin/dirvish-preview-read-only)
@@ -300,26 +319,7 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
       ("M-f" "History forward"      dirvish-history-go-forward :transient t)
       ("M-e" "Emerge menu"          dirvish-emerge-menu)
       ("g"   "Revert"               revert-buffer :transient t)
-      ("q"   "Quit Dirvish"         dirvish-quit)]])
-  
-  (let ((map dirvish-mode-map)
-        (create-map (make-sparse-keymap)))
-    (keymap-set map "C-p"        #'dired-previous-line)
-    (keymap-set map "C-n"        #'dired-next-line)
-    (keymap-set map "R"          #'that1guycolin/dirvish-rename-file)
-    (keymap-set map "m"          #'dired-do-rename)
-    (keymap-set map "c"            create-map)
-    (keymap-set map "C-w"        #'that1guycolin/dirvish-cut)
-    (keymap-set map "M-w"        #'that1guycolin/dirvish-copy)
-    (keymap-set map "C-y"        #'that1guycolin/dirvish-paste)
-    (keymap-set map "^"          #'dired-up-directory)
-    (keymap-set map "C-M-p"      #'dired-up-directory)
-    (keymap-set map "C-M-n"      #'that1guycolin/dirvish-down-directory)
-    (keymap-set map "TAB"        #'that1guycolin/dirvish-tab-dwim)
-    (keymap-set map "RET"        #'that1guycolin/dirvish-return-dwim)
-    (keymap-set map "?"          #'that1guycolin/dirvish-dispatch)
-    (keymap-set create-map "f"   #'dired-create-empty-file)
-    (keymap-set create-map "d"   #'dired-create-directory)))
+      ("q"   "Quit Dirvish"         dirvish-quit)]]))
 
 ;; execute shell commands on marked files
 (use-package dwim-shell-command
@@ -370,8 +370,7 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
 ;; Launch media directly from `dirvish'
 (use-package ready-player
   :defer t
-  :hook ((dired-mode . ready-player-mode)
-         (dirvish-mode . ready-player-mode)))
+  :hook (dired-mode . ready-player-mode))
 
 
 ;;; Email:
@@ -379,14 +378,22 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
   :demand t
   :preface
   (declare-function inhibit-mouse-mode "03-visual.el")
-  (defvar that1guycolin/scripts-directory)
 
-  (defvar that1guycolin/gmi-sendmail-path nil
+  (defvar that1guycolin/gmi-sendmail-path
+    "/home/colin-l/scripts/bash/gmi-sendmail.sh"
     "Location of the `gmi-sendmail' bash script on device.")
+
+  (defvar that1guycolin/gmail-accounts
+    (list "colinloeffler" "that1guycolin" "cloudyguy4" "colinjl227")
+    "A list of my various gmail usernames.")
   
-  (defun that1guycolin/sendmail-via-gmi ()
-    "Send mail using `gmi-sendmail' bash script as the `sendmail' program."
-    (let ((sendmail-program that1guycolin/gmi-sendmail-path))
+  (defun that1guycolin/sendmail-via-gmi (account)
+    "Send mail from ACCOUNT using the `gmi-sendmail' bash script."
+    (interactive
+     (list
+      (completing-read "Account (colinloeffler): " that1guycolin/gmail-accounts
+                       nil t "colinloeffler" nil "colinloeffler")))
+    (let ((message-sendmail-extra-arguments account))
       (message-send-mail-with-sendmail)))
 
   (defun that1guycolin/notmuch-avoid-empty-subject ()
@@ -404,8 +411,6 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
          (message-send . that1guycolin/notmuch-avoid-empty-subject))
   :functions (message-field-value notmuch-addr-setup
                                   message-send-mail-with-sendmail)
-  :init (setq that1guycolin/gmi-sendmail-path
-              (concat that1guycolin/scripts-directory "/bash/gmi-sendmail.sh"))
   :custom
   (notmuch-always-prompt-for-sender t)
   (notmuch-fcc-dirs nil)
@@ -415,12 +420,12 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
      (:name "flagged"  :query "tag:flagged" :key "f" :sort-order oldest-first)
      (:name "sent"     :query "tag:sent"    :key "s" :sort-order oldest-first)
      (:name "drafts"   :query "tag:draft"   :key "d" :sort-order oldest-first)
-     (:name "todo"     :query "tag:task"    :key "t" :sort-order oldest-first)
+     (:name "todo"     :query "tag:todo"    :key "t" :sort-order oldest-first)
      (:name "all mail" :query "*"           :key "a" :sort-order oldest-first)))
   (sendmail-program that1guycolin/gmi-sendmail-path)
   (sendmail-send-mail-function #'message-send-mail-with-sendmail)
-  :config
-  (add-hook 'notmuch-hello-mode-hook (lambda () (inhibit-mouse-mode -1))))
+  :config (add-hook 'notmuch-hello-mode-hook
+                    (lambda () (inhibit-mouse-mode -1))))
 
 (use-package notmuch-addr
   :demand t
@@ -931,7 +936,9 @@ doubles as a model-switcher."
 ;; Show available keybinds
 (use-package free-keys
   :defer t
-  :bind ("C-c C-=" . free-keys))
+  :preface (defvar popper-reference-buffers)
+  :bind ("C-c C-=" . free-keys)
+  :config (add-to-list 'popper-reference-buffers 'free-keys))
 
 ;; GUIX
 (use-package guix
@@ -970,6 +977,7 @@ doubles as a model-switcher."
         (telega-mode-line-mode 1))))
   :unless (eq system-type 'android)
   :bind ("C-M-g" . telega)
+  :hook (telega-root-mode . (lambda () (setq-local fill-column 1000)))
   :functions (telega-mode-line-mode
               telega-appindicator-mode telega-auto-download-mode
               telega-autoplay-mode telega-chat-auto-fill-mode

@@ -4,8 +4,7 @@
 ;; djvu, el2org, nov, ob-rust, org-appear, org-category-capture, org-chef,
 ;; org-edna, org-make-toc, org-mem, org-modern, org-modern-indent, org-node,
 ;; org-node-backlink, org-noter, org-noter-pdftools, org-pdftools,
-;; org-pomodoro, org-project-capture, org-recur, org-super-agenda, org-tidy,
-;; pdf-tools
+;; org-pomodoro, org-project-capture, org-recur, org-tidy, pdf-tools
 
 ;;; Commentary:
 ;; Set up Emacs' Org-mode.  Also, configure packages that extend Org's already

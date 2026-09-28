@@ -2,7 +2,7 @@
 
 ;;; Packages included:
 ;; activities, consult-project-extra, diff-hl, disproject, forge,
-;; git-commit-ts-mode, git-link, git-modes, magit, magit-todos, project,
+;; git-commit-ts-mode, git-link, git-modes, hydra, magit, magit-todos, project,
 ;; project-treemacs, treemacs, treemacs-magit, with-editor
 
 ;;; Commentary:
