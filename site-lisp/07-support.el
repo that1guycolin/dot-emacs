@@ -377,14 +377,22 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
   :demand t
   :preface
   (declare-function inhibit-mouse-mode "03-visual.el")
-  (defvar that1guycolin/scripts-directory)
 
-  (defvar that1guycolin/gmi-sendmail-path nil
+  (defvar that1guycolin/gmi-sendmail-path
+    "/home/colin-l/scripts/bash/gmi-sendmail.sh"
     "Location of the `gmi-sendmail' bash script on device.")
+
+  (defvar that1guycolin/gmail-accounts
+    (list "colinloeffler" "that1guycolin" "cloudyguy4" "colinjl227")
+    "A list of my various gmail usernames.")
   
-  (defun that1guycolin/sendmail-via-gmi ()
-    "Send mail using `gmi-sendmail' bash script as the `sendmail' program."
-    (let ((sendmail-program that1guycolin/gmi-sendmail-path))
+  (defun that1guycolin/sendmail-via-gmi (account)
+    "Send mail from ACCOUNT using the `gmi-sendmail' bash script."
+    (interactive
+     (list
+      (completing-read "Account (colinloeffler): " that1guycolin/gmail-accounts
+                       nil t "colinloeffler" nil "colinloeffler")))
+    (let ((message-sendmail-extra-arguments account))
       (message-send-mail-with-sendmail)))
 
   (defun that1guycolin/notmuch-avoid-empty-subject ()
@@ -402,8 +410,6 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
          (message-send . that1guycolin/notmuch-avoid-empty-subject))
   :functions (message-field-value notmuch-addr-setup
                                   message-send-mail-with-sendmail)
-  :init (setq that1guycolin/gmi-sendmail-path
-              (concat that1guycolin/scripts-directory "/bash/gmi-sendmail.sh"))
   :custom
   (notmuch-always-prompt-for-sender t)
   (notmuch-fcc-dirs nil)
@@ -413,12 +419,12 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
      (:name "flagged"  :query "tag:flagged" :key "f" :sort-order oldest-first)
      (:name "sent"     :query "tag:sent"    :key "s" :sort-order oldest-first)
      (:name "drafts"   :query "tag:draft"   :key "d" :sort-order oldest-first)
-     (:name "todo"     :query "tag:task"    :key "t" :sort-order oldest-first)
+     (:name "todo"     :query "tag:todo"    :key "t" :sort-order oldest-first)
      (:name "all mail" :query "*"           :key "a" :sort-order oldest-first)))
   (sendmail-program that1guycolin/gmi-sendmail-path)
   (sendmail-send-mail-function #'message-send-mail-with-sendmail)
-  :config
-  (add-hook 'notmuch-hello-mode-hook (lambda () (inhibit-mouse-mode -1))))
+  :config (add-hook 'notmuch-hello-mode-hook
+                    (lambda () (inhibit-mouse-mode -1))))
 
 (use-package notmuch-addr
   :demand t
