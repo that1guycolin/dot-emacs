@@ -959,7 +959,7 @@ See URL: https://github.com/zavoloklom/docker-compose-linter"
                    (lambda (_interactive _project)
                      (if (and (buffer-file-name)
                               (string-match-p
-                               "/\\(?:compose\\|docker-compose\\)\\.yam?ml\\'"
+                               "/\\(?:compose\\|docker-compose\\)\\.ya?ml\\'"
                                (buffer-file-name)))
                          '("docker-compose-langserver" "--stdio")
                        '("yaml-language-server" "--stdio")))))))
