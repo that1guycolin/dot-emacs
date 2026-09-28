@@ -24,7 +24,7 @@
 (require '04-code-assist)
 (declare-function treesit-fold-mode "treesit")
 (declare-function kirigami-mode "kirigami")
-(declare-function that1guycolin/eglot-remove-server "04-code-assist")
+(declare-function that1guycolin/eglot-remove-mode-servers "04-code-assist")
 
 (defvar eglot-server-programs)
 
@@ -116,33 +116,34 @@
   (setf (alist-get 'lisp-ts-mode font-lock-ignore)
         lisp-ts-mode-font-lock-ignore-keywords)
 
-  (flycheck-define-checker cl-mallet
-    "A Common Lisp linter using Mallet.
+  (with-eval-after-load 'flycheck
+    (flycheck-define-checker cl-mallet
+      "A Common Lisp linter using Mallet.
 See URL: `https://github.com/fukamachi/mallet'."
-    :command ("mallet" source)
-    :error-patterns
-    ((error line-start (zero-or-more space)
-            line ":" column
-            (one-or-more space) "error" (one-or-more space)
-            (message (minimal-match (one-or-more not-newline)))
-            (one-or-more space) (id (one-or-more not-newline))
-            line-end)
-
-     (warning line-start (zero-or-more space)
+      :command ("mallet" source)
+      :error-patterns
+      ((error line-start (zero-or-more space)
               line ":" column
-              (one-or-more space) "warning" (one-or-more space)
+              (one-or-more space) "error" (one-or-more space)
               (message (minimal-match (one-or-more not-newline)))
               (one-or-more space) (id (one-or-more not-newline))
               line-end)
 
-     (info line-start (zero-or-more space)
-           line ":" column
-           (one-or-more space) "info" (one-or-more space)
-           (message(minimal-match (one-or-more not-newline)))
-           (one-or-more space) (id (one-or-more not-newline))
-           line-end))
-    :modes (lisp-mode lisp-ts-mode lisp-data-mode))
-  (add-to-list 'flycheck-checkers 'cl-mallet)
+       (warning line-start (zero-or-more space)
+                line ":" column
+                (one-or-more space) "warning" (one-or-more space)
+                (message (minimal-match (one-or-more not-newline)))
+                (one-or-more space) (id (one-or-more not-newline))
+                line-end)
+
+       (info line-start (zero-or-more space)
+             line ":" column
+             (one-or-more space) "info" (one-or-more space)
+             (message(minimal-match (one-or-more not-newline)))
+             (one-or-more space) (id (one-or-more not-newline))
+             line-end))
+      :modes (lisp-mode lisp-ts-mode lisp-data-mode))
+    (add-to-list 'flycheck-checkers 'cl-mallet))
 
   (with-eval-after-load 'eglot
     (that1guycolin/eglot-remove-mode-servers 'lisp-mode)
