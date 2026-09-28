@@ -770,9 +770,9 @@ See URL `https://fishshell.com'."
   (defun that1guycolin/apheleia-set-json-formatter (fmtr)
     "Get user-input on which FMTR they want for JSON files."
     (interactive
-     (list (completing-read
-            "Which formatter do you want to use for JSON files? "
-            '(jq prettier-json) nil t)))
+     (list (intern (completing-read
+                    "Which formatter do you want to use for JSON files? "
+                    '("jq" "prettier-json") nil t))))
     (unless (memq fmtr '(jq prettier-json))
       (user-error "Formatter must be either jq or prettier-json"))
     (setf
@@ -897,9 +897,9 @@ If the current `buffer-file-name' is \\='compose.ya(m)l' or
   (defun that1guycolin/apheleia-set-yaml-formatter (fmtr)
     "Get user-input on which FMTR they want for Yaml files."
     (interactive
-     (list (completing-read
-            "Which formatter do you want to use for Yaml files? "
-            '(yamlfmt prettier-yaml) nil t)))
+     (list (intern (completing-read
+                    "Which formatter do you want to use for Yaml files? "
+                    '("yamlfmt" "prettier-yaml") nil t))))
     (unless (memq fmtr '(yamlfmt prettier-yaml))
       (user-error "Formatter must be either yamlfmt or prettier-yaml"))
     (setf
