@@ -135,8 +135,8 @@ The file is created if it doesn't exist."
   (org-mem-watch-dirs (list (expand-file-name org-directory)))
   (org-mem-do-look-everywhere nil)
   :config
-  (add-to-list 'org-mem-exclude "/elpaca/")
-  (add-to-list 'org-mem-exclude "/archive/")
+  (mapc (lambda (d) (add-to-list 'org-mem-exclude d))
+        '("/elpaca/" "/archive/" "/TODOs"))
   (org-mem-updater-mode 1))
 
 ;; Fast & simple note management
