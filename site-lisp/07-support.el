@@ -450,7 +450,9 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
   :demand t
   :preface (defvar minions-prominent-modes)
   :unless (eq system-type 'android)
-  :init (add-to-list 'minions-prominent-modes 'notmuch-indicator-mode))
+  :init (with-eval-after-load 'minions
+          (add-to-list 'minions-prominent-modes 'notmuch-indicator-mode)))
+
 
 ;;; LLM:
 (use-package llm

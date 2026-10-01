@@ -134,8 +134,6 @@
   :custom (flycheck-disabled-checkers
            '(emacs-lisp-elsa rpm-rpmlint yaml-jsyaml yaml-ruby))
   :config
-  (add-to-list 'minions-prominent-modes 'flycheck-mode)
-
   (flycheck-define-checker text-vale
     "Tool to bring code-like linting to prose.
 See URL `https://vale.sh'."
@@ -151,6 +149,9 @@ See URL `https://vale.sh'."
     (unless (file-exists-p vale-install)
       (that1guycolin/flycheck-vale-setup)))
   (add-to-list 'flycheck-checkers 'text-vale)
+  
+  (with-eval-after-load 'minions
+    (add-to-list 'minions-prominent-modes 'flycheck-mode))
   (add-hook 'org-mode-hook
             (lambda () (flycheck-select-checker 'org-lint))))
 
