@@ -240,24 +240,7 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
     (which-key-add-keymap-based-replacements that1guycolin/dired-create-map
       "f" "Create File"
       "d" "Create Directory"))
-
-  (with-eval-after-load 'dired
-    (defvar-keymap dired-mode-map
-      :keymap dired-mode-map
-      "C-p"       #'dired-previous-line
-      "C-n"       #'dired-next-line
-      "R"         #'that1guycolin/dirvish-rename-file
-      "m"         #'dired-do-rename
-      "c"           that1guycolin/dired-create-map
-      "C-w"       #'that1guycolin/dirvish-cut
-      "M-w"       #'that1guycolin/dirvish-copy
-      "C-y"       #'that1guycolin/dirvish-paste
-      "^"         #'dired-up-directory
-      "C-M-p"     #'dired-up-directory
-      "C-M-n"     #'that1guycolin/dirvish-down-directory
-      "TAB"       #'that1guycolin/dirvish-tab-dwim
-      "RET"       #'that1guycolin/dirvish-return-dwim
-      "?"         #'that1guycolin/dirvish-dispatch))
+  
   :bind ("C-x d" . dirvish)
   :commands (dirvish-dwim)
   :functions (dired-create-directory
@@ -267,7 +250,9 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
               dired-up-directory dirvish-override-dired-mode
               dirvish-subtree-toggle that1guycolin/dirvish-dispatch)
   :defines (dirvish-mode-map)
-  :init (dirvish-override-dired-mode 1)
+  :init
+  (dirvish-override-dired-mode 1)
+  (advice-add #'dired :override #'dirvish)
   :custom
   (dirvish-hide-cursor nil)
   (dirvish-attributes '(subtree-state file-size file-time nerd-icons))
@@ -275,10 +260,27 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
   (dirvish-reuse-session nil)
   :config
   (mapc #'require '(dirvish-extras dirvish-subtree dirvish-yank))
-  (mapc (lambda (pgn) (require pgn nil t)) '(dirvish-vc dirvish-emerge))
+  (mapc (lambda (p) (require p nil t)) '(dirvish-vc dirvish-emerge))
   
   (add-hook 'dirvish-preview-setup-hook
             #'that1guycolin/dirvish-preview-read-only)
+
+  (defvar-keymap dirvish-mode-map
+    :keymap dirvish-mode-map
+    "C-p"       #'dired-previous-line
+    "C-n"       #'dired-next-line
+    "R"         #'that1guycolin/dirvish-rename-file
+    "m"         #'dired-do-rename
+    "c"           that1guycolin/dired-create-map
+    "C-w"       #'that1guycolin/dirvish-cut
+    "M-w"       #'that1guycolin/dirvish-copy
+    "C-y"       #'that1guycolin/dirvish-paste
+    "^"         #'dired-up-directory
+    "C-M-p"     #'dired-up-directory
+    "C-M-n"     #'that1guycolin/dirvish-down-directory
+    "TAB"       #'that1guycolin/dirvish-tab-dwim
+    "RET"       #'that1guycolin/dirvish-return-dwim
+    "?"         #'that1guycolin/dirvish-dispatch)
 
   (defvar that1guycolin/dirvish-dispatch)
   (transient-define-prefix that1guycolin/dirvish-dispatch ()
