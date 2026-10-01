@@ -406,9 +406,9 @@ Thanks to Reddit user \\='hogmannn' for the basis of this function:
   :defines (org-agenda-files org-babel-default-header-args:zsh
                              org-babel-lisp-eval-fn org-directory
                              org-mode-map)
-  :init (that1guycolin/desktop-mobile
-          :desk (setq org-directory (expand-file-name "~/org/"))
-          :termux (setq org-directory "/storage/emulated/0/Documents/org/"))
+  :init (that1guycolin/emacs-set-for-type org-directory
+          :desk (expand-file-name "~/org/")
+          :tmux"/storage/emulated/0/Documents/org")
   :custom
   (org-agenda-files
    (directory-files (expand-file-name "TODOs/" org-directory) t

@@ -22,15 +22,13 @@
     "/data/data/com.termux/files/home"
     "Termux home directory on Android.")
 
-  (that1guycolin/desktop-mobile
-    :desk (setq
-           that1guycolin/projects-directory (expand-file-name "~/projects/")
-           that1guycolin/scripts-directory (expand-file-name "~/scripts/"))
-    :termux (setq
-             that1guycolin/projects-directory
-             (expand-file-name "projects" that1guycolin/android-home)
-             that1guycolin/scripts-directory
-             (expand-file-name "scripts" that1guycolin/android-home)))
+  (that1guycolin/emacs-set-for-type that1guycolin/projects-directory
+    :desk (expand-file-name "~/projects/")
+    :tmux (expand-file-name "projects/" that1guycolin/android-home))
+
+  (that1guycolin/emacs-set-for-type that1guycolin/scripts-directory
+    :desk (expand-file-name "~/scripts/")
+    :tmux (expand-file-name "scripts/" that1guycolin/android-home))
 
 ;;;; tabs-to-spaces
   (defun that1guycolin/untabify-buffer ()

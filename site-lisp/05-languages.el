@@ -664,19 +664,19 @@ See URL `https://github.com/rvben/rumdl'."
   (flycheck-sh-bash-executable
    (that1guycolin/desktop-mobile
      :desk "/usr/bin/bash"
-     :termux "/data/data/com.termux/files/usr/bin/bash"))
+     :tmux "/data/data/com.termux/files/usr/bin/bash"))
   (flycheck-sh-posix-bash-executable
    (that1guycolin/desktop-mobile
      :desk "/usr/bin/bash"
-     :termux "/data/data/com.termux/files/usr/bin/bash"))
+     :tmux "/data/data/com.termux/files/usr/bin/bash"))
   (flycheck-sh-posix-dash-executable
    (that1guycolin/desktop-mobile
      :desk "/usr/bin/shellcheck"
-     :termux "/data/data/com.termux/files/usr/bin/shellcheck"))
+     :tmux "/data/data/com.termux/files/usr/bin/shellcheck"))
   (flycheck-sh-zsh-executable
    (that1guycolin/desktop-mobile
      :desk "/usr/bin/zsh"
-     :termux "/data/data/com.termux/files/usr/bin/zsh")))
+     :tmux "/data/data/com.termux/files/usr/bin/zsh")))
 
 (use-package shfmt
   :defer t
