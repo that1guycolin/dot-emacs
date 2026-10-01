@@ -14,8 +14,9 @@
 ;; functionality to the extent it mirrors an external tool (e.g., "dirvish").
 
 ;;; Code:
-(require '00-macros)
 
+(require '00-macros)
+(require '02-project-vc)
 
 ;;; Terminals:
 ;; Emulate A Terminal

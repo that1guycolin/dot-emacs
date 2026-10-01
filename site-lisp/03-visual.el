@@ -12,6 +12,10 @@
 ;; server-frame.
 
 ;;; Code:
+
+(require '00-macros)
+
+
 ;;; Themes & Icons:
 ;; Readable Emacs' themes
 (use-package modus-themes
