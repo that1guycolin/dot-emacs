@@ -95,39 +95,52 @@
 
  ;; gpg-protected authorization info
  auth-sources '("~/.authinfo.gpg")
+
  ;; Disable the second non-case-match pass that typically occurs if Emacs cannot
  ;; find a major-mode when opening a file
  auto-mode-case-fold nil
+
  ;; Don't create lockfiles
  create-lockfiles nil
+
  ;; Alist of x windows options (see help)
  command-line-x-option-alist nil
+
  ;; Save modifications made in Emacs UI to alternate file
  custom-file (expand-file-name "etc/auto-custom.el" user-emacs-directory)
+
  ;; Let tiling window manager handle frame size.
  ;; NOTE: This has little/no effect in fullscreen-mode or on Android GUI
  frame-inhibit-implied-resize 'force
+
  ;; Don't compact font caches during GC
  inhibit-compacting-font-caches t
- ;; Use-system-font
- font-use-system-font t
+
  ;; Disable GNU startup message (to disable, value must be your username)
  inhibit-startup-echo-area-message "colin-l"
+
  ;; Don't display the Emacs' startup-screen
  inhibit-startup-screen t
+
  ;; Don't display anything in the initial scratch buffer
  initial-scratch-message nil
+
  ;; Max # of bytes to read from subprocess in single chunk
  ;; (= /proc/sys/fs/pipe-max-size)
  read-process-output-max (* 1024 1024)
+
  ;; Can make scrolling smoother by avoiding unncessary fontifiation
  redisplay-skip-fontification-on-input t
+
  ;; Explicitly set active region w/ mouse or shift-select
  select-active-regions 'only
+
  ;; Use y/n instead of yes/no
  use-short-answers t
+
  ;; Don't display warnings for elpaca core
- warning-suppress-types '((elpaca core)))
+ warning-suppress-types '((elpaca core))
+
  ;; Disable the default edebug keymap (for `activities.el')
  edebug-inhibit-emacs-lisp-mode-bindings t)
 
