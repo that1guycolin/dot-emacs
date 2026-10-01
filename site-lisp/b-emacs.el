@@ -5,13 +5,13 @@
 ;; package.
 
 ;;; Code:
+(require '00-macros)
+
 (use-package emacs
   :ensure nil
   :demand t
   :preface
 ;;;; Load paths:
-  (require '00-macros)
-  
   (defvar that1guycolin/projects-directory nil
     "Directory containing active projects.")
 
@@ -19,7 +19,7 @@
     "Directory containing custom \\='one off' scripts.")
 
   (defvar that1guycolin/android-home
-    "/data/data/com.termux/files/home"
+    "/data/data/com.termux/files/home/"
     "Termux home directory on Android.")
 
   (that1guycolin/emacs-set-for-type that1guycolin/projects-directory
@@ -106,8 +106,8 @@ If not in a side window, jump to the first found side window."
   (global-display-fill-column-indicator-mode 1)
   (which-key-mode 1)
 
-  (dolist (lisp-file (directory-files user-lisp-directory t "\\.el\\'"))
-    (add-to-list 'trusted-content lisp-file))
+  (mapc (lambda (f) (add-to-list 'trusted-content f))
+        (directory-files user-lisp-directory t "\\.el\\'"))
   
   (dolist (mode '(bash-ts-mode
                   emacs-lisp-mode lisp-mode lisp-data-mode python-mode

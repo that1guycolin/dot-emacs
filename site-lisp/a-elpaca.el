@@ -5,7 +5,9 @@
 
 ;;; Code:
 ;;; Elpaca:
+
 (require '00-macros)
+
 ;; Define variables (paths for `no-littering')
 (defvar elpaca-directory (expand-file-name "var/elpaca/" user-emacs-directory))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
