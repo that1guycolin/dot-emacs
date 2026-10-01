@@ -304,6 +304,9 @@ See URL `https://vale.sh'."
   :defer t
   :preface (declare-function embark-act "embark")
   :hook ((prog-mode conf-mode text-mode) . flyspell-mode)
+  :custom
+  (ispell-program-name "hunspell")
+  (ispell-dictionary "en_US")
   :config
   (keymap-unset flyspell-mode-map "C-.")
   (keymap-global-set "C-." #'embark-act))
