@@ -123,16 +123,44 @@
       "l"        "List Activities"
       "C-r"      "Rename Activity"
       "C-d"      "Discard Activity"))
+
+  (defun that1guycolin/activity-switch-to-project (project)
+    "Switch to an activity named after PROJECT, defining it if needed."
+    (let* ((name (project-name project))
+           (activity (activities-named name)))
+      (unless (and activity
+                   (eq activity (activities-current)))
+        (if activity
+            (activities-switch activity)
+          (activities-new name)))))
+
+  (defun that1guycolin/project--switch-with-activity (og-fn dir &rest args)
+    "Around advice: enter DIR's activity before OG-FN runs."
+    (when-let* ((pr (project-current nil dir)))
+      (that1guycolin/activity-switch-to-project pr))
+    (apply og-fn dir args))
+
+  (defun that1guycolin/activity-follow-file-project ()
+    "Switch to the current file's project activity."
+    (when buffer-file-name
+      (when-let* ((pr (project-current)))
+        (save-current-buffer
+          (that1guycolin/activity-switch-to-project pr)))))
+
   :bind-keymap ("C-x C-a" . that1guycolin/activities-map)
   :functions (activities-new
               activities-define activities-resume activities-suspend
               activities-kill activities-switch activities-switch-buffer
               activities-revert activities-list activities-rename
-              activities-discard activities-mode activities-tabs-mode)
+              activities-discard activities-named activities-current
+              activities-mode activities-tabs-mode)
   :init
   :config
   (activities-mode 1)
-  (activities-tabs-mode 1))
+  (activities-tabs-mode 1)
+  (advice-add #'project-switch-project :around
+              #'that1guycolin/project--switch-with-activity)
+  (add-hook 'find-file-hook #'that1guycolin/activity-follow-file-project))
 
 
 ;;; VC/Git:
