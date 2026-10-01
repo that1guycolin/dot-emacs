@@ -31,32 +31,34 @@
   (defvar that1guycolin/scripts-directory)
   (defvar org-directory)
 
-  (defun that1guycolin/current-project-root ()
+  (defun that1guycolin/project--current-root ()
     "Return the current project's root directory or nil if not in project."
     (when-let* ((project (project-current nil)))
       (project-root project)))
 
-  (defun that1guycolin/project-clear-projects ()
+  (defun that1guycolin/project-clear-projects (&optional print-message)
     "Remove all projects from `project-known-project-roots'."
-    (interactive)
-    (if (boundp 'project-known-project-roots)
+    (interactive "p")
+    (let ((project-roots (project-known-project-roots)))
+      (if (= (length project-roots) 0)
+          (when print-message
+            (message "Projects list is already empty"))
         (progn
-          (mapc #'project-forget-project project-known-project-roots)
-          (message "Cleared all projects"))
-      (message "Projects list is already empty")))
+          (mapc #'project-forget-project project-roots)
+          (message "Cleared all projects")))))
   
   (defun that1guycolin/project-reset-projects ()
     "Clear the project list and repopulate it."
     (interactive)
     (that1guycolin/project-clear-projects)
     ;; Scan these directories recursively
-    (dolist (dir (list that1guycolin/projects-directory
-                       that1guycolin/scripts-directory))
-      (project-remember-projects-under dir t))
+    (mapc (lambda (d) (project-remember-projects-under d t))
+          (list that1guycolin/projects-directory
+                that1guycolin/scripts-directory))
     ;; Scan these directories (but not their subdirectories)
-    (dolist (dir (list user-emacs-directory org-directory "~/dotfiles"))
-      (when (file-exists-p dir)
-        (project-remember-projects-under (expand-file-name dir))))
+    (mapc (lambda (d) (when (file-exists-p d)
+                        (project-remember-projects-under (expand-file-name d))))
+          (list user-emacs-directory org-directory "~/dotfiles"))
     (message "Successfully repopulated projects list"))
 
   :functions (project-remember-projects-under)
@@ -66,8 +68,7 @@
               (list (regexp-quote (expand-file-name elpaca-directory))
                     (regexp-quote "~/dotfiles/terminals/alacritty")
                     (regexp-quote  "~/projects/guix-base/source")))
-  :custom
-  (project-vc-ignores '("^node_modules$" "^\\.venv$" "^\\.uv$")))
+  :custom (project-vc-ignores '("^node_modules$" "^\\.venv$" "^\\.uv$")))
 
 ;; transient dispatch for project.el
 (use-package disproject
