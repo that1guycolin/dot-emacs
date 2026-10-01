@@ -7,11 +7,14 @@
 ;;; Code:
 (eval-when-compile (require 'cl-lib))
 
-(defgroup that1guycolin '()
-  "Custom functions, packages, & variables by `that1guycolin'."
-  :group 'config)
-
-(defcustom that1guycolin/emacs-type nil
+(defcustom that1guycolin/emacs-type
+  (cond
+   ((and (eq system-type 'android) (null (getenv "TERMUX_VERSION")))
+    (setq that1guycolin/emacs-type 'android-gui))
+   ((eq system-type 'android)
+    (setq that1guycolin/emacs-type 'termux))
+   (t
+    (setq that1guycolin/emacs-type 'desktop)))
   "The type of Emacs currently running.
 Acceptable values are \\='desktop, \\='termux, or \\='android-gui."
   :type '(symbol)

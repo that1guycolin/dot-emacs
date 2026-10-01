@@ -63,8 +63,11 @@
 
 ;;; Code:
 ;;; Global settings:
-(dolist (lib '(bs cl-lib hl-line mouse seq subr-x))
-  (require lib))
+(mapc #'require '(bs cl-lib hl-line ibuffer mouse seq subr-x))
+
+(defgroup that1guycolin '()
+  "Custom functions, packages, & variables by `that1guycolin'."
+  :group 'config)
 
 (require 'a-elpaca)
 (require 'b-emacs)
