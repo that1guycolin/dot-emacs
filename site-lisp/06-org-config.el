@@ -270,8 +270,8 @@ this function as `org-node-creation-fn'."
             (if toggle-no-questions
                 (not org-noter-insert-note-no-questions)
               org-noter-insert-note-no-questions))
-           (org-pdftools-use-isearch-link t)
-           (org-pdftools-use-freepointer-annot t))
+           (_org-pdftools-use-isearch-link t) ; flycheck-ignore: emacs-lisp
+           (_org-pdftools-use-freepointer-annot t)) ; flycheck-ignore: emacs-lisp
        (org-noter-insert-note (org-noter--get-precise-info)))))
 
   (defun org-noter-set-start-location (&optional arg)
