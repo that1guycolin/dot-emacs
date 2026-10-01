@@ -306,18 +306,16 @@ Wait two seconds before activating the mode."
          ("t p"         . treemacs-project-follow-mode)
          ("<backspace>" . treemacs-root-up))
   :commands (treemacs treemacs-refresh)
-  :functions (treemacs-filewatch-mode
-              treemacs-git-mode treemacs-git-commit-diff-mode
-              treemacs-select-window treemacs-project-follow-mode
-              treemacs-root-up treemacs-get-local-window
-              treemacs-hide-gitignored-files-mode
+  :functions (treemacs-git-mode
+              treemacs-git-commit-diff-mode treemacs-select-window
+              treemacs-project-follow-mode treemacs-root-up
+              treemacs-get-local-window treemacs-hide-gitignored-files-mode
               treemacs--select-workspace-by-name treemacs-switch-workspace)
   :defines (treemacs-mode-map)
   :custom
   (treemacs-width 35)
   (treemacs-is-never-other-window t)
   :config
-  (treemacs-filewatch-mode 1)
   (treemacs-git-mode 'deferred)
   (treemacs-git-commit-diff-mode 1)
   (treemacs-project-follow-mode 1)
@@ -337,4 +335,3 @@ Wait two seconds before activating the mode."
 
 (provide '02-project-vc)
 ;;; 02-project-vc.el ends here
-
