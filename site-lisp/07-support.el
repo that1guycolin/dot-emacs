@@ -841,12 +841,32 @@ doubles as a model-switcher."
 
 (use-package empv
   :defer t
-  :preface
-  (require '02-project-vc)
-  (defvar empv-hydra)
+  :preface (defvar empv-hydra)
+  :bind (("C-c v f" . empv-play-file)
+         ("C-c v d" . empv-play-directory))
+  :functions(empv-embark-initialize-extra-actions
+             empv-override-quit-key empv-play-or-enqueue empv-play-file
+             empv-play-directory empv-play-video empv-play-audio empv-exit
+             empv-save-and-exit empv-playback-speed-down empv-playback-speed-up
+             empv-volume-up empv-volume-down empv-chapter-prev empv-chapter-next
+             empv-chapter-select empv-playlist-select
+             empv-playlist-load-from-file empv-playlist-shuffle
+             empv-playlist-clear empv-playlist-next empv-playlist-prev
+             empv-play-radio empv-play-random-channel
+             empv-log-current-radio-song-name empv-youtube
+             empv-youtube-last-results empv-toggle empv-toggle-video
+             empv-toggle-current-loop empv-toggle-event-display
+             empv-display-current empv-copy-path)
+  :custom
+  (empv-default-dir "/mnt/that1Media/")
+  (empv-max-directory-search-depth 5)
+  (empv-playlist-dir "/mnt/that1Media/playlists/")
+  (empv-video-dir "/mnt/that1Media/")
+  :config
+  (keymap-global-unset "C-c v f")
+  (keymap-global-unset "C-c v d")
   (defhydra empv-hydra nil
     "EMPV Hydra."
-    ("S" #'empv-start "start empv" :column "Play")
     ("o" #'empv-play-or-enqueue "play or enqueue" :column "Play")
     ("f" #'empv-play-file "play file" :column "Play")
     ("d" #'empv-play-directory "play directory" :column "Play")
@@ -874,27 +894,8 @@ doubles as a model-switcher."
     ("e" #'empv-toggle-event-display "toggle event display" :column "Toggle")
     ("i" #'empv-display-current "display current" :column "Utility")
     ("c" #'empv-copy-path "copy path" :column "Utility"))
-  :bind ("C-c m" . empv-hydra/body)
-  :functions(empv-start
-             empv-embark-initialize-extra-actions empv-override-quit-key
-             empv-play-or-enqueue empv-play-file empv-play-directory
-             empv-play-video empv-play-audio empv-exit empv-save-and-exit
-             empv-playback-speed-down empv-playback-speed-up empv-volume-up
-             empv-volume-down empv-chapter-prev empv-chapter-next
-             empv-chapter-select empv-playlist-select
-             empv-playlist-load-from-file empv-playlist-shuffle
-             empv-playlist-clear empv-playlist-next empv-playlist-prev
-             empv-play-radio empv-play-random-channel
-             empv-log-current-radio-song-name empv-youtube
-             empv-youtube-last-results empv-toggle empv-toggle-video
-             empv-toggle-current-loop empv-toggle-event-display
-             empv-display-current empv-copy-path)
-  :custom
-  (empv-default-dir "/mnt/that1Media/")
-  (empv-max-directory-search-depth 5)
-  (empv-playlist-dir "/mnt/that1Media/playlists/")
-  (empv-video-dir "/mnt/that1Media/")
-  :config
+  (keymap-global-set "C-c v" #'empv-hydra/body)
+  
   (add-to-list 'empv-mpv-args
                "--ytdl-format=bestvideo+bestaudio/best[ext=mp4]/best")
   (add-hook
