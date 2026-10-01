@@ -7,9 +7,10 @@
 ;; src_shell{emacs -x update-packages.el}.
 
 ;;; Code:
-;; Requirements
+
 (require 'cl-lib)
 
+;;; Variable defs
 (defvar potential-init-files '("~/.config/emacs/init.el"
                                "~/.emacs.d/init.el"
                                "~/.emacs")
