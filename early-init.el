@@ -67,6 +67,7 @@
     inhibit-message nil)))
 
 ;;; Other Variable Mods
+(defvar edebug-inhibit-emacs-lisp-mode-bindings)
 (setq
  ;; Do not auto bytecompile custom elisp files
  user-lisp-auto-scrape nil
@@ -127,6 +128,8 @@
  use-short-answers t
  ;; Don't display warnings for elpaca core
  warning-suppress-types '((elpaca core)))
+ ;; Disable the default edebug keymap (for `activities.el')
+ edebug-inhibit-emacs-lisp-mode-bindings t)
 
 ;;; Variables depending on package load
 (defvar ffap-machine-p-known)

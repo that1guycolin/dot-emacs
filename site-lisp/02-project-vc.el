@@ -129,7 +129,6 @@
               activities-revert activities-list activities-rename
               activities-discard activities-mode activities-tabs-mode)
   :init
-  (setq edebug-inhibit-emacs-lisp-mode-bindings t)
   :config
   (activities-mode 1)
   (activities-tabs-mode 1))
