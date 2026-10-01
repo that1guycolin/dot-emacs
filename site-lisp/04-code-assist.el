@@ -131,9 +131,8 @@
       (shell-command command)))
   :hook ((prog-mode conf-mode text-mode) . flycheck-mode)
   :functions (flycheck-error-new-at flycheck-select-checker flycheck-add-mode)
-  :custom
-  (flycheck-disabled-checkers
-   '(emacs-lisp-elsa rpm-rpmlint yaml-jsyaml yaml-ruby))
+  :custom (flycheck-disabled-checkers
+           '(emacs-lisp-elsa rpm-rpmlint yaml-jsyaml yaml-ruby))
   :config
   (add-to-list 'minions-prominent-modes 'flycheck-mode)
 
@@ -274,7 +273,7 @@ See URL `https://vale.sh'."
   :after (:any hideshow outline outline-indent treesit-fold)
   :demand t
   :preface
-    (defvar-keymap that1guycolin/kirigami-functions-map
+  (defvar-keymap that1guycolin/kirigami-functions-map
     :doc "Common code folding functions from `kirigami'."
     "o" #'kirigami-open-fold
     "r" #'kirigami-open-fold-rec
