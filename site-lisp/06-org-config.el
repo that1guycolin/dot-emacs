@@ -182,11 +182,16 @@ this function as `org-node-creation-fn'."
   :bind-keymap ("M-o" . org-node-global-prefix-map)
   :commands (org-node-org-prefix-map)
   :functions (org-node-pop-to-fresh-file-buffer
-              org-node-cache-mode org-node-complete-at-point-mode
-              org-node-backlink-mode)
+              org-node-create org-node-cache-mode
+              org-node-complete-at-point-mode org-node-backlink-mode)
   :defines (org-node-backlink-do-drawers)
   :init (with-eval-after-load 'org
           (keymap-set org-mode-map "M-o" org-node-org-prefix-map))
+  (advice-add
+   #'org-node-create :before
+   (lambda (&rest _args)
+     (setq-local default-directory
+                 (expand-file-name "knowledge-base/" org-directory))))
   :custom
   (org-node-creation-fn #'that1guycolin/org-node-new-file)
   (org-node-file-directory-ask t)
