@@ -220,11 +220,18 @@ open the file in another window."
   (defvar xref-show-xrefs-function)
   (defvar xref-show-definitions-function)
 
+  (defun that1guycolin/info-dwim (&optional arg)
+    "Run `consult-info'.  If called with ARG `prefix-arg', run `info'."
+    (interactive "P")
+    (if arg
+        (info)
+      (call-interactively #'consult-info)))
+
   :bind (("C-c M-x"            . consult-mode-command)
          ("C-c h"              . consult-history)
          ("C-c k"              . consult-kmacro)
          ("C-c M-m"            . consult-man)
-         ("C-c i"              . consult-info)
+         ("C-h i"              . that1guycolin/info-dwim)
          ([remap Info-search]  . consult-info)
 
          ("C-x M-:"            . consult-complex-command)
