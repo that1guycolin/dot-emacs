@@ -197,13 +197,6 @@ Otherwise run `consult-buffer'.  With universal-prefix ARG, always run
 (use-package forge
   :after (magit)
   :demand t
-  :preface
-  (defun that1guycolin/interactive-forge-pull ()
-    "Call forge-pull interactively."
-    (interactive)
-    (call-interactively #'forge-pull))
-  :hook (magit-status-mode . that1guycolin/interactive-forge-pull)
-  :commands (forge-pull)
   :custom (forge-pull-notifications t))
 
 (use-package diff-hl
