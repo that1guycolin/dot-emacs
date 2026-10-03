@@ -94,6 +94,7 @@
 (use-package activities
   :demand t
   :preface
+  (declare-function consult-buffer "01-environment.el")
   (defvar edebug-inhibit-emacs-lisp-mode-bindings)
 
   (defvar-keymap that1guycolin/activities-map
@@ -103,8 +104,8 @@
     "r"          #'activities-resume
     "p"          #'activities-suspend
     "k"          #'activities-kill
-    "s"          #'activities-switch
-    "b"          #'activities-switch-buffer
+    "s"          #'activities-tabs--switch
+    "b"          #'activities-tabs--switch-buffer
     "v"          #'activities-revert
     "l"          #'activities-list
     "C-r"        #'activities-rename
@@ -129,10 +130,9 @@
     (let* ((name (project-name project))
            (activity (activities-named name)))
       (unless (and activity
-                   (eq activity (activities-current)))
-        (if activity
-            (activities-switch activity)
-          (activities-new name)))))
+                   (equal activity (activities-tabs-current)))
+        (when activity
+          (activities-tabs--switch activity)))))
 
   (defun that1guycolin/project--switch-with-activity (og-fn dir &rest args)
     "Around advice: enter DIR's activity before OG-FN runs."
@@ -147,17 +147,30 @@
         (save-current-buffer
           (that1guycolin/activity-switch-to-project pr)))))
 
+  (defun that1guycolin/buffer-switch-dwim (&optional arg)
+    "If within an active activity, run `activities-tabs--switch-buffer'.
+Otherwise run `consult-buffer'.  With universal-prefix ARG, always run
+`consult-buffer'."
+    (interactive "P")
+    (if arg
+        (consult-buffer)
+      (let ((actvy (activities-tabs-current)))
+        (if actvy
+            (activities-tabs--switch-buffer actvy)
+          (consult-buffer)))))
+
   :bind-keymap ("C-x C-a" . that1guycolin/activities-map)
   :functions (activities-new
               activities-define activities-resume activities-suspend
-              activities-kill activities-switch activities-switch-buffer
-              activities-revert activities-list activities-rename
-              activities-discard activities-named activities-current
-              activities-mode activities-tabs-mode)
+              activities-kill activities-tabs--switch
+              activities-tabs--switch-buffer activities-revert activities-list
+              activities-rename activities-discard activities-named
+              activities-tabs-current activities-mode activities-tabs-mode)
   :init
   :config
   (activities-mode 1)
   (activities-tabs-mode 1)
+  (keymap-set ctl-x-map "b" #'that1guycolin/buffer-switch-dwim)
   (advice-add #'project-switch-project :around
               #'that1guycolin/project--switch-with-activity)
   (add-hook 'find-file-hook #'that1guycolin/activity-follow-file-project))
