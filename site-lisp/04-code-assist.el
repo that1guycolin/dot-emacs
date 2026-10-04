@@ -97,7 +97,7 @@
 
 ;; Jump-to-def/find-refs
 (use-package dumb-jump
-  :demand t
+  :defer t
   :bind ("M-j" . dumb-jump-find-references)
   :functions (dumb-jump-xref-activate)
   :custom
