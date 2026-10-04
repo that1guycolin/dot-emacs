@@ -311,7 +311,8 @@ See URL `https://vale.sh'."
   :bind-keymap ("C-c z" . that1guycolin/kirigami-functions-map)
   :functions (kirigami-open-fold
               kirigami-open-fold-rec kirigami-open-folds kirigami-close-fold
-              kirigami-close-folds kirigami-toggle-fold))
+              kirigami-close-folds kirigami-toggle-fold)
+  :commands (kirigami-mode))
 
 
 ;;; Spellcheck:
