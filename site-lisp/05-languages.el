@@ -740,7 +740,7 @@ See URL `https://fishshell.com'."
   (with-eval-after-load 'apheleia
     (setf
      (alist-get 'neocmakelsp apheleia-formatters)
-     '("neocmakelsp" "format" "-")
+     '("neocmakelsp" "format" "--inplace" buffer-file-name)
      (alist-get 'cmake-ts-mode apheleia-mode-alist) 'neocmakelsp)))
 
 (use-package eldoc-cmake
