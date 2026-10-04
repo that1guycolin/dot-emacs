@@ -13,7 +13,6 @@ etc/*
 !etc/templates
 .pre-commit-config.yaml
 savefold/
-temporary
 TODO.org
 tramp*
 tree-sitter/

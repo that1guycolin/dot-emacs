@@ -265,7 +265,6 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
   (add-hook 'dirvish-preview-setup-hook
             #'that1guycolin/dirvish-preview-read-only)
 
-
   (defvar that1guycolin/dirvish-dispatch)
   (transient-define-prefix that1guycolin/dirvish-dispatch ()
     "Custom Dirvish command menu."

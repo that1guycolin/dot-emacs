@@ -556,8 +556,7 @@ See URL `https://github.com/rvben/rumdl'."
   :functions (python-skeleton-class
               python-skeleton-def python-skeleton-for python-skeleton-if
               python-skeleton-import python-skeleton-try python-skeleton-while)
-  :init
-  (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
+  :init (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
   :custom
   (docstr-python-style 'google)
   (python-indent-offset 4)
