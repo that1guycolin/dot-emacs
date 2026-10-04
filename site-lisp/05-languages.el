@@ -24,6 +24,7 @@
 (require '04-code-assist)
 (declare-function treesit-fold-mode "treesit")
 (declare-function kirigami-mode "kirigami")
+(declare-function docstr-mode "docstr")
 (declare-function that1guycolin/eglot-remove-mode-servers "04-code-assist")
 
 (defvar eglot-server-programs)
@@ -394,26 +395,59 @@ a running slynk instance @ localhost:4005."
 (use-package go-ts-mode
   :ensure nil
   :defer t
+  :preface (defvar docstr-go-modes)
   :hook (go-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)
-                        (setq-local fill-column 80)))
-  :mode "\\.go\\'")
+                        (setq-local fill-column 80) (docstr-mode 1)))
+  :mode "\\.go\\'"
+  :config
+  (with-eval-after-load 'docstr
+    (add-to-list 'docstr-writers-alist
+                 '(go-ts-mode . docstr-writers-golang)))
+  (with-eval-after-load 'docstr-golang
+    (add-to-list 'docstr-go-modes 'go-ts-mode)))
 
 
 ;;; Lua:
 (use-package lua-ts-mode
   :ensure nil
   :defer t
+  :preface
+  (defvar docstr-lua-modes)
+  (defvar docstr-lua-style)
+  (declare-function docstr-lua--before-insert "docstr")
+  (declare-function docstr-trigger-lua "docstr")
+
+  (defun that1guycolin/docstr-trigger-lua (&rest _)
+    "Trigger `docstr' for Lua's \\='---' documentation marker."
+    (when (and (memq major-mode '(lua-mode lua-ts-mode))
+               (docstr--doc-valid-p)
+               (docstr--looking-back "---" 3)
+               (memq docstr-lua-style '(luadoc doxygen)))
+      (add-hook 'docstr-before-insert-hook #'docstr-lua--before-insert nil t)
+      (docstr--insert-doc-string (docstr--generic-search-string 1 ")"))))
+
   :hook (lua-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)
-                         (setq-local fill-column 120)))
+                         (setq-local fill-column 120) (docstr-mode 1)))
   :mode "\\.lua\\'"
   :init (add-to-list 'major-mode-remap-alist '(lua-mode . lua-ts-mode))
   :custom (lua-ts-inferior-lua "luajit")
   :config
-  (add-hook 'lua-ts-mode-hook (lambda () (docstr-mode 1)))
   (with-eval-after-load 'apheleia
     (setf
-     (alist-get 'stylua apheleia-formatters) '("stylua" "--stdin-filepath"
-                                               filepath "-"))))
+     (alist-get 'stylua apheleia-formatters)
+     '("stylua" "--syntax" "LuaJit" "--stdin-filepath" filepath "-")))
+  (with-eval-after-load 'docstr
+    (add-to-list 'docstr-writers-alist
+                 '(lua-ts-mode . docstr-writers-lua))
+    (setq docstr-trigger-alist
+          (cons '("-" . that1guycolin/docstr-trigger-lua)
+                (cl-remove-if (lambda (trigger)
+                                (eq (cdr trigger) #'docstr-trigger-lua))
+                              docstr-trigger-alist))))
+  (with-eval-after-load 'docstr-lua
+    (add-to-list 'docstr-lua-modes 'lua-ts-mode))
+  (with-eval-after-load 'docstr-key
+    (add-to-list 'docstr-key-javadoc-like-modes 'lua-ts-mode)))
 
 
 ;;; Makefile:
@@ -515,6 +549,7 @@ See URL `https://github.com/rvben/rumdl'."
   :defer t
   :preface
   (defvar python-base-mode-map)
+  (defvar docstr-python-modes)
 
   (defun that1guycolin/python-uv-script-p ()
     "Return non-nil if current buffer is a uv script."
@@ -573,7 +608,15 @@ See URL `https://github.com/rvben/rumdl'."
     (that1guycolin/eglot-remove-mode-servers 'python-mode)
     (add-to-list 'eglot-server-programs
                  '((python-mode python-ts-mode) .
-                   ("uv" "run" "rass" "python")))))
+                   ("uv" "run" "rass" "python"))))
+
+  (with-eval-after-load 'doctr
+    (add-to-list 'docstr-writers-alist
+                 '(python-ts-mode . docstr-writers-python)))
+  (with-eval-after-load 'docstr-python
+    (add-to-list 'docstr-python-modes 'python-ts-mode))
+  (with-eval-after-load 'docstr-key
+    (add-to-list 'docstr-key-sharp-doc-modes 'python-ts-mode)))
 
 ;; Live coding
 (use-package live-py-mode
