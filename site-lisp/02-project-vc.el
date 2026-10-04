@@ -19,12 +19,14 @@
 ;; `treemacs' related packages are deferred.
 
 ;;; Code:
+
+(declare-function no-littering-expand-etc-file-name "no-littering")
+
 ;;; Projects:
 (use-package project
   :ensure nil
   :demand t
   :preface
-  (declare-function no-littering-expand-etc-file-name "no-littering")
   (defvar android-home)
   (defvar elpaca-directory)
   (defvar that1guycolin/projects-directory)
@@ -72,8 +74,8 @@
 
 ;; transient dispatch for project.el
 (use-package disproject
+  :after (project)
   :defer t
-  :preface (keymap-global-unset "C-x p")
   :bind (:map ctl-x-map ("p" . disproject-dispatch))
   :config (transient-append-suffix 'disproject-dispatch "M-x"
             '("R" "Reset Projects" that1guycolin/project-reset-projects)))
