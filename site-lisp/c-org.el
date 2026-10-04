@@ -268,10 +268,10 @@ The function ends with the cursor on the new line."
             (string-trim (match-string 1))))
       nil))
 
-  (defun that1guycolin/org-gen-header (ti au id)
-    "Insert a custom header block with TItle, AUthor & ID."
-    (insert "#+TITLE: " ti
-            "\n#+AUTHOR: " au
+  (defun that1guycolin/org-gen-header (title author id)
+    "Insert a custom header block with TITLE, AUTHOR & ID."
+    (insert "#+TITLE: " title
+            "\n#+AUTHOR: " author
             "\n#+CREATED_DATE: " (format-time-string "[%Y-%m-%d %a %H:%M:%S]")
             "\n#+LAST_EDIT: "
             "\n#+ID: " id
@@ -293,6 +293,13 @@ The function ends with the cursor on the new line."
                        (format-time-string "[%Y-%m-%d %a %H:%M:%S]")))
       id))
 
+  (defun that1guycolin/org--header-properties (title author)
+    "Generate a header block and properties drawer at the same time.
+The header block will contain TITLE and AUTHOR information."
+    (let ((id (that1guycolin/org-insert-properties-drawer)))
+      (that1guycolin/org-top-drawer-end)
+      (that1guycolin/org-gen-header title author id)))
+
   (defun that1guycolin/org-insert-header-block (title author)
     "Insert a header block at the top of the current document.
 If there is a properties drawer at the top, the header block will go
@@ -307,11 +314,12 @@ underneath it.  The header block will contain the following fields:
       (user-error "This buffer is not in org mode"))
     (if (that1guycolin/org-top-drawer-p)
         (let ((existing-id (that1guycolin/org-top-property-drawer-id)))
-          (that1guycolin/org-top-drawer-end)
-          (that1guycolin/org-gen-header title author existing-id))
-      (let ((new-id (that1guycolin/org-insert-properties-drawer)))
-        (that1guycolin/org-top-drawer-end)
-        (that1guycolin/org-gen-header title author new-id))))
+          (if existing-id
+              (progn
+                (that1guycolin/org-top-drawer-end)
+                (that1guycolin/org-gen-header title author existing-id)))
+          (that1guycolin/org--header-properties title author))
+      (that1guycolin/org--header-properties title author)))
 
   (defun that1guycolin/org-insert-src-block (lang)
     "Insert a block structure of the type #+begin_src LANG/#+end_src."
