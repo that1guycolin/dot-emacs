@@ -104,7 +104,6 @@ The file is created if it doesn't exist."
   (add-hook 'org-mode-hook #'that1guycolin/remove-org-todo))
 
 (use-package org-category-capture
-  :ensure nil
   :after (org-project-capture)
   :demand t
   :custom (occ-auto-insert-category-heading t))
