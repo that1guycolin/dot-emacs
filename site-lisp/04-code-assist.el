@@ -22,13 +22,14 @@
   (declare-function no-littering-expand-var-file-name "no-littering")
   (declare-function file-directory-p "emacs")
 
-  (defun that1guycolin/treesit-install-grammars ()
+  (defun that1guycolin/treesit-inst-grammars ()
     "Install all language grammars."
     (interactive)
-    (unless (file-directory-p treesit-extra-load-path)
-      (mapc (lambda (g)
-              (treesit-install-language-grammar g treesit-extra-load-path))
-            (mapcar #'car treesit-language-source-alist))))
+    (let ((ts-dir (car treesit-extra-load-path)))
+      (unless (file-directory-p ts-dir)
+        (mapc (lambda (g)
+                (treesit-install-language-grammar g ts-dir))
+              (mapcar #'car treesit-language-source-alist)))))
   
   :mode ("\\.tsx\\'" . tsx-ts-mode)
   :init (add-to-list 'treesit-extra-load-path
@@ -72,10 +73,10 @@
      (xml . ("https://github.com/tree-sitter-grammars/tree-sitter-xml"))
      (yaml . ("https://github.com/ikatyang/tree-sitter-yaml"))
      (zsh . ("https://github.com/georgeharker/tree-sitter-zsh"))))
+  
   (add-hook 'emacs-startup-hook
             (lambda ()
-              (run-with-timer 10 nil
-                              #'that1guycolin/treesit-install-grammars))))
+              (run-with-timer 10 nil #'that1guycolin/treesit-inst-grammars))))
 
 
 ;;; Text manipulation:
