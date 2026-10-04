@@ -28,6 +28,7 @@
   (defvar org-agenda-files)
   (defvar org-directory)
   (defvar org-refile-targets)
+
   (defun that1guycolin/remove-org-todo ()
     "If a \='TODO.org' file exists in the org directory, delete it.
 Because the org-directory is a git repo, there is a possibility of
@@ -54,6 +55,19 @@ The file is created if it doesn't exist."
     (let* ((pr (project-root (project-current)))
            (todo (expand-file-name "TODO.org" pr)))
       (find-file todo)))
+
+  (defun that1guycolin/manual-TODO-pkg-inquiry (header url &optional link)
+    "Add an entry in a TODO file for a package you may want to install.
+Provide the text you want in the HEADER (after the \\='**') and the URL
+to link to.  If you want the display text to be something other than the
+URL, LINK will be shown instead."
+    (interactive "sHeader text: \nsURL: \nsLink display text \
+(optional, leave blank to display URL): ")
+    (if (string= link "")
+        (insert "** TODO " header
+                "\n  - [[" url "]]\n")
+      (insert "** TODO " header
+              "\n  - [[" url "][" link "]]\n")))
 
   :functions (org-project-capture-capture-for-current-project
               org-project-capture-project-todo-completing-read
