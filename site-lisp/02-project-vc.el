@@ -93,89 +93,40 @@
                 consult-project-extra-find-other-window))))
 
 ;; Save frame-state & tab-state
-(use-package activities
+(use-package tabspaces
   :demand t
   :preface
-  (declare-function consult-buffer "01-environment.el")
-  (defvar edebug-inhibit-emacs-lisp-mode-bindings)
-
-  (defvar-keymap that1guycolin/activities-map
-    :doc "Functions from the package activities.el"
-    "n"          #'activities-new
-    "d"          #'activities-define
-    "r"          #'activities-resume
-    "p"          #'activities-suspend
-    "k"          #'activities-kill
-    "s"          #'activities-tabs--switch
-    "b"          #'activities-tabs--switch-buffer
-    "v"          #'activities-revert
-    "l"          #'activities-list
-    "C-r"        #'activities-rename
-    "C-d"        #'activities-discard)
-  (with-eval-after-load 'which-key
-    (which-key-add-keymap-based-replacements
-      that1guycolin/activities-map
-      "n"        "New Activity"
-      "d"        "Define Activity"
-      "r"        "Resume Activity"
-      "p"        "Suspend Activity"
-      "k"        "Kill Activity"
-      "s"        "Switch Activity"
-      "b"        "Switch Buffer (in current activity)"
-      "v"        "Revert Activity"
-      "l"        "List Activities"
-      "C-r"      "Rename Activity"
-      "C-d"      "Discard Activity"))
-
-  (defun that1guycolin/activity-switch-to-project (project)
-    "Switch to an activity named after PROJECT, defining it if needed."
-    (let* ((name (project-name project))
-           (activity (activities-named name)))
-      (unless (and activity
-                   (equal activity (activities-tabs-current)))
-        (when activity
-          (activities-tabs--switch activity)))))
-
-  (defun that1guycolin/project--switch-with-activity (og-fn dir &rest args)
-    "Around advice: enter DIR's activity before OG-FN runs."
-    (when-let* ((pr (project-current nil dir)))
-      (that1guycolin/activity-switch-to-project pr))
-    (apply og-fn dir args))
-
-  (defun that1guycolin/activity-follow-file-project ()
-    "Switch to the current file's project activity."
-    (when buffer-file-name
-      (when-let* ((pr (project-current)))
-        (save-current-buffer
-          (that1guycolin/activity-switch-to-project pr)))))
-
-  (defun that1guycolin/buffer-switch-dwim (&optional arg)
-    "If within an active activity, run `activities-tabs--switch-buffer'.
-Otherwise run `consult-buffer'.  With universal-prefix ARG, always run
-`consult-buffer'."
-    (interactive "P")
-    (if arg
-        (consult-buffer)
-      (let ((actvy (activities-tabs-current)))
-        (if actvy
-            (activities-tabs--switch-buffer actvy)
-          (consult-buffer)))))
-
-  :bind-keymap ("C-x C-a" . that1guycolin/activities-map)
-  :functions (activities-new
-              activities-define activities-resume activities-suspend
-              activities-kill activities-tabs--switch
-              activities-tabs--switch-buffer activities-revert activities-list
-              activities-rename activities-discard activities-named
-              activities-tabs-current activities-mode activities-tabs-mode)
-  :init
+  (defun that1guycolin/consult-tabspaces ()
+    "Set `consult-buffer-list-function' based on if `tabspaces-mode' is active.
+If active, set to `tabspaces-local-buffer-list'.  If nil, set to
+`buffer-list'."
+    (if tabspaces-mode
+        (setq consult-buffer-list-function #'tabspaces-local-buffer-list)
+      (setq consult-buffer-list-function #'buffer-list)))
+  
+  :bind ("C-x TAB" . tabspaces-switch-buffer-and-tab)
+  :functions (tabspaces-mode tabspaces-local-buffer-list)
+  :custom
+  (tab-bar-new-tab-choice "*scratch*")
+  (tabspaces-default-tab "Main")
+  (tabspaces-exclude-buffers '("*Messages*" "*Compile-Log*"))
+  (tabspaces-fully-resolve-paths t)
+  (tabspaces-include-buffers '("*scratch*"))
+  (tabspaces-initialize-project-with-todo t)
+  (tabspaces-keymap-prefix (kbd "M-p"))
+  (tabspaces-project-switch-opens-workspace t)
+  (tabspaces-remove-to-default t)
+  (tabspaces-session t)
+  (tabspaces-session-auto-restore t)
+  (tabspaces-session-auto-save-delay 300)
+  (tabspaces-session-file (no-littering-expand-etc-file-name "tabsession.el"))
+  (tabspaces-session-project-session-store
+   (no-littering-expand-etc-file-name "tabspaces-sessions"))
+  (tabspaces-todo-file-name "TODO.org")
+  (tabspaces-use-filtered-buffers-as-default t)
   :config
-  (activities-mode 1)
-  (activities-tabs-mode 1)
-  (keymap-set ctl-x-map "b" #'that1guycolin/buffer-switch-dwim)
-  (advice-add #'project-switch-project :around
-              #'that1guycolin/project--switch-with-activity)
-  (add-hook 'find-file-hook #'that1guycolin/activity-follow-file-project))
+  (add-hook 'tabspaces-mode-hook #'that1guycolin/consult-tabspaces)
+  (tabspaces-mode 1))
 
 
 ;;; VC/Git:
