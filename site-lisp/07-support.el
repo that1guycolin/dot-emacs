@@ -265,22 +265,6 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
   (add-hook 'dirvish-preview-setup-hook
             #'that1guycolin/dirvish-preview-read-only)
 
-  (defvar-keymap dirvish-mode-map
-    :keymap dirvish-mode-map
-    "C-p"       #'dired-previous-line
-    "C-n"       #'dired-next-line
-    "R"         #'that1guycolin/dirvish-rename-file
-    "m"         #'dired-do-rename
-    "c"           that1guycolin/dired-create-map
-    "C-w"       #'that1guycolin/dirvish-cut
-    "M-w"       #'that1guycolin/dirvish-copy
-    "C-y"       #'that1guycolin/dirvish-paste
-    "^"         #'dired-up-directory
-    "C-M-p"     #'dired-up-directory
-    "C-M-n"     #'that1guycolin/dirvish-down-directory
-    "TAB"       #'that1guycolin/dirvish-tab-dwim
-    "RET"       #'that1guycolin/dirvish-return-dwim
-    "?"         #'that1guycolin/dirvish-dispatch)
 
   (defvar that1guycolin/dirvish-dispatch)
   (transient-define-prefix that1guycolin/dirvish-dispatch ()
@@ -321,7 +305,23 @@ On directories, toggle subtree.  On files, use Dirvish file outline viewer."
       ("M-f" "History forward"      dirvish-history-go-forward :transient t)
       ("M-e" "Emerge menu"          dirvish-emerge-menu)
       ("g"   "Revert"               revert-buffer :transient t)
-      ("q"   "Quit Dirvish"         dirvish-quit)]]))
+      ("q"   "Quit Dirvish"         dirvish-quit)]])
+
+  (let ((map dirvish-mode-map))
+    (keymap-set map "C-p"        #'dired-previous-line)
+    (keymap-set map "C-n"        #'dired-next-line)
+    (keymap-set map "R"          #'that1guycolin/dirvish-rename-file)
+    (keymap-set map "m"          #'dired-do-rename)
+    (keymap-set map "c"            that1guycolin/dired-create-map)
+    (keymap-set map "C-w"        #'that1guycolin/dirvish-cut)
+    (keymap-set map "M-w"        #'that1guycolin/dirvish-copy)
+    (keymap-set map "C-y"        #'that1guycolin/dirvish-paste)
+    (keymap-set map "^"          #'dired-up-directory)
+    (keymap-set map "C-M-p"      #'dired-up-directory)
+    (keymap-set map "C-M-n"      #'that1guycolin/dirvish-down-directory)
+    (keymap-set map "TAB"        #'that1guycolin/dirvish-tab-dwim)
+    (keymap-set map "RET"        #'that1guycolin/dirvish-return-dwim)
+    (keymap-set map "?"          #'that1guycolin/dirvish-dispatch)))
 
 ;; execute shell commands on marked files
 (use-package dwim-shell-command
