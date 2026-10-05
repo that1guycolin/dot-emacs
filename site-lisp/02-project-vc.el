@@ -225,6 +225,14 @@ If active, set to `tabspaces-local-buffer-list'.  If nil, set to
   :demand t)
 
 (use-package treemacs
+  :ensure (treemacs
+	   :source "MELPA" :package "treemacs" :id treemacs
+	   :fetcher github :repo "that1guycolin/treemacs"
+	   :branch "avoid-error-on-project-follow-mode-deactivation"
+	   :files (:defaults "Changelog.org" "icons" "src/elisp/treemacs*.el"
+			     "src/scripts/treemacs*.py"
+			     (:exclude "src/extra/*"))
+	   :type git :protocol https :inherit t :depth treeless)
   :defer t
   :preface
   (defun that1guycolin/treemacs-switch-workspace-focus ()
