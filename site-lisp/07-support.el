@@ -980,7 +980,7 @@ doubles as a model-switcher."
       (unless (bound-and-true-p telega-mode-line-mode)
         (telega-mode-line-mode 1))))
   :unless (eq system-type 'android)
-  :bind ("C-M-g" . telega)
+  :bind ("M-t" . telega)
   :hook (telega-root-mode . (lambda () (setq-local fill-column 1000)))
   :functions (telega-mode-line-mode
               telega-appindicator-mode telega-auto-download-mode
