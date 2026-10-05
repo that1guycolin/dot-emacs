@@ -435,7 +435,8 @@ a running slynk instance @ localhost:4005."
   (with-eval-after-load 'apheleia
     (setf
      (alist-get 'stylua apheleia-formatters)
-     '("stylua" "--syntax" "LuaJit" "--stdin-filepath" filepath "-")))
+     '("stylua" "--search-parent-directories" "--stdin-filepath" filepath "-")))
+  
   (with-eval-after-load 'docstr
     (add-to-list 'docstr-writers-alist
                  '(lua-ts-mode . docstr-writers-lua))
