@@ -146,7 +146,7 @@
            (command (format "vale --config %s sync >/dev/null 2>&1"
                             (shell-quote-argument vale-config))))
       (shell-command command)))
-  :hook ((prog-mode conf-mode text-mode) . flycheck-mode)
+  :hook ((prog-mode text-mode) . flycheck-mode)
   :functions (flycheck-error-new-at flycheck-select-checker flycheck-add-mode)
   :custom (flycheck-disabled-checkers
            '(emacs-lisp-elsa rpm-rpmlint yaml-jsyaml yaml-ruby))
