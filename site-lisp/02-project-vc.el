@@ -263,6 +263,18 @@ Wait two seconds before activating the mode."
       ('none (ignore))))
   (advice-add 'treemacs :after #'that1guycolin/toggle-gitignored-wait-2)
 
+  (defun that1guycolin/treemacs-toggle-project-follow-mode ()
+    "If `treemacs-project-follow-mode' is active, deactivate it.
+If it is not active, activate it."
+    (interactive)
+    (if (bound-and-true-p treemacs-project-follow-mode)
+        (progn
+          (treemacs-project-follow-mode -1)
+          (message "Deactivated `treemacs-project-follow-mode'"))
+      (progn
+        (treemacs-project-follow-mode 1)
+        (message "Activated `treemacs-project-follow-mode'"))))
+
   (defun that1guycolin/close-treemacs (&rest _args)
     "If a treemacs window exists, close it."
     (when (eq 'visible (treemacs-current-visibility))
@@ -270,7 +282,7 @@ Wait two seconds before activating the mode."
 
   :bind (("C-c t t"     . treemacs)
          :map treemacs-mode-map
-         ("t p"         . treemacs-project-follow-mode)
+         ("t p"         . that1guycolin/treemacs-toggle-project-follow-mode)
          ("<backspace>" . treemacs-root-up))
   :commands (treemacs treemacs-refresh)
   :functions (treemacs-git-mode
@@ -278,7 +290,7 @@ Wait two seconds before activating the mode."
               treemacs-project-follow-mode treemacs-root-up
               treemacs-get-local-window treemacs-hide-gitignored-files-mode
               treemacs--select-workspace-by-name treemacs-switch-workspace)
-  :defines (treemacs-mode-map)
+  :defines (treemacs-mode-map treemacs-project-follow-mode)
   :custom
   (treemacs-width 35)
   (treemacs-is-never-other-window t)
