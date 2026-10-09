@@ -609,16 +609,58 @@ See URL: \\='https://github.com/rvben/rumdl'."
 
 
 ;;; Shell scripts:
-(use-package bash-ts-mode
+(use-package sh-script
   :ensure nil
+  :after (apheleia flycheck)
   :defer t
-  :hook (bash-ts-mode . (lambda () (apheleia-mode -1) (treesit-fold-mode)
-                          (kirigami-mode)
-                          (setq-local fill-column 80)))
-  :interpreter "bash"
-  :mode "\\.bash\\'"
-  :config (with-eval-after-load 'flycheck
-            (flycheck-select-checker 'bash-ts-mode)))
+  :preface
+  (defun that1guycolin/sh-shell-hooks ()
+    "Set hooks for `sh-mode' based on buffer's `sh-shell-file'.
+Also used for `bash-ts-mode'.  Add to the list `sh-mode-hook'."
+    (cond
+     ((string-suffix-p "bash" sh-shell-file)
+      (unless (eq mode-name 'bash-ts-mode)
+        (bash-ts-mode))
+      (treesit-fold-mode) (kirigami-mode)
+      (flycheck-select-checker 'sh-shellcheck))
+     ((string-suffix-p "zsh" sh-shell-file)
+      (hs-minor-mode) (kirigami-mode)
+     ((string-suffix-p "sh" sh-shell-file)
+      (hs-minor-mode) (kirigami-mode)
+      (flycheck-select-checker 'sh-shellcheck))
+     ((string-suffix-p "dash" sh-shell-file)
+      (hs-minor-mode) (kirigami-mode)
+      (flycheck-select-checker 'sh-shellcheck))))
+
+  :hook (sh-mode . (lambda () (apheleia-mode -1)
+                     (setq-local fill-column 80)
+                     (that1guycolin/sh-shell-hooks)))
+  :mode (("\\.bash\\'" . bash-ts-mode)
+         (("\\.dash\\'" "\\.sh\\'" "\\.zsh\\'") . sh-mode))
+  :init (add-to-list 'flycheck-shellcheck-supported-shells 'dash)
+  :custom
+  (flycheck-shellcheck-infer-shell t)
+  (flycheck-sh-bash-executable
+   (that1guycolin/desktop-mobile
+     :desk "/usr/bin/bash"
+     :tmux "/data/data/com.termux/files/usr/bin/bash"))
+  (flycheck-sh-posix-bash-executable
+   (that1guycolin/desktop-mobile
+     :desk "/usr/bin/bash"
+     :tmux "/data/data/com.termux/files/usr/bin/bash"))
+  (flycheck-sh-posix-dash-executable
+   (that1guycolin/desktop-mobile
+     :desk "/usr/bin/dash"
+     :tmux "/data/data/com.termux/files/usr/bin/dash"))
+  (flycheck-sh-shellcheck-executable
+   (that1guycolin/desktop-mobile
+     :desk "/home/colin-l/.local/bin/shellcheck"
+     :tmux "/data/data/com.termux/files/usr/bin/shellcheck"))
+  (flycheck-sh-zsh-executable
+   (that1guycolin/desktop-mobile
+     :desk "/usr/bin/zsh"
+     :tmux "/data/data/com.termux/files/usr/bin/zsh"))
+
 
 (use-package shfmt
   :defer t
@@ -691,29 +733,12 @@ See URL: \\='https://fishshell.com'."
                           (setq-local fill-column 100)))
   :mode "justfile\\'")
 
-(use-package sh-mode
 ;; Makefile:
 (use-package makefile-mode
   :ensure nil
   :after (flycheck)
   :defer t
   :preface
-  (defun that1guycolin/sh-mode-shell-auto ()
-    "Automatically set `sh-shell-file' based on `sh-shell'."
-    (interactive)
-    (unless (or (eq major-mode 'sh-mode) (eq major-mode 'bash-ts-mode))
-      (user-error "Buffer not in a shell-script mode"))
-    (let ((file nil))
-      (cond
-       ((eq sh-shell 'bash)  (setq file "/usr/bin/bash"))
-       ((eq sh-shell 'dash)  (setq file "/usr/bin/dash"))
-       ((eq sh-shell 'zsh)   (setq file "/usr/bin/zsh"))
-       (t                    (setq file "/usr/bin/zsh")))
-      (when (or (eq that1guycolin/emacs-type 'android-gui)
-                (eq that1guycolin/emacs-type 'termux))
-        (setq file (concat "/data/data/com.termux/files" file)))
-      (setq-local sh-shell-file file)))
-
   (defun that1guycolin/flycheck-parse-zsh-lint (output)
     "Parse JSON OUTPUT from zsh-lint."
   (defun that1guycolin/flycheck-parse-checkmake (output)
@@ -763,33 +788,6 @@ See URL: \\='https://github.com/mrtazz/checkmake'."
     :modes (makefile-mode makefile-automake-mode makefile-bsdmake-mode
                           makefile-gmake-mode))
   (add-to-list 'flycheck-checkers 'makefile-checkmake))
-
-  :hook (sh-mode . (lambda ()  (that1guycolin/sh-mode-shell-auto)
-                     (apheleia-mode -1) (hs-minor-mode) (kirigami-mode)
-                     (setq-local fill-column 80)))
-  :interpreter ("sh" "zsh" "dash")
-  :mode ("\\.zsh\\'" "\\.dash\\'")
-  :init (with-eval-after-load 'flycheck
-          (add-to-list 'flycheck-shellcheck-supported-shells 'dash))
-  :custom
-  (with-eval-after-load 'flycheck
-    (flycheck-shellcheck-infer-shell t)
-    (flycheck-sh-bash-executable
-     (that1guycolin/desktop-mobile
-       :desk "/usr/bin/bash"
-       :tmux "/data/data/com.termux/files/usr/bin/bash"))
-    (flycheck-sh-posix-bash-executable
-     (that1guycolin/desktop-mobile
-       :desk "/usr/bin/bash"
-       :tmux "/data/data/com.termux/files/usr/bin/bash"))
-    (flycheck-sh-posix-dash-executable
-     (that1guycolin/desktop-mobile
-       :desk "/usr/bin/shellcheck"
-       :tmux "/data/data/com.termux/files/usr/bin/shellcheck"))
-    (flycheck-sh-zsh-executable
-     (that1guycolin/desktop-mobile
-       :desk "/usr/bin/zsh"
-       :tmux "/data/data/com.termux/files/usr/bin/zsh"))
 
     (flycheck-define-checker zsh-lint
       "A Flycheck checker for zsh-lint.
