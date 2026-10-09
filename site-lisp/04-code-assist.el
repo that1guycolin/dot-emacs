@@ -14,6 +14,9 @@
 ;; The packages configured in this file set up IDE-like features within Emacs.
 
 ;;; Code:
+
+(defvar minions-prominent-modes)
+
 ;;; Treesit:
 (use-package treesit
   :ensure nil
@@ -92,8 +95,7 @@
 
 ;; docstring support
 (use-package docstr
-  :defer t
-  :commands (docstr-mode))
+  :demand t)
 
 ;; Jump-to-def/find-refs
 (use-package dumb-jump
@@ -137,7 +139,7 @@
 
 ;;; Linting (flycheck)
 (use-package flycheck
-  :defer t
+  :demand t
   :preface
   (defvar minions-prominent-modes)
   (defun that1guycolin/flycheck-vale-setup ()
@@ -199,7 +201,7 @@ See URL `https://vale.sh'."
 
 ;;; Formatting (apheleia):
 (use-package apheleia
-  :defer t
+  :demand t
   :bind ("C-c f" . apheleia-format-buffer)
   :hook ((prog-mode text-mode conf-mode) . apheleia-mode))
 
@@ -264,8 +266,7 @@ See URL `https://vale.sh'."
 (use-package outline
   :ensure nil
   :defer t
-  :hook ((conf-mode diff-mode lisp-interaction-mode markdown-mode) .
-         outline-minor-mode))
+  :commands (outline-minor-mode))
 
 ;; Based on indentation
 (use-package outline-indent

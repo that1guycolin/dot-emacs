@@ -31,8 +31,9 @@
 
 
 ;;; CSS:
-(use-package css-ts-mode
+(use-package css-mode
   :ensure nil
+  :after (eglot)
   :defer t
   :hook (css-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)
                          (setq-local fill-column 80)))
@@ -40,11 +41,10 @@
   :init
   (add-to-list 'major-mode-remap-alist '(css-mode . css-ts-mode))
   :config
-  (with-eval-after-load 'eglot
-    (that1guycolin/eglot-remove-mode-servers 'css-mode)
-    (add-to-list 'eglot-server-programs
-                 '((css-ts-mode) .
-                   ("vscode-css-language-server" "--stdio")))))
+  (that1guycolin/eglot-remove-mode-servers 'css-mode)
+  (add-to-list 'eglot-server-programs
+               '((css-ts-mode) .
+                 ("vscode-css-language-server" "--stdio"))))
 
 
 ;;; CSV:
@@ -57,16 +57,16 @@
 ;;; Containers:
 (use-package dockerfile-ts-mode
   :ensure nil
+  :after (eglot)
   :defer t
   :hook (dockerfile-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)
                                 (setq-local fill-column 100)))
   :mode ("Dockerfile\\'" "Containerfile\\'")
   :config
-  (with-eval-after-load 'eglot
-    (that1guycolin/eglot-remove-mode-servers 'dockerfile-mode)
-    (add-to-list 'eglot-server-programs
-                 '((dockerfile-ts-mode) .
-                   ("docker-language-server" "start" "--stdio")))))
+  (that1guycolin/eglot-remove-mode-servers 'dockerfile-mode)
+  (add-to-list 'eglot-server-programs
+               '((dockerfile-ts-mode) .
+                 ("docker-language-server" "start" "--stdio"))))
 
 
 ;;; Shaders:
@@ -87,6 +87,7 @@
   :custom (flycheck-emacs-lisp-load-path 'inherit))
 
 (use-package lisp-ts-mode
+  :after (flycheck eglot)
   :defer t
   :preface
   (defcustom that1guycolin/eglot-lisp-alive-port 8006
@@ -117,71 +118,67 @@
   (setf (alist-get 'lisp-ts-mode font-lock-ignore)
         lisp-ts-mode-font-lock-ignore-keywords)
 
-  (with-eval-after-load 'flycheck
-    (flycheck-define-checker cl-mallet
-      "A Common Lisp linter using Mallet.
-See URL: `https://github.com/fukamachi/mallet'."
-      :command ("mallet" source)
-      :error-patterns
-      ((error line-start (zero-or-more space)
+  (flycheck-define-checker cl-mallet
+    "A Common Lisp linter using Mallet.
+See URL: \\='https://github.com/fukamachi/mallet'."
+    :command ("mallet" source)
+    :error-patterns
+    ((error line-start (zero-or-more space)
+            line ":" column
+            (one-or-more space) "error" (one-or-more space)
+            (message (minimal-match (one-or-more not-newline)))
+            (one-or-more space) (id (one-or-more not-newline))
+            line-end)
+
+     (warning line-start (zero-or-more space)
               line ":" column
-              (one-or-more space) "error" (one-or-more space)
+              (one-or-more space) "warning" (one-or-more space)
               (message (minimal-match (one-or-more not-newline)))
               (one-or-more space) (id (one-or-more not-newline))
               line-end)
 
-       (warning line-start (zero-or-more space)
-                line ":" column
-                (one-or-more space) "warning" (one-or-more space)
-                (message (minimal-match (one-or-more not-newline)))
-                (one-or-more space) (id (one-or-more not-newline))
-                line-end)
+     (info line-start (zero-or-more space)
+           line ":" column
+           (one-or-more space) "info" (one-or-more space)
+           (message(minimal-match (one-or-more not-newline)))
+           (one-or-more space) (id (one-or-more not-newline))
+           line-end))
+    :modes (lisp-mode lisp-ts-mode lisp-data-mode))
+  (add-to-list 'flycheck-checkers 'cl-mallet)
 
-       (info line-start (zero-or-more space)
-             line ":" column
-             (one-or-more space) "info" (one-or-more space)
-             (message(minimal-match (one-or-more not-newline)))
-             (one-or-more space) (id (one-or-more not-newline))
-             line-end))
-      :modes (lisp-mode lisp-ts-mode lisp-data-mode))
-    (add-to-list 'flycheck-checkers 'cl-mallet))
+  (that1guycolin/eglot-remove-mode-servers 'lisp-mode)
+  (add-to-list 'eglot-server-programs
+               '((lisp-mode lisp-ts-mode) .
+                 (lambda (_interactive _project)
+                   (unless (that1guycolin/eglot-lisp-alive--port-available-p
+                            that1guycolin/eglot-lisp-alive-port)
+                     (error "Port %d is already in use"
+                            that1guycolin/eglot-lisp-alive-port))
+                   (make-process
+                    :name "alive-lsp"
+                    :buffer (get-buffer-create "*alive-lsp*")
+                    :noquery t
+                    :sentinel #'ignore
+                    :filter #'ignore
+                    :command
+                    (list "sbcl"
+                          "--eval" "(require :asdf)"
+                          "--eval" "(asdf:load-system :alive-lsp)"
+                          "--eval"
+                          (format "(alive/server::start :port %d)"
+                                  that1guycolin/eglot-lisp-alive-port)))
+                   (sleep-for 1)
+                   (list "localhost" that1guycolin/eglot-lisp-alive-port)))))
 
-  (with-eval-after-load 'eglot
-    (that1guycolin/eglot-remove-mode-servers 'lisp-mode)
-    (add-to-list 'eglot-server-programs
-                 '((lisp-mode lisp-ts-mode) .
-                   (lambda (_interactive _project)
-                     (unless (that1guycolin/eglot-lisp-alive--port-available-p
-                              that1guycolin/eglot-lisp-alive-port)
-                       (error "Port %d is already in use"
-                              that1guycolin/eglot-lisp-alive-port))
-                     (make-process
-                      :name "alive-lsp"
-                      :buffer (get-buffer-create "*alive-lsp*")
-                      :noquery t
-                      :sentinel #'ignore
-                      :filter #'ignore
-                      :command
-                      (list "sbcl"
-                            "--eval" "(require :asdf)"
-                            "--eval" "(asdf:load-system :alive-lsp)"
-                            "--eval"
-                            (format "(alive/server::start :port %d)"
-                                    that1guycolin/eglot-lisp-alive-port)))
-                     (sleep-for 1)
-                     (list "localhost" that1guycolin/eglot-lisp-alive-port))))))
-
-(use-package scheme-mode
+(use-package scheme
   :ensure nil
   :defer t
   :hook (scheme-mode . (lambda () (outline-minor-mode) (kirigami-mode)
                          (setq-local fill-column 80)))
   :mode "\\.scm\\'"
   :config
-  (with-eval-after-load 'eglot
-    (add-to-list 'eglot-server-programs
-                 '((scheme-mode) . ("guile-lsp-server"))))
-  (add-hook 'scheme-mode-hook #'outline-minor-mode))
+  (add-to-list 'eglot-server-programs
+               '((scheme-mode) . ("guile-lsp-server"))))
 
 ;; Smart '()' (all)
 (use-package adjust-parens
@@ -197,11 +194,10 @@ See URL: `https://github.com/fukamachi/mallet'."
 ;; Emacs package assist
 (use-package eask-mode
   :defer t
+  :after (apheleia)
   :mode "Eask\\'"
   :config
-  (with-eval-after-load 'apheleia
-    (setf
-     (alist-get 'eask-mode apheleia-mode-alist) 'lisp-indent)))
+  (setf (alist-get 'eask-mode apheleia-mode-alist) 'lisp-indent))
 
 ;; Go directly to symbol definition (elisp)
 (use-package elisp-def
@@ -220,7 +216,7 @@ See URL: `https://github.com/fukamachi/mallet'."
   :config (flycheck-eask-setup))
 
 (use-package flycheck-guile
-  :after (flycheck (:any scheme-mode geiser))
+  :after (flycheck (:any scheme geiser))
   :demand t)
 
 (use-package flycheck-package
@@ -347,6 +343,7 @@ a running slynk instance @ localhost:4005."
                   sly-apropos sly-describe-symbol)
   :init (setq inferior-lisp-program "sbcl")
   :custom
+  (sly-auto-start 'always)
   (sly-lisp-implementations
    `((sbcl
       ("lisp-repl-core-dumper"
@@ -355,31 +352,30 @@ a running slynk instance @ localhost:4005."
                                                   elpaca-sources-directory))
        "sbcl"))))
   :config
-  (dolist (contrib '(sly-fancy sly-mrepl sly-indentation sly-package-fu))
-    (add-to-list 'sly-contribs contrib))
-  (setq sly-auto-start 'always)
+  (mapc (lambda (c) (add-to-list 'sly-contribs c))
+        '(sly-fancy sly-mrepl sly-indentation sly-package-fu))
   (add-hook 'sly-mrepl-mode-hook #'corfu-mode)
   (add-hook 'sly-mode-hook #'that1guycolin/sly-load-if-not-connected)
-  (with-eval-after-load 'transient
-    (defvar that1guycolin/sly-dispatch)
-    (transient-define-prefix that1guycolin/sly-dispatch ()
-      "Transient menu for functions related to `sly' & the `sly-mrepl'."
-      ["SLYvester the Cat's Common Lisp IDE"
-       ["Connection"
-        ("s" "Sly" that1guycolin/sly-autoconnect)
-        ("c" "Sly Connect" sly-connect)
-        ("d" "Sly Disconnect" sly-disconnect)
-        ("D" "Sly Disconnect (All)" sly-disconnect-all)]
-       ["REPL"
-        ("r" "Open" sly-mrepl)
-        ("m" "Set Directory" sly-mrepl-set-directory :transient t)
-        ("n" "New" sly-mrepl-new)
-        ("s" "Sync" sly-mrepl-sync :transient t)]
-       ["Utilities"
-        ("h" "Change Directory" sly-cd :transient t)
-        ("i" "Inspect" sly-inspect)
-        ("a" "Match Symbol" sly-apropos)
-        ("w" "Describe Symbol" sly-describe-symbol)]]))
+
+  (defvar that1guycolin/sly-dispatch)
+  (transient-define-prefix that1guycolin/sly-dispatch ()
+    "Transient menu for functions related to `sly' & the `sly-mrepl'."
+    ["SLYvester the Cat's Common Lisp IDE"
+     ["Connection"
+      ("s" "Sly" that1guycolin/sly-autoconnect)
+      ("c" "Sly Connect" sly-connect)
+      ("d" "Sly Disconnect" sly-disconnect)
+      ("D" "Sly Disconnect (All)" sly-disconnect-all)]
+     ["REPL"
+      ("r" "Open" sly-mrepl)
+      ("m" "Set Directory" sly-mrepl-set-directory :transient t)
+      ("n" "New" sly-mrepl-new)
+      ("s" "Sync" sly-mrepl-sync :transient t)]
+     ["Utilities"
+      ("h" "Change Directory" sly-cd :transient t)
+      ("i" "Inspect" sly-inspect)
+      ("a" "Match Symbol" sly-apropos)
+      ("w" "Describe Symbol" sly-describe-symbol)]])
   (keymap-global-set "C-c s" 'that1guycolin/sly-dispatch))
 
 (use-package sly-quicklisp
@@ -394,22 +390,22 @@ a running slynk instance @ localhost:4005."
 ;;; Go:
 (use-package go-ts-mode
   :ensure nil
+  :after (docstr)
   :defer t
   :preface (defvar docstr-go-modes)
   :hook (go-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)
                         (setq-local fill-column 80) (docstr-mode 1)))
   :mode "\\.go\\'"
   :config
-  (with-eval-after-load 'docstr
-    (add-to-list 'docstr-writers-alist
-                 '(go-ts-mode . docstr-writers-golang)))
-  (with-eval-after-load 'docstr-golang
-    (add-to-list 'docstr-go-modes 'go-ts-mode)))
+  (add-to-list 'docstr-writers-alist
+               '(go-ts-mode . docstr-writers-golang))
+  (add-to-list 'docstr-go-modes 'go-ts-mode))
 
 
 ;;; Lua:
 (use-package lua-ts-mode
   :ensure nil
+  :after (docstr apheleia)
   :defer t
   :preface
   (defvar docstr-lua-modes)
@@ -432,73 +428,27 @@ a running slynk instance @ localhost:4005."
   :init (add-to-list 'major-mode-remap-alist '(lua-mode . lua-ts-mode))
   :custom (lua-ts-inferior-lua "luajit")
   :config
-  (with-eval-after-load 'apheleia
-    (setf
-     (alist-get 'stylua apheleia-formatters)
-     '("stylua" "--search-parent-directories" "--stdin-filepath" filepath "-")))
-  
-  (with-eval-after-load 'docstr
-    (add-to-list 'docstr-writers-alist
-                 '(lua-ts-mode . docstr-writers-lua))
-    (setq docstr-trigger-alist
-          (cons '("-" . that1guycolin/docstr-trigger-lua)
-                (cl-remove-if (lambda (trigger)
-                                (eq (cdr trigger) #'docstr-trigger-lua))
-                              docstr-trigger-alist))))
+  (setf
+   (alist-get 'stylua apheleia-formatters)
+   '("stylua" "--search-parent-directories" "--stdin-filepath" filepath "-"))
+
+  (add-to-list 'docstr-writers-alist
+               '(lua-ts-mode . docstr-writers-lua))
+  (setq docstr-trigger-alist
+        (cons '("-" . that1guycolin/docstr-trigger-lua)
+              (cl-remove-if (lambda (trigger)
+                              (eq (cdr trigger) #'docstr-trigger-lua))
+                            docstr-trigger-alist)))
   (with-eval-after-load 'docstr-lua
     (add-to-list 'docstr-lua-modes 'lua-ts-mode))
   (with-eval-after-load 'docstr-key
     (add-to-list 'docstr-key-javadoc-like-modes 'lua-ts-mode)))
 
 
-;;; Makefile:
-(use-package makefile-mode
-  :ensure nil
-  :defer t
-  :preface
-  (defun that1guycolin/flycheck-checkmake--read-json (output)
-    "Parse the leading JSON array out of OUTPUT, ignoring trailing text."
-    (with-temp-buffer
-      (insert output)
-      (goto-char (point-min))
-      (json-parse-buffer :object-type 'alist :array-type 'list)))
-
-  (defun that1guycolin/flycheck-checkmake-parse-json (output checker buffer)
-    "Parse checkmake's JSON OUTPUT into Flycheck errors for CHECKER/BUFFER."
-    (mapcar
-     (lambda (violation)
-       (flycheck-error-new-at
-        (alist-get 'line_number violation)
-        nil
-        (if (member (alist-get 'rule violation) '("miniphony"))
-            'error
-          'warning)
-        (format "[%s] %s"
-                (alist-get 'rule violation)
-                (alist-get 'violation violation))
-        :checker checker
-        :buffer buffer
-        :filename (buffer-file-name buffer)))
-     (that1guycolin/flycheck-checkmake--read-json output)))
-  
-  :hook (makefile-mode . (lambda () (setq-local fill-column 100)))
-  :mode "Makefile\\'"
-  :config
-  (with-eval-after-load 'flycheck
-    (flycheck-define-checker makefile-checkmake
-      "Makefile style-checker/linter written in Go.
-See URL `https://github.com/mrtazz/checkmake'.  Install with \\='go
-install github.com/checkmake/checkmake/cmd/checkmake@latest'."
-      :command ("checkmake" "-o" "json" source-inplace)
-      :error-parser that1guycolin/flycheck-checkmake-parse-json
-      :modes (makefile-mode makefile-automake-mode makefile-bsdmake-mode
-                            makefile-gmake-mode))
-    (add-to-list 'flycheck-checkers 'makefile-checkmake)))
-
-
 ;;; Markdown:
 (use-package markdown-ts-mode
   :ensure nil
+  :after (flycheck apheleia eglot)
   :defer t
   :hook (markdown-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)
                               (setq-local fill-column 80)))
@@ -507,34 +457,31 @@ install github.com/checkmake/checkmake/cmd/checkmake@latest'."
   (add-to-list 'major-mode-remap-alist '(markdown-mode . markdown-ts-mode))
   :config
   (keymap-set markdown-ts-mode-map "C-c C-x" #'toggle-frame-maximized)
-  (with-eval-after-load 'flycheck
-    (flycheck-define-checker markdown-rumdl
-      "A fast Markdown linter written in Rust.
-See URL `https://github.com/rvben/rumdl'."
-      :command ("rumdl" "check" "--watch" "--stdin" source)
-      :error-patterns
-      ((error line-start (file-name)
+  (flycheck-define-checker markdown-rumdl
+    "A fast Markdown linter written in Rust.
+See URL: \\='https://github.com/rvben/rumdl'."
+    :command ("rumdl" "check" "--watch" "--stdin" source)
+    :error-patterns
+    ((error line-start (file-name)
+            ":" line ":" column ": "
+            (id (one-or-more (not (any " ")))) " " (message) line-end)
+     (warning line-start (file-name)
               ":" line ":" column ": "
               (id (one-or-more (not (any " ")))) " " (message) line-end)
-       (warning line-start (file-name)
-                ":" line ":" column ": "
-                (id (one-or-more (not (any " ")))) " " (message) line-end)
-       (info line-start (file-name)
-             ":" line ":" column ": "
-             (id (one-or-more (not (any " ")))) " " (message) line-end))
-      :modes (markdown-ts-mode markdown-mode gfm-mode))
-    (add-to-list 'flycheck-checkers 'markdown-rumdl))
+     (info line-start (file-name)
+           ":" line ":" column ": "
+           (id (one-or-more (not (any " ")))) " " (message) line-end))
+    :modes (markdown-ts-mode markdown-mode gfm-mode))
+  (add-to-list 'flycheck-checkers 'markdown-rumdl)
 
-  (with-eval-after-load 'apheleia
-    (setf
-     (alist-get 'markdown-mode    apheleia-mode-alist) 'rumdl
-     (alist-get 'markdown-ts-mode apheleia-mode-alist) 'rumdl
-     (alist-get 'gfm-mode         apheleia-mode-alist) 'rumdl))
+  (setf
+   (alist-get 'markdown-mode    apheleia-mode-alist) 'rumdl
+   (alist-get 'markdown-ts-mode apheleia-mode-alist) 'rumdl
+   (alist-get 'gfm-mode         apheleia-mode-alist) 'rumdl)
 
-  (with-eval-after-load 'eglot
-    (that1guycolin/eglot-remove-mode-servers 'markdown-mode)
-    (add-to-list 'eglot-server-programs
-                 '((markdown-mode markdown-ts-mode) . ("rumdl" "server")))))
+  (that1guycolin/eglot-remove-mode-servers 'markdown-mode)
+  (add-to-list 'eglot-server-programs
+               '((markdown-mode markdown-ts-mode) . ("rumdl" "server"))))
 
 (use-package grip-mode
   :after (markdown-ts-mode)
@@ -545,8 +492,9 @@ See URL `https://github.com/rvben/rumdl'."
 
 
 ;;; Python:
-(use-package python-ts-mode
+(use-package python
   :ensure nil
+  :after (apheleia eglot)
   :defer t
   :preface
   (defvar python-base-mode-map)
@@ -600,20 +548,17 @@ See URL `https://github.com/rvben/rumdl'."
   :config
   (keymap-unset python-base-mode-map "C-c C-t")
   
-  (with-eval-after-load 'apheleia
-    (setf
-     (alist-get 'ruff apheleia-formatters) '("ruff" "format" "-")
-     (alist-get 'python-ts-mode apheleia-mode-alist) 'ruff))
+  (setf
+   (alist-get 'ruff apheleia-formatters) '("ruff" "format" "-")
+   (alist-get 'python-ts-mode apheleia-mode-alist) 'ruff)
 
-  (with-eval-after-load 'eglot
-    (that1guycolin/eglot-remove-mode-servers 'python-mode)
-    (add-to-list 'eglot-server-programs
-                 '((python-mode python-ts-mode) .
-                   ("uv" "run" "rass" "python"))))
+  (that1guycolin/eglot-remove-mode-servers 'python-mode)
+  (add-to-list 'eglot-server-programs
+               '((python-mode python-ts-mode) .
+                 ("uv" "run" "rass" "python")))
 
-  (with-eval-after-load 'doctr
-    (add-to-list 'docstr-writers-alist
-                 '(python-ts-mode . docstr-writers-python)))
+  (add-to-list 'docstr-writers-alist
+               '(python-ts-mode . docstr-writers-python))
   (with-eval-after-load 'docstr-python
     (add-to-list 'docstr-python-modes 'python-ts-mode))
   (with-eval-after-load 'docstr-key
@@ -675,8 +620,82 @@ See URL `https://github.com/rvben/rumdl'."
   :config (with-eval-after-load 'flycheck
             (flycheck-select-checker 'bash-ts-mode)))
 
-(use-package sh-mode
+(use-package shfmt
+  :defer t
+  :preface
+  (defvar bash-ts-mode-map)
+  (defvar sh-mode-map)
+  :bind ((:map bash-ts-mode-map ("C-c f" . shfmt-buffer))
+         (:map sh-mode-map      ("C-c f" . shfmt-buffer)))
+  :hook ((bash-ts-mode sh-mode) . shfmt-on-save-mode)
+  :custom
+  (shfmt-command "shfmt")
+  (shfmt-arguments '("-i" "4" "-ci")))
+
+(use-package pkgbuild-mode
+  :after (eglot)
+  :defer t
+  :mode "^PKGBUILD\\'"
+  :config (with-eval-after-load 'eglot
+            (add-to-list 'eglot-server-programs
+                         '((pkgbuild-mode) .
+                           ("termux-language-server" "--check")))))
+
+;; Fish shell:
+(use-package fish-mode
+  :after (flycheck apheleia eglot)
+  :defer t
+  :hook (fish-mode . (lambda () (setq-local fill-column 80)))
+  :interpreter "fish"
+  :mode "\\.fish\\'"
+  :custom (fish-enable-auto-indent t)
+  :config
+  (flycheck-define-checker fish-self
+    "The shell for the 90's built-in syntax checker.
+See URL: \\='https://fishshell.com'."
+    :command ("fish" "-n" source)
+    :error-patterns
+    ((error   line-start (file-name) " (line " line "): " (message) line-end)
+     (warning line-start (file-name) " (line " line "): " (message) line-end)
+     (info    line-start (file-name) " (line " line "): " (message) line-end))
+    :modes (fish-mode))
+  (add-to-list 'flycheck-checkers 'fish-self)
+  (setf (alist-get 'fish-mode apheleia-mode-alist) 'fish-indent)
+  (add-to-list 'eglot-server-programs '((fish-mode) . ("fish-lsp" "start"))))
+
+
+;;; Build File Modes:
+;;;  CMake:
+(use-package cmake-ts-mode
   :ensure nil
+  :after (apheleia)
+  :defer t
+  :hook (cmake-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)
+                           (setq-local fill-column 100)))
+  :mode ("\\.cmake\\'" "CMakeLists\\.txt\\'")
+  :init (add-to-list 'major-mode-remap-alist '(cmake-mode . cmake-ts-mode))
+  :config
+  (setf
+   (alist-get 'neocmakelsp apheleia-formatters)
+   '("neocmakelsp" "format" "--inplace" buffer-file-name)
+   (alist-get 'cmake-ts-mode apheleia-mode-alist) 'neocmakelsp))
+
+(use-package eldoc-cmake
+  :defer t
+  :hook ((cmake-mode cmake-ts-mode) . eldoc-cmake-enable))
+
+;; Justfile:
+(use-package just-ts-mode
+  :defer t
+  :hook (just-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)
+                          (setq-local fill-column 100)))
+  :mode "justfile\\'")
+
+(use-package sh-mode
+;; Makefile:
+(use-package makefile-mode
+  :ensure nil
+  :after (flycheck)
   :defer t
   :preface
   (defun that1guycolin/sh-mode-shell-auto ()
@@ -697,6 +716,8 @@ See URL `https://github.com/rvben/rumdl'."
 
   (defun that1guycolin/flycheck-parse-zsh-lint (output)
     "Parse JSON OUTPUT from zsh-lint."
+  (defun that1guycolin/flycheck-parse-checkmake (output)
+    "Parse json OUTPUT from checkmake."
     (let ((json (json-parse-string output
                                    :object-type 'alist
                                    :array-type 'list
@@ -709,6 +730,10 @@ See URL `https://github.com/rvben/rumdl'."
                 (rule (alist-get 'rule diagnostic))
                 (file (alist-get 'file diagnostic))
                 (start (alist-get 'start (alist-get 'range diagnostic))))
+         (let* ((rule      (alist-get 'rule        diagnostic))
+                (violation (alist-get 'violation   diagnostic))
+                (file      (alist-get 'file_name   diagnostic))
+                (line      (alist-get 'line_number diagnostic)))
            (flycheck-error-new-at
             (alist-get 'line start)
             (alist-get 'column start)
@@ -719,7 +744,25 @@ See URL `https://github.com/rvben/rumdl'."
               ("hint" 'info)
               (_ 'info))
             message :filename file :id rule)))
+            line nil
+            (if (string= rule "miniphony")
+                'error
+              'warning)
+            (format "[%s] %s" rule violation)
+            :filename file)))
        (alist-get 'diagnostics json))))
+  
+  :hook (makefile-mode . (lambda () (setq-local fill-column 100)))
+  :mode "Makefile\\'"
+  :config
+  (flycheck-define-checker makefile-checkmake
+    "Makefile style-checker/linter written in Go.
+See URL: \\='https://github.com/mrtazz/checkmake'."
+    :command ("checkmake" "-o" "json" source-inplace)
+    :error-parser that1guycolin/flycheck-parse-checkmake
+    :modes (makefile-mode makefile-automake-mode makefile-bsdmake-mode
+                          makefile-gmake-mode))
+  (add-to-list 'flycheck-checkers 'makefile-checkmake))
 
   :hook (sh-mode . (lambda ()  (that1guycolin/sh-mode-shell-auto)
                      (apheleia-mode -1) (hs-minor-mode) (kirigami-mode)
@@ -759,298 +802,222 @@ See URL `https://wiki.zshell.dev'."
                 (when (eq sh-shell 'zsh)
                   (flycheck-select-checker 'zsh-lint)))))
 
-  (use-package shfmt
-    :defer t
-    :preface
-    (defvar bash-ts-mode-map)
-    (defvar sh-mode-map)
-    :bind ((:map bash-ts-mode-map
-                 ("C-c f" . shfmt-buffer))
-           (:map sh-mode-map
-                 ("C-c f". shfmt-buffer)))
-    :hook ((bash-ts-mode sh-mode) . shfmt-on-save-mode)
-    :custom
-    (shfmt-command "shfmt")
-    (shfmt-arguments '("-i" "4" "-ci")))
-
-  (use-package pkgbuild-mode
-    :defer t
-    :mode "^PKGBUILD\\'"
-    :config (with-eval-after-load 'eglot
-              (add-to-list 'eglot-server-programs
-                           '((pkgbuild-mode) .
-                             ("termux-language-server" "--check")))))
-
-  ;; Fish shell:
-  (use-package fish-mode
-    :defer t
-    :hook (fish-mode . (lambda () (setq-local fill-column 80)))
-    :interpreter "fish"
-    :mode "\\.fish\\'"
-    :custom (fish-enable-auto-indent t)
-    :config
-    (with-eval-after-load 'flycheck
-      (flycheck-define-checker fish-self
-        "The shell for the 90's built-in syntax checker.
-See URL `https://fishshell.com'."
-        :command ("fish" "-n" source)
-        :error-patterns
-        ((error   line-start (file-name) " (line " line "): " (message) line-end)
-         (warning line-start (file-name) " (line " line "): " (message) line-end)
-         (info    line-start (file-name) " (line " line "): " (message) line-end))
-        :modes (fish-mode))
-      (add-to-list 'flycheck-checkers 'fish-self))
-
-    (with-eval-after-load 'apheleia
-      (setf (alist-get 'fish-mode apheleia-mode-alist) 'fish-indent))
-
-    (with-eval-after-load 'eglot
-      (add-to-list 'eglot-server-programs '((fish-mode) . ("fish-lsp" "start")))))
-
-
-;;; Build File Modes:
-;;;  CMake:
-  (use-package cmake-ts-mode
-    :ensure nil
-    :defer t
-    :hook (cmake-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)
-                             (setq-local fill-column 100)))
-    :mode ("\\.cmake\\'" "CMakeLists\\.txt\\'")
-    :init (add-to-list 'major-mode-remap-alist '(cmake-mode . cmake-ts-mode))
-    :config
-    (with-eval-after-load 'apheleia
-      (setf
-       (alist-get 'neocmakelsp apheleia-formatters)
-       '("neocmakelsp" "format" "--inplace" buffer-file-name)
-       (alist-get 'cmake-ts-mode apheleia-mode-alist) 'neocmakelsp)))
-
-  (use-package eldoc-cmake
-    :defer t
-    :hook ((cmake-mode cmake-ts-mode) . eldoc-cmake-enable))
-
-  ;; Justfile:
-  (use-package just-ts-mode
-    :defer t
-    :hook (just-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)
-                            (setq-local fill-column 100)))
-    :mode "justfile\\'")
-
-
 ;;; Config File Modes:
-  ;; INI:
-  (use-package ini-mode
-    :defer t
-    :hook (ini-mode . (lambda () (setq-local fill-column 100)))
-    :mode ("\\.ini\\'" "\\.desktop\\'" "\\.hook\\'"))
+;; INI:
+(use-package ini-mode
+  :defer t
+  :hook (ini-mode . (lambda () (setq-local fill-column 100)))
+  :mode ("\\.ini\\'" "\\.desktop\\'" "\\.hook\\'"))
 
-  ;; JSON:
-  (use-package json-ts-mode
-    :ensure nil
-    :defer t
-    :preface
-    (defun that1guycolin/apheleia-set-json-formatter (fmtr)
-      "Get user-input on which FMTR they want for JSON files."
-      (interactive
-       (list (intern (completing-read
-                      "Which formatter do you want to use for JSON files? "
-                      '("jq" "prettier-json") nil t))))
-      (unless (memq fmtr '(jq prettier-json))
-        (user-error "Formatter must be either jq or prettier-json"))
-      (setf
-       (alist-get 'js-json-mode apheleia-mode-alist) fmtr
-       (alist-get 'json-ts-mode apheleia-mode-alist) fmtr)
-      (message "JSON formatter set to %s" fmtr))
-    
-    (defun that1guycolin/apheleia-toggle-json-formatter ()
-      "Switch aphelia formatter between jq & prettier in json-modes."
-      (interactive)
-      (unless (memq major-mode '(json-ts-mode js-json-mode))
-        (error "Buffer not in a json major-mode"))
-      (let ((current-fmtr (alist-get major-mode apheleia-mode-alist)))
-        (cond
-         ((eq current-fmtr 'jq)
-          (that1guycolin/apheleia-set-json-formatter 'prettier-json))
-         ((eq current-fmtr 'prettier-json)
-          (that1guycolin/apheleia-set-json-formatter 'jq))
-         (t
-          (call-interactively #'that1guycolin/apheleia-set-json-formatter)))))
-    
-    :hook (json-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)
-                            (setq-local fill-column 80)))
-    :mode ("\\.json\\'" "\\.jsonc\\'")
-    :config
-    (with-eval-after-load 'apheleia
-      (setf
-       (alist-get 'jq apheleia-formatters)
-       '("jq" "." "-M" "--indent" "2")
-       (alist-get 'prettier-json apheleia-formatters)
-       '("pnpx" "prettier" "--stdin-filepath" filepath "--parser=json")
-       (alist-get 'json-ts-mode apheleia-mode-alist) 'jq)
-      (keymap-set json-ts-mode-map "C-c v"
-                  #'that1guycolin/apheleia-toggle-json-formatter))
+;; JSON:
+(use-package json-ts-mode
+  :ensure nil
+  :after (apheleia eglot)
+  :defer t
+  :preface
+  (defun that1guycolin/apheleia-set-json-formatter (fmtr)
+    "Get user-input on which FMTR they want for JSON files."
+    (interactive
+     (list (intern (completing-read
+                    "Which formatter do you want to use for JSON files? "
+                    '("jq" "prettier-json") nil t))))
+    (unless (memq fmtr '(jq prettier-json))
+      (user-error "Formatter must be either jq or prettier-json"))
+    (setf
+     (alist-get 'js-json-mode apheleia-mode-alist) fmtr
+     (alist-get 'json-ts-mode apheleia-mode-alist) fmtr)
+    (message "JSON formatter set to %s" fmtr))
+  
+  (defun that1guycolin/apheleia-toggle-json-formatter ()
+    "Switch aphelia formatter between jq & prettier in json-modes."
+    (interactive)
+    (unless (memq major-mode '(json-ts-mode js-json-mode))
+      (error "Buffer not in a json major-mode"))
+    (let ((current-fmtr (alist-get major-mode apheleia-mode-alist)))
+      (cond
+       ((eq current-fmtr 'jq)
+        (that1guycolin/apheleia-set-json-formatter 'prettier-json))
+       ((eq current-fmtr 'prettier-json)
+        (that1guycolin/apheleia-set-json-formatter 'jq))
+       (t
+        (call-interactively #'that1guycolin/apheleia-set-json-formatter)))))
+  
+  :hook (json-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)
+                          (setq-local fill-column 80)))
+  :mode ("\\.json\\'" "\\.jsonc\\'")
+  :config
+  (setf
+   (alist-get 'jq apheleia-formatters)
+   '("jq" "." "-M" "--indent" "2")
+   (alist-get 'prettier-json apheleia-formatters)
+   '("pnpx" "prettier" "--stdin-filepath" filepath "--parser=json")
+   (alist-get 'json-ts-mode apheleia-mode-alist) 'jq)
+  (keymap-set json-ts-mode-map "C-c v"
+              #'that1guycolin/apheleia-toggle-json-formatter)
 
-    (with-eval-after-load 'eglot
-      (that1guycolin/eglot-remove-mode-servers 'json-mode)
-      (add-to-list 'eglot-server-programs
-                   '((js-json-mode json-ts-mode) .
-                     ("vscode-json-language-server" "--stdio")))))
+  (that1guycolin/eglot-remove-mode-servers 'json-mode)
+  (add-to-list 'eglot-server-programs
+               '((js-json-mode json-ts-mode) .
+                 ("vscode-json-language-server" "--stdio"))))
 
-  ;; KDL:
-  (use-package kdl-mode
-    :defer t
-    :hook (kdl-mode . (lambda () (setq-local fill-column 100)))
-    :mode "\\.kdl\\'")
+;; KDL:
+(use-package kdl-mode
+  :defer t
+  :hook (kdl-mode . (lambda () (setq-local fill-column 100)))
+  :mode "\\.kdl\\'")
 
-  ;; Systemd:
-  (use-package systemd
-    :defer t
-    :hook (systemd-mode . (lambda () (setq-local fill-column 100)))
-    :mode (("\\.container\\'" . systemd-mode)
-           ("\\.service\\'"   . systemd-mode)
-           ("\\.socket\\'"    . systemd-mode)
-           ("\\.timer\\'"     . systemd-mode))
-    :config
-    (with-eval-after-load 'flycheck
-      (flycheck-define-checker systemd-systemdlint
-        "A Systemd unit file linter.
-See URL `https://github.com/priv-kweihmann/systemdlint'."
-        :command ("systemdlint" source)
-        :error-patterns
-        ((error line-start (file-name) ":" line ":" (message) line-end)
-         (warning line-start (file-name) ":" line ":" (message) line-end)
-         (info line-start (file-name) ":" line ":" (message) line-end))
-        :modes systemd-mode)
-      (add-to-list 'flycheck-checkers 'systemd-systemdlint)))
+;; Systemd:
+(use-package systemd
+  :after (flycheck)
+  :defer t
+  :hook (systemd-mode . (lambda () (setq-local fill-column 100)))
+  :mode (("\\.container\\'" . systemd-mode)
+         ("\\.service\\'"   . systemd-mode)
+         ("\\.socket\\'"    . systemd-mode)
+         ("\\.timer\\'"     . systemd-mode))
+  :config
+  (flycheck-define-checker systemd-systemdlint
+    "A Systemd unit file linter.
+See URL: \\='https://github.com/priv-kweihmann/systemdlint'."
+    :command ("systemdlint" source)
+    :error-patterns
+    ((error line-start (file-name) ":" line ":" (message) line-end)
+     (warning line-start (file-name) ":" line ":" (message) line-end)
+     (info line-start (file-name) ":" line ":" (message) line-end))
+    :modes systemd-mode)
+  (add-to-list 'flycheck-checkers 'systemd-systemdlint))
 
-  ;; TOML:
-  (use-package toml-ts-mode
-    :ensure nil
-    :defer t
-    :hook (toml-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)
-                            (setq-local fill-column 1000)))
-    :mode "\\.toml\\'"
-    :init (add-to-list 'major-mode-remap-alist '(conf-toml-mode . toml-ts-mode))
-    :config
-    (with-eval-after-load 'apheleia
-      (setf
-       (alist-get 'tombi apheleia-formatters) '("tombi" "fmt" "-")
-       (alist-get 'toml-ts-mode apheleia-mode-alist) 'tombi)))
+;; TOML:
+(use-package toml-ts-mode
+  :ensure nil
+  :after (apheleia)
+  :defer t
+  :hook (toml-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)
+                          (setq-local fill-column 1000)))
+  :mode "\\.toml\\'"
+  :init (add-to-list 'major-mode-remap-alist '(conf-toml-mode . toml-ts-mode))
+  :config
+  (setf
+   (alist-get 'tombi apheleia-formatters) '("tombi" "fmt" "-")
+   (alist-get 'toml-ts-mode apheleia-mode-alist) 'tombi))
 
-  ;; XML:
-  (use-package nxml-mode
-    :ensure nil
-    :defer t
-    :hook (nxml-mode . (lambda () (hs-minor-mode) (kirigami-mode)
-                         (setq-local fill-column 1000)))
-    :mode ("\\.xml\\'"
-           "\\.xsd\\'" "\\.xslt\\'" "\\.svg\\'" "\\.rss\\'" "\\.pom\\'")
-    :custom
-    (nxml-child-indent 2)
-    (nxml-attribute-indent 2)
-    (nxml-slash-auto-complete-flag t)
-    :config
-    (with-eval-after-load 'eglot
-      (that1guycolin/eglot-remove-mode-servers 'nxml-mode)
-      (add-to-list 'eglot-server-programs '((nxml-mode) . ("lemminx")))))
+;; XML:
+(use-package nxml-mode
+  :ensure nil
+  :after (eglot)
+  :defer t
+  :hook (nxml-mode . (lambda () (hs-minor-mode) (kirigami-mode)
+                       (setq-local fill-column 1000)))
+  :mode ("\\.xml\\'"
+         "\\.xsd\\'" "\\.xslt\\'" "\\.svg\\'" "\\.rss\\'" "\\.pom\\'")
+  :custom
+  (nxml-child-indent 2)
+  (nxml-attribute-indent 2)
+  (nxml-slash-auto-complete-flag t)
+  :config
+  (that1guycolin/eglot-remove-mode-servers 'nxml-mode)
+  (add-to-list 'eglot-server-programs '((nxml-mode) . ("lemminx"))))
 
-  (use-package auto-rename-tag
-    :defer t
-    :hook (nxml-mode . auto-rename-tag-mode))
+(use-package auto-rename-tag
+  :defer t
+  :hook (nxml-mode . auto-rename-tag-mode))
 
-;;; YAML:
-  (use-package yaml-ts-mode
-    :ensure nil
-    :defer t
-    :preface
-    (defun that1guycolin/flycheck-yaml-checker ()
-      "Select the linter for \\='.ya(m)l' files.
+;; YAML:
+(use-package yaml-ts-mode
+  :ensure nil
+  :after (flycheck apheleia eglot)
+  :defer t
+  :preface
+  ;; (defun that1guycolin/flycheck-handle-json--dclint (output)
+  ;;   "Parse the json output from `dclint' into `flycheck' keys.")
+  
+  (defun that1guycolin/flycheck-yaml-checker ()
+    "Select the linter for \\='.ya(m)l' files.
 If the current `buffer-file-name' is \\='compose.ya(m)l' or
 \\='docker-compose.ya(m)l', use \"dclint\".  Otherwise, use \"yamllint\"."
-      (unless (eq major-mode 'yaml-ts-mode)
-        (error "Buffer not in yaml-ts-mode"))
-      (if (and (buffer-file-name)
-               (string-match-p
-                "/\\(?:compose\\|docker-compose\\)\\.yam?ml\\'"
-                (buffer-file-name)))
-          (flycheck-select-checker 'yaml-dclint)
-        (flycheck-select-checker 'yaml-yamllint)))
+    (unless (eq major-mode 'yaml-ts-mode)
+      (error "Buffer not in yaml-ts-mode"))
+    (if (and (buffer-file-name)
+             (string-match-p
+              "/\\(?:compose\\|docker-compose\\)\\.yam?l\\'"
+              (buffer-file-name)))
+        (flycheck-select-checker 'yaml-dclint)
+      (flycheck-select-checker 'yaml-yamllint)))
 
-    (defun that1guycolin/apheleia-set-yaml-formatter (fmtr)
-      "Get user-input on which FMTR they want for Yaml files."
-      (interactive
-       (list (intern (completing-read
-                      "Which formatter do you want to use for Yaml files? "
-                      '("yamlfmt" "prettier-yaml") nil t))))
-      (unless (memq fmtr '(yamlfmt prettier-yaml))
-        (user-error "Formatter must be either yamlfmt or prettier-yaml"))
-      (setf
-       (alist-get 'yaml-ts-mode apheleia-mode-alist) fmtr)
-      (message "Yaml formatter set to %s" fmtr))
+  (defun that1guycolin/apheleia-set-yaml-formatter (fmtr)
+    "Get user-input on which FMTR they want for Yaml files."
+    (interactive
+     (list (intern (completing-read
+                    "Which formatter do you want to use for Yaml files? "
+                    '("yamlfmt" "prettier-yaml") nil t))))
+    (unless (memq fmtr '(yamlfmt prettier-yaml))
+      (user-error "Formatter must be either yamlfmt or prettier-yaml"))
+    (setf
+     (alist-get 'yaml-ts-mode apheleia-mode-alist) fmtr)
+    (message "Yaml formatter set to %s" fmtr))
 
-    (defun that1guycolin/apheleia-toggle-yaml-formatter ()
-      "Switch aphelia formatter between yamlfmt & prettier in yaml modes."
-      (interactive)
-      (unless (eq major-mode 'yaml-ts-mode)
-        (error "Buffer not in a Yaml major-mode"))
-      (let ((current-fmtr (alist-get major-mode apheleia-mode-alist)))
-        (cond
-         ((eq current-fmtr 'yamlfmt)
-          (that1guycolin/apheleia-set-yaml-formatter 'prettier-yaml))
-         ((eq current-fmtr 'prettier-yaml)
-          (that1guycolin/apheleia-set-yaml-formatter 'yamlfmt))
-         (t
-          (call-interactively #'that1guycolin/apheleia-set-yaml-formatter)))))
+  (defun that1guycolin/apheleia-toggle-yaml-formatter ()
+    "Switch aphelia formatter between yamlfmt & prettier in yaml modes."
+    (interactive)
+    (unless (eq major-mode 'yaml-ts-mode)
+      (error "Buffer not in a Yaml major-mode"))
+    (let ((current-fmtr (alist-get major-mode apheleia-mode-alist)))
+      (cond
+       ((eq current-fmtr 'yamlfmt)
+        (that1guycolin/apheleia-set-yaml-formatter 'prettier-yaml))
+       ((eq current-fmtr 'prettier-yaml)
+        (that1guycolin/apheleia-set-yaml-formatter 'yamlfmt))
+       (t
+        (call-interactively #'that1guycolin/apheleia-set-yaml-formatter)))))
 
-    :bind (:map yaml-ts-mode-map
-                ("C-c v" . that1guycolin/apheleia-toggle-yaml-formatter))
-    :hook (yaml-ts-mode . (lambda () (outline-indent-minor-mode) (kirigami-mode)
-                            (setq-local fill-column 1000)
-                            (that1guycolin/flycheck-yaml-checker)))
-    :mode ("\\.yml\\'" "\\.yaml\\'")
-    :init
-    (add-to-list 'major-mode-remap-alist '(yaml-mode . yaml-ts-mode))
-    :config
-    (with-eval-after-load 'flycheck
-      (flycheck-define-checker yaml-dclint
-        "A yaml linter for \\='compose.yaml' files using dclint.
-See URL: https://github.com/zavoloklom/docker-compose-linter"
-        :command ("dclint" source)
-        :error-patterns
-        ((error line-start (zero-or-more space) line ":" column
-                (one-or-more space) "error" (one-or-more space) (message)
-                (one-or-more space) (id (one-or-more (any alnum "-"))) line-end)
-         (warning line-start (zero-or-more space) line ":" column
-                  (one-or-more space) "warning" (one-or-more space) (message)
-                  (one-or-more space) (id (one-or-more (any alnum "-"))) line-end)
-         (info line-start (zero-or-more space) line ":" column
-               (one-or-more space) "info" (one-or-more space) (message)
-               (one-or-more space) (id (one-or-more (any alnum "-"))) line-end))
-        :modes (yaml-ts-mode))
-      (add-to-list 'flycheck-checkers 'yaml-dclint))
+  :bind (:map yaml-ts-mode-map
+              ("C-c v" . that1guycolin/apheleia-toggle-yaml-formatter))
+  :hook (yaml-ts-mode . (lambda () (outline-indent-minor-mode) (kirigami-mode)
+                          (setq-local fill-column 1000)
+                          (that1guycolin/flycheck-yaml-checker)))
+  :mode ("\\.yml\\'" "\\.yaml\\'")
+  :init
+  (add-to-list 'major-mode-remap-alist '(yaml-mode . yaml-ts-mode))
+  :config
+  (flycheck-define-checker yaml-dclint
+    "A yaml linter for \\='compose.yaml' files using dclint.
+See URL: \\='https://github.com/zavoloklom/docker-compose-linter'."
+    :command ("dclint" "-C"
+              (eval (file-name-parent-directory (buffer-file-name))))
+    :error-patterns
+    ((error line-start (zero-or-more space) line ":" column
+            (one-or-more space) "error" (one-or-more space) (message)
+            (one-or-more space) (id (one-or-more (any alnum "-"))) line-end)
+     (warning line-start (zero-or-more space) line ":" column
+              (one-or-more space) "warning" (one-or-more space) (message)
+              (one-or-more space) (id (one-or-more (any alnum "-"))) line-end)
+     (info line-start (zero-or-more space) line ":" column
+           (one-or-more space) "info" (one-or-more space) (message)
+           (one-or-more space) (id (one-or-more (any alnum "-"))) line-end))
+    :modes (yaml-ts-mode))
+  (add-to-list 'flycheck-checkers 'yaml-dclint)
 
-    (with-eval-after-load 'apheleia
-      (setf
-       (alist-get 'yamlfmt apheleia-formatters) '("yamlfmt" "--in"  "-")
-       (alist-get 'yaml-ts-mode apheleia-mode-alist) 'yamlfmt))
+  (setf
+   (alist-get 'yamlfmt apheleia-formatters) '("yamlfmt" "--in"  "-")
+   (alist-get 'yaml-ts-mode apheleia-mode-alist) 'yamlfmt)
 
-    (with-eval-after-load 'eglot
-      (that1guycolin/eglot-remove-mode-servers 'yaml-mode)
-      (add-to-list 'eglot-server-programs
-                   '((yaml-ts-mode) .
-                     (lambda (_interactive _project)
-                       (if (and (buffer-file-name)
-                                (string-match-p
-                                 "/\\(?:compose\\|docker-compose\\)\\.ya?ml\\'"
-                                 (buffer-file-name)))
-                           '("docker-compose-langserver" "--stdio")
-                         '("yaml-language-server" "--stdio")))))))
+  (that1guycolin/eglot-remove-mode-servers 'yaml-mode)
+  (add-to-list 'eglot-server-programs
+               '((yaml-ts-mode) .
+                 (lambda (_interactive _project)
+                   (if (and (buffer-file-name)
+                            (string-match-p
+                             "/\\(?:compose\\|docker-compose\\)\\.ya?ml\\'"
+                             (buffer-file-name)))
+                       '("docker-compose-langserver" "--stdio" source)
+                     '("yaml-language-server" "--stdio" source))))))
 
-  (use-package yaml-pro
-    :defer t
-    :hook ((yaml-mode yaml-ts-mode) . yaml-pro-mode))
+(use-package yaml-pro
+  :defer t
+  :hook ((yaml-mode yaml-ts-mode) . yaml-pro-mode))
 
 
-  (provide '05-languages)
+(provide '05-languages)
 ;;; 05-languages.el ends here
 
                                         ; LocalWords:  fmtr
