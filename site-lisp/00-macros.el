@@ -60,7 +60,7 @@ GUI   - Settings for the Emacs Android GUI application (only required when
     ((eq that1guycolin/emacs-type 'desktop)
      ,desk)
     (t (error "\"that1guycolin/emacs-type\" set to %s"
-              ,that1guycolin/emacs-type))))
+              that1guycolin/emacs-type))))
 
 
 (provide '00-macros)
