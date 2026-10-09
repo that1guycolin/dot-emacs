@@ -94,39 +94,35 @@
 
 ;; Save frame-state & tab-state
 (use-package tabspaces
-  :demand t
+  :after (dashboard)
+  :defer t
   :preface
   (defun that1guycolin/consult-tabspaces ()
-    "Set `consult-buffer-list-function' based on if `tabspaces-mode' is active.
-If active, set to `tabspaces-local-buffer-list'.  If nil, set to
-`buffer-list'."
+    "Determine how consult handles the buffer list based on `tabspaces-mode'."
     (if tabspaces-mode
         (setq consult-buffer-list-function #'tabspaces-local-buffer-list)
       (setq consult-buffer-list-function #'buffer-list)))
-  
   :bind ("C-x TAB" . tabspaces-switch-buffer-and-tab)
+  :hook (dashboard-after-initialize . (lambda () (tabspaces-mode 1)))
   :functions (tabspaces-mode tabspaces-local-buffer-list)
   :custom
   (tab-bar-new-tab-choice "*scratch*")
-  (tabspaces-default-tab "Main")
   (tabspaces-exclude-buffers '("*Messages*" "*Compile-Log*"))
   (tabspaces-fully-resolve-paths t)
   (tabspaces-include-buffers '("*scratch*"))
   (tabspaces-initialize-project-with-todo t)
   (tabspaces-keymap-prefix (kbd "M-p"))
   (tabspaces-project-switch-opens-workspace t)
-  (tabspaces-remove-to-default t)
+  (tabspaces-remove-to-default nil)
   (tabspaces-session t)
   (tabspaces-session-auto-restore t)
-  (tabspaces-session-auto-save-delay 300)
-  (tabspaces-session-file (no-littering-expand-etc-file-name "tabsession.el"))
+  (tabspaces-session-auto-save-delay 180)
+  (tabspaces-session-file (no-littering-expand-etc-file-name ".tabsession.el"))
   (tabspaces-session-project-session-store
-   (no-littering-expand-etc-file-name "tabspaces-sessions"))
+   (no-littering-expand-etc-file-name ".tabspaces-sessions"))
   (tabspaces-todo-file-name "TODO.org")
   (tabspaces-use-filtered-buffers-as-default t)
-  :config
-  (add-hook 'tabspaces-mode-hook #'that1guycolin/consult-tabspaces)
-  (tabspaces-mode 1))
+  :config (add-hook 'tabspaces-mode-hook #'that1guycolin/consult-tabspaces))
 
 
 ;;; VC/Git:
@@ -188,7 +184,7 @@ If active, set to `tabspaces-local-buffer-list'.  If nil, set to
 
 (use-package git-commit-ts-mode
   :after (treesit)
-  :demand t
+  :defer t
   :hook (git-commit-setup . git-commit-ts-mode)
   :custom (git-commit-major-mode #'git-commit-ts-mode))
 
@@ -206,7 +202,7 @@ If active, set to `tabspaces-local-buffer-list'.  If nil, set to
       "l" "Link to current buffer"
       "c" "Link to specified commit"
       "h" "Link to repo homepage"))
-  :bind-keymap ("C-c g" . that1guycolin/git-link-functions-map)
+  :bind-keymap ("C-c C-g" . that1guycolin/git-link-functions-map)
   :functions (git-link git-link-commit git-link-homepage))
 
 (use-package git-modes
@@ -226,13 +222,13 @@ If active, set to `tabspaces-local-buffer-list'.  If nil, set to
 
 (use-package treemacs
   :ensure (treemacs
-	   :source "MELPA" :package "treemacs" :id treemacs
-	   :fetcher github :repo "that1guycolin/treemacs"
-	   :branch "avoid-error-on-project-follow-mode-deactivation"
-	   :files (:defaults "Changelog.org" "icons" "src/elisp/treemacs*.el"
-			     "src/scripts/treemacs*.py"
-			     (:exclude "src/extra/*"))
-	   :type git :protocol https :inherit t :depth treeless)
+           :source "MELPA" :package "treemacs" :id treemacs
+           :fetcher github :repo "that1guycolin/treemacs"
+           :branch "avoid-error-on-project-follow-mode-deactivation"
+           :files (:defaults "Changelog.org" "icons" "src/elisp/treemacs*.el"
+                             "src/scripts/treemacs*.py"
+                             (:exclude "src/extra/*"))
+           :type git :protocol https :inherit t :depth treeless)
   :defer t
   :preface
   (defun that1guycolin/treemacs-switch-workspace-focus ()
