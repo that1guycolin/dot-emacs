@@ -15,8 +15,8 @@
 
 (require '00-macros)
 
-
 ;;; Themes & Icons:
+
 ;; Readable Emacs' themes
 (use-package modus-themes
   :demand t
@@ -303,11 +303,11 @@ via the function `that1guycolin/default-font-presets-set-size'."
   (defun that1guycolin/dashboard-setup-startup-hook ()
     "Setup post-init hooks unless a command line argument is provided."
     (when (< (length command-line-args) 2)
-      (add-hook 'window-size-change-functions #'dashboard-resize-on-hook 100)
+      (add-hook 'window-size-change-functions #'dashboard-resize-on-hook)
       (add-hook 'window-setup-hook #'dashboard-resize-on-hook)
       (add-hook 'elpaca-after-init-hook #'dashboard-insert-startupify-lists)
       (when (eq that1guycolin/emacs-type 'desktop)
-        (add-hook 'emacs-startup-hook #'dashboard-initialize)
+        (add-hook 'elpaca-after-init-hook #'dashboard-initialize)
         (setq-default initial-buffer-choice #'dashboard-refresh-buffer))))
   
   (defun that1guycolin/dashboard-home-dir ()
@@ -320,8 +320,7 @@ via the function `that1guycolin/default-font-presets-set-size'."
               dashboard-insert-startupify-lists dashboard-initialize
               dashboard-setup-startup-hook dashboard-refresh-buffer
               dashboard-display-icons-p)
-  :init
-  (that1guycolin/dashboard-setup-startup-hook)
+  :init (that1guycolin/dashboard-setup-startup-hook)
   :custom
   (dashboard-banner-logo-title "Welcome back")
   (dashboard-center-content t)
@@ -335,9 +334,10 @@ via the function `that1guycolin/default-font-presets-set-size'."
   (dashboard-startup-banner 'logo)
   (dashboard-vertically-center-content t)
   :config
-  (add-hook 'dashboard-mode-hook (lambda ()
-                                   (that1guycolin/dashboard-home-dir)
-                                   (setq-local fill-column 1000))))
+  (add-hook 'dashboard-mode-hook
+            (lambda ()
+              (that1guycolin/dashboard-home-dir)
+              (setq-local fill-column 1000))))
 
 
 (provide '03-visual)
