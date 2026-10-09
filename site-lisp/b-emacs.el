@@ -94,6 +94,7 @@ If not in a side window, jump to the first found side window."
    '(read-only t cursor-intangible t face minibuffer-prompt))
   (native-comp-async-report-warnings-errors nil)
   (read-extended-command-predicate #'command-completion-default-include-p)
+  (remember-data-file (no-littering-expand-etc-file-name "remember"))
   (tab-always-indent 'complete)
   (text-mode-ispell-word-completion nil)
   (trusted-content
