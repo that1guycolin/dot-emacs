@@ -171,31 +171,20 @@ URL, LINK will be shown instead."
   :preface
   (defun that1guycolin/org-node-new-file (title id)
     "Create a new file for a new node.
-Optionally, provide the TITLE and CUST-ID for the new node. This is the
-original `org-node-new-fn' with a custom \=':PROPERTIES:' block.  Set
-this function as `org-node-creation-fn'."
 
-    (let ((title (or title (or org-node-proposed-title
-                               (error "Proposed title was nil")))))
-      (org-node-pop-to-fresh-file-buffer title)
-      (goto-char (point-min))
-      (if cust-id
-          (insert
-           ":PROPERTIES:"
-           "\n:ID:       " cust-id
-           "\n:END:"
-           "\n#+TITLE: " title
-           "\n#+AUTHOR: "
-           "\n#+CREATED_DATE: "
-           (format-time-string "[%Y-%m-%d %a %H:%M:%S]")
-           "\n#+LAST_EDIT: "
-           "\n#+ID:      " cust-id
-           "\n#+FILETAGS:"
-           "\n")
-        (progn
-          (org-id-get-create)
-          (that1guycolin/org-insert-header-block
-           title "Colin Loeffler (that1guycolin)"))))
+Set this function as `org-node-creation-fn'.  It is based on the original
+`org-node-creation-function' but has a different properties block.  The TITLE
+and ID are automatically provided."
+    
+    (org-node-pop-to-fresh-file-buffer title)
+    (goto-char (point-min))
+    (insert
+     ":PROPERTIES:\n:ID:       " id
+     "\n:END:\n#+TITLE: " title
+     "\n#+AUTHOR: \n#+CREATED_DATE: "
+     (format-time-string "[%Y-%m-%d %a %H:%M:%S]")
+     "\n#+LAST_EDIT: \n#+ID:      " id
+     "\n#+FILETAGS:\n")
 
     (push (current-buffer) org-node--new-unsaved-buffers)
     (run-hooks 'org-node-creation-hook))
