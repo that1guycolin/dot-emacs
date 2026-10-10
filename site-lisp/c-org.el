@@ -154,7 +154,7 @@ underneath."
       :kill-buffer t))
 
   
-;;; `org-id-prefix' functions
+;;; `org-id-prefix' functions.
   (defun that1guycolin/org-id-prefix-slug (s)
     "Turn S into a safe(-ish) `org-id-prefix'."
     (when s
@@ -262,6 +262,7 @@ The function ends with the cursor on the new line."
     "Return ID from a top-of-file-property-drawer, or nil."
     (if (that1guycolin/org-top-drawer-p)
         (save-restriction
+          (org-show-all)
           (narrow-to-region (match-beginning 0) (match-end 0))
           (goto-char (point-min))
           (when (re-search-forward "^:ID:[ \t]+\\(.+\\)$" nil t)
@@ -318,7 +319,9 @@ underneath it.  The header block will contain the following fields:
               (progn
                 (that1guycolin/org-top-drawer-end)
                 (that1guycolin/org-gen-header title author existing-id)))
-          (that1guycolin/org--header-properties title author))
+          (progn
+            (goto-char (point-min))
+            (org-id-get-create)))
       (that1guycolin/org--header-properties title author)))
 
   (defun that1guycolin/org-insert-src-block (lang)
