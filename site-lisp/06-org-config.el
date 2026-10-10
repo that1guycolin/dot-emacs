@@ -11,7 +11,25 @@
 ;; awesome power.
 
 ;;; Code:
+
+(declare-function project-root "project.el")
+(declare-function org-id-get-create "org-id")
+(declare-function org-id-new "org-id")
+(declare-function that1guycolin/org-gen-header "c-org")
+(declare-function that1guycolin/org-top-drawer-end "c-org")
+(declare-function that1guycolin/org-top-property-drawer-id "c-org")
+(declare-function that1guycolin/inhibit-inhibit-mouse "03-visual.el")
+
+(defvar org-agenda-files)
+(defvar org-directory)
+(defvar org-refile-targets)
+(defvar org-mode-map)
+(defvar dired-mode-map)
+(defvar dirvish-mode-map)
+(defvar org-capture-templates)
+
 ;;; Tasks:
+
 ;; Conditional task completion
 (use-package org-edna
   :after (org)
@@ -24,11 +42,6 @@
   :after (org-edna)
   :demand t
   :preface
-  (declare-function project-root "project.el")
-  (defvar org-agenda-files)
-  (defvar org-directory)
-  (defvar org-refile-targets)
-
   (defun that1guycolin/remove-org-todo ()
     "If a \='TODO.org' file exists in the org directory, delete it.
 Because the org-directory is a git repo, there is a possibility of
@@ -156,12 +169,7 @@ URL, LINK will be shown instead."
 (use-package org-node
   :defer t
   :preface
-  (declare-function org-id-get-create "org-id")
-  (declare-function org-id-new "org-id")
-  (declare-function that1guycolin/org-insert-header-block "01-bootstrap-core")
-  (defvar org-mode-map)
-
-  (defun that1guycolin/org-node-new-file (&optional title cust-id)
+  (defun that1guycolin/org-node-new-file (title id)
     "Create a new file for a new node.
 Optionally, provide the TITLE and CUST-ID for the new node. This is the
 original `org-node-new-fn' with a custom \=':PROPERTIES:' block.  Set
@@ -197,7 +205,7 @@ this function as `org-node-creation-fn'."
   :functions (org-node-pop-to-fresh-file-buffer
               org-node-create org-node-cache-mode
               org-node-complete-at-point-mode org-node-backlink-mode)
-  :defines (org-node-backlink-do-drawers)
+  :defines (org-node-backlink-do-drawers org-node--new-unsaved-buffers)
   :init (with-eval-after-load 'org
           (keymap-set org-mode-map "M-o" org-node-org-prefix-map))
   (advice-add
@@ -227,8 +235,6 @@ this function as `org-node-creation-fn'."
 ;; View PDFs in Emacs
 (use-package pdf-tools
   :defer t
-  :preface
-  (declare-function that1guycolin/inhibit-inhibit-mouse "03-visual.el")
   :magic ("%PDF" . pdf-view-mode)
   :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)
   :functions (pdf-tools-install)
@@ -244,8 +250,6 @@ this function as `org-node-creation-fn'."
 (use-package org-noter
   :defer t
   :preface
-  (defvar dired-mode-map)
-  (defvar dirvish-mode-map)
   (defvar that1guycolin/notes-directory
     (expand-file-name "notes" org-directory)
     "Directory in which org-noter files are stored.")
@@ -316,8 +320,6 @@ With a prefix ARG, remove start location."
   :after (org)
   :demand t
   :preface
-  (defvar org-capture-templates)
-  
   (defvar that1guycolin/org-recipe-templates
     '(("c" "Cookbook" entry (file "~/org/cookbook.org")
        "%(org-chef-get-recipe-from-url)"
