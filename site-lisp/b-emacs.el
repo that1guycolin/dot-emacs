@@ -35,7 +35,6 @@
     "Run `untabify' over current buffer."
     (interactive)
     (untabify (point-min) (point-max)))
-
   (defun that1guycolin/setup-untabify-save ()
     "Add `that1guycolin/untabify-buffer' to buffer-local hook."
     (add-hook 'after-save-hook #'that1guycolin/untabify-buffer nil t))
@@ -106,10 +105,6 @@ If not in a side window, jump to the first found side window."
   (context-menu-mode 1)
   (global-display-fill-column-indicator-mode 1)
   (which-key-mode 1)
-
-  (mapc (lambda (f) (add-to-list 'trusted-content f))
-        (directory-files user-lisp-directory t "\\.el\\'"))
-  
   (dolist (mode '(bash-ts-mode
                   emacs-lisp-mode lisp-mode lisp-data-mode python-mode
                   python-ts-mode scheme-mode sh-mode))
@@ -117,7 +112,7 @@ If not in a side window, jump to the first found side window."
       (add-hook hook-var #'that1guycolin/setup-untabify-save)))
 
   (add-hook 'ibuffer-mode-hook #'that1guycolin/ibuffer-hook-functions)
-  (add-hook 'emacs-startup-hook #'that1guycolin/remove-eln-cache))
+  (add-hook 'elpaca-after-init-hook #'that1guycolin/remove-eln-cache))
 
 
 (provide 'b-emacs)
