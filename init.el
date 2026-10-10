@@ -62,9 +62,16 @@
 ;; clutter-free environment thanks to `no-littering'.
 
 ;;; Code:
-;;; Global settings:
-(mapc #'require '(bs cl-lib hl-line ibuffer mouse seq subr-x))
 
+(require 'bs)
+(require 'cl-lib)
+(require 'hl-line)
+(require 'ibuffer)
+(require 'mouse)
+(require 'seq)
+(require 'subr-x)
+
+;;; Global settings:
 (defgroup that1guycolin '()
   "Custom functions, macros, & variables by `that1guycolin'."
   :group 'config)
@@ -88,7 +95,7 @@ is not the same as the Emacs' native `user-lisp-directory'.")
 ;; Automatically load customization variables if they exist
 (when (file-exists-p custom-file)
   (add-hook 'elpaca-after-init-hook
-            #'(lambda () (load custom-file 'noerror))))
+            (lambda () (load custom-file t))))
 
 
 ;;; Modular Init:
