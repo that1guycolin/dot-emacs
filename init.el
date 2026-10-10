@@ -66,8 +66,20 @@
 (mapc #'require '(bs cl-lib hl-line ibuffer mouse seq subr-x))
 
 (defgroup that1guycolin '()
-  "Custom functions, packages, & variables by `that1guycolin'."
+  "Custom functions, macros, & variables by `that1guycolin'."
   :group 'config)
+
+(defconst that1guycolin/site-lisp-dir
+  (expand-file-name "site-lisp" user-emacs-directory)
+  "Directory containing .el files to be loaded at startup.
+
+Files in this directory are added to `trusted-content'.  At present,
+this directory mainly consists of `use-package' S-expressions.  This
+is not the same as the Emacs' native `user-lisp-directory'.")
+
+(add-to-list 'load-path that1guycolin/site-lisp-dir)
+(mapc (lambda (f) (add-to-list 'trusted-content f))
+      (directory-files that1guycolin/site-lisp-dir t "\\.el\\'"))
 
 (require 'a-elpaca)
 (require 'b-emacs)

@@ -69,12 +69,6 @@
 ;;; Other Variable Mods
 (defvar edebug-inhibit-emacs-lisp-mode-bindings)
 (setq
- ;; Do not auto bytecompile custom elisp files
- user-lisp-auto-scrape nil
- 
- ;; Set directory in which custom elisp files are stored
- user-lisp-directory (expand-file-name "site-lisp" user-emacs-directory)
-
  ;; No garbage collection during startup
  gc-cons-threshold most-positive-fixnum
 
