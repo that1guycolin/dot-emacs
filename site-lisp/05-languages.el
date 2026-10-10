@@ -619,7 +619,7 @@ See URL: \\='https://github.com/rvben/rumdl'."
 Also used for `bash-ts-mode'.  Add to the list `sh-mode-hook'."
     (cond
      ((string-suffix-p "bash" sh-shell-file)
-      (unless (eq mode-name 'bash-ts-mode)
+      (when (eq mode-name 'bash-ts-mode)
         (bash-ts-mode))
       (treesit-fold-mode) (kirigami-mode)
       (flycheck-select-checker 'sh-shellcheck))
@@ -659,7 +659,18 @@ Also used for `bash-ts-mode'.  Add to the list `sh-mode-hook'."
   (flycheck-sh-zsh-executable
    (that1guycolin/desktop-mobile
      :desk "/usr/bin/zsh"
-     :tmux "/data/data/com.termux/files/usr/bin/zsh"))
+     :tmux "/data/data/com.termux/files/usr/bin/zsh")
+   :config
+   (flycheck-define-checker zsh-lint
+      "A Flycheck checker for zsh-lint.
+See URL `https://wiki.zshell.dev'."
+      :command ("zsh-lint" "--format" "json" source)
+      :error-parser that1guycolin/flycheck-parse-zsh-lint
+      :modes sh-mode)
+    (add-hook 'sh-mode-hook
+              (lambda ()
+                (when (eq sh-shell 'zsh)
+                  (flycheck-select-checker 'zsh-lint))))))
 
 
 (use-package shfmt
@@ -788,17 +799,7 @@ See URL: \\='https://github.com/mrtazz/checkmake'."
     :modes (makefile-mode makefile-automake-mode makefile-bsdmake-mode
                           makefile-gmake-mode))
   (add-to-list 'flycheck-checkers 'makefile-checkmake))
-
-    (flycheck-define-checker zsh-lint
-      "A Flycheck checker for zsh-lint.
-See URL `https://wiki.zshell.dev'."
-      :command ("zsh-lint" "--format" "json" source)
-      :error-parser that1guycolin/flycheck-parse-zsh-lint
-      :modes sh-mode)
-    (add-hook 'sh-mode-hook
-              (lambda ()
-                (when (eq sh-shell 'zsh)
-                  (flycheck-select-checker 'zsh-lint)))))
+  
 
 ;;; Config File Modes:
 ;; INI:
