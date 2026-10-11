@@ -625,12 +625,12 @@ Also used for `bash-ts-mode'.  Add to the list `sh-mode-hook'."
       (flycheck-select-checker 'sh-shellcheck))
      ((string-suffix-p "zsh" sh-shell-file)
       (hs-minor-mode) (kirigami-mode)
-     ((string-suffix-p "sh" sh-shell-file)
-      (hs-minor-mode) (kirigami-mode)
-      (flycheck-select-checker 'sh-shellcheck))
-     ((string-suffix-p "dash" sh-shell-file)
-      (hs-minor-mode) (kirigami-mode)
-      (flycheck-select-checker 'sh-shellcheck))))
+      ((string-suffix-p "sh" sh-shell-file)
+       (hs-minor-mode) (kirigami-mode)
+       (flycheck-select-checker 'sh-shellcheck))
+      ((string-suffix-p "dash" sh-shell-file)
+       (hs-minor-mode) (kirigami-mode)
+       (flycheck-select-checker 'sh-shellcheck)))))
 
   :hook (sh-mode . (lambda () (apheleia-mode -1)
                      (setq-local fill-column 80)
@@ -659,18 +659,18 @@ Also used for `bash-ts-mode'.  Add to the list `sh-mode-hook'."
   (flycheck-sh-zsh-executable
    (that1guycolin/desktop-mobile
      :desk "/usr/bin/zsh"
-     :tmux "/data/data/com.termux/files/usr/bin/zsh")
-   :config
-   (flycheck-define-checker zsh-lint
-      "A Flycheck checker for zsh-lint.
+     :tmux "/data/data/com.termux/files/usr/bin/zsh"))
+  :config
+  (flycheck-define-checker zsh-lint
+    "A Flycheck checker for zsh-lint.
 See URL `https://wiki.zshell.dev'."
-      :command ("zsh-lint" "--format" "json" source)
-      :error-parser that1guycolin/flycheck-parse-zsh-lint
-      :modes sh-mode)
-    (add-hook 'sh-mode-hook
-              (lambda ()
-                (when (eq sh-shell 'zsh)
-                  (flycheck-select-checker 'zsh-lint))))))
+    :command ("zsh-lint" "--format" "json" source)
+    :error-parser that1guycolin/flycheck-parse-zsh-lint
+    :modes sh-mode)
+  (add-hook 'sh-mode-hook
+            (lambda ()
+              (when (eq sh-shell 'zsh)
+                (flycheck-select-checker 'zsh-lint)))))
 
 
 (use-package shfmt
@@ -734,8 +734,14 @@ See URL: \\='https://fishshell.com'."
    (alist-get 'cmake-ts-mode apheleia-mode-alist) 'neocmakelsp))
 
 (use-package eldoc-cmake
-  :defer t
-  :hook ((cmake-mode cmake-ts-mode) . eldoc-cmake-enable))
+  :after (cmake-ts-mode)
+  :demand t
+  :config (eldoc-cmake-enable))
+
+(use-package cmake-ide
+  :after (cmake-ts-mode)
+  :demand t
+  :config (cmake-ide-setup))
 
 ;; Justfile:
 (use-package just-ts-mode
@@ -752,42 +758,42 @@ See URL: \\='https://fishshell.com'."
   :preface
   (defun that1guycolin/flycheck-parse-zsh-lint (output)
     "Parse JSON OUTPUT from zsh-lint."
-  (defun that1guycolin/flycheck-parse-checkmake (output)
-    "Parse json OUTPUT from checkmake."
-    (let ((json (json-parse-string output
-                                   :object-type 'alist
-                                   :array-type 'list
-                                   :null-object nil
-                                   :false-object nil)))
-      (mapcar
-       (lambda (diagnostic)
-         (let* ((severity (alist-get 'severity diagnostic))
-                (message (alist-get 'message diagnostic))
-                (rule (alist-get 'rule diagnostic))
-                (file (alist-get 'file diagnostic))
-                (start (alist-get 'start (alist-get 'range diagnostic))))
-         (let* ((rule      (alist-get 'rule        diagnostic))
-                (violation (alist-get 'violation   diagnostic))
-                (file      (alist-get 'file_name   diagnostic))
-                (line      (alist-get 'line_number diagnostic)))
-           (flycheck-error-new-at
-            (alist-get 'line start)
-            (alist-get 'column start)
-            (pcase severity
-              ("error" 'error)
-              ("warning" 'warning)
-              ("info" 'info)
-              ("hint" 'info)
-              (_ 'info))
-            message :filename file :id rule)))
-            line nil
-            (if (string= rule "miniphony")
-                'error
-              'warning)
-            (format "[%s] %s" rule violation)
-            :filename file)))
-       (alist-get 'diagnostics json))))
-  
+    (defun that1guycolin/flycheck-parse-checkmake (output)
+      "Parse json OUTPUT from checkmake."
+      (let ((json (json-parse-string output
+                                     :object-type 'alist
+                                     :array-type 'list
+                                     :null-object nil
+                                     :false-object nil)))
+        (mapcar
+         (lambda (diagnostic)
+           (let* ((severity (alist-get 'severity diagnostic))
+                  (message (alist-get 'message diagnostic))
+                  (rule (alist-get 'rule diagnostic))
+                  (file (alist-get 'file diagnostic))
+                  (start (alist-get 'start (alist-get 'range diagnostic))))
+             (let* ((rule      (alist-get 'rule        diagnostic))
+                    (violation (alist-get 'violation   diagnostic))
+                    (file      (alist-get 'file_name   diagnostic))
+                    (line      (alist-get 'line_number diagnostic)))
+               (flycheck-error-new-at
+                (alist-get 'line start)
+                (alist-get 'column start)
+                (pcase severity
+                  ("error" 'error)
+                  ("warning" 'warning)
+                  ("info" 'info)
+                  ("hint" 'info)
+                  (_ 'info))
+                message :filename file :id rule)))
+           line nil
+           (if (string= rule "miniphony")
+               'error
+             'warning)
+           (format "[%s] %s" rule violation)
+           :filename file)))
+      (alist-get 'diagnostics json)))
+
   :hook (makefile-mode . (lambda () (setq-local fill-column 100)))
   :mode "Makefile\\'"
   :config
@@ -799,7 +805,7 @@ See URL: \\='https://github.com/mrtazz/checkmake'."
     :modes (makefile-mode makefile-automake-mode makefile-bsdmake-mode
                           makefile-gmake-mode))
   (add-to-list 'flycheck-checkers 'makefile-checkmake))
-  
+
 
 ;;; Config File Modes:
 ;; INI:
