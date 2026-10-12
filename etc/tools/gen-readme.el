@@ -15,19 +15,19 @@
 
 ;; This program is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+;; along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
 ;; Functions to assist with creating the README for the git repo of this Emacs'
-;; configuration.  Load this document into Emacs:
+;; configuration. Load this document into Emacs:
 ;; #+begin_src emacs-lisp
 ;;   (require 'gen-readme "~/.config/emacs/etc/tools")
 ;; #+end_src
-;; This method assumes the tools folder is in load-path.  Otherwise:
+;; This method assumes the tools folder is in load-path. Otherwise:
 ;; #+begin_src emacs-lisp
 ;;   (load "~/.config/emacs/etc/tools/gen-readme.el")
 ;; #+end_src
@@ -91,9 +91,9 @@ up the information multiple times."
 
 (defun gen-readme-print-file-info (file)
   "Print the section of the README for FILE.
-First, print a heading.  The heading links FILE's pretty name to the
-actual file.  Next, print a list containing all the elpaca-installed
-packages whose `use-package' block appears in file.  The entry for each
+First, print a heading. The heading links FILE's pretty name to the
+actual file. Next, print a list containing all the elpaca-installed
+packages whose `use-package' block appears in file. The entry for each
 package links to its online repo."
   (let* ((filename-ext (file-name-nondirectory file))
          (file-url (concat "file: site-lisp/" filename-ext))

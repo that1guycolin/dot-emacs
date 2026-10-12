@@ -66,7 +66,7 @@
 
   (defun that1guycolin/select-file-from-list (files prompt &optional other-win)
     "Request the user select a file from FILES to open.
-Provide a custom PROMPT to display to the user.  If `other-win' is non-nil,
+Provide a custom PROMPT to display to the user. If `other-win' is non-nil,
 open the file in another window."
     (when (= 1 (length files))
       (let ((file (car files)))
@@ -221,7 +221,7 @@ open the file in another window."
   (defvar xref-show-definitions-function)
 
   (defun that1guycolin/info-dwim (&optional arg)
-    "Run `consult-info'.  If called with ARG `prefix-arg', run `info'."
+    "Run `consult-info'. If called with ARG `prefix-arg', run `info'."
     (interactive "P")
     (if arg
         (info)

@@ -304,7 +304,7 @@ The header block will contain TITLE and AUTHOR information."
   (defun that1guycolin/org-insert-header-block (title author)
     "Insert a header block at the top of the current document.
 If there is a properties drawer at the top, the header block will go
-underneath it.  The header block will contain the following fields:
+underneath it. The header block will contain the following fields:
 \='TITLE:, AUTHOR: CREATED_DATE:, LAST_EDITED:, ID:, FILETAGS:'."
     (interactive
      (list (read-string "Title: " (file-name-base (buffer-name)))

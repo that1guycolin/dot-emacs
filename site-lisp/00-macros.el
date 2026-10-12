@@ -62,6 +62,14 @@ GUI   - Settings for the Emacs Android GUI application (only required when
     (t (error "\"that1guycolin/emacs-type\" set to %s"
               that1guycolin/emacs-type))))
 
+;; (defmacro that1guycolin/command-to-load (mode func)
+;;   "Add a hook for MODE to run FUNC on MODE's initial load."
+;;   `(unless (fboundp func)
+;;      (user-error "%s does not have a function definition" func))
+;;   `(let ((hook (intern (concat (symbol-name ,mode) "-hook"))))
+;;      (add-hook hook `(lambda ()
+;;                        `(unless (featurep ,mode) (func))))))
+
 
 (provide '00-macros)
 ;;; 00-macros.el ends here

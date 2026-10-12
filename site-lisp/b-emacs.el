@@ -5,7 +5,9 @@
 ;; package.
 
 ;;; Code:
+
 (require '00-macros)
+(defvar that1guycolin/site-lisp-dir)
 
 (use-package emacs
   :ensure nil
@@ -59,7 +61,7 @@ If not in a side window, jump to the first found side window."
 
 ;;;; misc.
   (defun that1guycolin/check-parens-with-message ()
-    "Run `check-parens'.  Print a message when all parentheses match."
+    "Run `check-parens'. Print a message when all parentheses match."
     (interactive)
     (when (not (check-parens))
       (message "All parentheses match!")))
@@ -94,12 +96,15 @@ If not in a side window, jump to the first found side window."
   (native-comp-async-report-warnings-errors nil)
   (read-extended-command-predicate #'command-completion-default-include-p)
   (remember-data-file (no-littering-expand-etc-file-name "remember"))
+  (sentence-end-double-space nil)
   (tab-always-indent 'complete)
   (text-mode-ispell-word-completion nil)
   (trusted-content
-   `(,(expand-file-name "early-init.el" user-emacs-directory)
-     ,(expand-file-name "init.el" user-emacs-directory)))
+   (list (expand-file-name "early-init.el" user-emacs-directory)
+         (expand-file-name "init.el" user-emacs-directory)))
   :config
+  (mapc (lambda (f) (add-to-list 'trusted-content f))
+        (directory-files that1guycolin/site-lisp-dir t "\\.el\\'"))
   (abbrev-mode 1)
   (auto-save-visited-mode 1)
   (context-menu-mode 1)
@@ -112,7 +117,9 @@ If not in a side window, jump to the first found side window."
       (add-hook hook-var #'that1guycolin/setup-untabify-save)))
 
   (add-hook 'ibuffer-mode-hook #'that1guycolin/ibuffer-hook-functions)
-  (add-hook 'elpaca-after-init-hook #'that1guycolin/remove-eln-cache))
+  (add-hook 'elpaca-after-init-hook
+            (lambda ()
+              (run-with-timer 30 nil #'that1guycolin/remove-eln-cache))))
 
 
 (provide 'b-emacs)

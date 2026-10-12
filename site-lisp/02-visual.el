@@ -1,4 +1,4 @@
-;;; 03-visual.el --- Core UI configuration -*- lexical-binding: t; -*-
+;;; 02-visual.el --- Core UI configuration -*- lexical-binding: t; -*-
 
 ;;; Packages included:
 ;; dashboard, default-font-presets, ef-themes, inhibit-mouse, minions,
@@ -6,7 +6,7 @@
 ;; tab-line-nerd-icons, treemacs-nerd-icons, visual-fill-column
 
 ;;; Commentary:
-;; Define the user-interface.  In the case of this configuration, start with
+;; Define the user-interface. In the case of this configuration, start with
 ;; some functional, yet beautiful themes, go heavy on the nerd-icons, and finish
 ;; off with a dashboard to greet you every time you open Emacs or a new
 ;; server-frame.
@@ -147,7 +147,7 @@ Uses `default-font-presets-list' as the backend for what fonts to include."
   (defcustom that1guycolin/default-font-presets--font-size nil
     "A human-readable font-size that could be used in a standard office suite.
 The Emacs' `font-face' attribute `height' is the font size (this number)
-multiplied by 10.  Setting this value directly will nothing, it must be updated
+multiplied by 10. Setting this value directly will nothing, it must be updated
 via the function `that1guycolin/default-font-presets-set-size'."
     :type 'integer
     :group 'default-font-presets)
@@ -311,7 +311,7 @@ via the function `that1guycolin/default-font-presets-set-size'."
         (setq-default initial-buffer-choice #'dashboard-refresh-buffer))))
   
   (defun that1guycolin/dashboard-home-dir ()
-    "Change-directory to \"~\".  Add to `dashboard-mode-hook'."
+    "Change-directory to \"~\". Add to `dashboard-mode-hook'."
     (interactive)
     (setq-local default-directory "~")
     (cd "~"))
@@ -340,5 +340,5 @@ via the function `that1guycolin/default-font-presets-set-size'."
               (setq-local fill-column 1000))))
 
 
-(provide '03-visual)
-;;; 03-visual.el ends here
+(provide '02-visual)
+;;; 02-visual.el ends here

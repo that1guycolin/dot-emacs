@@ -13,11 +13,11 @@
 
 ;; This program is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+;; along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 ;;; All packages included:
 ;; activities, adaptive-wrap, adjust-parens, apheleia, auto-rename-tag, avy,
@@ -57,8 +57,9 @@
 ;; with-editor, yaml-pro, yaml-ts-mode
 
 ;;; Commentary:
-;; that1guycolin's personal Emacs configuration.  Reduces startup time by
-;; optimizing load-order and using `Elpaca' as package manager.  Organization
+
+;; that1guycolin's personal Emacs configuration. Reduces startup time by
+;; optimizing load-order and using `Elpaca' as package manager. Organization
 ;; clutter-free environment thanks to `no-littering'.
 
 ;;; Code:
@@ -80,13 +81,11 @@
   (expand-file-name "site-lisp" user-emacs-directory)
   "Directory containing .el files to be loaded at startup.
 
-Files in this directory are added to `trusted-content'.  At present,
-this directory mainly consists of `use-package' S-expressions.  This
+Files in this directory are added to `trusted-content'. At present,
+this directory mainly consists of `use-package' S-expressions. This
 is not the same as the Emacs' native `user-lisp-directory'.")
 
 (add-to-list 'load-path that1guycolin/site-lisp-dir)
-(mapc (lambda (f) (add-to-list 'trusted-content f))
-      (directory-files that1guycolin/site-lisp-dir t "\\.el\\'"))
 
 (require 'a-elpaca)
 (require 'b-emacs)
@@ -102,23 +101,20 @@ is not the same as the Emacs' native `user-lisp-directory'.")
 ;; Startup & Core Packages
 (require '01-environment)
 
-;; Projects & Workspaces
-(require '02-project-vc)
-
 ;; Core UI Configuration
-(require '03-visual)
+(require '02-visual)
 
 ;; Code Smarter, Not Harder
-(require '04-code-assist)
+(require '03-idemacs)
 
-;; Language Specific Settings
-(require '05-languages)
+;; Project support
+(require '04-project-vc)
 
 ;; Org Config & Support Packages
-(require '06-org-config)
+(require '05-org-config)
 
 ;; Integrate or Emulate External Tools
-(require '07-support)
+(require '06-support)
 
 
 (provide 'init)

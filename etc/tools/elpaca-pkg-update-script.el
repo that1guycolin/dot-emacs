@@ -3,7 +3,7 @@
 ;;; Commentary:
 ;; This file contains a script for automatically updating Emacs packages
 ;; installed via the Elpaca package manager (see
-;; https://github.com/progfolio/elpaca.git).  Run the script with
+;; https://github.com/progfolio/elpaca.git). Run the script with
 ;; src_shell{emacs -x update-packages.el}.
 
 ;;; Code:
@@ -47,7 +47,7 @@
 
 (defun elpaca-pkg-update--update-pkg (pkg)
   "Fetch, merge, and rebuild elpaca package PKG.
-If PKG is \\='ghostel', run `ghostel-module-compile'.  If package is
+If PKG is \\='ghostel', run `ghostel-module-compile'. If package is
 \\='pdf-tools', run `pdf-tools-install'."
   (elpaca-fetch pkg)
   (elpaca-merge pkg)

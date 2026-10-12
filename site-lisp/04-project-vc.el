@@ -1,4 +1,4 @@
-;;; 02-project-vc.el --- Projects & Workspaces -*- lexical-binding: t; -*-
+;;; 04-project-vc.el --- Projects & Workspaces -*- lexical-binding: t; -*-
 
 ;;; Packages included:
 ;; activities, consult-project-extra, diff-hl, disproject, forge,
@@ -6,12 +6,12 @@
 ;; project-treemacs, treemacs, treemacs-magit, with-editor
 
 ;;; Commentary:
-;; Packages to assist with project management in Emacs.  The first section
+;; Packages to assist with project management in Emacs. The first section
 ;; focuses on the built-in `project.el' package, which is fortunately so robust
 ;; as-is that most of the additional packages are small quality of life
-;; improvements.  The middle portion of this file is dedicated to
-;; version-control, which in Emacs is synonymous with `magit'.  The typical
-;; `magit' toolchain is configured to my personal preferences.  The third and
+;; improvements. The middle portion of this file is dedicated to
+;; version-control, which in Emacs is synonymous with `magit'. The typical
+;; `magit' toolchain is configured to my personal preferences. The third and
 ;; final section of the config focuses on treemacs, which provides a utilitarian
 ;; & user-friendly side-buffer containing the current project's directory.
 ;;
@@ -308,5 +308,5 @@ If it is not active, activate it."
   :demand t)
 
 
-(provide '02-project-vc)
-;;; 02-project-vc.el ends here
+(provide '04-project-vc)
+;;; 04-project-vc.el ends here

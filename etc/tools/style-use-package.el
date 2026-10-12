@@ -116,7 +116,7 @@ Provide optional FILE if you want to include specific filename in report."
 (defun style-use-package-check-buffer ()
   "Check key order of all `use-package' forms in the current buffer.
 The order in which keys appear in each form should match
-`style-use-package-key-order'.  Violations are reported in a
+`style-use-package-key-order'. Violations are reported in a
 *style-use-package-violations* buffer."
   (interactive)
   (let* ((buf (current-buffer))
@@ -146,8 +146,8 @@ The order in which keys appear in each form should match
 (defun style-use-package-maybe-check-buffer-objects (&optional dir)
   "Check the key order of each `use-package' object in `user-emacs-directory'.
 Optionally, specify an alternate DIR (including subdirs of
-`user-emacs-directory').  This function is designed to be an
-`after-save-hook'.  Add with:
+`user-emacs-directory'). This function is designed to be an
+`after-save-hook'. Add with:
   (add-to-list \='after-save-hook
     #\='style-use-package-maybe-check-buffer-objects)
 OR

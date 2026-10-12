@@ -1,33 +1,373 @@
-;;; 05-languages.el --- Language Specific Settings -*- lexical-binding: t; -*-
+;;; 03-idemacs.el --- Code Smarter, Not Harder -*- lexical-binding: t -*-
 
 ;;; Packages included:
-;; adjust-parens, auto-rename-tag, bash-ts-mode, checkdoc, cmake-ts-mode,
-;; css-ts-mode, csv-mode, dockerfile-ts-mode, eask-mode, eldoc-cmake, elisp-def,
-;; emacs-lisp-mode, eros, eros-inspector, fish-mode, flycheck-eask,
-;; flycheck-guile, flycheck-package, gaudy-cl, geiser, geiser-guile, glsl-mode,
-;; go-ts-mode, grip-mode, ielm, ini-mode, inspector, json-ts-mode, just-ts-mode,
-;; kdl-mode, let-completion, lisp-semantic-hl, lisp-ts-mode, live-py-mode,
-;; lua-ts-mode, macrostep, macrostep-geiser, makefile-mode, markdown-ts-mode,
-;; morlock, nxml-mode, pkgbuild-mode, python-pytest, python-ts-mode, python-x,
-;; rust-ts-mode, rustic, scheme-mode, sh-mode, shfmt, sly, sly-asdf,
-;; sly-quicklisp, suggest, systemd, toml-ts-mode, tree-inspector, yaml-pro,
-;; yaml-ts-mode
+;; adaptive-wrap, apheleia, comment-dwim-2, consult-eglot,
+;; consult-eglot-embark, consult-flycheck, docstr, dumb-jump, editorconfig,
+;; eglot, eglot-tempel, flycheck, flycheck-color-mode-line, flycheck-eglot,
+;; flycheck-posframe, flycheck-relint, flyspell, flyspell-correct,
+;; flyspell-correct-avy-menu, hideshow, kirigami, lsp-snippet, outline,
+;; outline-indent, rainbow-delimiters, smartparens, treesit, treesit-fold,
+;; visual-regexp, visual-regexp-steroids
 
 ;;; Commentary:
-;; The purpose of this file is to define how Emacs should behave in the
-;; major-modes of various coding/scripting languages; different languages
-;; require different settings.  The use of an Emacs built-in treesitter mode is
-;; almost always given preference over its non-treesitter counterpart (in this
-;; config).  Note how all packages are loaded with `:defer' or `:after'.
+;; The purpose of this file is to define how Emacs should behave when actually
+;; working with code. The packages at the top of the file apply to all
+;; languages; later in the document, s-exps are separated into groups to
+;; define packages and features unique to different languages. Ultimately, the
+;; goal is to set up IDE-like features within Emacs, and thus, IDEmacs.
 
 ;;; Code:
-(require '04-code-assist)
-(declare-function treesit-fold-mode "treesit")
-(declare-function kirigami-mode "kirigami")
-(declare-function docstr-mode "docstr")
-(declare-function that1guycolin/eglot-remove-mode-servers "04-code-assist")
 
-(defvar eglot-server-programs)
+(require '00-macros)
+(declare-function no-littering-expand-var-file-name "no-littering")
+(declare-function file-directory-p "emacs")
+(declare-function embark-act "embark")
+(declare-function corfu-mode "corfu")
+(declare-function docstr-lua--before-insert "docstr")
+(declare-function docstr-trigger-lua "docstr")
+(defvar minions-prominent-modes)
+(defvar docstr-lua-modes)
+(defvar docstr-lua-style)
+(defvar docstr-go-modes)
+(defvar python-base-mode-map)
+(defvar docstr-python-modes)
+(defvar bash-ts-mode-map)
+(defvar sh-mode-map)
+
+;;; Treesit:
+(use-package treesit
+  :ensure nil
+  :demand t
+  :preface
+  (defun that1guycolin/treesit-install-language-grammars ()
+    "Install all language grammars."
+    (interactive)
+    (let ((ts-dir (car treesit-extra-load-path)))
+      (unless (file-directory-p ts-dir)
+        (mapc (lambda (g)
+                (treesit-install-language-grammar g ts-dir))
+              (mapcar #'car treesit-language-source-alist)))))
+  
+  :mode ("\\.tsx\\'" . tsx-ts-mode)
+  :init (add-to-list 'treesit-extra-load-path
+                     (no-littering-expand-var-file-name "tree-sitter"))
+  :custom
+  (treesit-enabled-modes t)
+  (treesit-font-lock-level 4)
+  :config
+  (setq
+   treesit-language-source-alist
+   '((bash . ("https://github.com/tree-sitter/tree-sitter-bash"))
+     (commonlisp . ("https://github.com/tree-sitter-grammars/tree-sitter-commonlisp"))
+     (cmake . ("https://github.com/uyha/tree-sitter-cmake"))
+     (css . ("https://github.com/tree-sitter/tree-sitter-css"))
+     (cpp . ("https://github.com/tree-sitter/tree-sitter-cpp"))
+     (dockerfile . ("https://github.com/camdencheek/tree-sitter-dockerfile"))
+     (fish . ("https://github.com/ram02z/tree-sitter-fish"))
+     (elisp . ("https://github.com/Wilfred/tree-sitter-elisp"))
+     (gitcommit . ("https://github.com/gbprod/tree-sitter-gitcommit"))
+     (go . ("https://github.com/tree-sitter/tree-sitter-go"))
+     (html . ("https://github.com/tree-sitter/tree-sitter-html"))
+     (javascript . ("https://github.com/tree-sitter/tree-sitter-javascript"
+                    "master" "src"))
+     (json . ("https://github.com/tree-sitter/tree-sitter-json"))
+     (json5 . ("https://github.com/Joakker/tree-sitter-json5"))
+     (kdl . ("https://github.com/tree-sitter-grammars/tree-sitter-kdl"))
+     (lua . ("https://github.com/MunifTanjim/tree-sitter-lua"))
+     (make . ("https://github.com/alemuller/tree-sitter-make"))
+     (markdown . ("https://github.com/tree-sitter-grammars/tree-sitter-markdown"
+                  "split_parser" "tree-sitter-markdown/src"))
+     (markdown-inline . ("https://github.com/tree-sitter-grammars/tree-sitter-markdown"
+                         "split_parser" "tree-sitter-markdown-inline/src"))
+     (powershell . ("https://github.com/airbus-cert/tree-sitter-powershell"))
+     (python . ("https://github.com/tree-sitter/tree-sitter-python"))
+     (rust . ("https://github.com/tree-sitter/tree-sitter-rust"))
+     (toml . ("https://github.com/ikatyang/tree-sitter-toml"))
+     (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript"
+             "master" "tsx/src"))
+     (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript"
+                    "master" "typescript/src"))
+     (xml . ("https://github.com/tree-sitter-grammars/tree-sitter-xml"))
+     (yaml . ("https://github.com/ikatyang/tree-sitter-yaml"))
+     (zsh . ("https://github.com/georgeharker/tree-sitter-zsh"))))
+  
+  (add-hook 'elpaca-after-init-hook
+            (lambda ()
+              (run-with-timer
+               10 nil #'that1guycolin/treesit-install-language-grammars))))
+
+
+;;; Text manipulation:
+;; Smart wrapping
+(use-package adaptive-wrap
+  :defer t
+  :hook ((prog-mode text-mode conf-mode) . adaptive-wrap-prefix-mode))
+
+;; Easily switch between comment types
+(use-package comment-dwim-2
+  :defer t
+  :bind ([remap comment-dwim] . comment-dwim-2))
+
+;; docstring support
+(use-package docstr
+  :demand t
+  :functions (docstr-mode
+              docstr--doc-valid-p docstr--looking-back docstr--insert-doc-string
+              docstr--generic-search-string))
+
+;; Jump-to-def/find-refs
+(use-package dumb-jump
+  :defer t
+  :bind ("M-j" . dumb-jump-find-references)
+  :functions (dumb-jump-xref-activate)
+  :custom
+  (dumb-jump-prefer-searcher 'ag)
+  (xref-show-definitions-function #'consult-xref)
+  :config (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
+
+;; Integrate with editorconfig
+(use-package editorconfig
+  :ensure nil
+  :defer t
+  :hook ((prog-mode text-mode conf-mode) . editorconfig-mode))
+
+;; Colorize "", {}, [], ()
+(use-package rainbow-delimiters
+  :defer t
+  :hook ((prog-mode text-mode conf-mode) . rainbow-delimiters-mode))
+
+;; Auto-close "", {}, [], ()
+(use-package smartparens
+  :defer t
+  :hook ((prog-mode text-mode conf-mode) . smartparens-mode)
+  :config (require 'smartparens-config))
+
+;; Hl regexp while typing
+(use-package visual-regexp
+  :defer t
+  :bind (("C-c r" . vr/replace)
+         ("C-c q" . vr/query-replace)))
+
+;; Python-style regexp over Emacs
+(use-package visual-regexp-steroids
+  :defer t
+  :bind (([remap isearch-forward-regexp]  . vr/isearch-forward)
+         ([remap isearch-backward-regexp] . vr/isearch-backward)))
+
+
+;;; Linting (flycheck)
+(use-package flycheck
+  :demand t
+  :preface
+  (defun that1guycolin/flycheck--parse-pretty-json (output)
+    "Parse a linter's pretty-printed json OUTPUT.
+
+Flycheck's native `flycheck-parse-json' only works if the json is a single line
+string. The purpose of this function is to account for linters whose json output
+is in rich text, printed over multiple lines, etc..."
+    
+    (with-temp-buffer
+      (insert output)
+      (goto-char (point-min))
+      (json-parse-buffer :object-type 'alist :array-type 'list)))
+  
+  (defun that1guycolin/flycheck-vale-setup ()
+    "If not setup, install the vale from the .ini file in user-lisp-directory."
+    (let* ((vale-config (expand-file-name ".vale.ini" user-lisp-directory))
+           (command (format "vale --config %s sync >/dev/null 2>&1"
+                            (shell-quote-argument vale-config))))
+      (shell-command command)))
+  :hook ((prog-mode text-mode) . flycheck-mode)
+  :functions (flycheck-error-new-at flycheck-select-checker flycheck-add-mode)
+  :custom (flycheck-disabled-checkers
+           '(emacs-lisp-elsa rpm-rpmlint yaml-jsyaml yaml-ruby))
+  :config
+  (flycheck-define-checker text-vale
+    "Tool to bring code-like linting to prose.
+See URL `https://vale.sh'."
+    :command
+    ("vale" "--config"
+     (eval (expand-file-name ".vale.ini" user-lisp-directory))
+     "--no-global" "--output" "line" source)
+    :error-patterns
+    ((warning line-start (file-name) ":" line ":" column ":"
+              (id (one-or-more (not (any ":")))) ":" (message) line-end))
+    :modes (text-mode))
+  (let ((vale-install (expand-file-name ".vale-styles" user-lisp-directory)))
+    (unless (file-exists-p vale-install)
+      (that1guycolin/flycheck-vale-setup)))
+  (add-to-list 'flycheck-checkers 'text-vale)
+  
+  (with-eval-after-load 'minions
+    (add-to-list 'minions-prominent-modes 'flycheck-mode))
+  (add-hook 'org-mode-hook
+            (lambda () (flycheck-select-checker 'org-lint))))
+
+;; Display flycheck errors in buffer
+(use-package flycheck-posframe
+  :after (flycheck)
+  :defer t
+  :hook (flycheck-mode . flycheck-posframe-mode)
+  :functions (flycheck-posframe-configure-pretty-defaults)
+  :config (flycheck-posframe-configure-pretty-defaults))
+
+;; Buffer status
+(use-package flycheck-color-mode-line
+  :after (flycheck)
+  :defer t
+  :hook (flycheck-mode . flycheck-color-mode-line-mode))
+
+(use-package flycheck-relint
+  :after (flycheck elisp-mode)
+  :demand t
+  :functions (flycheck-relint-setup)
+  :config (flycheck-relint-setup))
+
+(use-package consult-flycheck
+  :after (consult flycheck)
+  :demand t)
+
+
+;;; Formatting (apheleia):
+(use-package apheleia
+  :demand t
+  :bind ("C-c f" . apheleia-format-buffer)
+  :hook ((prog-mode text-mode conf-mode) . apheleia-mode))
+
+
+;;; Language-Server-Protocol (eglot):
+(use-package eglot
+  :ensure nil
+  :demand t
+  :preface
+  (defun that1guycolin/eglot-remove-mode-servers (mode)
+    "Remove servers for MODE from `eglot-server-programs'."
+    (setq eglot-server-programs
+          (cl-remove-if
+           (lambda (cell)
+             (memq mode(ensure-list (car cell))))
+           eglot-server-programs)))
+  :bind (:map ctl-x-map ("e" . eglot)))
+
+(use-package consult-eglot
+  :after (consult eglot)
+  :demand t
+  :commands (consult-eglot-symbols))
+
+(use-package consult-eglot-embark
+  :after (consult-eglot embark)
+  :demand t
+  :functions (consult-eglot-embark-mode)
+  :config (consult-eglot-embark-mode 1))
+
+(use-package flycheck-eglot
+  :after (flycheck eglot)
+  :demand t
+  :functions (global-flycheck-eglot-mode)
+  :config (global-flycheck-eglot-mode 1))
+
+(use-package lsp-snippet
+  :ensure (:id lsp-snippet :type git :host github
+               :depth treeless :protocol https :autoloads t
+               :repo "svaante/lsp-snippet" :main "lsp-snippet.el" :build t
+               :files ("Makefile" "*.el") :autoloads t)
+  :after (eglot tempel)
+  :demand t
+  :config
+  (require 'lsp-snippet-tempel)
+  (lsp-snippet-tempel-eglot-init))
+
+(use-package eglot-tempel
+  :after (eglot tempel)
+  :demand t
+  :functions (eglot-tempel-mode)
+  :config (eglot-tempel-mode 1))
+
+
+;;; Code Folding:
+;; Based on buffer-syntax
+(use-package hideshow
+  :ensure nil
+  :defer t
+  :commands (hs-minor-mode))
+
+;; Based on headings
+(use-package outline
+  :ensure nil
+  :defer t
+  :commands (outline-minor-mode))
+
+;; Based on indentation
+(use-package outline-indent
+  :defer t
+  :commands (outline-indent-minor-mode)
+  :custom (outline-indent-ellipsis " …"))
+
+;; Based on treesit language syntax
+(use-package treesit-fold
+  :defer t
+  :commands (treesit-fold-mode)
+  :custom
+  (treesit-fold-line-count-show t)
+  (treesit-fold-line-count-format " …")
+  :config (set-face-attribute
+           'treesit-fold-replacement-face nil
+           :foreground "#808080"
+           :box nil
+           :weight 'bold))
+
+;; Allows use of same keybindings across backends
+(use-package kirigami
+  :after (:any hideshow outline outline-indent treesit-fold)
+  :demand t
+  :preface
+  (defvar-keymap that1guycolin/kirigami-functions-map
+    :doc "Common code folding functions from `kirigami'."
+    "o" #'kirigami-open-fold
+    "r" #'kirigami-open-fold-rec
+    "u" #'kirigami-open-folds
+    "c" #'kirigami-close-fold
+    "f" #'kirigami-close-folds
+    "a" #'kirigami-toggle-fold)
+  (with-eval-after-load 'which-key
+    (which-key-add-keymap-based-replacements
+      that1guycolin/kirigami-functions-map
+      "o" "Open Fold"
+      "r" "Recursively Open Fold"
+      "u" "Open Folds"
+      "c" "Close Fold"
+      "f" "Close Folds"
+      "a" "Toggle Folds"))
+  :bind-keymap ("C-c z" . that1guycolin/kirigami-functions-map)
+  :functions (kirigami-open-fold
+              kirigami-open-fold-rec kirigami-open-folds kirigami-close-fold
+              kirigami-close-folds kirigami-toggle-fold)
+  :commands (kirigami-mode))
+
+
+;;; Spellcheck:
+;; Backend:
+(use-package flyspell
+  :ensure nil
+  :defer t
+  :hook ((prog-mode conf-mode text-mode) . flyspell-mode)
+  :custom
+  (ispell-program-name "hunspell")
+  (ispell-dictionary "en_US")
+  :config
+  (keymap-unset flyspell-mode-map "C-.")
+  (keymap-global-set "C-." #'embark-act))
+
+;; Correct with flyspell...
+(use-package flyspell-correct
+  :after (flyspell)
+  :demand t
+  :bind (:map flyspell-mode-map ("C-&" . flyspell-correct-wrapper)))
+
+;; ...and the avy interface
+(use-package flyspell-correct-avy-menu
+  :after (flyspell-correct avy)
+  :demand t)
 
 
 ;;; CSS:
@@ -318,9 +658,6 @@ See URL: \\='https://github.com/fukamachi/mallet'."
 (use-package sly
   :defer t
   :preface
-  (require '00-macros)
-  (declare-function corfu-mode "corfu")
-
   (defun that1guycolin/sly-load-if-not-connected ()
     "Connect to sly, unless an active connection exists already."
     (unless (sly-connected-p)
@@ -328,7 +665,7 @@ See URL: \\='https://github.com/fukamachi/mallet'."
 
   (defun that1guycolin/sly-autoconnect ()
     "Start sly based on Emacs-type.
-If \\='desktop or \\='termux, run `sly'.  If \\='android-gui, connect to
+If \\='desktop or \\='termux, run `sly'. If \\='android-gui, connect to
 a running slynk instance @ localhost:4005."
     (interactive)
     (if (eq that1guycolin/emacs-type 'android-gui)
@@ -392,7 +729,7 @@ a running slynk instance @ localhost:4005."
   :ensure nil
   :after (docstr)
   :defer t
-  :preface (defvar docstr-go-modes)
+  :preface
   :hook (go-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)
                         (setq-local fill-column 80) (docstr-mode 1)))
   :mode "\\.go\\'"
@@ -408,11 +745,6 @@ a running slynk instance @ localhost:4005."
   :after (docstr apheleia)
   :defer t
   :preface
-  (defvar docstr-lua-modes)
-  (defvar docstr-lua-style)
-  (declare-function docstr-lua--before-insert "docstr")
-  (declare-function docstr-trigger-lua "docstr")
-
   (defun that1guycolin/docstr-trigger-lua (&rest _)
     "Trigger `docstr' for Lua's \\='---' documentation marker."
     (when (and (memq major-mode '(lua-mode lua-ts-mode))
@@ -497,9 +829,6 @@ See URL: \\='https://github.com/rvben/rumdl'."
   :after (apheleia eglot)
   :defer t
   :preface
-  (defvar python-base-mode-map)
-  (defvar docstr-python-modes)
-
   (defun that1guycolin/python-uv-script-p ()
     "Return non-nil if current buffer is a uv script."
     (and buffer-file-name
@@ -616,7 +945,7 @@ See URL: \\='https://github.com/rvben/rumdl'."
   :preface
   (defun that1guycolin/sh-shell-hooks ()
     "Set hooks for `sh-mode' based on buffer's `sh-shell-file'.
-Also used for `bash-ts-mode'.  Add to the list `sh-mode-hook'."
+Also used for `bash-ts-mode'. Add to the list `sh-mode-hook'."
     (cond
      ((string-suffix-p "bash" sh-shell-file)
       (when (eq mode-name 'bash-ts-mode)
@@ -624,13 +953,13 @@ Also used for `bash-ts-mode'.  Add to the list `sh-mode-hook'."
       (treesit-fold-mode) (kirigami-mode)
       (flycheck-select-checker 'sh-shellcheck))
      ((string-suffix-p "zsh" sh-shell-file)
+      (hs-minor-mode) (kirigami-mode))
+     ((string-suffix-p "sh" sh-shell-file)
       (hs-minor-mode) (kirigami-mode)
-      ((string-suffix-p "sh" sh-shell-file)
-       (hs-minor-mode) (kirigami-mode)
-       (flycheck-select-checker 'sh-shellcheck))
-      ((string-suffix-p "dash" sh-shell-file)
-       (hs-minor-mode) (kirigami-mode)
-       (flycheck-select-checker 'sh-shellcheck)))))
+      (flycheck-select-checker 'sh-shellcheck))
+     ((string-suffix-p "dash" sh-shell-file)
+      (hs-minor-mode) (kirigami-mode)
+      (flycheck-select-checker 'sh-shellcheck))))
 
   :hook (sh-mode . (lambda () (apheleia-mode -1)
                      (setq-local fill-column 80)
@@ -640,27 +969,22 @@ Also used for `bash-ts-mode'.  Add to the list `sh-mode-hook'."
   :init (add-to-list 'flycheck-shellcheck-supported-shells 'dash)
   :custom
   (flycheck-shellcheck-infer-shell t)
-  (flycheck-sh-bash-executable
-   (that1guycolin/desktop-mobile
-     :desk "/usr/bin/bash"
-     :tmux "/data/data/com.termux/files/usr/bin/bash"))
-  (flycheck-sh-posix-bash-executable
-   (that1guycolin/desktop-mobile
-     :desk "/usr/bin/bash"
-     :tmux "/data/data/com.termux/files/usr/bin/bash"))
-  (flycheck-sh-posix-dash-executable
-   (that1guycolin/desktop-mobile
-     :desk "/usr/bin/dash"
-     :tmux "/data/data/com.termux/files/usr/bin/dash"))
-  (flycheck-sh-shellcheck-executable
-   (that1guycolin/desktop-mobile
-     :desk "/home/colin-l/.local/bin/shellcheck"
-     :tmux "/data/data/com.termux/files/usr/bin/shellcheck"))
-  (flycheck-sh-zsh-executable
-   (that1guycolin/desktop-mobile
-     :desk "/usr/bin/zsh"
-     :tmux "/data/data/com.termux/files/usr/bin/zsh"))
+  (setq flycheck-sh-bash-executable "/usr/bin/bash")
+  (setq flycheck-sh-posix-bash-executable "/usr/bin/bash")
+  (setq flycheck-sh-posix-dash-executable "/usr/bin/dash")
+  (setq flycheck-sh-shellcheck-executable "/home/colin-l/.local/bin/shellcheck")
+  (setq flycheck-sh-zsh-executable "/usr/bin/zsh")
   :config
+  (when (eq system-type 'android)
+    (setq flycheck-sh-bash-executable "/data/data/com.termux/files/usr/bin/bash")
+    (setq flycheck-sh-posix-bash-executable
+          "/data/data/com.termux/files/usr/bin/bash")
+    (setq flycheck-sh-posix-dash-executable
+          "/data/data/com.termux/files/usr/bin/dash")
+    (setq flycheck-sh-shellcheck-executable
+          "/data/data/com.termux/files/home/.local/bin/shellcheck")
+    (setq flycheck-sh-zsh-executable "/data/data/com.termux/files/usr/bin/zsh"))
+                                               
   (flycheck-define-checker zsh-lint
     "A Flycheck checker for zsh-lint.
 See URL `https://wiki.zshell.dev'."
@@ -676,8 +1000,6 @@ See URL `https://wiki.zshell.dev'."
 (use-package shfmt
   :defer t
   :preface
-  (defvar bash-ts-mode-map)
-  (defvar sh-mode-map)
   :bind ((:map bash-ts-mode-map ("C-c f" . shfmt-buffer))
          (:map sh-mode-map      ("C-c f" . shfmt-buffer)))
   :hook ((bash-ts-mode sh-mode) . shfmt-on-save-mode)
@@ -735,13 +1057,20 @@ See URL: \\='https://fishshell.com'."
 
 (use-package eldoc-cmake
   :after (cmake-ts-mode)
-  :demand t
-  :config (eldoc-cmake-enable))
+  :defer t
+  :commands (eldoc-cmake-enable)
+  :init (add-hook 'cmake-ts-mode-hook (lambda ()
+                                        (unless (featurep 'cmake-ts-mode)
+                                          (eldoc-cmake-enable)))))
 
 (use-package cmake-ide
   :after (cmake-ts-mode)
-  :demand t
-  :config (cmake-ide-setup))
+  :defer t
+  :commands (cmake-ide-setup)
+  :init (add-hook 'cmake-ts-mode-hook (lambda ()
+                                        (unless (featurep 'cmake-ts-mode)
+                                          (cmake-ide-setup)))))
+
 
 ;; Justfile:
 (use-package just-ts-mode
@@ -755,44 +1084,8 @@ See URL: \\='https://fishshell.com'."
   :ensure nil
   :after (flycheck)
   :defer t
-  :preface
-  (defun that1guycolin/flycheck-parse-zsh-lint (output)
-    "Parse JSON OUTPUT from zsh-lint."
-    (defun that1guycolin/flycheck-parse-checkmake (output)
-      "Parse json OUTPUT from checkmake."
-      (let ((json (json-parse-string output
-                                     :object-type 'alist
-                                     :array-type 'list
-                                     :null-object nil
-                                     :false-object nil)))
-        (mapcar
-         (lambda (diagnostic)
-           (let* ((severity (alist-get 'severity diagnostic))
-                  (message (alist-get 'message diagnostic))
-                  (rule (alist-get 'rule diagnostic))
-                  (file (alist-get 'file diagnostic))
-                  (start (alist-get 'start (alist-get 'range diagnostic))))
-             (let* ((rule      (alist-get 'rule        diagnostic))
-                    (violation (alist-get 'violation   diagnostic))
-                    (file      (alist-get 'file_name   diagnostic))
-                    (line      (alist-get 'line_number diagnostic)))
-               (flycheck-error-new-at
-                (alist-get 'line start)
-                (alist-get 'column start)
-                (pcase severity
-                  ("error" 'error)
-                  ("warning" 'warning)
-                  ("info" 'info)
-                  ("hint" 'info)
-                  (_ 'info))
-                message :filename file :id rule)))
-           line nil
-           (if (string= rule "miniphony")
-               'error
-             'warning)
-           (format "[%s] %s" rule violation)
-           :filename file)))
-      (alist-get 'diagnostics json)))
+  ;; :preface				
+  ;; (defun that1guycolin)
 
   :hook (makefile-mode . (lambda () (setq-local fill-column 100)))
   :mode "Makefile\\'"
@@ -939,7 +1232,7 @@ See URL: \\='https://github.com/priv-kweihmann/systemdlint'."
   (defun that1guycolin/flycheck-yaml-checker ()
     "Select the linter for \\='.ya(m)l' files.
 If the current `buffer-file-name' is \\='compose.ya(m)l' or
-\\='docker-compose.ya(m)l', use \"dclint\".  Otherwise, use \"yamllint\"."
+\\='docker-compose.ya(m)l', use \"dclint\". Otherwise, use \"yamllint\"."
     (unless (eq major-mode 'yaml-ts-mode)
       (error "Buffer not in yaml-ts-mode"))
     (if (and (buffer-file-name)
@@ -1022,7 +1315,6 @@ See URL: \\='https://github.com/zavoloklom/docker-compose-linter'."
   :hook ((yaml-mode yaml-ts-mode) . yaml-pro-mode))
 
 
-(provide '05-languages)
-;;; 05-languages.el ends here
 
-                                        ; LocalWords:  fmtr
+(provide '03-idemacs)
+;;; 03-idemacs.el ends here

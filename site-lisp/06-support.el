@@ -1,4 +1,4 @@
-;;; 07-support.el --- Integrate or Emulate External Tools -*- lexical-binding: t -*-
+;;; 06-support.el --- Integrate or Emulate External Tools -*- lexical-binding: t -*-
 
 ;;; Packages included:
 ;; casual, casual-avy, deadgrep, dirvish, docker, dwim-shell-command, eat,
@@ -16,7 +16,7 @@
 ;;; Code:
 
 (require '00-macros)
-(require '02-project-vc)
+(require '04-project-vc)
 
 ;;; Terminals:
 ;; Emulate A Terminal
@@ -86,7 +86,7 @@
     "Files currently staged by `dirvish-copy' or `dirvish-cut'.")
 
   (defvar that1guycolin/dirvish-clipboard-action nil
-    "Current Dirvish clipboard action.  Expected values are `copy' or `cut'.")
+    "Current Dirvish clipboard action. Expected values are `copy' or `cut'.")
 
   (defvar-local that1guycolin/dirvish-preview-buffer nil
     "Non-nil when this buffer was made read-only as a Dirvish preview.")
@@ -211,7 +211,7 @@ Otherwise paste into the current Dired/Dirvish directory."
         (read-only-mode -1))))
 
   (defun that1guycolin/dirvish-return-dwim ()
-    "On directories, descend.  On files, open the file normally."
+    "On directories, descend. On files, open the file normally."
     (interactive)
     (let ((file (that1guycolin/dirvish--file-at-point)))
       (if (file-directory-p file)
@@ -221,7 +221,7 @@ Otherwise paste into the current Dired/Dirvish directory."
 
   (defun that1guycolin/dirvish-tab-dwim ()
     "Change behaviour based on current marker positions.
-On directories, toggle subtree.  On files, use Dirvish file outline viewer."
+On directories, toggle subtree. On files, use Dirvish file outline viewer."
     (interactive)
     (unless (fboundp 'dirvish-subtree-toggle)
       (user-error "`dirvish-subtree-toggle' is not available"))
@@ -757,7 +757,7 @@ doubles as a model-switcher."
     (setq that1guycolin/emms-is-paused nil))
 
   (defun that1guycolin/emms-toggle-play-pause ()
-    "If EMMS player is playing, pause it.  If it is paused, start playing."
+    "If EMMS player is playing, pause it. If it is paused, start playing."
     (interactive)
     (if that1guycolin/emms-is-paused
         (progn
@@ -1179,5 +1179,5 @@ doubles as a model-switcher."
   :bind ("M-g" . casual-avy-tmenu))
 
 
-(provide '07-support)
-;;; 07-support.el ends here
+(provide '06-support)
+;;; 06-support.el ends here

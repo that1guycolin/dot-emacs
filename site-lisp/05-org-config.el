@@ -1,4 +1,4 @@
-;;; 06-org-config.el --- Org-Mode Setup -*- lexical-binding: t; -*-
+;;; 05-org-config.el --- Org-Mode Setup -*- lexical-binding: t; -*-
 
 ;;; Packages included:
 ;; djvu, el2org, nov, ob-rust, org-appear, org-category-capture, org-chef,
@@ -7,7 +7,7 @@
 ;; org-pomodoro, org-project-capture, org-recur, org-tidy, pdf-tools
 
 ;;; Commentary:
-;; Set up Emacs' Org-mode.  Also, configure packages that extend Org's already
+;; Set up Emacs' Org-mode. Also, configure packages that extend Org's already
 ;; awesome power.
 
 ;;; Code:
@@ -45,7 +45,7 @@
   (defun that1guycolin/remove-org-todo ()
     "If a \='TODO.org' file exists in the org directory, delete it.
 Because the org-directory is a git repo, there is a possibility of
-accidentally creating a TODO file.  A TODO file in the org-directory is
+accidentally creating a TODO file. A TODO file in the org-directory is
 by definition redundant, since any TODO items should go in the tasks
 folder."
     (interactive)
@@ -72,7 +72,7 @@ The file is created if it doesn't exist."
   (defun that1guycolin/manual-TODO-pkg-inquiry (header url &optional link)
     "Add an entry in a TODO file for a package you may want to install.
 Provide the text you want in the HEADER (after the \\='**') and the URL
-to link to.  If you want the display text to be something other than the
+to link to. If you want the display text to be something other than the
 URL, LINK will be shown instead."
     (interactive "sHeader text: \nsURL: \nsLink display text \
 (optional, leave blank to display URL): ")
@@ -172,8 +172,8 @@ URL, LINK will be shown instead."
   (defun that1guycolin/org-node-new-file (title id)
     "Create a new file for a new node.
 
-Set this function as `org-node-creation-fn'.  It is based on the original
-`org-node-creation-function' but has a different properties block.  The TITLE
+Set this function as `org-node-creation-fn'. It is based on the original
+`org-node-creation-function' but has a different properties block. The TITLE
 and ID are automatically provided."
     
     (org-node-pop-to-fresh-file-buffer title)
@@ -393,7 +393,7 @@ Values are mapped to informative strings."
     "Make sure `org-tidy-mode' is  nil before running FUNC.n
 
 If variable `org-tidy-mode' is non-nil, deactivate \\='org-tidy' mode,
-then reactivate after FUNC is complete.  Use as advice for
+then reactivate after FUNC is complete. Use as advice for
 `that1guycolin/org-top-property-drawer-id'."
 
     (if org-tidy-mode
@@ -455,7 +455,7 @@ then reactivate after FUNC is complete.  Use as advice for
   :custom (org-pomodoro-manual-break t))
 
 
-(provide '06-org-config)
-;;; 06-org-config.el ends here
+(provide '05-org-config)
+;;; 05-org-config.el ends here
 
                                         ; LocalWords: annot fF
