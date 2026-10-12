@@ -7,6 +7,7 @@ bookmarks
 *.eask/
 eln-cache
 elpa/
+emacs-mcp-stdio.sh
 .envrc
 etc/*
 !etc/tools
