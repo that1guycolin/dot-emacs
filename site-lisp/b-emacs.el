@@ -116,6 +116,8 @@ If not in a side window, jump to the first found side window."
     (let ((hook-var (intern (concat (symbol-name mode) "-hook"))))
       (add-hook hook-var #'that1guycolin/setup-untabify-save)))
 
+  (async-shell-command ". /usr/share/nvm/init-nvm.sh")
+  
   (add-hook 'ibuffer-mode-hook #'that1guycolin/ibuffer-hook-functions)
   (add-hook 'elpaca-after-init-hook
             (lambda ()
