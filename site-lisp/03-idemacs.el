@@ -984,7 +984,7 @@ Also used for `bash-ts-mode'. Add to the list `sh-mode-hook'."
     (setq flycheck-sh-shellcheck-executable
           "/data/data/com.termux/files/home/.local/bin/shellcheck")
     (setq flycheck-sh-zsh-executable "/data/data/com.termux/files/usr/bin/zsh"))
-                                               
+  
   (flycheck-define-checker zsh-lint
     "A Flycheck checker for zsh-lint.
 See URL `https://wiki.zshell.dev'."
@@ -1084,7 +1084,7 @@ See URL: \\='https://fishshell.com'."
   :ensure nil
   :after (flycheck)
   :defer t
-  ;; :preface				
+  ;; :preface                           
   ;; (defun that1guycolin)
 
   :hook (makefile-mode . (lambda () (setq-local fill-column 100)))
@@ -1147,8 +1147,6 @@ See URL: \\='https://github.com/mrtazz/checkmake'."
   (setf
    (alist-get 'jq apheleia-formatters)
    '("jq" "." "-M" "--indent" "2")
-   (alist-get 'prettier-json apheleia-formatters)
-   '("pnpx" "prettier" "--stdin-filepath" filepath "--parser=json")
    (alist-get 'json-ts-mode apheleia-mode-alist) 'jq)
   (keymap-set json-ts-mode-map "C-c v"
               #'that1guycolin/apheleia-toggle-json-formatter)
