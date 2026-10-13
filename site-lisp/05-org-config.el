@@ -169,23 +169,25 @@ URL, LINK will be shown instead."
 (use-package org-node
   :defer t
   :preface
-  (defun that1guycolin/org-node-new-file (title id)
+  (defun that1guycolin/org-node-new-file (&optional title id)
     "Create a new file for a new node.
 
 Set this function as `org-node-creation-fn'. It is based on the original
 `org-node-creation-function' but has a different properties block. The TITLE
 and ID are automatically provided."
-    
+    (unless title (or (setq title org-node-proposed-title)
+                      (error "Proposed title was nil")))
+    (unless id    (or (setq id org-node-proposed-id)
+                      (error "Proposed ID was nil")))
     (org-node-pop-to-fresh-file-buffer title)
     (goto-char (point-min))
     (insert
-     ":PROPERTIES:\n:ID:       " id
-     "\n:END:\n#+TITLE: " title
-     "\n#+AUTHOR: \n#+CREATED_DATE: "
-     (format-time-string "[%Y-%m-%d %a %H:%M:%S]")
-     "\n#+LAST_EDIT: \n#+ID:      " id
-     "\n#+FILETAGS:\n")
+     ":PROPERTIES:\n:ID:       " id "\n:END:"
+     "\n#+TITLE: " title "\n#+AUTHOR: Colin Loeffler (that1guycolin)"
+     "\n#+CREATED_DATE: " (format-time-string "[%Y-%m-%d %a %H:%M:%S]")
+     "\n#+LAST_EDIT: \n#+ID:      " id "\n#+FILETAGS:\n")
 
+    (goto-char (point-max))
     (push (current-buffer) org-node--new-unsaved-buffers)
     (run-hooks 'org-node-creation-hook))
 
@@ -194,7 +196,8 @@ and ID are automatically provided."
   :functions (org-node-pop-to-fresh-file-buffer
               org-node-create org-node-cache-mode
               org-node-complete-at-point-mode org-node-backlink-mode)
-  :defines (org-node-backlink-do-drawers org-node--new-unsaved-buffers)
+  :defines (org-node-backlink-do-drawers
+            org-node--new-unsaved-buffers org-node-proposed-id)
   :init (with-eval-after-load 'org
           (keymap-set org-mode-map "M-o" org-node-org-prefix-map))
   (advice-add #'org-node-create :before
