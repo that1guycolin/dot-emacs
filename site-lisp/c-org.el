@@ -14,14 +14,6 @@
   :ensure (:wait t)
   :demand t
   :preface
-  (declare-function that1guycolin/desktop-mobile "init.el")
-  (declare-function sly-eval "sly")
-
-  (defun that1guycolin/org-check ()
-    "User-error if buffer is not in `org-mode'."
-    (unless (derived-mode-p 'org-mode)
-      (user-error "This buffer is not in org mode")))
-
 ;;; Org task sequences
   (defconst that1guycolin/org-keywords--tasks
     '(sequence "TODO(t!)" "NEXT(n!)" "WAIT(w@/!)" "|"
@@ -389,7 +381,23 @@ Thanks to Reddit user \\='hogmannn' for the basis of this function:
       (setq that1guycolin/org-inline-source-hidden t)
       (message "Inline source block delimiters are now hidden")))
 
+  
+;;; Keymap
+  (defvar-keymap org-functions-map
+    :doc "Useful functions inside and outside of Org-mode."
+    "o" #'org-mode
+    "a" #'org-agenda
+    "c" #'org-capture
+    "l" #'org-store-link)
 
+  (with-eval-after-load 'which-key
+    (which-key-add-keymap-based-replacements org-functions-map
+      "o" "Org Mode"
+      "a" "Agenda"
+      "c" "Capture"
+      "l" "Store Link"))
+  
+  
 ;;; misc.
   (defun that1guycolin/org-convert-md-links ()
     "Convert all md-style links in the current buffer to org-style."
@@ -402,14 +410,11 @@ Thanks to Reddit user \\='hogmannn' for the basis of this function:
         (replace-match "[[\\2][\\1]]" nil nil))))
 
 ;;; finish use-package sexp
-  :bind (("C-c o o" . org-mode)
-         ("C-c o a" . org-agenda)
-         ("C-c o c" . org-capture)
-         ("C-c o l" . org-store-link)
-         (:map org-mode-map
-               ("C-c l"   . org-toggle-link-display)
-               ("C-c C-q" . org-set-tags-command)
-               ("C-c _"   . that1guycolin/org-inline-source-toggle-visibility)))
+  :bind (:map org-mode-map
+              ("C-c l"   . org-toggle-link-display)
+              ("C-c C-q" . org-set-tags-command)
+              ("C-c _"   . that1guycolin/org-inline-source-toggle-visibility))
+  :bind-keymap ("C-c o" . org-functions-map)
   :mode (("\\.org\\'"   . org-mode)
          ("\\.notes\\'" . org-mode))
   :functions (org-before-first-heading-p
@@ -474,22 +479,23 @@ Thanks to Reddit user \\='hogmannn' for the basis of this function:
   (require 'ox-texinfo)
   
   (keymap-set org-mode-map "C-c b" that1guycolin/org-insert-block-map)
-  (let ((lang-mode-cells '(("bash"  . bash-ts) ("bash2" . bash-ts)
-                           ("cmake" . cmake-ts) ("json" . json-ts)
-                           ("lua"   . lua-ts) ("python" . python-ts)
-                           ("toml"  . toml-ts) ("yaml"  . yaml-ts))))
+  (let ((lang-mode-cells '(("bash"   . bash-ts) ("bash2"  . bash-ts)
+                           ("cmake"  . cmake-ts) ("json"  . json-ts)
+                           ("kdl"    . kdl)     ("lua"    . lua-ts)
+                           ("python" . python-ts) ("toml" . toml-ts)
+                           ("yaml"   . yaml-ts))))
     (setq org-src-lang-modes
           (assoc-delete-all (car lang-mode-cells) org-src-lang-modes))
-    (dolist (lang-cons lang-mode-cells)
-      (add-to-list 'org-src-lang-modes lang-cons)))
+    (mapc (lambda (cons) (add-to-list 'org-src-lang-modes cons))
+          lang-mode-cells))
 
   (with-eval-after-load 'ob
     (setq org-babel-default-header-args
           (cons '(:results . "value verbatim replace")
                 (assq-delete-all :results org-babel-default-header-args)))
     (setq org-babel-default-header-args:zsh '((:results . "output")))
-    (dolist (lang '(lisp lua makefile org python shell))
-      (add-to-list 'org-babel-load-languages `(,lang . t)))
+    (mapc (lambda (l) (add-to-list 'org-babel-load-languages `(,l . t)))
+          '(lisp lua makefile org python shell))
     (org-babel-do-load-languages
      'org-babel-load-languages
      org-babel-load-languages))

@@ -446,20 +446,18 @@ then reactivate after FUNC is complete. Use as advice for
   :functions (el2org-generate-readme el2org-generate-html el2org-generate-org))
 
 ;; Table-of-contents
-(use-package org-make-toc
+(use-package toc-org
   :after (org)
   :defer t
   :bind (:map org-mode-map
-              ("C-^" . org-make-toc-insert)
-              ("C-&" . org-make-toc-set))
-  :hook (org-mode . org-make-toc-mode)
-  :custom (org-make-toc-insert-custom-ids t))
+              ("C-^" . toc-org-insert-toc))
+  :hook (org-mode . toc-org-mode))
 
 ;; Manage time
 (use-package org-pomodoro
   :after (org)
   :defer t
-  :bind (:map org-mode-map ("M-P" . org-pomodoro))
+  :bind (:map org-mode-map ("C-M-p" . org-pomodoro))
   :custom (org-pomodoro-manual-break t))
 
 
