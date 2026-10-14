@@ -960,6 +960,10 @@ Also used for `bash-ts-mode'. Add to the list `sh-mode-hook'."
       (hs-minor-mode) (kirigami-mode)
       (flycheck-select-checker 'sh-shellcheck))))
 
+  (defun that1guycolin/prepend-termux-prefix (var)
+    "Add the Termux prefix to the start of VAR."
+    (setq var (concat "/data/data/com.termux/files" (symbol-value var))))
+
   :hook ((sh-mode . (lambda ()
                       (apheleia-mode -1)
                       (setq-local fill-column 80)
@@ -976,22 +980,13 @@ Also used for `bash-ts-mode'. Add to the list `sh-mode-hook'."
   :init (add-to-list 'flycheck-shellcheck-supported-shells 'dash)
   :custom
   (flycheck-shellcheck-infer-shell t)
-  (setq flycheck-sh-bash-executable "/usr/bin/bash")
-  (setq flycheck-sh-posix-bash-executable "/usr/bin/bash")
-  (setq flycheck-sh-posix-dash-executable "/usr/bin/dash")
-  (setq flycheck-sh-shellcheck-executable "/home/colin-l/.local/bin/shellcheck")
-  (setq flycheck-sh-zsh-executable "/usr/bin/zsh")
+  (flycheck-sh-bash-executable "/usr/bin/bash")
+  (flycheck-sh-posix-bash-executable "/usr/bin/bash")
+  (flycheck-sh-posix-dash-executable "/usr/bin/dash")
+  (flycheck-sh-shellcheck-executable "/usr/bin/shellcheck")
+  (flycheck-sh-zsh-executable "/usr/bin/zsh")
   :config
   (when (eq system-type 'android)
-    (setq flycheck-sh-bash-executable "/data/data/com.termux/files/usr/bin/bash")
-    (setq flycheck-sh-posix-bash-executable
-          "/data/data/com.termux/files/usr/bin/bash")
-    (setq flycheck-sh-posix-dash-executable
-          "/data/data/com.termux/files/usr/bin/dash")
-    (setq flycheck-sh-shellcheck-executable
-          "/data/data/com.termux/files/home/.local/bin/shellcheck")
-    (setq flycheck-sh-zsh-executable "/data/data/com.termux/files/usr/bin/zsh"))
-  
   (flycheck-define-checker zsh-lint
     "A Flycheck checker for zsh-lint.
 See URL `https://wiki.zshell.dev'."
@@ -1002,6 +997,12 @@ See URL `https://wiki.zshell.dev'."
             (lambda ()
               (when (eq sh-shell 'zsh)
                 (flycheck-select-checker 'zsh-lint)))))
+    (mapc #'that1guycolin/prepend-termux-prefix
+          '(flycheck-shellcheck-sh-bash-executable
+            flycheck-shellcheck-sh-posix-bash-executable
+            flycheck-shellcheck-sh-posix-dash-executable
+            flycheck-shellcheck-sh-shellcheck-executable
+            flycheck-sh-zsh-executable))))
 
 
 (use-package shfmt
