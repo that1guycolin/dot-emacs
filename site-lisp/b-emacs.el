@@ -89,7 +89,9 @@ If not in a side window, jump to the first found side window."
   :functions (ibuffer-auto-mode)
   :init
   (add-to-list 'default-frame-alist '(fullscreen . maximized))
-  (async-shell-command ". /usr/share/nvm/init-nvm.sh" "*nvm env* *nvm error*")
+  (when (eq that1guycolin/emacs-type 'desktop)
+    (async-shell-command ". /usr/share/nvm/init-nvm.sh"
+                         "*nvm env*" "*nvm error*"))
   (add-hook 'elpaca-after-init-hook
             (lambda ()
               (run-with-timer 30 nil #'that1guycolin/remove-eln-cache)))
