@@ -228,7 +228,7 @@
            :files (:defaults "Changelog.org" "icons" "src/elisp/treemacs*.el"
                              "src/scripts/treemacs*.py"
                              (:exclude "src/extra/*"))
-           :type git :protocol https :inherit t :depth treeless)
+           :type git :protocol https :inherit t :depth treeless :wait t)
   :defer t
   :preface
   (defun that1guycolin/treemacs-switch-workspace-focus ()
@@ -304,6 +304,12 @@ If it is not active, activate it."
   :config (project-treemacs-mode 1))
 
 (use-package treemacs-magit
+  :ensure (treemacs-magit
+           :source "MELPA" :package "treemacs-magit" :id treemacs-magit
+           :fetcher github :repo "that1guycolin/treemacs"
+           :branch "avoid-error-on-project-follow-mode-deactivation"
+           :files ("src/extra/treemacs-magit.el") :type git :protocol https
+           :inherit t :depth treeless)
   :after (treemacs magit)
   :demand t)
 
