@@ -148,6 +148,15 @@
   :demand t
   :custom (forge-pull-notifications t))
 
+(use-package fj
+  :demand t
+  :bind ("C-x f" . fj-list-own-repos)
+  :defines (fj-host fj-user)
+  :config
+  (setq
+   fj-host "https://codeberg.org"
+   fj-user "that1guycolin"))
+
 (use-package diff-hl
   :defer t
   :bind ("C-x v o" . diff-hl-mode)
