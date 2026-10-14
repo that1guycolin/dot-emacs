@@ -299,7 +299,6 @@ via the function `that1guycolin/default-font-presets-set-size'."
 (use-package dashboard
   :demand t
   :preface
-  (require '00-macros)
   (defun that1guycolin/dashboard-setup-startup-hook ()
     "Setup post-init hooks unless a command line argument is provided."
     (when (< (length command-line-args) 2)
@@ -337,6 +336,7 @@ via the function `that1guycolin/default-font-presets-set-size'."
   (add-hook 'dashboard-mode-hook
             (lambda ()
               (that1guycolin/dashboard-home-dir)
+              (delete-other-windows)
               (setq-local fill-column 1000))))
 
 
