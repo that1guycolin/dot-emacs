@@ -418,7 +418,8 @@ See URL `https://vale.sh'."
   :ensure nil
   :defer t
   :hook (emacs-lisp-mode . (lambda () (outline-minor-mode) (kirigami-mode)
-                             (setq-local fill-column 80)))
+                             (setq-local fill-column 80)
+                             (that1guycolin/setup-untabify-save)))
   :mode "\\.el\\'"
   :custom (flycheck-emacs-lisp-load-path 'inherit))
 
@@ -445,7 +446,8 @@ See URL `https://vale.sh'."
       (file-error nil)))
   
   :hook (lisp-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)
-                          (setq-local fill-column 80)))
+                          (setq-local fill-column 80)
+                          (that1guycolin/setup-untabify-save)))
   :interpreter "sbcl"
   :mode ("\\.lisp\\'" "\\.cl\\'" "\\.asd\\'")
   :init
@@ -510,7 +512,8 @@ See URL: \\='https://github.com/fukamachi/mallet'."
   :ensure nil
   :defer t
   :hook (scheme-mode . (lambda () (outline-minor-mode) (kirigami-mode)
-                         (setq-local fill-column 80)))
+                         (setq-local fill-column 80)
+                         (that1guycolin/setup-untabify-save)))
   :mode "\\.scm\\'"
   :config
   (add-to-list 'eglot-server-programs
@@ -859,7 +862,8 @@ See URL: \\='https://github.com/rvben/rumdl'."
               ("C-c C-r"   . that1guycolin/python-run-smart))
   :hook (python-ts-mode . (lambda () (outline-indent-minor-mode)
                             (kirigami-mode) (setq-local fill-column 88)
-                            (docstr-mode 1)))
+                            (docstr-mode 1)
+                            (that1guycolin/setup-untabify-save)))
   :interpreter ("python3" "uv")
   :mode "\\.py\\'"
   :functions (python-skeleton-class
