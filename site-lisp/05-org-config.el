@@ -246,7 +246,8 @@ and ID are automatically provided."
   (defvar that1guycolin/notes-directory
     (expand-file-name "notes" org-directory)
     "Directory in which org-noter files are stored.")
-  :bind (("C-c o n". org-noter)
+  :bind ((:map org-functions-map
+               ("n" . org-noter))
          (:map dired-mode-map
                ("N" . org-noter-start-from-dired))
          (:map dirvish-mode-map
@@ -256,7 +257,10 @@ and ID are automatically provided."
   :custom
   (org-noter-auto-save-last-location t)
   (org-noter-notes-search-path that1guycolin/notes-directory)
-  (org-noter-default-notes-file-names '("notes.org")))
+  (org-noter-default-notes-file-names '("notes.org"))
+  :config (with-eval-after-load 'which-key
+            (which-key-add-keymap-based-replacements org-functions-map
+              "n" "Noter")))
 
 ;; PDF Tools ext
 (use-package nov :after (org-noter) :demand t)
