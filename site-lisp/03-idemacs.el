@@ -23,16 +23,9 @@
 (declare-function file-directory-p "emacs")
 (declare-function embark-act "embark")
 (declare-function corfu-mode "corfu")
-(declare-function docstr-lua--before-insert "docstr")
-(declare-function docstr-trigger-lua "docstr")
+(declare-function that1guycolin/setup-untabify-save "b-emacs")
 (defvar minions-prominent-modes)
-(defvar docstr-lua-modes)
-(defvar docstr-lua-style)
-(defvar docstr-go-modes)
-(defvar python-base-mode-map)
-(defvar docstr-python-modes)
-(defvar bash-ts-mode-map)
-(defvar sh-mode-map)
+
 
 ;;; Treesit:
 (use-package treesit
@@ -40,7 +33,7 @@
   :demand t
   :preface
   (defun that1guycolin/treesit-install-language-grammars ()
-    "Install all language grammars."
+    "Install all treesit grammars for all languages."
     (interactive)
     (let ((ts-dir (car treesit-extra-load-path)))
       (unless (file-directory-p ts-dir)
@@ -112,8 +105,11 @@
 (use-package docstr
   :demand t
   :functions (docstr-mode
-              docstr--doc-valid-p docstr--looking-back docstr--insert-doc-string
-              docstr--generic-search-string))
+              docstr--doc-valid-p docstr--looking-back
+              docstr--insert-doc-string docstr--generic-search-string
+              docstr-lua--before-insert docstr-trigger-lua)
+  :defines (docstr-go-modes
+            docstr-lua-style docstr-lua-modes docstr-python-modes))
 
 ;; Jump-to-def/find-refs
 (use-package dumb-jump
@@ -869,6 +865,7 @@ See URL: \\='https://github.com/rvben/rumdl'."
   :functions (python-skeleton-class
               python-skeleton-def python-skeleton-for python-skeleton-if
               python-skeleton-import python-skeleton-try python-skeleton-while)
+  :defines (python-base-mode-map)
   :init (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
   :custom
   (docstr-python-style 'google)
@@ -966,6 +963,7 @@ Also used for `bash-ts-mode'. Add to the list `sh-mode-hook'."
                      (that1guycolin/sh-shell-hooks)))
   :mode (("\\.bash\\'" . bash-ts-mode)
          (("\\.dash\\'" "\\.sh\\'" "\\.zsh\\'") . sh-mode))
+  :defines (bash-ts-mode-map sh-mode-map)
   :init (add-to-list 'flycheck-shellcheck-supported-shells 'dash)
   :custom
   (flycheck-shellcheck-infer-shell t)
@@ -1316,3 +1314,5 @@ See URL: \\='https://github.com/zavoloklom/docker-compose-linter'."
 
 (provide '03-idemacs)
 ;;; 03-idemacs.el ends here
+
+                                        ; LocalWords:  luadoc
