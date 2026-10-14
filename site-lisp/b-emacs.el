@@ -93,6 +93,10 @@ If not in a side window, jump to the first found side window."
   (add-hook 'elpaca-after-init-hook
             (lambda ()
               (run-with-timer 30 nil #'that1guycolin/remove-eln-cache)))
+  (when (eq that1guycolin/emacs-type 'android-gui)
+    (add-hook 'elpaca-after-init-hook
+              (lambda ()
+                (set-frame-font "BlexMono Nerd Font Mono" nil t t))))
   :custom
   (auto-save-visited-interval 60)
   (enable-recursive-minibuffers t)
