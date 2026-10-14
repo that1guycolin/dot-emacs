@@ -157,6 +157,15 @@
    fj-host "https://codeberg.org"
    fj-user "that1guycolin"))
 
+(use-package shr-tag-pre-highlight
+  :after (shr)
+  :defer t
+  :hook ((fj-commits-mode
+          fj-compose-mode fj-issue-tl-mode fj-item-view-mode
+          fj-compose-comment-mode) . shr-tag-pre-highlight)
+  :config (add-to-list 'shr-external-rendering-functions
+                       '(pre . shr-tag-pre-highlight)))
+
 (use-package diff-hl
   :defer t
   :bind ("C-x v o" . diff-hl-mode)
