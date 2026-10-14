@@ -12,21 +12,22 @@
 
 ;;; Code:
 
-(declare-function project-root "project.el")
 (declare-function org-id-get-create "org-id")
 (declare-function org-id-new "org-id")
+(declare-function project-root "project.el")
+(declare-function that1guycolin/inhibit-inhibit-mouse "03-visual.el")
 (declare-function that1guycolin/org-gen-header "c-org")
 (declare-function that1guycolin/org-top-drawer-end "c-org")
 (declare-function that1guycolin/org-top-property-drawer-id "c-org")
-(declare-function that1guycolin/inhibit-inhibit-mouse "03-visual.el")
 
-(defvar org-agenda-files)
-(defvar org-directory)
-(defvar org-refile-targets)
-(defvar org-mode-map)
 (defvar dired-mode-map)
 (defvar dirvish-mode-map)
+(defvar org-agenda-files)
 (defvar org-capture-templates)
+(defvar org-directory)
+(defvar org-functions-map)
+(defvar org-mode-map)
+(defvar org-refile-targets)
 
 ;;; Tasks:
 

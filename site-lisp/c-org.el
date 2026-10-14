@@ -4,8 +4,11 @@
 ;; Load the latest version of Org rather than the built-in version.
 
 ;;; Code:
+
 (defvar elpaca-menu-org-make-manual nil)
 (setq   elpaca-menu-org-make-manual nil)
+(require '00-macros)
+(declare-function sly-eval "sly")
 
 (use-package org
   :ensure (:wait t)
@@ -469,6 +472,7 @@ Thanks to Reddit user \\='hogmannn' for the basis of this function:
   (require 'org-id)
   (require 'org-protocol)
   (require 'ox-texinfo)
+  
   (keymap-set org-mode-map "C-c b" that1guycolin/org-insert-block-map)
   (let ((lang-mode-cells '(("bash"  . bash-ts) ("bash2" . bash-ts)
                            ("cmake" . cmake-ts) ("json" . json-ts)
