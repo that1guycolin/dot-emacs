@@ -9,6 +9,7 @@
 (setq   elpaca-menu-org-make-manual nil)
 (require '00-macros)
 (declare-function sly-eval "sly")
+(defvar org-id-prefix)
 
 (use-package org
   :ensure (:wait t)
@@ -184,19 +185,22 @@ underneath."
         (when (org-up-heading-safe)
           (org-get-heading t t t t))))))
 
-  (defun that1guycolin/org-id-dynamic-prefix (orig-fn &rest args)
+  (defun that1guycolin/org-id-dynamic-prefix (_orig-fn &rest args)
     "Dynamically compute org-id-prefix' each time an ID is created.
-Designed to wrap around ORIG-FN `org-id-new' (accepting the same ARGS) when
+Designed to override `org-id-new' (accepting the same ARGS) when
 creating org nodes."
-    (defvar org-id-prefix)
     (let ((org-id-prefix
            (if (derived-mode-p 'org-mode)
                (or (that1guycolin/org-id-prefix-slug
                     (that1guycolin/org-id-context-prefix))
                    org-id-prefix)
              (that1guycolin/get-parent-directory))))
-      (apply orig-fn args)))
-  (advice-add 'org-id-new :around #'that1guycolin/org-id-dynamic-prefix)
+      (if (and (derived-mode-p 'org-mode)
+               (save-excursion (org-back-to-heading t)))
+          (format "%s:%s" org-id-prefix
+                  (that1guycolin/org-id-prefix-slug (org-get-heading t t t t)))
+        (apply #'org-id-new args))))
+  (advice-add 'org-id-new :override #'that1guycolin/org-id-dynamic-prefix)
 
   
 ;;; Custom header settings
@@ -222,6 +226,26 @@ For entire buffer, return the top of the buffer."
       (if (eq location 'document)
           (point-min)
         location)))
+
+  (defun that1guycolin/org-id-all-headings (&optional level)
+    "Ensure an ID exists for all headings in the current Org buffer.
+Optionally, specify only headings up-to-and-including LEVEL."
+    (interactive
+     (list
+      (and current-prefix-arg
+           (string-to-number
+            (read-string "Generate IDs up to header level... : ")))))
+    (if level
+        (message "Generating IDs through header level %d for %s"
+                 level buffer-file-name)
+      (message "Generating IDs for %s" buffer-file-name))
+    (let* ((numeric-level (cond
+                           ((integerp level) level)
+                           ((consp level) (car level))
+                           (t nil)))
+           (match-str (when numeric-level
+                        (format "LEVEL<=%d" numeric-level))))
+      (org-map-entries #'org-id-get-create match-str 'file)))
 
   (defun that1guycolin/org-update-last-edit-dt ()
     "Update value of `LAST_EDIT' header in the active Org buffer.
