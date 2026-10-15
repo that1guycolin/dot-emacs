@@ -503,11 +503,12 @@ Thanks to Reddit user \\='hogmannn' for the basis of this function:
   (require 'ox-texinfo)
   
   (keymap-set org-mode-map "C-c b" that1guycolin/org-insert-block-map)
-  (let ((lang-mode-cells '(("bash"   . bash-ts) ("bash2"  . bash-ts)
-                           ("cmake"  . cmake-ts) ("json"  . json-ts)
-                           ("kdl"    . kdl)     ("lua"    . lua-ts)
-                           ("python" . python-ts) ("toml" . toml-ts)
-                           ("yaml"   . yaml-ts))))
+  (let ((lang-mode-cells '(("bash"   . bash-ts) ("bash2" . bash-ts)
+                           ("cmake"  . cmake-ts) ("json" . json-ts)
+                           ("kdl"    . kdl)       ("lua" . lua-ts)
+                           ("python" . python-ts)  ("sh" . bash-ts)
+                           ("toml"   . toml-ts)  ("yaml" . yaml-ts)
+                           ("zsh"    . bash-ts))))
     (setq org-src-lang-modes
           (assoc-delete-all (car lang-mode-cells) org-src-lang-modes))
     (mapc (lambda (cons) (add-to-list 'org-src-lang-modes cons))
