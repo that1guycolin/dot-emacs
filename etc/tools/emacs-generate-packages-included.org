@@ -6,7 +6,7 @@
 #+AUTHOR: Colin Loeffler (that1guycolin)
 #+COMMENT: DO NOT COMMIT THIS FILE WITH EVALUATED RESULTS
 #+CREATED_DATE: [2026-06-13 Sat 05:08:11]
-#+LAST_EDIT: [2026-09-26 SAT 15:25:20]
+#+LAST_EDIT: [2026-10-16 FRI 09:39:43]
 #+ID: tools:dou27p801zk0
 #+FILETAGS: :Emacs:emacsd:elpaca:use_package:
 
@@ -64,15 +64,13 @@ DO NOT COMMIT THIS FILE WITH EVALUATED RESULTS
 
 #+CALL: list-packages(file="~/.config/emacs/site-lisp/01-environment.el")
 
-#+CALL: list-packages(file="~/.config/emacs/site-lisp/02-project-vc.el")
+#+CALL: list-packages(file="~/.config/emacs/site-lisp/02-visual.el")
 
-#+CALL: list-packages(file="~/.config/emacs/site-lisp/03-visual.el")
+#+CALL: list-packages(file="~/.config/emacs/site-lisp/03-idemacs.el")
 
-#+CALL: list-packages(file="~/.config/emacs/site-lisp/04-code-assist.el")
+#+CALL: list-packages(file="~/.config/emacs/site-lisp/04-project-vc.el")
 
-#+CALL: list-packages(file="~/.config/emacs/site-lisp/05-languages.el")
+#+CALL: list-packages(file="~/.config/emacs/site-lisp/05-org-config.el")
 
-#+CALL: list-packages(file="~/.config/emacs/site-lisp/06-org-config.el")
-
-#+CALL: list-packages(file="~/.config/emacs/site-lisp/07-support.el")
+#+CALL: list-packages(file="~/.config/emacs/site-lisp/06-support.el")
 
