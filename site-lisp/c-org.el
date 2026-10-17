@@ -277,9 +277,9 @@ The function ends with the cursor on the new line."
   (defun that1guycolin/org--header-properties (title author)
     "Generate a header block and properties drawer at the same time.
 The header block will contain TITLE and AUTHOR information."
-    (let ((id (that1guycolin/org-insert-properties-drawer)))
-      (that1guycolin/org-top-drawer-end)
-      (that1guycolin/org-gen-header title author id)))
+    (let ((id (that1guycolin/org-insert-properties-drawer nil)))
+      (that1guycolin/org--goto-drawer-end)
+      (that1guycolin/org--gen-header title author id)))
 
   (defun that1guycolin/org-insert-header-block (title author)
     "Insert a header block at the top of the current document.
@@ -424,7 +424,8 @@ If they are currently hidden, make them visible. Thanks to Reddit user
   (org-capture-templates
    (list that1guycolin/org-templates--task
          that1guycolin/org-templates--idea
-         that1guycolin/org-templates--daily
+         that1guycolin/org-templates--daily-today
+         that1guycolin/org-templates--daily-future
          that1guycolin/org-templates--someday
          that1guycolin/org-templates--reading-list
          that1guycolin/org-templates--media-download))
