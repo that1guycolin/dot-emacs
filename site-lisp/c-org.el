@@ -132,19 +132,27 @@ completed.")
 Designed to override ORIG-FN `org-id-new' (accepting the same ARGS) when
 creating org nodes."
     (let ((org-id-prefix
-           (if (derived-mode-p 'org-mode)
-               (or (that1guycolin/org-id-prefix-slug
-                    (that1guycolin/org-id-context-prefix))
+           (if (eq major-mode 'org-mode)
+               (or (that1guycolin/org-id--prefix-slug
+                    (that1guycolin/org-id--context-prefix))
                    org-id-prefix)
-             (that1guycolin/get-parent-directory))))
-      (if (and (derived-mode-p 'org-mode)
-               (save-excursion (org-back-to-heading t)))
-          (format "%s:%s" org-id-prefix
-                  (that1guycolin/org-id-prefix-slug (org-get-heading t t t t)))
-        (apply #'org-id-new args))))
-  (advice-add 'org-id-new :override #'that1guycolin/org-id-dynamic-prefix)
+             (that1guycolin/current-buffer-parent-dir))))
+      (if (eq major-mode 'org-mode)
+          (cond
+           ((org-before-first-heading-p) (apply orig-fn args))
+           ((save-excursion (org-back-to-heading t))
+            (format "%s:%s" org-id-prefix
+                    (that1guycolin/org-id--prefix-slug
+                     (org-get-heading t t t t))))
+           (t
+            (save-excursion
+              (org-back-to-heading t)
+              (when (org-up-heading-safe)
+                (org-get-heading t t t t)))))
+        (apply orig-fn args))))
+  (advice-add 'org-id-new :around #'that1guycolin/org-dynamic-id)
 
-  
+
 ;;; Custom header settings
   (defun that1guycolin/org--get-heading-location ()
     "In an org-mode buffer, prompt user to pick a scope.
