@@ -247,15 +247,26 @@ The function ends with the cursor on the new line."
             "\n#+ID: " id
             "\n#+FILETAGS: "))
 
-  
+  (defun that1guycolin/org--header-count ()
+    "Return the number of headings in the current buffer."
+    (unless (eq major-mode 'org-mode)
+      (user-error "This buffer is not in org mode"))
+    (let ((count 0))
+      (org-map-entries
+       (lambda () (setq count (1+ count)))
+       nil 'file)
+      count))
+
+
 ;;; Insert objects
   (defun that1guycolin/org-insert-properties-drawer (&optional choice)
     "Create org properties drawer at an interactively-selected heading."
     (interactive "p")
     (unless (eq major-mode 'org-mode)
       (user-error "This buffer is not in org mode"))
-    (if interactivep
-        (goto-char (that1guycolin/org-get-heading-location))
+    (if (and (not (= (that1guycolin/org--header-count) 0))
+             choice)
+        (goto-char (that1guycolin/org--get-heading-location))
       (goto-char (point-min)))
     (let ((id (org-id-get-create)))
       (unless (org-entry-get nil "CREATED")
