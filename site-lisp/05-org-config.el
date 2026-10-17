@@ -15,10 +15,8 @@
 (declare-function org-id-get-create "org-id")
 (declare-function org-id-new "org-id")
 (declare-function project-root "project.el")
-(declare-function that1guycolin/inhibit-inhibit-mouse "03-visual.el")
-(declare-function that1guycolin/org-gen-header "c-org")
-(declare-function that1guycolin/org-top-drawer-end "c-org")
-(declare-function that1guycolin/org-top-property-drawer-id "c-org")
+(declare-function that1guycolin/inhibit-inhibit-mouse "02-visual.el")
+(declare-function that1guycolin/org--top-drawer-id "c-org")
 
 (defvar dired-mode-map)
 (defvar dirvish-mode-map)
@@ -402,7 +400,7 @@ Values are mapped to informative strings."
 
 If variable `org-tidy-mode' is non-nil, deactivate \\='org-tidy' mode,
 then reactivate after FUNC is complete. Use as advice for
-`that1guycolin/org-top-property-drawer-id'."
+`that1guycolin/org--top-drawer-id'."
 
     (if org-tidy-mode
         (progn
@@ -412,7 +410,7 @@ then reactivate after FUNC is complete. Use as advice for
             return))
       (funcall func)))
 
-  (advice-add #'that1guycolin/org-top-property-drawer-id :around
+  (advice-add #'that1guycolin/org--top-drawer-id :around
               #'that1guycolin/org-top-tidy-property-drawer-id)
 
   :bind ("C-:" . org-tidy-toggle)
