@@ -158,9 +158,10 @@ via the function `that1guycolin/default-font-presets-set-size'."
      (list
       (read-number (format "Font Size (Current: %i): "
                            that1guycolin/default-font-presets--font-size))))
-    (set-face-attribute
-     'default nil :font (concat (that1guycolin/default-font-presets--get-font)
-                                "-" (number-to-string new-size)))
+    (set-frame-font (format "%s-%i"
+                            (that1guycolin/default-font-presets--get-font)
+                            new-size)
+                    nil t t)
     (setf that1guycolin/default-font-presets--font-size new-size))
 
   (defun that1guycolin/default-font-presets-random-font ()
