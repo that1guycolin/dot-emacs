@@ -81,7 +81,6 @@ If not in a side window, jump to the first found side window."
 ;;;; use-package
   :bind (("C-TAB"   . completion-at-point)
          ("C-c C-x" . toggle-frame-maximized)
-         ("C-x l"   . set-fill-column)
          ("C-c ("   . that1guycolin/check-parens-with-message)
          ("C-c #"   . display-line-numbers-mode)
          ("C-c C-#" . global-display-line-numbers-mode)

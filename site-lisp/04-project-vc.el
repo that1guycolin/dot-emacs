@@ -150,7 +150,7 @@
 
 (use-package fj
   :demand t
-  :bind ("C-x f" . fj-list-own-repos)
+  :bind ("C-x j" . fj-list-own-repos)
   :defines (fj-host fj-user)
   :config
   (setq
