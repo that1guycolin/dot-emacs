@@ -49,46 +49,46 @@ completed.")
   
 ;;; Capture Templates
   (defconst that1guycolin/org-templates--task
-    '("t" "Task" entry (file "TODOs/tasks.org")
+    '("t" "Task" entry (file "tasks-to-do/tasks.org")
       "* TODO %^{Title}\n:PROPERTIES:\n:CREATED: %U\n:END:\n- %?"
       :empty-lines 1
       :kill-buffer t))
 
   (defconst that1guycolin/org-templates--idea
-    '("i" "Idea" entry (file "TODOs/ideas.org")
+    '("i" "Idea" entry (file "tasks-to-do/ideas.org")
       "* IDEA %^{Title}\n:PROPERTIES:\n:CREATED: %U\n:END:\n** %?"
       :empty-lines 1
       :kill-buffer t))
 
   (defconst that1guycolin/org-templates--daily-today
     '("d" "Daily Task" entry
-      (file+olp+datetree "TODOs/daily.org")
+      (file+olp+datetree "tasks-to-do/daily.org")
       "** TODAY %?\nSCHEDULED: <%<%Y-%m-%d %a>>"
       :tree-type (year month week day)
       :kill-buffer t))
 
   (defconst that1guycolin/org-templates--daily-future
     '("f" "Daily Task (Future)" entry
-      (file+olp+datetree "TODOs/daily.org")
+      (file+olp+datetree "tasks-to-do/daily.org")
       "** UPCOMING %?\nSCHEDULED: <%^{Future Date}t>"
       :time-prompt t
       :tree-type (year month week day)
       :kill-buffer t))
 
   (defconst that1guycolin/org-templates--someday
-    '("s" "Someday" entry (file "TODOs/someday.org")
+    '("s" "Someday" entry (file "tasks-to-do/someday.org")
       "* SOMEDAY %^{Title}\n:PROPERTIES:\n:CREATED: %U\n:END:\n- %?"
       :empty-lines 1
       :kill-buffer t))
 
   (defconst that1guycolin/org-templates--reading-list
-    '("b" "Book" entry (file "TODOs/reading-list.org")
+    '("b" "Book" entry (file "tasks-to-do/reading-list.org")
       "* TO READ Title: %^{Title}\nAuthor: %?\nComments: "
       :empty-lines 1
       :kill-buffer t))
 
   (defconst that1guycolin/org-templates--media-download
-    '("m" "Media" entry (file "TODOs/media-download.org")
+    '("m" "Media" entry (file "tasks-to-do/media-download.org")
       "* TAGGED Title: %^{Title}\n- URL: %^{URL}\n- Actors: %?\n- Studio: "
       :empty-lines 1
       :kill-buffer t))
@@ -415,7 +415,7 @@ If they are currently hidden, make them visible. Thanks to Reddit user
           :tmux"/storage/emulated/0/Documents/org")
   :custom
   (org-agenda-files
-   (directory-files (expand-file-name "TODOs/" org-directory) t
+   (directory-files (expand-file-name "tasks-to-do/" org-directory) t
                     directory-files-no-dot-files-regexp))
   (org-agenda-diary-file (expand-file-name "diary.org" org-directory))
   (org-archive-location

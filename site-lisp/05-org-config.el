@@ -161,7 +161,7 @@ URL, LINK will be shown instead."
   (org-mem-do-look-everywhere nil)
   :config
   (mapc (lambda (d) (add-to-list 'org-mem-exclude d))
-        '("/elpaca/" "/archive/" "/TODOs"))
+        '("elpaca/" "archive/" "tasks-to-do/"))
   (org-mem-updater-mode 1))
 
 ;; Fast & simple note management
