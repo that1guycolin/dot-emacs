@@ -251,7 +251,7 @@ See URL `https://vale.sh'."
     (setq eglot-server-programs
           (cl-remove-if
            (lambda (cell)
-             (memq mode(ensure-list (car cell))))
+             (memq mode (ensure-list (car cell))))
            eglot-server-programs)))
   :bind (:map ctl-x-map ("e" . eglot)))
 
@@ -495,28 +495,28 @@ See URL: \\='https://github.com/fukamachi/mallet'."
   (add-to-list 'flycheck-checkers 'cl-mallet)
 
   (that1guycolin/eglot-remove-mode-servers 'lisp-mode)
-  (add-to-list 'eglot-server-programs
-               '((lisp-mode lisp-ts-mode) .
-                 (lambda (_interactive _project)
-                   (unless (that1guycolin/eglot-lisp-alive--port-available-p
-                            that1guycolin/eglot-lisp-alive-port)
-                     (error "Port %d is already in use"
-                            that1guycolin/eglot-lisp-alive-port))
-                   (make-process
-                    :name "alive-lsp"
-                    :buffer (get-buffer-create "*alive-lsp*")
-                    :noquery t
-                    :sentinel #'ignore
-                    :filter #'ignore
-                    :command
-                    (list "sbcl"
-                          "--eval" "(require :asdf)"
-                          "--eval" "(asdf:load-system :alive-lsp)"
-                          "--eval"
-                          (format "(alive/server::start :port %d)"
-                                  that1guycolin/eglot-lisp-alive-port)))
-                   (sleep-for 1)
-                   (list "localhost" that1guycolin/eglot-lisp-alive-port)))))
+  (add-to-list
+   'eglot-server-programs
+   '((lisp-mode lisp-ts-mode) .
+     (lambda (_interactive _project)
+       (unless (that1guycolin/eglot-lisp-alive--port-available-p
+                that1guycolin/eglot-lisp-alive-port)
+         (error "Port %d is already in use"
+                that1guycolin/eglot-lisp-alive-port))
+       (make-process
+        :name "alive-lsp"
+        :buffer (get-buffer-create "*alive-lsp*")
+        :noquery t
+        :sentinel #'ignore
+        :filter #'ignore
+        :command (list "sbcl"
+                       "--eval" "(require :asdf)"
+                       "--eval" "(asdf:load-system :alive-lsp)"
+                       "--eval"
+                       (format "(alive/server::start :port %d)"
+                               that1guycolin/eglot-lisp-alive-port)))
+       (sleep-for 1)
+       (list "localhost" that1guycolin/eglot-lisp-alive-port)))))
 
 (use-package scheme
   :ensure nil
@@ -751,7 +751,7 @@ a running slynk instance @ localhost:4005."
 ;;; Lua:
 (use-package lua-ts-mode
   :ensure nil
-  :after (docstr apheleia)
+  :after (apheleia docstr eglot)
   :defer t
   :preface
   (defun that1guycolin/docstr-trigger-lua (&rest _)
@@ -783,7 +783,10 @@ a running slynk instance @ localhost:4005."
   (with-eval-after-load 'docstr-lua
     (add-to-list 'docstr-lua-modes 'lua-ts-mode))
   (with-eval-after-load 'docstr-key
-    (add-to-list 'docstr-key-javadoc-like-modes 'lua-ts-mode)))
+    (add-to-list 'docstr-key-javadoc-like-modes 'lua-ts-mode))
+  (that1guycolin/eglot-remove-mode-servers 'lua-mode)
+  (add-to-list 'eglot-server-programs
+               '((lua-mode lua-ts-mode) . ("emmylua_ls"))))
 
 
 ;;; Markdown:
@@ -1097,10 +1100,17 @@ See URL: \\='https://fishshell.com'."
 
 
 ;;; Config File Modes:
+;; Conf:
+(use-package conf-mode
+  :ensure nil
+  :defer t
+  :hook (conf-mode . (lambda () (setq-local fill-column 1000)))
+  :mode ("\\.container"))
+
 ;; INI:
 (use-package ini-mode
   :defer t
-  :hook (ini-mode . (lambda () (setq-local fill-column 100)))
+  :hook (ini-mode . (lambda () (setq-local fill-column 1000)))
   :mode ("\\.ini\\'" "\\.desktop\\'" "\\.hook\\'"))
 
 ;; JSON:
@@ -1162,11 +1172,12 @@ See URL: \\='https://fishshell.com'."
 (use-package systemd
   :after (flycheck)
   :defer t
-  :hook (systemd-mode . (lambda () (setq-local fill-column 100)))
-  :mode (("\\.container\\'" . systemd-mode)
-         ("\\.service\\'"   . systemd-mode)
-         ("\\.socket\\'"    . systemd-mode)
-         ("\\.timer\\'"     . systemd-mode))
+  :hook (systemd-mode . (lambda ()
+                          (setq-local fill-column 1000) (flycheck-mode)))
+  :mode (("\\.network \\'"  . systemd-mode)
+         ("\\.service\\'"  . systemd-mode)
+         ("\\.socket\\'"   . systemd-mode)
+         ("\\.timer\\'"    . systemd-mode))
   :config
   (flycheck-define-checker systemd-systemdlint
     "A Systemd unit file linter.
