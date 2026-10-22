@@ -6,6 +6,13 @@
 ;; and applies early UI optimizations before the main config loads.
 
 ;;; Code:
+;;; no-littering
+(when (and (fboundp 'startup-redirect-eln-cache)
+           (not (eq system-type 'android)))
+  (startup-redirect-eln-cache
+   (convert-standard-filename
+    (expand-file-name "var/eln-cache/" user-emacs-directory))))
+
 ;;; Set PATH so Emacs Android GUI can access Termux files
 (when (eq system-type 'android)
   (setenv "PATH" (format "%s:%s:%s:%s"
@@ -19,38 +26,6 @@
   ;; Display scratch as initial buffer (changed when dashboard is loaded)
   (setq
    initial-buffer-choice t))
-
-;;; no-littering
-(when (and (fboundp 'startup-redirect-eln-cache)
-           (not (eq system-type 'android)))
-  (startup-redirect-eln-cache
-   (convert-standard-filename
-    (expand-file-name "var/eln-cache/" user-emacs-directory))))
-
-;;; Optionally Profile Startup
-(defvar that1guycolin/profile-startup nil
-  "When non-nil, enable CPU profiling during startup.")
-
-(when that1guycolin/profile-startup
-  (declare-function profiler-stop "profiler")
-  (declare-function profiler-report "profiler")
-  (setq debug-on-error t)
-  (profiler-start 'cpu)
-  (defvar that1guycolin/profiler-report-active-p nil
-    "Non-nil if if that1guycolin/profiler-startup-report has been triggered.")
-  (defun that1guycolin/profiler-startup-report ()
-    "Stop the cpu profiler and generate its report."
-    (unless that1guycolin/profiler-report-active-p
-      (require 'profiler)
-      (profiler-stop)
-      (with-eval-after-load 'profiler
-        (profiler-report))))
-  (declare-function that1guycolin/profiler-startup-report "early-init.el")
-  (add-hook 'emacs-startup-hook
-            #'(lambda ()
-                (run-with-idle-timer 10 nil
-                                     #'that1guycolin/profiler-startup-report)))
-  (run-with-idle-timer 30 nil #'that1guycolin/profiler-startup-report))
 
 ;;; Modify variables for startup, then reset
 (defvar that1guycolin/file-name-handler-alist-backup file-name-handler-alist)
