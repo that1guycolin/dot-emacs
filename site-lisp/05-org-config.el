@@ -23,7 +23,7 @@
 (defvar org-agenda-files)
 (defvar org-capture-templates)
 (defvar org-directory)
-(defvar org-functions-map)
+(defvar that1guycolin/org-functions-map)
 (defvar org-mode-map)
 (defvar org-refile-targets)
 
@@ -244,7 +244,7 @@ and ID are automatically provided."
   (defvar that1guycolin/notes-directory
     (expand-file-name "notes" org-directory)
     "Directory in which org-noter files are stored.")
-  :bind ((:map org-functions-map
+  :bind ((:map that1guycolin/org-functions-map
                ("n" . org-noter))
          (:map dired-mode-map
                ("N" . org-noter-start-from-dired))
@@ -257,7 +257,7 @@ and ID are automatically provided."
   (org-noter-notes-search-path that1guycolin/notes-directory)
   (org-noter-default-notes-file-names '("notes.org"))
   :config (with-eval-after-load 'which-key
-            (which-key-add-keymap-based-replacements org-functions-map
+            (which-key-add-keymap-based-replacements that1guycolin/org-functions-map
               "n" "Noter")))
 
 ;; PDF Tools ext

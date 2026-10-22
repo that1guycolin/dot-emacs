@@ -369,14 +369,14 @@ If they are currently hidden, make them visible. Thanks to Reddit user
 
 
 ;;; Keymap
-  (defvar-keymap org-functions-map
+  (defvar-keymap that1guycolin/org-functions-map
     :doc "Useful functions inside and outside of Org-mode."
     "o" #'org-mode
     "a" #'org-agenda
     "c" #'org-capture
     "l" #'org-store-link)
   (with-eval-after-load 'which-key
-    (which-key-add-keymap-based-replacements org-functions-map
+    (which-key-add-keymap-based-replacements that1guycolin/org-functions-map
       "o" "Org Mode"
       "a" "Agenda"
       "c" "Capture"
@@ -399,7 +399,7 @@ If they are currently hidden, make them visible. Thanks to Reddit user
               ("C-c l"   . org-toggle-link-display)
               ("C-c C-q" . org-set-tags-command)
               ("C-c _"   . that1guycolin/org-inline-source-toggle-visibility))
-  :bind-keymap ("C-c o" . org-functions-map)
+  :bind-keymap ("C-c o" . that1guycolin/org-functions-map)
   :mode (("\\.org\\'"   . org-mode)
          ("\\.notes\\'" . org-mode))
   :functions (org-before-first-heading-p
