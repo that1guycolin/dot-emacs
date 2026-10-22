@@ -997,21 +997,11 @@ Also used for `bash-ts-mode'. Add to the list `sh-mode-hook'."
   (flycheck-sh-zsh-executable "/usr/bin/zsh")
   :config
   (when (eq system-type 'android)
-  (flycheck-define-checker zsh-lint
-    "A Flycheck checker for zsh-lint.
-See URL `https://wiki.zshell.dev'."
-    :command ("zsh-lint" "--format" "json" source)
-    :error-parser that1guycolin/flycheck-parse-zsh-lint
-    :modes sh-mode)
-  (add-hook 'sh-mode-hook
-            (lambda ()
-              (when (eq sh-shell 'zsh)
-                (flycheck-select-checker 'zsh-lint)))))
     (mapc #'that1guycolin/prepend-termux-prefix
-          '(flycheck-shellcheck-sh-bash-executable
-            flycheck-shellcheck-sh-posix-bash-executable
-            flycheck-shellcheck-sh-posix-dash-executable
-            flycheck-shellcheck-sh-shellcheck-executable
+          '(flycheck-sh-bash-executable
+            flycheck-sh-posix-bash-executable
+            flycheck-sh-posix-dash-executable
+            flycheck-sh-shellcheck-executable
             flycheck-sh-zsh-executable))))
 
 
@@ -1102,20 +1092,8 @@ See URL: \\='https://fishshell.com'."
   :ensure nil
   :after (flycheck)
   :defer t
-  ;; :preface                           
-  ;; (defun that1guycolin)
-
   :hook (makefile-mode . (lambda () (setq-local fill-column 100)))
-  :mode "Makefile\\'"
-  :config
-  (flycheck-define-checker makefile-checkmake
-    "Makefile style-checker/linter written in Go.
-See URL: \\='https://github.com/mrtazz/checkmake'."
-    :command ("checkmake" "-o" "json" source-inplace)
-    :error-parser that1guycolin/flycheck-parse-checkmake
-    :modes (makefile-mode makefile-automake-mode makefile-bsdmake-mode
-                          makefile-gmake-mode))
-  (add-to-list 'flycheck-checkers 'makefile-checkmake))
+  :mode "Makefile\\'")
 
 
 ;;; Config File Modes:
