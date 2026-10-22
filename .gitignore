@@ -3,6 +3,7 @@ auto-save-list/
 backups/
 bookmarks
 .cache/
+*compose.yaml
 .cz.toml
 *.eask/
 eln-cache
