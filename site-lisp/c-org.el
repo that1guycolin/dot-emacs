@@ -395,9 +395,11 @@ If they are currently hidden, make them visible. Thanks to Reddit user
       (while (re-search-forward "\\[\\([^]]+\\)\\](\\([^)]+\\))" nil t)
         (replace-match "[[\\2][\\1]]" nil nil))))
 
+  
 ;;; use-package sexp
   :bind (:map org-mode-map
               ("C-c l"   . org-toggle-link-display)
+              ("C-c C-h" . that1guycolin/org-id-all-headings)
               ("C-c C-q" . org-set-tags-command)
               ("C-c _"   . that1guycolin/org-inline-source-toggle-visibility))
   :bind-keymap ("C-c o" . that1guycolin/org-functions-map)
