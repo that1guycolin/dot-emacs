@@ -7,8 +7,9 @@
 ;; org-pomodoro, org-project-capture, org-recur, org-tidy, pdf-tools
 
 ;;; Commentary:
-;; Set up Emacs' Org-mode. Also, configure packages that extend Org's already
-;; awesome power.
+;; Configure packages to improve and extend the Org-mode experience. Packages
+;; are grouped into \"Task (projects & TODO)\", \"Knowledge (notes & recipes)\",
+;; and \"miscellaneous\".
 
 ;;; Code:
 
