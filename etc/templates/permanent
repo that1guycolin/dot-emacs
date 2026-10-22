@@ -104,6 +104,9 @@ target = \".config/mpv/scripts/" fn ".lua\", direct = true }")
 (pyoptdeps "[project.optional-dependencies]" n "dev = [\"rassumfrassum\", \"ruff\", \"ty\"]" n
            "doc = [\"sphinx\", \"furo\"]")
 
+lua-ts-mode
+(mpkeybd "mp.add_key_binding(" (p "key") ", " (p "name") ", " (p "function") ")")
+
 
 ;; Local Variables:
 ;; mode: lisp-data
