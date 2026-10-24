@@ -122,7 +122,22 @@
    (no-littering-expand-etc-file-name ".tabspaces-sessions"))
   (tabspaces-todo-file-name "TODO.org")
   (tabspaces-use-filtered-buffers-as-default t)
-  :config (add-hook 'tabspaces-mode-hook #'that1guycolin/consult-tabspaces))
+  :config
+  (add-hook 'tabspaces-mode-hook #'that1guycolin/consult-tabspaces)
+  (with-eval-after-load 'which-key
+    (which-key-add-keymap-based-replacements tabspaces-command-map
+      "C" "Clear Buffers"
+      "b" "Switch to Buffer"
+      "d" "Close Workspace"
+      "k" "Kill Buffers & Close Workspace"
+      "n" "Rename Workspace"
+      "o" "Open Project in New Workspace"
+      "r" "Remove Current Buffer"
+      "R" "Remove Selected Buffer"
+      "s" "Switch Workspace"
+      "t" "Switch Buffer & Tab"
+      "w" "Show Workspaces"
+      "T" "Toggle Echo Area Display")))
 
 
 ;;; VC/Git:
