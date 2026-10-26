@@ -7,7 +7,6 @@
 ;;; Code:
 
 (require '00-macros)
-(defvar that1guycolin/site-lisp-dir)
 
 (use-package emacs
   :ensure nil
@@ -21,16 +20,16 @@
     "Directory containing custom \\='one off' scripts.")
 
   (defvar that1guycolin/android-home
-    "/data/data/com.termux/files/home/"
+    "/data/data/com.termux/files/home"
     "Termux home directory on Android.")
 
   (that1guycolin/emacs-set-for-type that1guycolin/projects-directory
-    :desk (expand-file-name "~/projects/")
-    :tmux (expand-file-name "projects/" that1guycolin/android-home))
+    (expand-file-name "~/projects") (expand-file-name "~/projects")
+    (expand-file-name "projects" that1guycolin/android-home))
 
   (that1guycolin/emacs-set-for-type that1guycolin/scripts-directory
-    :desk (expand-file-name "~/scripts/")
-    :tmux (expand-file-name "scripts/" that1guycolin/android-home))
+    (expand-file-name "~/scripts") (expand-file-name "~/scripts")
+    (expand-file-name "scripts" that1guycolin/android-home))
 
 ;;;; tabs-to-spaces
   (defun that1guycolin/untabify-buffer ()

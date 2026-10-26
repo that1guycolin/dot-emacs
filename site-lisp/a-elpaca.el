@@ -13,7 +13,7 @@
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
 (defvar elpaca-sources-directory (expand-file-name "sources/" elpaca-directory))
 (defvar elpaca-queue-limit)
-(that1guycolin/emacs-set-for-type elpaca-queue-limit :desk 8 :tmux 4 :gui 4)
+(that1guycolin/emacs-set-for-type elpaca-queue-limit 8 4 4)
 (defvar elpaca-menu-org-make-manual nil)
 
 ;; Avoid flycheck warnings

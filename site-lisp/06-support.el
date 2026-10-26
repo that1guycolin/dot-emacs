@@ -38,10 +38,10 @@
   :bind ("C-c t g" . ghostel)
   :hook (ghostel-mode . (lambda () (setq-local fill-column 1000)))
   :init (that1guycolin/emacs-set-for-type ghostel-module-auto-install
-          :desk 'compile :tmux 'download)
   :config (with-eval-after-load 'disproject
             (transient-append-suffix 'disproject-dispatch
               "s" '("o" "Ghostel" ghostel-project))))
+          'compile 'download 'download)
 
 ;; Commit shell layer
 (use-package mistty
