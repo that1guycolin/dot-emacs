@@ -976,8 +976,10 @@ Also used for `bash-ts-mode'. Add to the list `sh-mode-hook'."
       (flycheck-select-checker 'sh-shellcheck))))
 
   (defun that1guycolin/prepend-termux-prefix (var)
-    "Add the Termux prefix to the start of VAR."
-    (setq var (concat "/data/data/com.termux/files" (symbol-value var))))
+    "Add the Termux prefix to the start of VAR.
+For example, \"/usr/bin/bash\" becomes
+\"/data/data/com.termux/files/usr/bin/bash\"."
+    (set var (concat "/data/data/com.termux/files" (symbol-value var))))
 
   :hook ((sh-mode . (lambda ()
                       (apheleia-mode -1)
