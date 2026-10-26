@@ -1088,20 +1088,18 @@ See URL: \\='https://fishshell.com'."
    (alist-get 'cmake-ts-mode apheleia-mode-alist) 'neocmakelsp))
 
 (use-package eldoc-cmake
-  :after (cmake-ts-mode)
   :defer t
-  :commands (eldoc-cmake-enable)
-  :init (add-hook 'cmake-ts-mode-hook (lambda ()
-                                        (unless (featurep 'cmake-ts-mode)
-                                          (eldoc-cmake-enable)))))
+  :hook (cmake-ts-mode . (lambda ()
+                           (unless (featurep 'eldoc-cmake)
+                             (eldoc-cmake-enable))))
+  :commands (eldoc-cmake-enable))
 
 (use-package cmake-ide
-  :after (cmake-ts-mode)
   :defer t
-  :commands (cmake-ide-setup)
-  :init (add-hook 'cmake-ts-mode-hook (lambda ()
-                                        (unless (featurep 'cmake-ts-mode)
-                                          (cmake-ide-setup)))))
+  :hook (cmake-ts-mode . (lambda ()
+                           (unless (featurep 'cmake-ide)
+                             (cmake-ide-setup))))
+  :commands (cmake-ide-setup))
 
 
 ;; Justfile:
