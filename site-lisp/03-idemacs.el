@@ -1025,7 +1025,24 @@ For example, \"/usr/bin/bash\" becomes
 (use-package pkgbuild-mode
   :after (eglot)
   :defer t
+  :preface
+  (defun that1guycolin/pkgbuild--hook-function ()
+    "Set as `pkgbuild-mode-hook'.
+
+Disable flymake, then enable flycheck & shfmt-on-save-mode with the
+correct settings."
+    (flymake-mode -1)
+    (flycheck-add-mode 'sh-shellcheck 'pkgbuild-mode)
+    (setq-local
+     fill-column 1000
+     flycheck-shellcheck-infer-shell nil
+     flycheck-shellcheck-args '("--shell" "bash")
+     flycheck-shellcheck-excluded-warnings '("SC2034" "SC2154" "SC2164")
+     shfmt-arguments '("-i" "2" "-ci"))
+    (flycheck-mode 1) (shfmt-on-save-mode 1))
+  :hook (pkgbuild-mode . that1guycolin/pkgbuild--hook-function)
   :mode "^PKGBUILD\\'"
+  :custom (pkgbuild-update-sums-on-save nil)
   :config (with-eval-after-load 'eglot
             (add-to-list 'eglot-server-programs
                          '((pkgbuild-mode) .
