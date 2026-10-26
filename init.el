@@ -87,9 +87,12 @@ is not the same as the Emacs' native `user-lisp-directory'.")
 
 (add-to-list 'load-path that1guycolin/site-lisp-dir)
 
+(require '00-macros)
+
 (require 'a-elpaca)
 (require 'b-emacs)
-(require 'c-org)
+(that1guycolin/desktop-mobile (require 'c-org-ensure-t)
+  (require 'c-org-ensure-nil) (require 'c-org-ensure-nil))
 
 ;; Automatically load customization variables if they exist
 (when (file-exists-p custom-file)

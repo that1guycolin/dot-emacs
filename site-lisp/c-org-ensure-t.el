@@ -1,4 +1,4 @@
-;;; c-org.el --- Latest Org -*- lexical-binding: t -*-
+;;; c-org-ensure-t.el --- Latest Org -*- lexical-binding: t -*-
 
 ;;; Commentary:
 ;; Load the latest version of Org rather than the built-in version.
@@ -413,9 +413,7 @@ If they are currently hidden, make them visible. Thanks to Reddit user
   :defines (org-agenda-files org-babel-default-header-args:zsh
                              org-babel-lisp-eval-fn org-directory
                              org-mode-map)
-  :init (that1guycolin/emacs-set-for-type org-directory
-          :desk (expand-file-name "~/org/")
-          :tmux"/storage/emulated/0/Documents/org")
+  :init (setq org-directory (expand-file-name "~/org"))
   :custom
   (org-agenda-files
    (directory-files (expand-file-name "tasks-to-do/" org-directory) t
@@ -489,12 +487,13 @@ If they are currently hidden, make them visible. Thanks to Reddit user
     (org-babel-do-load-languages
      'org-babel-load-languages
      org-babel-load-languages))
+  
   (with-eval-after-load 'ob-lisp
     (setq org-babel-lisp-eval-fn 'sly)))
 
 
-(provide 'c-org)
-;;; c-org.el ends here
+(provide 'c-org-ensure-t)
+;;; c-org-ensure-t.el ends here
 
                                         ; LocalWords:  ov grp i1exdt hogmannn Za
                                         ; LocalWords:  nComments nSCHEDULED
