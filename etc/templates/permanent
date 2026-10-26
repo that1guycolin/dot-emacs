@@ -55,6 +55,13 @@ sh-mode
 (arg-2 "-" (p "short") " | --" (p "long") ")" n> (p "variable") "=\"$2\""
        n> "shift 2" n> ";;")
 (bash-safe "#!/usr/bin/env bash" n "set -euo pipefail" n "IFS=$\'\\n\\t\'")
+(bld-scr "#!/usr/bin/env bash" n "# shellcheck disable=SC2164" n "set -euo pipefail" n
+	 "IFS=$'\\n\\t'" n n "[ -n \"${SRC_BASE:-}\" ] || SRC_BASE=\"${HOME}/src\"" n
+	 "[ -d \"$SRC_BASE\" ] || mkdir -p \"$SRC_BASE\"" n
+	 "[ -n \"${BLD_BASE:-}\" ] || BLD_BASE=\"${HOME}/bld\"" n
+	 "[ -d \"$BLD_BASE\" ] || mkdir -p \"$BLD_BASE\"" n n
+	 "[ -d \"${SRC_BASE}/" (p "program" prog) "\" ] || {" n> 
+	 "cd \"$SRC_BASE\"" n> "git clone " (p "repo_url") n> "}" n "cd \"${SRC_BASE}/" prog "\"")
 (cmd-e "command -v " (p "cmd") " >/dev/null 2>&1")
 (env-chk "[ -" (p "dfe") " " (p "loc" loc) " ] && { " (p "var" var) "=" loc "; export " var "; }")
 (flag "-" (p "s") " | --" (p "long") ")" n>
