@@ -20,18 +20,34 @@
 
 ;;; Code:
 
+(require '00-macros)
 (declare-function no-littering-expand-etc-file-name "no-littering")
+(defvar android-home)
+(defvar elpaca-directory)
+(defvar that1guycolin/projects-directory)
+(defvar that1guycolin/scripts-directory)
+(defvar org-directory)
+
 
 ;;; Projects:
 (use-package project
   :ensure nil
   :demand t
   :preface
-  (defvar android-home)
-  (defvar elpaca-directory)
-  (defvar that1guycolin/projects-directory)
-  (defvar that1guycolin/scripts-directory)
-  (defvar org-directory)
+  (defvar that1guycolin/project--parent-directories
+    (mapcar (lambda (dir) (expand-file-name dir))
+            (list that1guycolin/projects-directory
+                  that1guycolin/scripts-directory))
+    "List of parent directories which project repositories are stored under.")
+
+  (when (eq that1guycolin/emacs-type 'desktop)
+    (add-to-list 'that1guycolin/project--parent-directories
+                 (expand-file-name "/var/aur/pkgbuilds")))
+
+  (defvar that1guycolin/project--standalones
+    (mapcar (lambda (dir) (expand-file-name dir)) (list user-emacs-directory
+                                                        org-directory "~/dotfiles"))
+    "List of directories containing non-grouped, individual project repos.")
 
   (defun that1guycolin/project--current-root ()
     "Return the current project's root directory or nil if not in project."
@@ -54,22 +70,23 @@
     (interactive)
     (that1guycolin/project-clear-projects)
     ;; Scan these directories recursively
-    (mapc (lambda (d) (project-remember-projects-under d t))
-          (list that1guycolin/projects-directory
-                that1guycolin/scripts-directory))
+    (mapc (lambda (d) (when (file-exists-p d)
+                        (project-remember-projects-under d t)))
+          that1guycolin/project--parent-directories)
     ;; Scan these directories (but not their subdirectories)
     (mapc (lambda (d) (when (file-exists-p d)
-                        (project-remember-projects-under (expand-file-name d))))
-          (list user-emacs-directory org-directory "~/dotfiles"))
+                        (project-remember-projects-under d)))
+          that1guycolin/project--standalones)
     (message "Successfully repopulated projects list"))
 
   :functions (project-remember-projects-under)
-  :init (setq project-list-file
-              (no-littering-expand-etc-file-name "project-list.eld")
-              project-list-exclude
-              (list (regexp-quote (expand-file-name elpaca-directory))
-                    (regexp-quote "~/dotfiles/terminals/alacritty")
-                    (regexp-quote  "~/projects/guix-base/source")))
+  :init (setq
+         project-list-file
+         (no-littering-expand-etc-file-name "project-list.eld")
+         project-list-exclude (mapcar #'regexp-quote
+                                      (list (expand-file-name elpaca-directory)
+                                            "~/dotfiles/terminals/alacritty"
+                                            "~/projects/guix-base/source")))
   :custom (project-vc-ignores '("^node_modules$" "^\\.venv$" "^\\.uv$")))
 
 ;; transient dispatch for project.el
