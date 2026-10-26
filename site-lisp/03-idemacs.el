@@ -836,7 +836,7 @@ See URL: \\='https://github.com/rvben/rumdl'."
 
 
 ;;; Python:
-(use-package python
+(use-package python-mode
   :ensure nil
   :after (apheleia eglot)
   :defer t
@@ -846,8 +846,10 @@ See URL: \\='https://github.com/rvben/rumdl'."
     (and buffer-file-name
          (save-excursion
            (goto-char (point-min))
-           (looking-at-p
-            (rx "#!/usr/bin/env -S uv tool run --script")))))
+           (or (looking-at-p
+                (rx "#!/usr/bin/env -S uv run --script"))
+               (looking-at-p
+                (rx "# /// script"))))))
 
   (defun that1guycolin/python-run-smart ()
     "Run current Python file appropriately."
