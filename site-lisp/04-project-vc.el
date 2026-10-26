@@ -160,7 +160,7 @@
 ;; Set EDITOR to current Emacs session
 (use-package with-editor
   :defer t
-  :hook ((eshell-mode shell-mode) . with-editor-export-editor))
+  :commands (with-editor-export-editor))
 
 (use-package magit
   :defer t

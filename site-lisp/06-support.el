@@ -24,7 +24,9 @@
   :defer t
   :bind ("C-c t e"   . eat)
   :hook ((eshell-mode . eat-eshell-visual-command-mode)
-         (eat-mode . (lambda () (setq-local fill-column 1000)))))
+         (eat-mode . (lambda () (setq-local fill-column 1000))))
+  :config (with-eval-after-load 'with-editor
+            (add-hook 'eat-mode-hook #'with-editor-export-editor)))
 
 ;; Libghostty-based terminal shell
 (use-package ghostel
@@ -38,10 +40,13 @@
   :bind ("C-c t g" . ghostel)
   :hook (ghostel-mode . (lambda () (setq-local fill-column 1000)))
   :init (that1guycolin/emacs-set-for-type ghostel-module-auto-install
-  :config (with-eval-after-load 'disproject
-            (transient-append-suffix 'disproject-dispatch
-              "s" '("o" "Ghostel" ghostel-project))))
           'compile 'download 'download)
+  :config
+  (with-eval-after-load 'disproject
+    (transient-append-suffix 'disproject-dispatch
+      "s" '("o" "Ghostel" ghostel-project)))
+  (with-eval-after-load 'with-editor
+    (add-hook 'ghostel-mode-hook #'with-editor-export-editor)))
 
 ;; Commit shell layer
 (use-package mistty
