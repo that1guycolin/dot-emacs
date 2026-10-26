@@ -111,7 +111,6 @@
 
 ;; Save frame-state & tab-state
 (use-package tabspaces
-  :after (dashboard)
   :defer t
   :preface
   (defun that1guycolin/consult-tabspaces ()
@@ -120,7 +119,7 @@
         (setq consult-buffer-list-function #'tabspaces-local-buffer-list)
       (setq consult-buffer-list-function #'buffer-list)))
   :bind ("C-x TAB" . tabspaces-switch-buffer-and-tab)
-  :hook (dashboard-after-initialize . (lambda () (tabspaces-mode 1)))
+  :hook (dashboard-after-initialize . tabspaces-mode)
   :functions (tabspaces-mode tabspaces-local-buffer-list)
   :custom
   (tab-bar-new-tab-choice "*scratch*")
