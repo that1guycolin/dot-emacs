@@ -22,6 +22,7 @@
 ;; Emulate A Terminal
 (use-package eat
   :defer t
+  :unless (eq that1guycolin/emacs-type 'android-gui)
   :bind ("C-c t e"   . eat)
   :hook ((eshell-mode . eat-eshell-visual-command-mode)
          (eat-mode . (lambda () (setq-local fill-column 1000))))
@@ -45,8 +46,11 @@
   (with-eval-after-load 'disproject
     (transient-append-suffix 'disproject-dispatch
       "s" '("o" "Ghostel" ghostel-project)))
-  (with-eval-after-load 'with-editor
-    (add-hook 'ghostel-mode-hook #'with-editor-export-editor)))
+  (that1guycolin/desktop-mobile
+    (with-eval-after-load 'with-editor
+      (add-hook 'ghostel-mode-hook #'with-editor-export-editor))
+    nil
+    (setq ghostel-shell "/data/data/com.termux/files/usr/bin/zsh")))
 
 ;; Commit shell layer
 (use-package mistty
