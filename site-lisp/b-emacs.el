@@ -115,7 +115,6 @@ If not in a side window, jump to the first found side window."
   (abbrev-mode 1)
   (auto-save-visited-mode 1)
   (context-menu-mode 1)
-  (global-display-fill-column-indicator-mode 1)
   (which-key-mode 1)
 
   (add-hook 'ibuffer-mode-hook #'that1guycolin/ibuffer-hook-functions))
