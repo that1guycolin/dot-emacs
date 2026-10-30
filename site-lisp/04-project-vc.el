@@ -158,11 +158,11 @@ The unique buffer is created if it does not exists. Use this function as
   (tabspaces-project-switch-opens-workspace t)
   (tabspaces-remove-to-default nil)
   (tabspaces-session t)
-  (tabspaces-session-auto-restore t)
+  (tabspaces-session-auto-restore nil)
   (tabspaces-session-auto-save-delay 180)
-  (tabspaces-session-file (no-littering-expand-etc-file-name ".tabsession.el"))
+  (tabspaces-session-file (no-littering-expand-etc-file-name "tabsession.el"))
   (tabspaces-session-project-session-store
-   (no-littering-expand-etc-file-name ".tabspaces-sessions"))
+   (no-littering-expand-etc-file-name "tabspaces-sessions"))
   (tabspaces-todo-file-name "TODO.org")
   (tabspaces-use-filtered-buffers-as-default t)
   :config
