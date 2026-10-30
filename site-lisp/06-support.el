@@ -711,8 +711,8 @@ doubles as a model-switcher."
    ellama-chat-display-action-function #'display-buffer-full-frame
    ellama-instant-display-action-function #'display-buffer-at-bottom)
 
-  (advice-add 'pixel-scroll-precision :before #'ellama-disable-scroll)
-  (advice-add 'end-of-buffer :after #'ellama-enable-scroll))
+  (advice-add #'pixel-scroll-precision :before #'ellama-disable-scroll)
+  (advice-add #'end-of-buffer :after #'ellama-enable-scroll))
 
 ;; Transient:
 (unless (eq system-type 'android)
@@ -834,8 +834,8 @@ doubles as a model-switcher."
    emms-player-list '(emms-player-mpv)
    emms-player-mpv-command-name "mpv"
    emms-player-mpv-parameters '("--force-window=yes"))
-  (advice-add 'emms-playlist-mode-play-smart :after
-              #'that1guycolin/emms-play))
+  (advice-add #'emms-playlist-mode-play-smart
+              :after #'that1guycolin/emms-play))
 
 (use-package emms-info-mediainfo
   :ensure (emms-info-mediainfo

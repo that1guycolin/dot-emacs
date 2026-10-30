@@ -169,6 +169,14 @@ URL, LINK will be shown instead."
 (use-package org-node
   :defer t
   :preface
+  (defvar that1guycolin/org-node--new-node-dir
+    (expand-file-name "knowledge-base" org-directory)
+    "Default directory for new org nodes.")
+  
+  (defun that1guycolin/org-node--default-directory (&rest _args)
+    "Set a custom org-directory as default when creating a new org-node."
+    (setq-local default-directory that1guycolin/org-node--new-node-dir))
+  
   (defun that1guycolin/org-node-new-file (&optional title id)
     "Create a new file for a new node.
 
@@ -198,13 +206,11 @@ and ID are automatically provided."
               org-node-complete-at-point-mode org-node-backlink-mode)
   :defines (org-node-backlink-do-drawers
             org-node--new-unsaved-buffers org-node-proposed-id)
-  :init (with-eval-after-load 'org
-          (keymap-set org-mode-map "M-o" org-node-org-prefix-map))
-  (advice-add #'org-node-create :before
-              (lambda (&rest _args)
-                (setq-local default-directory
-                            (expand-file-name "knowledge-base/"
-                                              org-directory))))
+  :init
+  (with-eval-after-load 'org
+    (keymap-set org-mode-map "M-o" org-node-org-prefix-map))
+  (advice-add #'org-node-create
+              :before #'that1guycolin/org-node--default-directory)
   :custom
   (org-node-creation-fn #'that1guycolin/org-node-new-file)
   (org-node-file-directory-ask t)
@@ -397,7 +403,7 @@ Values are mapped to informative strings."
         (setq org-tidy-properties-style new-style))))
 
   (defun that1guycolin/org-top-tidy-property-drawer-id (func)
-    "Make sure `org-tidy-mode' is  nil before running FUNC.n
+    "Make sure `org-tidy-mode' is  nil before running FUNC.
 
 If variable `org-tidy-mode' is non-nil, deactivate \\='org-tidy' mode,
 then reactivate after FUNC is complete. Use as advice for
@@ -411,14 +417,13 @@ then reactivate after FUNC is complete. Use as advice for
             return))
       (funcall func)))
 
-  (advice-add #'that1guycolin/org--top-drawer-id :around
-              #'that1guycolin/org-top-tidy-property-drawer-id)
-
   :bind ("C-:" . org-tidy-toggle)
   :hook (org-mode . org-tidy-mode)
   :custom
   (org-tidy-top-property-style 'invisible)
-  (org-tidy-properties-style 'invisible))
+  (org-tidy-properties-style 'invisible)
+  :config (advice-add #'that1guycolin/org--top-drawer-id
+                      :around #'that1guycolin/org-top-tidy-property-drawer-id))
 
 (use-package org-appear
   :defer t

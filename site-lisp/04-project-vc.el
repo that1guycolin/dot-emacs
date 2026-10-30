@@ -118,9 +118,25 @@
     (if tabspaces-mode
         (setq consult-buffer-list-function #'tabspaces-local-buffer-list)
       (setq consult-buffer-list-function #'buffer-list)))
+
+  (defun that1guycolin/tabspaces--project-scratch-buffer ()
+    "Switch to a unique scratch buffer for the current project.
+
+The unique buffer is created if it does not exists. Use this function as
+\':after' advice for `tabspaces-open-or-create-project-and-workspace'."
+    (let ((project (project-current)))
+      (if project
+          (let* ((project-cln (project-name project))
+                 (project-scratch (format "*scratch-%s*" project-cln)))
+            (get-buffer-create project-scratch)
+            (set-window-buffer nil project-scratch))
+        (scratch-buffer))))
+  
   :bind ("C-x TAB" . tabspaces-switch-buffer-and-tab)
-  :hook (dashboard-after-initialize . tabspaces-mode)
-  :functions (tabspaces-mode tabspaces-local-buffer-list)
+  :hook (elpaca-after-init-hook . (lambda ()
+                                    (run-with-timer 10 nil #'tabspaces-mode)))
+  :functions (tabspaces-local-buffer-list
+              tabspaces-mode tabspaces-open-or-create-project-and-workspace)
   :custom
   (tab-bar-new-tab-choice "*scratch*")
   (tabspaces-exclude-buffers '("*Messages*" "*Compile-Log*"))
@@ -140,6 +156,8 @@
   (tabspaces-use-filtered-buffers-as-default t)
   :config
   (add-hook 'tabspaces-mode-hook #'that1guycolin/consult-tabspaces)
+  (advice-add #'tabspaces-open-or-create-project-and-workspace
+              :after #'that1guycolin/tabspaces--project-scratch-buffer)
   (with-eval-after-load 'which-key
     (which-key-add-keymap-based-replacements tabspaces-command-map
       "C" "Clear Buffers"
@@ -280,18 +298,20 @@
            :type git :protocol https :inherit t :depth treeless :wait t)
   :defer t
   :preface
-  (defun that1guycolin/treemacs-switch-workspace-focus ()
-    "Run `treemacs-switch-workspace' and ensure the Treemacs window is focused.
-The ending behaviour, where treemacs is selected, then unselected, then
-selected again,"
-    (interactive)
-    (call-interactively #'treemacs-switch-workspace)
+  (defun that1guycolin/treemacs-workspace-focus ()
+    "Ensure the Treemacs' window is focused.
+
+If `treemacs-project-follow-mode' is non-nil, briefly select the other
+window before switching back to the Treemacs' window (this ensures
+treemacs displays the new project). Use this function as after advice
+for `treemacs-switch-workspace'."
+    
     (let ((treemacs-win (treemacs-get-local-window)))
       (when (and treemacs-win (not (eq treemacs-win (selected-window))))
         (select-window treemacs-win)
-        (when (fboundp 'treemacs-project-follow-mode)
-          (other-window 1))
-        (select-window treemacs-win))))
+        (when treemacs-project-follow-mode
+          (other-window 1)
+          (run-with-timer 3 nil select-window treemacs-win)))))
 
   (defun that1guycolin/toggle-gitignored-wait-2 (&rest _args)
     "Toggle `treemacs-hide-gitignored-files-mode' if treemacs window.
@@ -306,7 +326,6 @@ Wait two seconds before activating the mode."
                     #'(lambda ()
                         (treemacs-hide-gitignored-files-mode 1))))
       ('none (ignore))))
-  (advice-add 'treemacs :after #'that1guycolin/toggle-gitignored-wait-2)
 
   (defun that1guycolin/treemacs-toggle-project-follow-mode ()
     "If `treemacs-project-follow-mode' is active, deactivate it.
@@ -343,6 +362,9 @@ If it is not active, activate it."
   (treemacs-git-mode 'deferred)
   (treemacs-git-commit-diff-mode 1)
   (treemacs-project-follow-mode 1)
+  (advice-add #'treemacs-switch-workspace
+              :after #'that1guycolin/treemacs-workspace-focus)
+  (advice-add #'treemacs :after #'that1guycolin/toggle-gitignored-wait-2)
   (advice-add 'disproject-dispatch :before #'that1guycolin/close-treemacs))
 
 ;; Integrations

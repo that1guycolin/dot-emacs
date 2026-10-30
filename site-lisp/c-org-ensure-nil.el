@@ -5,6 +5,9 @@
 
 ;;; Code:
 
+(defvar elpaca-menu-org-make-manual nil)
+(setq   elpaca-menu-org-make-manual nil)
+
 (require '00-macros)
 (declare-function sly-eval "sly")
 (defvar org-id-prefix)
@@ -148,7 +151,6 @@ creating org nodes."
               (when (org-up-heading-safe)
                 (org-get-heading t t t t)))))
         (apply orig-fn args))))
-  (advice-add 'org-id-new :around #'that1guycolin/org-dynamic-id)
 
 
 ;;; Custom header settings
@@ -381,7 +383,7 @@ If they are currently hidden, make them visible. Thanks to Reddit user
       "l" "Store Link"))
 
 
-;;; misc.
+;;; Misc. functions
   (defun that1guycolin/org-convert-md-links ()
     "Convert all md-style links in the current buffer to org-style."
     (interactive)
@@ -393,7 +395,7 @@ If they are currently hidden, make them visible. Thanks to Reddit user
         (replace-match "[[\\2][\\1]]" nil nil))))
 
   
-;;; use-package sexp
+;;; Bind:
   :bind (:map org-mode-map
               ("C-c l"   . org-toggle-link-display)
               ("C-c C-h" . that1guycolin/org-id-all-headings)
@@ -410,7 +412,10 @@ If they are currently hidden, make them visible. Thanks to Reddit user
   :defines (org-agenda-files org-babel-default-header-args:zsh
                              org-babel-lisp-eval-fn org-directory
                              org-mode-map)
-  :init (setq org-directory "/storage/emulated/0/Documents/org")
+
+  
+;;; Init/Custom:
+  :init (setq org-directory (expand-file-name "~/org"))
   :custom
   (org-agenda-files
    (directory-files (expand-file-name "tasks-to-do/" org-directory) t
@@ -457,10 +462,15 @@ If they are currently hidden, make them visible. Thanks to Reddit user
      ("DONE"           . (:foreground "dim gray"        :weight bold))
      ("CANCELLED"      . (:foreground "dark gray"       :weight bold))))
   (org-use-sub-superscripts '{})
+
+
+;;; Config:
   :config
   (require 'org-id)
   (require 'org-protocol)
   (require 'ox-texinfo)
+
+  (advice-add #'org-id-new :around #'that1guycolin/org-dynamic-id)
 
   (keymap-set org-mode-map "C-c b" that1guycolin/org-insert-block-map)
   (let ((lang-mode-cells '(("bash"   . bash-ts) ("bash2" . bash-ts)
