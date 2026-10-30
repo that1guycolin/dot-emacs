@@ -816,16 +816,17 @@ doubles as a model-switcher."
                ("l"       . emms-sort)
                ("C-y"     . emms-playlist-mode-yank)))
   :functions (emms-all
-              emms-seek emms-player-mpv-pause emms-player-mpv-resume
-              emms-playlist-mode-go emms-playlist-mode-go-popup emms-pause
-              emms-next emms-previous emms-playlist-shuffle emms-seek-backward
-              emms-seek-forward emms-play-playlist emms-play-file
-              emms-play-find emms-playlist-save emms-playlist-new emms-show
-              emms-sort emms-playlist-mode-undo emms-playlist-mode-yank)
-  :defines (emms-info-functions
-            emms-playlist-mode-map emms-player-mpv-command-name
-            emms-player-mpv-parameters emms-browser-default-browse-type
-            emms-browser-info-title-format)
+              emms-next emms-pause emms-play-file emms-play-find
+              emms-play-playlist emms-player-mpv-pause emms-player-mpv-resume
+              emms-playlist-mode-go emms-playlist-mode-go-popup
+              emms-playlist-mode-play-smart emms-playlist-mode-undo
+              emms-playlist-mode-yank emms-playlist-new emms-playlist-save
+              emms-playlist-shuffle emms-previous emms-seek emms-seek-backward
+              emms-seek-forward emms-show emms-sort)
+  :defines (emms-browser-default-browse-type
+            emms-browser-info-title-format emms-info-functions
+            emms-player-mpv-command-name emms-player-mpv-parameters
+            emms-playlist-mode-map)
   :config
   (require 'emms-setup)
   (emms-all)
