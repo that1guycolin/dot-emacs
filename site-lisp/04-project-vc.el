@@ -34,21 +34,25 @@
   :ensure nil
   :demand t
   :preface
-  (defvar that1guycolin/project--parent-directories
-    (mapcar (lambda (dir) (expand-file-name dir))
-            (list that1guycolin/projects-directory
-                  that1guycolin/scripts-directory))
+  (defvar that1guycolin/project--parent-directories '()
     "List of parent directories which project repositories are stored under.")
 
-  (when (eq that1guycolin/emacs-type 'desktop)
-    (add-to-list 'that1guycolin/project--parent-directories
-                 (expand-file-name "/var/aur/pkgbuilds")))
-
-  (defvar that1guycolin/project--standalones
-    (mapcar (lambda (dir) (expand-file-name dir)) (list user-emacs-directory
-                                                        org-directory "~/dotfiles"))
+  (defvar that1guycolin/project--standalones '()
     "List of directories containing non-grouped, individual project repos.")
 
+  (defun that1guycolin/project--add-to-list (var dir-list)
+    "Add existing dirs from DIR-LIST to VAR."
+    (declare (indent defun))
+    (unless (listp var)
+      (user-error
+       "VAR must be an existing symbol containing a list; %s is not" var))
+    (unless (listp dir-list)
+      (user-error "%s is not a list" dir-list))
+    (mapc (lambda (d)
+            (let ((d-path (expand-file-name d)))
+              (when (file-exists-p d-path)
+                (add-to-list var d-path)))) dir-list))
+  
   (defun that1guycolin/project--current-root ()
     "Return the current project's root directory or nil if not in project."
     (when-let* ((project (project-current nil)))
@@ -80,13 +84,20 @@
     (message "Successfully repopulated projects list"))
 
   :functions (project-remember-projects-under)
-  :init (setq
-         project-list-file
-         (no-littering-expand-etc-file-name "project-list.eld")
-         project-list-exclude (mapcar #'regexp-quote
-                                      (list (expand-file-name elpaca-directory)
-                                            "~/dotfiles/terminals/alacritty"
-                                            "~/projects/guix-base/source")))
+  :init
+  (setq
+   project-list-file
+   (no-littering-expand-etc-file-name "project-list.eld")
+   project-list-exclude (mapcar #'regexp-quote
+                                (list (expand-file-name elpaca-directory)
+                                      "~/dotfiles/terminals/alacritty"
+                                      "~/projects/guix-base/source")))
+  (that1guycolin/project--add-to-list
+    'that1guycolin/project--parent-directories
+    (list that1guycolin/projects-directory
+          that1guycolin/scripts-directory "/var/aur/pkgbuilds"))
+  (that1guycolin/project--add-to-list 'that1guycolin/project--standalones
+    (list user-emacs-directory org-directory "~/dotfiles"))
   :custom (project-vc-ignores '("^node_modules$" "^\\.venv$" "^\\.uv$")))
 
 ;; transient dispatch for project.el
