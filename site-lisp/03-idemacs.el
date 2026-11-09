@@ -29,6 +29,7 @@
 ;;; Code:
 
 (require '00-macros)
+(declare-function that1guycolin/flycheck-vale-setup "flycheck-custom-checkers")
 (declare-function no-littering-expand-var-file-name "no-littering")
 (declare-function file-directory-p "emacs")
 (declare-function embark-act "embark")
@@ -38,6 +39,7 @@
 
 
 ;;; Treesit:
+
 (use-package treesit
   :ensure nil
   :demand t
@@ -101,29 +103,28 @@
 
 
 ;;; Text manipulation:
-;; Smart wrapping
+
 (use-package adaptive-wrap
   :defer t
-  :hook ((prog-mode text-mode conf-mode) . adaptive-wrap-prefix-mode))
+  :hook ((conf-mode prog-mode text-mode) . adaptive-wrap-prefix-mode))
 
-;; Easily switch between comment types
 (use-package comment-dwim-2
   :defer t
   :bind ([remap comment-dwim] . comment-dwim-2))
 
-;; docstring support
 (use-package docstr
-  :demand t
-  :functions (docstr-mode
-              docstr--doc-valid-p docstr--looking-back
-              docstr--insert-doc-string docstr--generic-search-string
-              docstr-lua--before-insert docstr-trigger-lua)
-  :defines (docstr-go-modes
-            docstr-lua-style docstr-lua-modes docstr-python-modes))
-
-;; Jump-to-def/find-refs
-(use-package dumb-jump
   :defer t
+  :commands (docstr-mode)
+  :functions (docstr--doc-valid-p
+              docstr--looking-back docstr--insert-doc-string
+              docstr--generic-search-string docstr-lua--before-insert
+              docstr-trigger-lua)
+  :defines (docstr-go-modes
+            docstr-lua-style docstr-lua-modes docstr-python-modes)
+  :custom (docstr-python-style 'google))
+
+(use-package dumb-jump
+  :demand t
   :bind ("M-j" . dumb-jump-find-references)
   :functions (dumb-jump-xref-activate)
   :custom
@@ -131,85 +132,55 @@
   (xref-show-definitions-function #'consult-xref)
   :config (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
 
-;; Integrate with editorconfig
 (use-package editorconfig
   :ensure nil
   :defer t
-  :hook ((prog-mode text-mode conf-mode) . editorconfig-mode))
+  :hook ((conf-mode prog-mode text-mode) . editorconfig-mode))
 
-;; Colorize "", {}, [], ()
 (use-package rainbow-delimiters
   :defer t
-  :hook ((prog-mode text-mode conf-mode) . rainbow-delimiters-mode))
+  :hook ((conf-mode prog-mode text-mode) . rainbow-delimiters-mode))
 
-;; Auto-close "", {}, [], ()
 (use-package smartparens
   :defer t
-  :hook ((prog-mode text-mode conf-mode) . smartparens-mode)
+  :hook ((conf-mode prog-mode text-mode) . smartparens-mode)
   :config (require 'smartparens-config))
 
-;; Hl regexp while typing
 (use-package visual-regexp
   :defer t
   :bind (("C-c r" . vr/replace)
          ("C-c q" . vr/query-replace)))
 
-;; Python-style regexp over Emacs
 (use-package visual-regexp-steroids
   :defer t
   :bind (([remap isearch-forward-regexp]  . vr/isearch-forward)
          ([remap isearch-backward-regexp] . vr/isearch-backward)))
 
 
-;;; Linting (flycheck)
+;;; Linting (flycheck):
+
 (use-package flycheck
-  :demand t
-  :preface
-  (defun that1guycolin/flycheck--parse-pretty-json (output)
-    "Parse a linter's pretty-printed json OUTPUT.
-
-Flycheck's native `flycheck-parse-json' only works if the json is a single line
-string. The purpose of this function is to account for linters whose json output
-is in rich text, printed over multiple lines, etc..."
-    
-    (with-temp-buffer
-      (insert output)
-      (goto-char (point-min))
-      (json-parse-buffer :object-type 'alist :array-type 'list)))
-  
-  (defun that1guycolin/flycheck-vale-setup ()
-    "If not setup, install the vale from the .ini file in user-lisp-directory."
-    (let* ((vale-config (expand-file-name ".vale.ini" user-lisp-directory))
-           (command (format "vale --config %s sync >/dev/null 2>&1"
-                            (shell-quote-argument vale-config))))
-      (shell-command command)))
-  :hook ((prog-mode text-mode) . flycheck-mode)
-  :functions (flycheck-error-new-at flycheck-select-checker flycheck-add-mode)
-  :custom (flycheck-disabled-checkers
-           '(emacs-lisp-elsa rpm-rpmlint yaml-jsyaml yaml-ruby))
+  :defer t
+  :commands (flycheck-mode)
+  :functions (flycheck-add-mode
+              flycheck-error-new-at flycheck-parse-json flycheck-select-checker)
+  :custom
+  (flycheck-disabled-checkers
+   '(emacs-lisp-elsa rpm-rpmlint yaml-jsyaml yaml-ruby))
+  (flycheck-emacs-lisp-load-path 'inherit)
+  (flycheck-shellcheck-infer-shell t)
+  (flycheck-sh-bash-executable "/usr/bin/bash")
+  (flycheck-sh-posix-bash-executable "/usr/bin/bash")
+  (flycheck-sh-posix-dash-executable "/usr/bin/dash")
+  (flycheck-sh-shellcheck-executable "/usr/bin/shellcheck")
+  (flycheck-sh-zsh-executable "/usr/bin/zsh")
   :config
-  (flycheck-define-checker text-vale
-    "Tool to bring code-like linting to prose.
-See URL `https://vale.sh'."
-    :command
-    ("vale" "--config"
-     (eval (expand-file-name ".vale.ini" user-lisp-directory))
-     "--no-global" "--output" "line" source)
-    :error-patterns
-    ((warning line-start (file-name) ":" line ":" column ":"
-              (id (one-or-more (not (any ":")))) ":" (message) line-end))
-    :modes (text-mode))
-  (let ((vale-install (expand-file-name ".vale-styles" user-lisp-directory)))
-    (unless (file-exists-p vale-install)
-      (that1guycolin/flycheck-vale-setup)))
-  (add-to-list 'flycheck-checkers 'text-vale)
-  
-  (with-eval-after-load 'minions
-    (add-to-list 'minions-prominent-modes 'flycheck-mode))
-  (add-hook 'org-mode-hook
-            (lambda () (flycheck-select-checker 'org-lint))))
+  (require 'flycheck-custom-checkers)
 
-;; Display flycheck errors in buffer
+  (add-to-list 'flycheck-shellcheck-supported-shells 'dash)
+  (with-eval-after-load 'minions
+    (add-to-list 'minions-prominent-modes 'flycheck-mode)))
+
 (use-package flycheck-posframe
   :after (flycheck)
   :defer t
@@ -217,17 +188,10 @@ See URL `https://vale.sh'."
   :functions (flycheck-posframe-configure-pretty-defaults)
   :config (flycheck-posframe-configure-pretty-defaults))
 
-;; Buffer status
 (use-package flycheck-color-mode-line
   :after (flycheck)
   :defer t
   :hook (flycheck-mode . flycheck-color-mode-line-mode))
-
-(use-package flycheck-relint
-  :after (flycheck elisp-mode)
-  :demand t
-  :functions (flycheck-relint-setup)
-  :config (flycheck-relint-setup))
 
 (use-package consult-flycheck
   :after (consult flycheck)
@@ -235,15 +199,16 @@ See URL `https://vale.sh'."
 
 
 ;;; Formatting (apheleia):
+
 (use-package apheleia
-  :demand t
+  :defer t
   :bind ("C-c f" . apheleia-format-buffer)
-  :hook ((prog-mode text-mode conf-mode) . apheleia-mode))
+  :commands (apheleia-mode))
 
 
 ;;; Language-Server-Protocol (eglot):
+
 (use-package eglot
-  :ensure nil
   :demand t
   :preface
   (defun that1guycolin/eglot-remove-mode-servers (mode)
@@ -273,10 +238,11 @@ See URL `https://vale.sh'."
   :config (global-flycheck-eglot-mode 1))
 
 (use-package lsp-snippet
-  :ensure (:id lsp-snippet :type git :host github
-               :depth treeless :protocol https :autoloads t
-               :repo "svaante/lsp-snippet" :main "lsp-snippet.el" :build t
-               :files ("Makefile" "*.el") :autoloads t)
+  :ensure (lsp-snippet
+           :id lsp-snippet :type git :host github
+           :depth treeless :protocol https :autoloads t
+           :repo "svaante/lsp-snippet" :main "lsp-snippet.el"
+           :build t :files ("Makefile" "*.el") :autoloads t)
   :after (eglot tempel)
   :demand t
   :config
@@ -291,6 +257,7 @@ See URL `https://vale.sh'."
 
 
 ;;; Code Folding:
+
 ;; Based on buffer-syntax
 (use-package hideshow
   :ensure nil
@@ -316,16 +283,14 @@ See URL `https://vale.sh'."
   :custom
   (treesit-fold-line-count-show t)
   (treesit-fold-line-count-format " …")
-  :config (set-face-attribute
-           'treesit-fold-replacement-face nil
-           :foreground "#808080"
-           :box nil
-           :weight 'bold))
+  :config (set-face-attribute 'treesit-fold-replacement-face nil
+                              :foreground "#808080"
+                              :box nil
+                              :weight 'bold))
 
 ;; Allows use of same keybindings across backends
 (use-package kirigami
-  :after (:any hideshow outline outline-indent treesit-fold)
-  :demand t
+  :defer t
   :preface
   (defvar-keymap that1guycolin/kirigami-functions-map
     :doc "Common code folding functions from `kirigami'."
@@ -352,7 +317,7 @@ See URL `https://vale.sh'."
 
 
 ;;; Spellcheck:
-;; Backend:
+
 (use-package flyspell
   :ensure nil
   :defer t
@@ -364,77 +329,31 @@ See URL `https://vale.sh'."
   (keymap-unset flyspell-mode-map "C-.")
   (keymap-global-set "C-." #'embark-act))
 
-;; Correct with flyspell...
 (use-package flyspell-correct
   :after (flyspell)
   :demand t
   :bind (:map flyspell-mode-map ("C-&" . flyspell-correct-wrapper)))
 
-;; ...and the avy interface
 (use-package flyspell-correct-avy-menu
   :after (flyspell-correct avy)
   :demand t)
 
 
-;;; CSS:
-(use-package css-mode
-  :ensure nil
-  :after (eglot)
-  :defer t
-  :hook (css-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)
-                         (setq-local fill-column 80)))
-  :mode "\\.css\\'"
-  :init
-  (add-to-list 'major-mode-remap-alist '(css-mode . css-ts-mode))
-  :config
-  (that1guycolin/eglot-remove-mode-servers 'css-mode)
-  (add-to-list 'eglot-server-programs
-               '((css-ts-mode) .
-                 ("vscode-css-language-server" "--stdio"))))
-
-
-;;; CSV:
-(use-package csv-mode
-  :defer t
-  :hook (csv-mode . (lambda () (setq-local fill-column 1000)))
-  :mode "\\.csv\\'")
-
-
-;;; Containers:
-(use-package dockerfile-ts-mode
-  :ensure nil
-  :after (eglot)
-  :defer t
-  :hook (dockerfile-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)
-                                (setq-local fill-column 100)))
-  :mode ("Dockerfile\\'" "Containerfile\\'")
-  :config
-  (that1guycolin/eglot-remove-mode-servers 'dockerfile-mode)
-  (add-to-list 'eglot-server-programs
-               '((dockerfile-ts-mode) .
-                 ("docker-language-server" "start" "--stdio"))))
-
-
-;;; Shaders:
-(use-package glsl-mode
-  :defer t
-  :hook (glsl-mode . (lambda () (setq-local fill-column 100)))
-  :mode "\\.glsl\\'")
-
-
 ;;; (E)Lisp:
+
 ;; Base packages
 (use-package emacs-lisp-mode
   :ensure nil
   :defer t
-  :hook (emacs-lisp-mode . (lambda () (outline-minor-mode) (kirigami-mode)
-                             (setq-local fill-column 80)
-                             (that1guycolin/setup-untabify-save)))
-  :mode "\\.el\\'"
-  :custom (flycheck-emacs-lisp-load-path 'inherit))
+  :hook ((emacs-lisp-mode . apheleia-mode)
+         (emacs-lisp-mode . flycheck-mode)
+         (emacs-lisp-mode . outline-minor-mode)
+         (emacs-lisp-mode . kirigami-mode)
+         (emacs-lisp-mode . that1guycolin/setup-untabify-save)
+         (emacs-lisp-mode . (lambda () (setq-local fill-column 80))))
+  :mode "\\.el\\'")
 
 (use-package lisp-ts-mode
-  :after (flycheck eglot)
   :defer t
   :preface
   (defcustom that1guycolin/eglot-lisp-alive-port 8006
@@ -455,9 +374,12 @@ See URL `https://vale.sh'."
           t)
       (file-error nil)))
   
-  :hook (lisp-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)
-                          (setq-local fill-column 80)
-                          (that1guycolin/setup-untabify-save)))
+  :hook ((lisp-ts-mode . apheleia-mode)
+         (lisp-ts-mode . flycheck-mode)
+         (lisp-ts-mode . treesit-fold-mode)
+         (lisp-ts-mode . kirigami-mode)
+         (lisp-ts-mode . that1guycolin/setup-untabify-save)
+         (lisp-ts-mode . (lambda () (setq-local fill-column 80))))
   :interpreter "sbcl"
   :mode ("\\.lisp\\'" "\\.cl\\'" "\\.asd\\'")
   :init
@@ -466,94 +388,61 @@ See URL `https://vale.sh'."
   (setf (alist-get 'lisp-ts-mode font-lock-ignore)
         lisp-ts-mode-font-lock-ignore-keywords)
 
-  (flycheck-define-checker cl-mallet
-    "A Common Lisp linter using Mallet.
-See URL: \\='https://github.com/fukamachi/mallet'."
-    :command ("mallet" source)
-    :error-patterns
-    ((error line-start (zero-or-more space)
-            line ":" column
-            (one-or-more space) "error" (one-or-more space)
-            (message (minimal-match (one-or-more not-newline)))
-            (one-or-more space) (id (one-or-more not-newline))
-            line-end)
-
-     (warning line-start (zero-or-more space)
-              line ":" column
-              (one-or-more space) "warning" (one-or-more space)
-              (message (minimal-match (one-or-more not-newline)))
-              (one-or-more space) (id (one-or-more not-newline))
-              line-end)
-
-     (info line-start (zero-or-more space)
-           line ":" column
-           (one-or-more space) "info" (one-or-more space)
-           (message(minimal-match (one-or-more not-newline)))
-           (one-or-more space) (id (one-or-more not-newline))
-           line-end))
-    :modes (lisp-mode lisp-ts-mode lisp-data-mode))
-  (add-to-list 'flycheck-checkers 'cl-mallet)
-
-  (that1guycolin/eglot-remove-mode-servers 'lisp-mode)
-  (add-to-list
-   'eglot-server-programs
-   '((lisp-mode lisp-ts-mode) .
-     (lambda (_interactive _project)
-       (unless (that1guycolin/eglot-lisp-alive--port-available-p
-                that1guycolin/eglot-lisp-alive-port)
-         (error "Port %d is already in use"
-                that1guycolin/eglot-lisp-alive-port))
-       (make-process
-        :name "alive-lsp"
-        :buffer (get-buffer-create "*alive-lsp*")
-        :noquery t
-        :sentinel #'ignore
-        :filter #'ignore
-        :command (list "sbcl"
-                       "--eval" "(require :asdf)"
-                       "--eval" "(asdf:load-system :alive-lsp)"
-                       "--eval"
-                       (format "(alive/server::start :port %d)"
-                               that1guycolin/eglot-lisp-alive-port)))
-       (sleep-for 1)
-       (list "localhost" that1guycolin/eglot-lisp-alive-port)))))
+  (with-eval-after-load 'eglot
+    (that1guycolin/eglot-remove-mode-servers 'lisp-mode)
+    (add-to-list
+     'eglot-server-programs
+     '((lisp-mode lisp-ts-mode) .
+       (lambda (_interactive _project)
+         (unless (that1guycolin/eglot-lisp-alive--port-available-p
+                  that1guycolin/eglot-lisp-alive-port)
+           (error "Port %d is already in use"
+                  that1guycolin/eglot-lisp-alive-port))
+         (make-process
+          :name "alive-lsp"
+          :buffer (get-buffer-create "*alive-lsp*")
+          :noquery t
+          :sentinel #'ignore
+          :filter #'ignore
+          :command (list "sbcl"
+                         "--eval" "(require :asdf)"
+                         "--eval" "(asdf:load-system :alive-lsp)"
+                         "--eval"
+                         (format "(alive/server::start :port %d)"
+                                 that1guycolin/eglot-lisp-alive-port)))
+         (sleep-for 1)
+         (list "localhost" that1guycolin/eglot-lisp-alive-port))))))
 
 (use-package scheme
   :ensure nil
   :defer t
-  :hook (scheme-mode . (lambda () (outline-minor-mode) (kirigami-mode)
-                         (setq-local fill-column 80)
-                         (that1guycolin/setup-untabify-save)))
+  :hook ((scheme-mode . apheleia-mode)
+         (scheme-mode . flycheck-mode)
+         (scheme-mode . outline-minor-mode)
+         (scheme-mode . kirigami-mode)
+         (scheme-mode . that1guycolin/setup-untabify-save)
+         (scheme-mode . (lambda () (setq-local fill-column 80))))
   :mode "\\.scm\\'"
-  :config
-  (add-to-list 'eglot-server-programs
-               '((scheme-mode) . ("guile-lsp-server"))))
+  :config (with-eval-after-load 'eglot
+            (add-to-list 'eglot-server-programs
+                         '((scheme-mode) . ("guile-lsp-server")))))
 
-;; Smart '()' (all)
 (use-package adjust-parens
   :defer t
-  :hook ((emacs-lisp-mode lisp-mode scheme-mode) . adjust-parens-mode))
+  :hook ((emacs-lisp-mode lisp-ts-mode scheme-mode) . adjust-parens-mode))
 
-;; Style checker (elisp)
-(use-package checkdoc
-  :ensure nil
-  :defer t
-  :commands (checkdoc-defun checkdoc-current-buffer))
-
-;; Emacs package assist
 (use-package eask-mode
   :defer t
-  :after (apheleia)
+  :hook ((eask-mode . apheleia-mode)
+         (eask-mode . flycheck-mode))
   :mode "Eask\\'"
-  :config
-  (setf (alist-get 'eask-mode apheleia-mode-alist) 'lisp-indent))
+  :config (with-eval-after-load 'apheleia
+            (setf (alist-get 'eask-mode apheleia-mode-alist) 'lisp-indent)))
 
-;; Go directly to symbol definition (elisp)
 (use-package elisp-def
   :defer t
   :hook (emacs-lisp-mode . elisp-def-mode))
 
-;; Display function results in buffer (elisp)
 (use-package eros
   :defer t
   :hook (emacs-lisp-mode . eros-mode))
@@ -574,7 +463,12 @@ See URL: \\='https://github.com/fukamachi/mallet'."
   :functions (flycheck-package-setup)
   :config (flycheck-package-setup))
 
-;; Improved syntax highlighting (cl)
+(use-package flycheck-relint
+  :after (flycheck elisp-mode)
+  :demand t
+  :functions (flycheck-relint-setup)
+  :config (flycheck-relint-setup))
+
 (use-package gaudy-cl
   :ensure (gaudy-cl :host codeberg :repo "zshaftel/gaudy-cl"
                     :files (:defaults "*.lisp" "*.asd"))
@@ -586,11 +480,11 @@ See URL: \\='https://github.com/fukamachi/mallet'."
         gaudy-cl-font-lock-ignore-keywords)
   (add-hook 'gaudy-cl-mode-hook #'gaudy-cl-highlight-mode))
 
-;; Scheme REPL
 (use-package geiser
   :defer t
   :hook ((scheme-mode . turn-on-geiser-mode)
          (geiser-repl-mode . (lambda () (setq-local fill-column 1000))))
+  :defines (geiser-mode-map)
   :custom (geiser-repl-use-other-window t))
 
 (use-package geiser-guile
@@ -598,19 +492,16 @@ See URL: \\='https://github.com/fukamachi/mallet'."
   :demand t
   :bind ("C-c C-s" . geiser-guile-switch))
 
-;; Elisp REPL
 (use-package ielm
   :ensure nil
   :defer t
   :bind ("C-c I" . ielm))
 
-;; Inspection tool (elisp)
 (use-package inspector
   :defer t
   :bind (:map emacs-lisp-mode-map ("M-I e" . inspector-inspect-expression))
   :custom (inspector-switch-to-buffer nil))
 
-;; Integration (elisp)
 (use-package eros-inspector
   :after (eros inspector)
   :demand t
@@ -618,23 +509,19 @@ See URL: \\='https://github.com/fukamachi/mallet'."
               ([remap eros-eval-last-sexp] . eros-inspector-eval-last-sexp)
               ([remap eros-eval-defun]     . eros-inspector-eval-defun)))
 
-;; Support completion for dynamic variables (elisp)
 (use-package let-completion
   :defer t
   :hook (emacs-lisp-mode . let-completion-mode))
 
-;; Syntax highlighting (elisp, cl)
 (use-package lisp-semantic-hl
   :defer t
-  :hook ((emacs-lisp-mode lisp-mode) . lisp-semantic-hl-mode))
+  :hook ((emacs-lisp-mode lisp-ts-mode) . lisp-semantic-hl-mode))
 
-;; Interactively parse macros (elisp)
 (use-package macrostep
   :defer t
   :bind (:map emacs-lisp-mode-map
               ("C-c C-m" . macrostep-expand)))
 
-;; Interactively parse macros (scheme)
 (use-package macrostep-geiser
   :defer t
   :bind ((:map geiser-mode-map
@@ -642,28 +529,23 @@ See URL: \\='https://github.com/fukamachi/mallet'."
          (:map geiser-repl-mode-map
                ("C-c j" . macrostep-geiser)))
   :functions (macrostep-geiser-setup)
-  :defines (geiser-mode-map)
   :config (macrostep-geiser-setup))
 
-;; Additional font hl (elisp)
 (use-package morlock
   :defer t
   :hook (emacs-lisp-mode . morlock-mode))
 
-;; Provide tool to accomplish X (elisp)
 (use-package suggest
   :defer t
   :bind (:map emacs-lisp-mode-map
               ("C-c S" . suggest)))
 
-;; Tree-style viewer for inspector (elisp)
 (use-package tree-inspector
   :defer t
   :bind (:map emacs-lisp-mode-map
               ("M-I t" . tree-inspector-inspect-expression)
               ("M-I s" . tree-inspector-inspect-last-sexp)))
 
-;; Modern SLIME (cl)
 (use-package sly
   :defer t
   :preface
@@ -681,12 +563,15 @@ a running slynk instance @ localhost:4005."
         (sly-connect "localhost" 4005)
       (sly)))
 
-  :bind ("C-c s" . that1guycolin/sly-autoconnect)
-  :hook (((lisp-mode lisp-ts-mode) . sly-editing-mode)
-         (sly-mrepl-mode . (lambda () (setq-local fill-column 1000))))
-  :functions (sly sly-connect sly-connected-p sly-mrepl sly-mrepl-new
-                  sly-mrepl-sync sly-mrepl-set-directory sly-cd sly-inspect
-                  sly-apropos sly-describe-symbol)
+  :bind ("C-c l" . that1guycolin/sly-autoconnect)
+  :hook ((lisp-ts-mode . sly-editing-mode)
+         (sly-mrepl-mode . corfu-mode)
+         (sly-mrepl-mode . (lambda () (setq-local fill-column 1000)))
+         (sly-mode . that1guycolin/sly-load-if-not-connected))
+  :functions (sly
+              sly-apropos sly-cd sly-connect sly-connected-p
+              sly-describe-symbol sly-inspect sly-mrepl sly-mrepl-new
+              sly-mrepl-set-directory sly-mrepl-sync)
   :init (setq inferior-lisp-program "sbcl")
   :custom
   (sly-auto-start 'always)
@@ -700,8 +585,6 @@ a running slynk instance @ localhost:4005."
   :config
   (mapc (lambda (c) (add-to-list 'sly-contribs c))
         '(sly-fancy sly-mrepl sly-indentation sly-package-fu))
-  (add-hook 'sly-mrepl-mode-hook #'corfu-mode)
-  (add-hook 'sly-mode-hook #'that1guycolin/sly-load-if-not-connected)
 
   (defvar that1guycolin/sly-dispatch)
   (transient-define-prefix that1guycolin/sly-dispatch ()
@@ -733,25 +616,78 @@ a running slynk instance @ localhost:4005."
   :demand t)
 
 
-;;; Go:
+;;; Other Programming Languages:
+
+;; CSS:
+(use-package css-mode
+  :ensure nil
+  :defer t
+  :hook ((css-ts-mode . apheleia-mode)
+         (css-ts-mode . flycheck-mode)
+         (css-ts-mode . treesit-fold-mode)
+         (css-ts-mode . kirigami-mode)
+         (css-ts-mode . (lambda () (setq-local fill-column 80))))
+  :mode "\\.css\\'"
+  :init (add-to-list 'major-mode-remap-alist '(css-mode . css-ts-mode)))
+
+
+;; CSV:
+(use-package csv-mode
+  :defer t
+  :hook (csv-mode . (lambda () (setq-local fill-column 1000)))
+  :mode "\\.csv\\'"
+  :config
+  (with-eval-after-load 'eglot
+    (that1guycolin/eglot-remove-mode-servers 'css-mode)
+    (add-to-list 'eglot-server-programs
+                 '((css-ts-mode) . ("vscode-css-language-server" "--stdio")))))
+
+
+;; Containers:
+(use-package dockerfile-ts-mode
+  :ensure nil
+  :defer t
+  :hook ((dockerfile-ts-mode . apheleia-mode)
+         (dockerfile-ts-mode . flycheck-mode)
+         (dockerfile-ts-mode . treesit-fold-mode)
+         (dockerfile-ts-mode . kirigami-mode)
+         (dockerfile-ts-mode . (lambda () (setq-local fill-column 100))))
+  :mode ("Dockerfile\\'" "Containerfile\\'")
+  :config
+  (with-eval-after-load 'eglot
+    (that1guycolin/eglot-remove-mode-servers 'dockerfile-mode)
+    (add-to-list 'eglot-server-programs
+                 '((dockerfile-ts-mode) .
+                   ("docker-language-server" "start" "--stdio")))))
+
+
+;; Shaders:
+(use-package glsl-mode
+  :defer t
+  :hook (glsl-mode . (lambda () (setq-local fill-column 100)))
+  :mode "\\.glsl\\'")
+
+
+;; Go:
 (use-package go-ts-mode
   :ensure nil
-  :after (docstr)
   :defer t
-  :preface
-  :hook (go-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)
-                        (setq-local fill-column 80) (docstr-mode 1)))
+  :hook ((go-ts-mode . apheleia-mode)
+         (go-ts-mode . docstr-mode)
+         (go-ts-mode . flycheck-mode)
+         (go-ts-mode . treesit-fold-mode)
+         (go-ts-mode . kirigami-mode)
+         (go-ts-mode . (lambda () (setq-local fill-column 80))))
   :mode "\\.go\\'"
-  :config
-  (add-to-list 'docstr-writers-alist
-               '(go-ts-mode . docstr-writers-golang))
-  (add-to-list 'docstr-go-modes 'go-ts-mode))
+  :config (with-eval-after-load 'docstr
+            (add-to-list 'docstr-writers-alist
+                         '(go-ts-mode . docstr-writers-golang))
+            (add-to-list 'docstr-go-modes 'go-ts-mode)))
 
 
-;;; Lua:
+;; Lua:
 (use-package lua-ts-mode
   :ensure nil
-  :after (apheleia docstr eglot)
   :defer t
   :preface
   (defun that1guycolin/docstr-trigger-lua (&rest _)
@@ -762,83 +698,77 @@ a running slynk instance @ localhost:4005."
                (memq docstr-lua-style '(luadoc doxygen)))
       (add-hook 'docstr-before-insert-hook #'docstr-lua--before-insert nil t)
       (docstr--insert-doc-string (docstr--generic-search-string 1 ")"))))
-
-  :hook (lua-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)
-                         (setq-local fill-column 120) (docstr-mode 1)))
+  
+  :hook ((lua-ts-mode . apheleia-mode)
+         (lua-ts-mode . docstr-mode)
+         (lua-ts-mode . flycheck-mode)
+         (lua-ts-mode . treesit-fold-mode)
+         (lua-ts-mode . kirigami-mode)
+         (lua-ts-mode . (lambda () (setq-local fill-column 120))))
   :mode "\\.lua\\'"
   :init (add-to-list 'major-mode-remap-alist '(lua-mode . lua-ts-mode))
   :custom (lua-ts-inferior-lua "luajit")
   :config
-  (setf
-   (alist-get 'stylua apheleia-formatters)
-   '("stylua" "--search-parent-directories" "--stdin-filepath" filepath "-"))
+  (with-eval-after-load 'apheleia
+    (setf
+     (alist-get 'stylua apheleia-formatters)
+     '("stylua" "--search-parent-directories" "--stdin-filepath" filepath "-")))
 
-  (add-to-list 'docstr-writers-alist
-               '(lua-ts-mode . docstr-writers-lua))
-  (setq docstr-trigger-alist
-        (cons '("-" . that1guycolin/docstr-trigger-lua)
-              (cl-remove-if (lambda (trigger)
-                              (eq (cdr trigger) #'docstr-trigger-lua))
-                            docstr-trigger-alist)))
-  (with-eval-after-load 'docstr-lua
-    (add-to-list 'docstr-lua-modes 'lua-ts-mode))
-  (with-eval-after-load 'docstr-key
-    (add-to-list 'docstr-key-javadoc-like-modes 'lua-ts-mode))
-  (that1guycolin/eglot-remove-mode-servers 'lua-mode)
-  (add-to-list 'eglot-server-programs
-               '((lua-mode lua-ts-mode) . ("emmylua_ls"))))
+  (with-eval-after-load 'docstr
+    (add-to-list 'docstr-writers-alist
+                 '(lua-ts-mode . docstr-writers-lua))
+    (setq docstr-trigger-alist
+          (cons '("-" . that1guycolin/docstr-trigger-lua)
+                (cl-remove-if (lambda (trigger)
+                                (eq (cdr trigger) #'docstr-trigger-lua))
+                              docstr-trigger-alist)))
+    (with-eval-after-load 'docstr-lua
+      (add-to-list 'docstr-lua-modes 'lua-ts-mode))
+    (with-eval-after-load 'docstr-key
+      (add-to-list 'docstr-key-javadoc-like-modes 'lua-ts-mode)))
+  
+  (with-eval-after-load 'eglot
+    (that1guycolin/eglot-remove-mode-servers 'lua-mode)
+    (add-to-list 'eglot-server-programs
+                 '((lua-mode lua-ts-mode) . ("emmylua_ls")))))
 
 
-;;; Markdown:
+;; Markdown:
 (use-package markdown-ts-mode
   :ensure nil
-  :after (flycheck apheleia eglot)
   :defer t
-  :hook (markdown-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)
-                              (setq-local fill-column 80)))
+  :hook ((markdown-ts-mode . apheleia-mode)
+         (markdown-ts-mode . flycheck-mode)
+         (markdown-ts-mode . treesit-fold-mode)
+         (markdown-ts-mode . kirigami-mode)
+         (markdown-ts-mode . (lambda () (setq-local fill-column 80))))
   :mode ("\\.md\\'" "README\\'" "INSTALL\\'")
-  :init
-  (add-to-list 'major-mode-remap-alist '(markdown-mode . markdown-ts-mode))
+  :init (add-to-list 'major-mode-remap-alist
+                     '(markdown-mode . markdown-ts-mode))
   :config
   (keymap-set markdown-ts-mode-map "C-c C-x" #'toggle-frame-maximized)
-  (flycheck-define-checker markdown-rumdl
-    "A fast Markdown linter written in Rust.
-See URL: \\='https://github.com/rvben/rumdl'."
-    :command ("rumdl" "check" "--watch" "--stdin" source)
-    :error-patterns
-    ((error line-start (file-name)
-            ":" line ":" column ": "
-            (id (one-or-more (not (any " ")))) " " (message) line-end)
-     (warning line-start (file-name)
-              ":" line ":" column ": "
-              (id (one-or-more (not (any " ")))) " " (message) line-end)
-     (info line-start (file-name)
-           ":" line ":" column ": "
-           (id (one-or-more (not (any " ")))) " " (message) line-end))
-    :modes (markdown-ts-mode markdown-mode gfm-mode))
-  (add-to-list 'flycheck-checkers 'markdown-rumdl)
 
-  (setf
-   (alist-get 'markdown-mode    apheleia-mode-alist) 'rumdl
-   (alist-get 'markdown-ts-mode apheleia-mode-alist) 'rumdl
-   (alist-get 'gfm-mode         apheleia-mode-alist) 'rumdl)
-
-  (that1guycolin/eglot-remove-mode-servers 'markdown-mode)
-  (add-to-list 'eglot-server-programs
-               '((markdown-mode markdown-ts-mode) . ("rumdl" "server"))))
+  (with-eval-after-load 'apheleia
+    (setf
+     (alist-get 'markdown-mode    apheleia-mode-alist) 'rumdl
+     (alist-get 'markdown-ts-mode apheleia-mode-alist) 'rumdl
+     (alist-get 'gfm-mode         apheleia-mode-alist) 'rumdl))
+  
+  (with-eval-after-load 'eglot
+    (that1guycolin/eglot-remove-mode-servers 'markdown-mode)
+    (add-to-list 'eglot-server-programs
+                 '((markdown-mode markdown-ts-mode) . ("rumdl" "server")))))
 
 (use-package grip-mode
-  :after (markdown-ts-mode)
-  :demand t
+  :defer t
   :bind (:map markdown-ts-mode-map
               ("C-c g" . grip-mode))
   :custom (grip-command 'auto))
 
 
-;;; Python:
+;; Python:
 (use-package python-mode
   :ensure nil
-  :after (apheleia eglot)
   :defer t
   :preface
   (defun that1guycolin/python-uv-script-p ()
@@ -875,10 +805,13 @@ See URL: \\='https://github.com/rvben/rumdl'."
               ("C-c C-k t" . python-skeleton-try)
               ("C-c C-k w" . python-skeleton-while)
               ("C-c C-r"   . that1guycolin/python-run-smart))
-  :hook (python-ts-mode . (lambda () (outline-indent-minor-mode)
-                            (kirigami-mode) (setq-local fill-column 88)
-                            (docstr-mode 1)
-                            (that1guycolin/setup-untabify-save)))
+  :hook ((python-ts-mode . apheleia-mode)
+         (python-ts-mode . docstr-mode)
+         (python-ts-mode . flycheck-mode)
+         (python-ts-mode . outline-indent-minor-mode)
+         (python-ts-mode . kirigami-mode)
+         (python-ts-mode . that1guycolin/setup-untabify-save)
+         (python-ts-mode . (lambda () (setq-local fill-column 88))))
   :interpreter ("python3" "uv")
   :mode "\\.py\\'"
   :functions (python-skeleton-class
@@ -887,63 +820,71 @@ See URL: \\='https://github.com/rvben/rumdl'."
   :defines (python-base-mode-map)
   :init (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
   :custom
-  (docstr-python-style 'google)
   (python-indent-offset 4)
   (python-shell-interpreter "python3")
   :config
   (keymap-unset python-base-mode-map "C-c C-t")
+
+  (with-eval-after-load 'apheleia
+    (setf
+     (alist-get 'ruff apheleia-formatters) '("ruff" "format" "-")
+     (alist-get 'python-ts-mode apheleia-mode-alist) 'ruff))
+
+  (with-eval-after-load 'docstr
+    (add-to-list 'docstr-writers-alist
+                 '(python-ts-mode . docstr-writers-python))
+    (with-eval-after-load 'docstr-python
+      (add-to-list 'docstr-python-modes 'python-ts-mode))
+    (with-eval-after-load 'docstr-key
+      (add-to-list 'docstr-key-sharp-doc-modes 'python-ts-mode)))
   
-  (setf
-   (alist-get 'ruff apheleia-formatters) '("ruff" "format" "-")
-   (alist-get 'python-ts-mode apheleia-mode-alist) 'ruff)
+  (with-eval-after-load 'eglot
+    (that1guycolin/eglot-remove-mode-servers 'python-mode)
+    (add-to-list 'eglot-server-programs
+                 '((python-ts-mode) . ("uv" "run" "rass" "python")))))
 
-  (that1guycolin/eglot-remove-mode-servers 'python-mode)
-  (add-to-list 'eglot-server-programs
-               '((python-mode python-ts-mode) .
-                 ("uv" "run" "rass" "python")))
-
-  (add-to-list 'docstr-writers-alist
-               '(python-ts-mode . docstr-writers-python))
-  (with-eval-after-load 'docstr-python
-    (add-to-list 'docstr-python-modes 'python-ts-mode))
-  (with-eval-after-load 'docstr-key
-    (add-to-list 'docstr-key-sharp-doc-modes 'python-ts-mode)))
-
-;; Live coding
 (use-package live-py-mode
-  :after (:any python-mode python-ts-mode)
+  :after (python-ts-mode)
   :defer t
   :bind (:map python-base-mode-map
               ("C-c L" . live-py-mode)))
 
-;; Support testing frameworks
 (use-package python-pytest
-  :after (:any python-mode python-ts-mode)
+  :after (python-ts-mode)
   :defer t
   :bind (:map python-base-mode-map
               ("C-c C-t" . python-pytest-dispatch)))
 
-;; Enhance built-in python(-ts)-mode
 (use-package python-x
-  :after (:any python-mode python-ts-mode)
+  :after (python-ts-mode)
   :demand t
   :functions (python-x-setup)
   :config (python-x-setup))
 
 
-;;; Rust/Cargo:
+;; Rust/Cargo:
 (use-package rust-ts-mode
   :ensure nil
   :defer t
-  :hook (rust-ts-mode . (lambda () (docstr-mode -1) (treesit-fold-mode)
-                          (kirigami-mode) (setq-local fill-column 100)))
+  :preface
+  (defun that1guycolin/rust--hook-function ()
+    "Setup workspace for editing rust."
+    (docstr-mode -1)
+    (apheleia-mode 1) (flycheck-mode 1)
+    (treesit-fold-mode) (kirigami-mode)
+    (setq-local fill-column 100))
+  :hook ((rust-ts-mode . apheleia-mode)
+         (rust-ts-mode . eglot-mode)
+         (rust-ts-mode . flycheck-mode)
+         (rust-ts-mode . treesit-fold-mode)
+         (rust-ts-mode . kirigami-mode)
+         (rust-ts-mode . (lambda () (setq-local fill-column 100))))
   :mode "\\.rs\\'"
   :init (add-to-list 'major-mode-remap-alist '(rust-mode . rust-ts-mode)))
 
 (use-package rustic
   :defer t
-  :hook (((rust-mode rust-ts-mode) . rustic-mode)
-         (rustic-mode . (lambda () (setq-local fill-column 100))))
+  :hook (rust-ts-mode . rustic-mode)
   :custom
   (compilation-ask-about-save t)
   (rustic-analyzer-command '("/usr/lib/rustup/bin/rust-analyzer"))
@@ -953,64 +894,52 @@ See URL: \\='https://github.com/rvben/rumdl'."
   (rustic-lsp-client 'eglot))
 
 
-;;; Shell scripts:
+;; Shell scripts:
 (use-package sh-script
   :ensure nil
-  :after (apheleia flycheck)
   :defer t
   :preface
-  (defun that1guycolin/sh-shell-hooks ()
-    "Set hooks for `sh-mode' based on buffer's `sh-shell-file'.
-Also used for `bash-ts-mode'. Add to the list `sh-mode-hook'."
-    (cond
-     ((string-suffix-p "bash" sh-shell-file)
-      (unless (eq major-mode 'bash-ts-mode)
-        (bash-ts-mode)))
-     ((string-suffix-p "zsh" sh-shell-file)
-      (hs-minor-mode) (kirigami-mode))
-     ((string-suffix-p "sh" sh-shell-file)
-      (hs-minor-mode) (kirigami-mode)
-      (flycheck-select-checker 'sh-shellcheck))
-     ((string-suffix-p "dash" sh-shell-file)
-      (hs-minor-mode) (kirigami-mode)
-      (flycheck-select-checker 'sh-shellcheck))))
-
   (defun that1guycolin/prepend-termux-prefix (var)
     "Add the Termux prefix to the start of VAR.
 For example, \"/usr/bin/bash\" becomes
 \"/data/data/com.termux/files/usr/bin/bash\"."
     (set var (concat "/data/data/com.termux/files" (symbol-value var))))
 
-  :hook ((sh-mode . (lambda ()
-                      (apheleia-mode -1)
-                      (setq-local fill-column 80)
-                      (that1guycolin/setup-untabify-save)
-                      (that1guycolin/sh-shell-hooks)))
-         (bash-ts-mode . (lambda ()
-                           (treesit-fold-mode) (kirigami-mode)
-                           (flycheck-select-checker 'sh-shellcheck)
-                           (that1guycolin/setup-untabify-save)
-                           apheleia-mode -1)))
+  (defun that1guycolin/bash-ts-auto ()
+    "Activate `bash-ts-mode' when the active shell is bash."
+    (when (eq sh-shell 'bash)
+      (bash-ts-mode)))
+
+  (defun that1guycolin/sh-set-checker-per-shell ()
+    "Select a flycheck checker based on buffer's `sh-shell'."
+    (with-eval-after-load 'flycheck
+      (if (eq sh-shell 'zsh)
+          (flycheck-select-checker 'zsh-lint)
+        (flycheck-select-checker 'sh-shellcheck))))
+
+  :hook ((sh-mode . that1guycolin/bash-ts-auto)
+         (sh-mode . flycheck-mode)
+         (sh-mode . hs-minor-mode)
+         (sh-mode . kirigami-mode)
+         (sh-mode . that1guycolin/setup-untabify-save)
+         (sh-mode . (lambda () (setq-local fill-column 80)))
+         (bash-ts-mode . flycheck-mode)
+         (bash-ts-mode . treesit-fold-mode)
+         (bash-ts-mode . kirigami-mode)
+         (bash-ts-mode . that1guycolin/setup-untabify-save)
+         (bash-ts-mode . (lambda () (setq-local fill-column 80))))
   :mode (("\\.bash\\'" . bash-ts-mode)
          (("\\.dash\\'" "\\.sh\\'" "\\.zsh\\'") . sh-mode))
   :defines (bash-ts-mode-map sh-mode-map)
-  :init (add-to-list 'flycheck-shellcheck-supported-shells 'dash)
-  :custom
-  (flycheck-shellcheck-infer-shell t)
-  (flycheck-sh-bash-executable "/usr/bin/bash")
-  (flycheck-sh-posix-bash-executable "/usr/bin/bash")
-  (flycheck-sh-posix-dash-executable "/usr/bin/dash")
-  (flycheck-sh-shellcheck-executable "/usr/bin/shellcheck")
-  (flycheck-sh-zsh-executable "/usr/bin/zsh")
   :config
-  (when (eq system-type 'android)
-    (mapc #'that1guycolin/prepend-termux-prefix
-          '(flycheck-sh-bash-executable
-            flycheck-sh-posix-bash-executable
-            flycheck-sh-posix-dash-executable
-            flycheck-sh-shellcheck-executable
-            flycheck-sh-zsh-executable))))
-
+  (with-eval-after-load 'flycheck
+    (when (eq system-type 'android)
+      (mapc #'that1guycolin/prepend-termux-prefix
+            '(flycheck-sh-bash-executable
+              flycheck-sh-posix-bash-executable
+              flycheck-sh-posix-dash-executable
+              flycheck-sh-shellcheck-executable
+              flycheck-sh-zsh-executable)))))
 
 (use-package shfmt
   :defer t
@@ -1023,24 +952,18 @@ For example, \"/usr/bin/bash\" becomes
   (shfmt-arguments '("-i" "4" "-ci")))
 
 (use-package pkgbuild-mode
-  :after (eglot)
   :defer t
-  :preface
-  (defun that1guycolin/pkgbuild--hook-function ()
-    "Set as `pkgbuild-mode-hook'.
-
-Disable flymake, then enable flycheck & shfmt-on-save-mode with the
-correct settings."
-    (flymake-mode -1)
-    (flycheck-add-mode 'sh-shellcheck 'pkgbuild-mode)
-    (setq-local
-     fill-column 1000
-     flycheck-shellcheck-infer-shell nil
-     flycheck-shellcheck-args '("--shell" "bash")
-     flycheck-shellcheck-excluded-warnings '("SC2034" "SC2154" "SC2164")
-     shfmt-arguments '("-i" "2" "-ci"))
-    (flycheck-mode 1) (shfmt-on-save-mode 1))
-  :hook (pkgbuild-mode . that1guycolin/pkgbuild--hook-function)
+  :hook ((pkgbuild-mode . (lambda () (flymake-mode -1)))
+         (pkgbuild-mode . flycheck-mode)
+         (pkgbuild-mode . shfmt-on-save-mode)
+         (pkgbuild-mode . (lambda () (setq-local
+                                      fill-column 1000
+                                      flycheck-shellcheck-infer-shell nil
+                                      flycheck-shellcheck-args
+                                      '("--shell" "bash")
+                                      flycheck-shellcheck-excluded-warnings
+                                      '("SC2034" "SC2154" "SC2164")
+                                      shfmt-arguments '("-i" "2" "-ci")))))
   :mode "^PKGBUILD\\'"
   :custom (pkgbuild-update-sums-on-save nil)
   :config (with-eval-after-load 'eglot
@@ -1048,83 +971,102 @@ correct settings."
                          '((pkgbuild-mode) .
                            ("termux-language-server" "--check")))))
 
-;; Fish shell:
 (use-package fish-mode
-  :after (flycheck apheleia eglot)
   :defer t
-  :hook (fish-mode . (lambda () (setq-local fill-column 80)))
+  :hook ((fish-mode . apheleia-mode)
+         (fish-mode . flycheck-mode)
+         (fish-mode . (lambda () (setq-local fill-column 80))))
   :interpreter "fish"
   :mode "\\.fish\\'"
   :custom (fish-enable-auto-indent t)
   :config
-  (flycheck-define-checker fish-self
-    "The shell for the 90's built-in syntax checker.
-See URL: \\='https://fishshell.com'."
-    :command ("fish" "-n" source)
-    :error-patterns
-    ((error   line-start (file-name) " (line " line "): " (message) line-end)
-     (warning line-start (file-name) " (line " line "): " (message) line-end)
-     (info    line-start (file-name) " (line " line "): " (message) line-end))
-    :modes (fish-mode))
-  (add-to-list 'flycheck-checkers 'fish-self)
-  (setf (alist-get 'fish-mode apheleia-mode-alist) 'fish-indent)
-  (add-to-list 'eglot-server-programs '((fish-mode) . ("fish-lsp" "start"))))
+  (with-eval-after-load 'apheleia
+    (setf (alist-get 'fish-mode apheleia-mode-alist) 'fish-indent))
+  (with-eval-after-load 'eglot
+    (add-to-list 'eglot-server-programs '((fish-mode) . ("fish-lsp" "start")))))
+
+
+;; Text:
+(use-package text-mode
+  :ensure nil
+  :defer t
+  :hook ((text-mode . flycheck-mode)
+         (text-mode . (lambda () (setq-local fill-column 1000))))
+  :mode "\\.txt\\'"
+  :config  (with-eval-after-load 'flycheck-custom-checkers
+             (let ((vale-install (expand-file-name "site-lisp/.vale-styles"
+                                                   user-emacs-directory)))
+               (unless (file-exists-p vale-install)
+                 (that1guycolin/flycheck-vale-setup)))))
 
 
 ;;; Build File Modes:
-;;;  CMake:
+
+;;  CMake:
 (use-package cmake-ts-mode
   :ensure nil
-  :after (apheleia)
   :defer t
-  :hook (cmake-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)
-                           (setq-local fill-column 100)))
+  :hook ((cmake-ts-mode . apheleia-mode)
+         (cmake-ts-mode . treesit-fold-mode)
+         (cmake-ts-mode . kirigami-mode)
+         (cmake-ts-mode . (lambda () (setq-local fill-column 100))))
   :mode ("\\.cmake\\'" "CMakeLists\\.txt\\'")
   :init (add-to-list 'major-mode-remap-alist '(cmake-mode . cmake-ts-mode))
   :config
-  (setf
-   (alist-get 'neocmakelsp apheleia-formatters)
-   '("neocmakelsp" "format" "--inplace" buffer-file-name)
-   (alist-get 'cmake-ts-mode apheleia-mode-alist) 'neocmakelsp))
+  (with-eval-after-load 'apheleia
+    (setf
+     (alist-get 'neocmakelsp apheleia-formatters)
+     '("neocmakelsp" "format" "--inplace" buffer-file-name)
+     (alist-get 'cmake-ts-mode apheleia-mode-alist) 'neocmakelsp)))
 
-(use-package eldoc-cmake
-  :defer t
-  :hook (cmake-ts-mode . (lambda ()
-                           (unless (featurep 'eldoc-cmake)
-                             (eldoc-cmake-enable))))
-  :commands (eldoc-cmake-enable))
+(use-package cmake-font-lock
+  :after (cmake-ts-mode)
+  :demand t
+  :functions (cmake-font-lock-activate)
+  :defines (cmake-font-lock-modes)
+  :init (setq cmake-font-lock-modes nil)
+  :config (cmake-font-lock-activate))
 
 (use-package cmake-ide
-  :defer t
-  :hook (cmake-ts-mode . (lambda ()
-                           (unless (featurep 'cmake-ide)
-                             (cmake-ide-setup))))
-  :commands (cmake-ide-setup))
+  :after (cmake-ts-mode)
+  :demand t
+  :functions (cmake-ide-setup)
+  :config (cmake-ide-setup))
+
+(use-package eldoc-cmake
+  :after (cmake-ts-mode)
+  :demand t
+  :functions (eldoc-cmake-enable)
+  :config (eldoc-cmake-enable))
 
 
 ;; Justfile:
 (use-package just-ts-mode
   :defer t
-  :hook (just-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)
-                          (setq-local fill-column 100)))
+  :hook ((just-ts-mode . treesit-fold-mode)
+         (just-ts-mode . kirigami-mode)
+         (just-ts-mode . (lambda () (setq-local fill-column 100))))
   :mode "justfile\\'")
+
 
 ;; Makefile:
 (use-package makefile-mode
   :ensure nil
-  :after (flycheck)
   :defer t
-  :hook (makefile-mode . (lambda () (setq-local fill-column 100)))
+  :hook ((makefile-mode . flycheck-mode)
+         (makefile-mode . (lambda () (setq-local fill-column 100))))
   :mode "Makefile\\'")
 
 
 ;;; Config File Modes:
+
 ;; Conf:
 (use-package conf-mode
   :ensure nil
   :defer t
   :hook (conf-mode . (lambda () (setq-local fill-column 1000)))
-  :mode ("\\.container"))
+  :mode ("\\.container" "\\.network \\'" "\\.socket\\'" "\\.timer\\'"))
+
 
 ;; INI:
 (use-package ini-mode
@@ -1132,10 +1074,10 @@ See URL: \\='https://fishshell.com'."
   :hook (ini-mode . (lambda () (setq-local fill-column 1000)))
   :mode ("\\.ini\\'" "\\.desktop\\'" "\\.hook\\'"))
 
+
 ;; JSON:
 (use-package json-ts-mode
   :ensure nil
-  :after (apheleia eglot)
   :defer t
   :preface
   (defun that1guycolin/apheleia-set-json-formatter (fmtr)
@@ -1164,22 +1106,27 @@ See URL: \\='https://fishshell.com'."
         (that1guycolin/apheleia-set-json-formatter 'jq))
        (t
         (call-interactively #'that1guycolin/apheleia-set-json-formatter)))))
-  
-  :hook (json-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)
-                          (setq-local fill-column 80)))
+
+  :hook ((json-ts-mode . apheleia-mode)
+         (json-ts-mode . flycheck-mode)
+         (json-ts-mode . treesit-fold-mode)
+         (json-ts-mode . kirigami-mode)
+         (json-ts-mode . (lambda () (setq-local fill-column 80))))
   :mode ("\\.json\\'" "\\.jsonc\\'")
   :config
-  (setf
-   (alist-get 'jq apheleia-formatters)
-   '("jq" "." "-M" "--indent" "2")
-   (alist-get 'json-ts-mode apheleia-mode-alist) 'jq)
-  (keymap-set json-ts-mode-map "C-c v"
-              #'that1guycolin/apheleia-toggle-json-formatter)
+  (with-eval-after-load 'apheleia
+    (setf
+     (alist-get 'jq apheleia-formatters) '("jq" "." "-M" "--indent" "2")
+     (alist-get 'json-ts-mode apheleia-mode-alist) 'jq)
+    (keymap-set json-ts-mode-map "C-c v"
+                #'that1guycolin/apheleia-toggle-json-formatter))
 
-  (that1guycolin/eglot-remove-mode-servers 'json-mode)
-  (add-to-list 'eglot-server-programs
-               '((js-json-mode json-ts-mode) .
-                 ("vscode-json-language-server" "--stdio"))))
+  (with-eval-after-load 'eglot
+    (that1guycolin/eglot-remove-mode-servers 'json-mode)
+    (add-to-list 'eglot-server-programs
+                 '((js-json-mode json-ts-mode) .
+                   ("vscode-json-language-server" "--stdio")))))
+
 
 ;; KDL:
 (use-package kdl-mode
@@ -1187,49 +1134,41 @@ See URL: \\='https://fishshell.com'."
   :hook (kdl-mode . (lambda () (setq-local fill-column 100)))
   :mode "\\.kdl\\'")
 
+
 ;; Systemd:
 (use-package systemd
-  :after (flycheck)
   :defer t
-  :hook (systemd-mode . (lambda ()
-                          (setq-local fill-column 1000) (flycheck-mode)))
-  :mode (("\\.network \\'"  . systemd-mode)
-         ("\\.service\\'"  . systemd-mode)
-         ("\\.socket\\'"   . systemd-mode)
-         ("\\.timer\\'"    . systemd-mode))
-  :config
-  (flycheck-define-checker systemd-systemdlint
-    "A Systemd unit file linter.
-See URL: \\='https://github.com/priv-kweihmann/systemdlint'."
-    :command ("systemdlint" source)
-    :error-patterns
-    ((error line-start (file-name) ":" line ":" (message) line-end)
-     (warning line-start (file-name) ":" line ":" (message) line-end)
-     (info line-start (file-name) ":" line ":" (message) line-end))
-    :modes systemd-mode)
-  (add-to-list 'flycheck-checkers 'systemd-systemdlint))
+  :hook ((systemd-mode . flycheck-mode)
+         (systemd-mode . (lambda () (setq-local fill-column 1000))))
+  :mode ("\\.service\\'"  . systemd-mode))
+
 
 ;; TOML:
 (use-package toml-ts-mode
   :ensure nil
-  :after (apheleia)
   :defer t
-  :hook (toml-ts-mode . (lambda () (treesit-fold-mode) (kirigami-mode)
-                          (setq-local fill-column 1000)))
+  :hook ((toml-ts-mode . apheleia-mode)
+         (toml-ts-mode . treesit-fold-mode)
+         (toml-ts-mode . kirigami-mode)
+         (toml-ts-mode . (lambda () (setq-local fill-column 1000))))
   :mode "\\.toml\\'"
   :init (add-to-list 'major-mode-remap-alist '(conf-toml-mode . toml-ts-mode))
   :config
-  (setf
-   (alist-get 'tombi apheleia-formatters) '("tombi" "fmt" "-")
-   (alist-get 'toml-ts-mode apheleia-mode-alist) 'tombi))
+  (with-eval-after-load 'apheleia
+    (setf
+     (alist-get 'tombi apheleia-formatters) '("tombi" "fmt" "-")
+     (alist-get 'toml-ts-mode apheleia-mode-alist) 'tombi)))
+
 
 ;; XML:
 (use-package nxml-mode
   :ensure nil
-  :after (eglot)
   :defer t
-  :hook (nxml-mode . (lambda () (hs-minor-mode) (kirigami-mode)
-                       (setq-local fill-column 1000)))
+  :hook ((nxml-mode . apheleia-mode)
+         (nxml-mode . flycheck-mode)
+         (nxml-mode . hs-minor-mode)
+         (nxml-mode . kirigami-mode)
+         (nxml-mode . (lambda () (setq-local fill-column 1000))))
   :mode ("\\.xml\\'"
          "\\.xsd\\'" "\\.xslt\\'" "\\.svg\\'" "\\.rss\\'" "\\.pom\\'")
   :custom
@@ -1237,22 +1176,20 @@ See URL: \\='https://github.com/priv-kweihmann/systemdlint'."
   (nxml-attribute-indent 2)
   (nxml-slash-auto-complete-flag t)
   :config
-  (that1guycolin/eglot-remove-mode-servers 'nxml-mode)
-  (add-to-list 'eglot-server-programs '((nxml-mode) . ("lemminx"))))
+  (with-eval-after-load 'eglot
+    (that1guycolin/eglot-remove-mode-servers 'nxml-mode)
+    (add-to-list 'eglot-server-programs '((nxml-mode) . ("lemminx")))))
 
 (use-package auto-rename-tag
   :defer t
   :hook (nxml-mode . auto-rename-tag-mode))
 
+
 ;; YAML:
 (use-package yaml-ts-mode
   :ensure nil
-  :after (flycheck apheleia eglot)
   :defer t
   :preface
-  ;; (defun that1guycolin/flycheck-handle-json--dclint (output)
-  ;;   "Parse the json output from `dclint' into `flycheck' keys.")
-  
   (defun that1guycolin/flycheck-yaml-checker ()
     "Select the linter for \\='.ya(m)l' files.
 If the current `buffer-file-name' is \\='compose.ya(m)l' or
@@ -1294,49 +1231,36 @@ If the current `buffer-file-name' is \\='compose.ya(m)l' or
 
   :bind (:map yaml-ts-mode-map
               ("C-c v" . that1guycolin/apheleia-toggle-yaml-formatter))
-  :hook (yaml-ts-mode . (lambda () (outline-indent-minor-mode) (kirigami-mode)
-                          (setq-local fill-column 1000)
-                          (that1guycolin/flycheck-yaml-checker)))
+  :hook ((yaml-ts-mode . apheleia-mode)
+         (yaml-ts-mode . flycheck-mode)
+         (yaml-ts-mode . outline-indent-minor-mode)
+         (yaml-ts-mode . kirigami-mode)
+         (yaml-ts-mode . that1guycolin/flycheck-yaml-checker)
+         (yaml-ts-mode . (lambda () (setq-local fill-column 1000))))
   :mode ("\\.yml\\'" "\\.yaml\\'")
   :init
   (add-to-list 'major-mode-remap-alist '(yaml-mode . yaml-ts-mode))
   :config
-  (flycheck-define-checker yaml-dclint
-    "A yaml linter for \\='compose.yaml' files using dclint.
-See URL: \\='https://github.com/zavoloklom/docker-compose-linter'."
-    :command ("dclint" "-C"
-              (eval (file-name-parent-directory (buffer-file-name))))
-    :error-patterns
-    ((error line-start (zero-or-more space) line ":" column
-            (one-or-more space) "error" (one-or-more space) (message)
-            (one-or-more space) (id (one-or-more (any alnum "-"))) line-end)
-     (warning line-start (zero-or-more space) line ":" column
-              (one-or-more space) "warning" (one-or-more space) (message)
-              (one-or-more space) (id (one-or-more (any alnum "-"))) line-end)
-     (info line-start (zero-or-more space) line ":" column
-           (one-or-more space) "info" (one-or-more space) (message)
-           (one-or-more space) (id (one-or-more (any alnum "-"))) line-end))
-    :modes (yaml-ts-mode))
-  (add-to-list 'flycheck-checkers 'yaml-dclint)
+  (with-eval-after-load 'apheleia
+    (setf
+     (alist-get 'yamlfmt apheleia-formatters) '("yamlfmt" "--in"  "-")
+     (alist-get 'yaml-ts-mode apheleia-mode-alist) 'yamlfmt))
 
-  (setf
-   (alist-get 'yamlfmt apheleia-formatters) '("yamlfmt" "--in"  "-")
-   (alist-get 'yaml-ts-mode apheleia-mode-alist) 'yamlfmt)
-
-  (that1guycolin/eglot-remove-mode-servers 'yaml-mode)
-  (add-to-list 'eglot-server-programs
-               '((yaml-ts-mode) .
-                 (lambda (_interactive _project)
-                   (if (and (buffer-file-name)
-                            (string-match-p
-                             "/\\(?:compose\\|docker-compose\\)\\.ya?ml\\'"
-                             (buffer-file-name)))
-                       '("docker-compose-langserver" "--stdio" source)
-                     '("yaml-language-server" "--stdio" source))))))
+  (with-eval-after-load 'eglot
+    (that1guycolin/eglot-remove-mode-servers 'yaml-mode)
+    (add-to-list 'eglot-server-programs
+                 '((yaml-ts-mode) .
+                   (lambda (_interactive _project)
+                     (if (and (buffer-file-name)
+                              (string-match-p
+                               "/\\(?:compose\\|docker-compose\\)\\.ya?ml\\'"
+                               (buffer-file-name)))
+                         '("docker-compose-langserver" "--stdio" source)
+                       '("yaml-language-server" "--stdio" source)))))))
 
 (use-package yaml-pro
   :defer t
-  :hook ((yaml-mode yaml-ts-mode) . yaml-pro-mode))
+  :hook (yaml-ts-mode . yaml-pro-mode))
 
 
 
