@@ -49,36 +49,36 @@ function `message'; for example, to insert the value of a variable, include
   (elpaca-rebuild pkg)
   (elpaca-pkg-update-script-message "Updated %s" pkg))
 
-(defun elpaca-pkg-update--compilation-finished (buffer _status)
-  "Continue after Ghostel's compilation in BUFFER finishes."
-  (when (and (buffer-live-p buffer)
-             (with-current-buffer buffer
-               (derived-mode-p 'ghostel-module-compilation-mode)))
-    (remove-hook 'compilation-finish-functions
-                 #'elpaca-pkg-update--compilation-finished)
-    (when elpaca-pkg-update--after-ghostel
-      (run-at-time 0 nil elpaca-pkg-update--after-ghostel))))
+;; (defun elpaca-pkg-update--compilation-finished (buffer _status)
+;;   "Continue after Ghostel's compilation in BUFFER finishes."
+;;   (when (and (buffer-live-p buffer)
+;;              (with-current-buffer buffer
+;;                (derived-mode-p 'ghostel-module-compilation-mode)))
+;;     (remove-hook 'compilation-finish-functions
+;;                  #'elpaca-pkg-update--compilation-finished)
+;;     (when elpaca-pkg-update--after-ghostel
+;;       (run-at-time 0 nil elpaca-pkg-update--after-ghostel))))
 
-(defun elpaca-pkg-update--rebuild-ghostel (&optional continuation)
-  "Rebuild the ghostel module, then run CONTINUATION if provided."
-  (add-to-list 'load-path
-               (expand-file-name "ghostel" elpaca-builds-directory))
-  (require 'ghostel)
-  (with-eval-after-load 'ghostel
-    (when continuation
-      (setq elpaca-pkg-update--after-ghostel continuation)
-      (add-hook 'compilation-finish-functions
-                #'elpaca-pkg-update--compilation-finished))
-    (ghostel-module-compile)
-    (elpaca-pkg-update-script-message "Started ghostel-module compilation")))
+;; (defun elpaca-pkg-update--rebuild-ghostel (&optional continuation)
+;;   "Rebuild the ghostel module, then run CONTINUATION if provided."
+;;   (add-to-list 'load-path
+;;                (expand-file-name "ghostel" elpaca-builds-directory))
+;;   (require 'ghostel)
+;;   (with-eval-after-load 'ghostel
+;;     (when continuation
+;;       (setq elpaca-pkg-update--after-ghostel continuation)
+;;       (add-hook 'compilation-finish-functions
+;;                 #'elpaca-pkg-update--compilation-finished))
+;;     (ghostel-module-compile)
+;;     (elpaca-pkg-update-script-message "Started ghostel-module compilation")))
 
-(defun elpaca-pkg-update--rebuild-epdfinfo ()
-  "Rebuild the epdfinfo program."
-  (add-to-list 'load-path
-               (expand-file-name "pdf-tools" elpaca-builds-directory))
-  (require 'pdf-tools)
-  (pdf-tools-install)
-  (elpaca-pkg-update-script-message "Rebuilt epdfinfo program"))
+;; (defun elpaca-pkg-update--rebuild-epdfinfo ()
+;;   "Rebuild the epdfinfo program."
+;;   (add-to-list 'load-path
+;;                (expand-file-name "pdf-tools" elpaca-builds-directory))
+;;   (require 'pdf-tools)
+;;   (pdf-tools-install)
+;;   (elpaca-pkg-update-script-message "Rebuilt epdfinfo program"))
 
 ;;; Load config
 
@@ -110,16 +110,16 @@ function `message'; for example, to insert the value of a variable, include
 (setq elpaca-menu-org-make-manual nil)
 (let ((packages (sort (cl-delete-duplicates
                        (mapcar #'car (elpaca--queued))) #'string<)))
-  (mapc #'elpaca-pkg-update--update-pkg packages)
-  (cond
-   ((and (memq 'pdf-tools packages)
-         (memq 'ghostel packages))
-    (elpaca-pkg-update--rebuild-ghostel
-     #'elpaca-pkg-update--rebuild-epdfinfo))
-   ((memq 'ghostel packages)
-    (elpaca-pkg-update--rebuild-ghostel))
-   ((memq 'pdf-tools packages)
-    (elpaca-pkg-update--rebuild-epdfinfo))))
+  (mapc #'elpaca-pkg-update--update-pkg packages))
+;; (cond
+;;  ((and (memq 'pdf-tools packages)
+;;        (memq 'ghostel packages))
+;;   (elpaca-pkg-update--rebuild-ghostel
+;;    #'elpaca-pkg-update--rebuild-epdfinfo))
+;;  ((memq 'ghostel packages)
+;;   (elpaca-pkg-update--rebuild-ghostel))
+;;  ((memq 'pdf-tools packages)
+;;   (elpaca-pkg-update--rebuild-epdfinfo)))
 
 
 (provide 'elpaca-pkg-update-script)
