@@ -1,6 +1,7 @@
 ;;; c-org-ensure-t.el --- Latest Org -*- lexical-binding: t -*-
 
 ;;; Commentary:
+
 ;; Load the latest version of Org rather than the built-in version.
 
 ;;; Code:
@@ -402,13 +403,16 @@ If they are currently hidden, make them visible. Thanks to Reddit user
               ("C-c C-q" . org-set-tags-command)
               ("C-c _"   . that1guycolin/org-inline-source-toggle-visibility))
   :bind-keymap ("C-c o" . that1guycolin/org-functions-map)
+  :hook ((org-mode . flycheck-mode)
+         (org-mode . (lambda ()
+                       (flycheck-select-checker 'org-lint))))
   :mode (("\\.org\\'"   . org-mode)
          ("\\.notes\\'" . org-mode))
-  :functions (org-before-first-heading-p
-              org-get-heading org-map-entries org-back-to-heading
-              org-outline-level org-up-heading-safe org-get-outline-path
-              org-id-get-create org-entry-get org-entry-put org-id-new
-              org-insert-structure-template)
+  :functions (org-back-to-heading
+              org-before-first-heading-p org-entry-get org-entry-put
+              org-get-heading org-get-outline-path org-id-get-create org-id-new
+              org-insert-structure-template org-map-entries org-outline-level
+              org-up-heading-safe)
   :defines (org-agenda-files org-babel-default-header-args:zsh
                              org-babel-lisp-eval-fn org-directory
                              org-mode-map)
