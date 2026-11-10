@@ -43,9 +43,6 @@
   (defun that1guycolin/project--add-to-list (var dir-list)
     "Add existing dirs from DIR-LIST to VAR."
     (declare (indent defun))
-    (unless (listp var)
-      (user-error
-       "VAR must be an existing symbol containing a list; %s is not" var))
     (unless (listp dir-list)
       (user-error "%s is not a list" dir-list))
     (mapc (lambda (d)
