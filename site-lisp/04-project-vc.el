@@ -126,19 +126,6 @@
     (if tabspaces-mode
         (setq consult-buffer-list-function #'tabspaces-local-buffer-list)
       (setq consult-buffer-list-function #'buffer-list)))
-
-  (defun that1guycolin/tabspaces--project-scratch-buffer ()
-    "Switch to a unique scratch buffer for the current project.
-
-The unique buffer is created if it does not exists. Use this function as
-\':after' advice for `tabspaces-open-or-create-project-and-workspace'."
-    (let ((project (project-current)))
-      (if project
-          (let* ((project-cln (project-name project))
-                 (project-scratch (format "*scratch-%s*" project-cln)))
-            (get-buffer-create project-scratch)
-            (set-window-buffer nil project-scratch))
-        (scratch-buffer))))
   
   :bind ("C-x TAB" . tabspaces-switch-buffer-and-tab)
   :hook (elpaca-after-init-hook . (lambda ()
@@ -164,8 +151,6 @@ The unique buffer is created if it does not exists. Use this function as
   (tabspaces-use-filtered-buffers-as-default t)
   :config
   (add-hook 'tabspaces-mode-hook #'that1guycolin/consult-tabspaces)
-  (advice-add #'tabspaces-open-or-create-project-and-workspace
-              :after #'that1guycolin/tabspaces--project-scratch-buffer)
   (with-eval-after-load 'which-key
     (which-key-add-keymap-based-replacements tabspaces-command-map
       "C" "Clear Buffers"
