@@ -10,6 +10,7 @@
 (setq   elpaca-menu-org-make-manual nil)
 
 (require '00-macros)
+(declare-function flycheck-select-checker "flycheck")
 (declare-function sly-eval "sly")
 (defvar org-id-prefix)
 
@@ -36,7 +37,7 @@ Their implementation in this config is far less strict than traditional GTD.")
   (defconst that1guycolin/org-keywords--someday
     '(sequence "SOMEDAY(s)" "RESEARCH(h!)" "|" "NEVER(v@)")
     "Keyword sequence to track things you might do \"someday\".
-Note the absence of a \'completed\' keyword; objects from this pipeline
+Note the absence of a \\='completed' keyword; objects from this pipeline
 move to either the \"tasks\" or the \"ideas\" pipeline to then be
 completed.")
 
@@ -199,7 +200,7 @@ Optionally, specify only headings up-to-and-including LEVEL."
       (org-map-entries #'org-id-get-create match-str 'file)))
 
   (defun that1guycolin/org--update-last-edit-dt ()
-    "Update value of `LAST_EDIT' header in the active Org buffer.
+    "Update value of \\=`LAST_EDIT' header in the active Org buffer.
 The new value is the current date & time in this format:
 YYYY-MM-DD DAY HH:MM:ss (e.g., 2026-03-15 SUN 14:24:06)"
     (when (eq major-mode 'org-mode)
@@ -232,7 +233,7 @@ The function ends with the cursor on the new line."
     "Return ID from a top-of-file-property-drawer, or nil."
     (if (that1guycolin/org-top-drawer-p)
         (save-restriction
-          (org-show-all)
+          (org-fold-show-all)
           (narrow-to-region (match-beginning 0) (match-end 0))
           (goto-char (point-min))
           (when (re-search-forward "^:ID:[ \t]+\\(.+\\)$" nil t)
@@ -286,7 +287,7 @@ The header block will contain TITLE and AUTHOR information."
     "Insert a header block at the top of the current document.
 If there is a properties drawer at the top, the header block will go
 underneath it. The header block will contain the following fields:
-'TITLE:', 'AUTHOR:', 'CREATED_DATE:', 'LAST_EDITED:', 'ID:', 'FILETAGS:'."
+\\='TITLE:', \\='AUTHOR:', \\='CREATED_DATE:', \\='LAST_EDITED:', \\='ID:', \\='FILETAGS:'."
     (interactive
      (list (read-string "Title: " (file-name-base (buffer-name)))
            (let ((default "Colin Loeffler (that1guycolin)"))
@@ -347,7 +348,7 @@ underneath it. The header block will contain the following fields:
   (defun that1guycolin/org-inline-source-toggle-visibility ()
     "If inline source blocks and results are currently visible, hide them.
 If they are currently hidden, make them visible. Thanks to Reddit user
-'hogmannn' for the inspiration for this function:
+\\='hogmannn' for the inspiration for this function:
 \"https://www.reddit.com/r/emacs/comments/1i1exdt/hiding_inline_src_in_org/\"."
     (interactive)
     (if that1guycolin/org-inline-source-hidden
@@ -410,9 +411,9 @@ If they are currently hidden, make them visible. Thanks to Reddit user
          ("\\.notes\\'" . org-mode))
   :functions (org-back-to-heading
               org-before-first-heading-p org-entry-get org-entry-put
-              org-get-heading org-get-outline-path org-id-get-create org-id-new
-              org-insert-structure-template org-map-entries org-outline-level
-              org-up-heading-safe)
+              org-fold-show-all org-get-heading org-get-outline-path
+              org-id-get-create org-id-new org-insert-structure-template
+              org-map-entries org-outline-level org-up-heading-safe)
   :defines (org-agenda-files org-babel-default-header-args:zsh
                              org-babel-lisp-eval-fn org-directory
                              org-mode-map)
