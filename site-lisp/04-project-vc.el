@@ -92,7 +92,7 @@
   (that1guycolin/project--add-to-list
     'that1guycolin/project--parent-directories
     (list that1guycolin/projects-directory
-          that1guycolin/scripts-directory "/var/aur/pkgbuilds"))
+          that1guycolin/scripts-directory "/var/custompkgs/pkgbuilds"))
   (that1guycolin/project--add-to-list 'that1guycolin/project--standalones
     (list user-emacs-directory org-directory "~/dotfiles"))
   :custom (project-vc-ignores '("^node_modules$" "^\\.venv$" "^\\.uv$")))
@@ -129,7 +129,7 @@
   
   :bind ("C-x TAB" . tabspaces-switch-buffer-and-tab)
   :hook (elpaca-after-init-hook . (lambda ()
-                                    (run-with-timer 10 nil #'tabspaces-mode)))
+                                    (run-with-timer 5 nil #'tabspaces-mode)))
   :functions (tabspaces-local-buffer-list
               tabspaces-mode tabspaces-open-or-create-project-and-workspace)
   :custom
