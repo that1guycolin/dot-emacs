@@ -166,6 +166,10 @@
       "w" "Show Workspaces"
       "T" "Toggle Echo Area Display")))
 
+(use-package scratch
+  :defer t
+  :bind ("C-c s" . scratch))
+
 
 ;;; VC/Git:
 ;; Set EDITOR to current Emacs session
