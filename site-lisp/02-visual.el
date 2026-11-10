@@ -112,7 +112,7 @@ Useful as a hook function."
     (visual-line-mode 1)
     (auto-fill-mode 1))
   :hook ((visual-line-mode . visual-fill-column-for-vline)
-         ((prog-mode text-mode conf-mode) .
+         ((conf-mode prog-mode text-mode) .
           that1guycolin/visual-fill-column-setup)))
 
 
