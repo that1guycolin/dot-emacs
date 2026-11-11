@@ -20,6 +20,7 @@
 ;; visual-regexp-steroids, yaml-pro, yaml-ts-mode
 
 ;;; Commentary:
+
 ;; The purpose of this file is to define how Emacs should behave when actually
 ;; working with code. The packages at the top of the file apply to all
 ;; languages; later in the document, s-exps are separated into groups to
@@ -29,11 +30,11 @@
 ;;; Code:
 
 (require '00-macros)
-(declare-function that1guycolin/flycheck-vale-setup "flycheck-custom-checkers")
-(declare-function no-littering-expand-var-file-name "no-littering")
-(declare-function file-directory-p "emacs")
-(declare-function embark-act "embark")
 (declare-function corfu-mode "corfu")
+(declare-function embark-act "embark")
+(declare-function file-directory-p "emacs")
+(declare-function no-littering-expand-var-file-name "no-littering")
+(declare-function that1guycolin/flycheck-vale-setup "flycheck-custom-checkers")
 (declare-function that1guycolin/setup-untabify-save "b-emacs")
 (defvar minions-prominent-modes)
 
