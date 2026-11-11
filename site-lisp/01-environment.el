@@ -40,11 +40,6 @@
         that1guycolin/exec-path-from-shell-vars)
   (exec-path-from-shell-initialize))
 
-(use-package envrc
-  :demand t
-  :functions (envrc-global-mode)
-  :config (envrc-global-mode 1))
-
 ;; Override-built-in version w/ package's latest version
 (use-package transient
   :ensure (:wait t)

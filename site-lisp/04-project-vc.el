@@ -30,6 +30,7 @@
 
 
 ;;; Projects:
+
 (use-package project
   :ensure nil
   :demand t
@@ -116,6 +117,12 @@
             (transient-append-suffix 'disproject-dispatch "C f"
               '("C o" "C. P. Find Other Window"
                 consult-project-extra-find-other-window))))
+
+;; Direnv integration
+(use-package envrc
+  :demand t
+  :functions (envrc-global-mode)
+  :config (envrc-global-mode 1))
 
 ;; Save frame-state & tab-state
 (use-package tabspaces
