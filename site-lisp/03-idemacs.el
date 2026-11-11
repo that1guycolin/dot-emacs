@@ -162,6 +162,13 @@
 
 (use-package flycheck
   :defer t
+  :preface
+  (defun that1guycolin/prepend-termux-prefix (var)
+    "Add the Termux prefix to the start of VAR.
+For example, \"/usr/bin/bash\" becomes
+\"/data/data/com.termux/files/usr/bin/bash\"."
+    (set var (concat "/data/data/com.termux/files" (symbol-value var))))
+  
   :commands (flycheck-mode)
   :functions (flycheck-add-mode
               flycheck-error-new-at flycheck-parse-json flycheck-select-checker)
@@ -179,6 +186,14 @@
   (require 'flycheck-custom-checkers)
 
   (add-to-list 'flycheck-shellcheck-supported-shells 'dash)
+  (when (eq system-type 'android)
+    (mapc #'that1guycolin/prepend-termux-prefix
+          '(flycheck-sh-bash-executable
+            flycheck-sh-posix-bash-executable
+            flycheck-sh-posix-dash-executable
+            flycheck-sh-shellcheck-executable
+            flycheck-sh-zsh-executable)))
+
   (with-eval-after-load 'minions
     (add-to-list 'minions-prominent-modes 'flycheck-mode)))
 
@@ -900,12 +915,6 @@ a running slynk instance @ localhost:4005."
   :ensure nil
   :defer t
   :preface
-  (defun that1guycolin/prepend-termux-prefix (var)
-    "Add the Termux prefix to the start of VAR.
-For example, \"/usr/bin/bash\" becomes
-\"/data/data/com.termux/files/usr/bin/bash\"."
-    (set var (concat "/data/data/com.termux/files" (symbol-value var))))
-
   (defun that1guycolin/bash-ts-auto ()
     "Activate `bash-ts-mode' when the active shell is bash."
     (when (eq sh-shell 'bash)
@@ -931,16 +940,8 @@ For example, \"/usr/bin/bash\" becomes
          (bash-ts-mode . (lambda () (setq-local fill-column 80))))
   :mode (("\\.bash\\'" . bash-ts-mode)
          (("\\.dash\\'" "\\.sh\\'" "\\.zsh\\'") . sh-mode))
-  :defines (bash-ts-mode-map sh-mode-map)
-  :config
-  (with-eval-after-load 'flycheck
-    (when (eq system-type 'android)
-      (mapc #'that1guycolin/prepend-termux-prefix
-            '(flycheck-sh-bash-executable
-              flycheck-sh-posix-bash-executable
-              flycheck-sh-posix-dash-executable
-              flycheck-sh-shellcheck-executable
-              flycheck-sh-zsh-executable)))))
+  :defines (bash-ts-mode-map sh-mode-map))
+
 
 (use-package shfmt
   :defer t
