@@ -1,12 +1,14 @@
 ;;; 05-org-config.el --- Org-Mode Setup -*- lexical-binding: t; -*-
 
 ;;; Packages included:
+
 ;; djvu, el2org, nov, ob-rust, org-appear, org-category-capture, org-chef,
-;; org-edna, org-make-toc, org-mem, org-modern, org-modern-indent, org-node,
+;; org-edna, org-mem, org-modern, org-modern-indent, org-node,
 ;; org-node-backlink, org-noter, org-noter-pdftools, org-pdftools,
-;; org-pomodoro, org-project-capture, org-recur, org-tidy, pdf-tools
+;; org-pomodoro, org-project-capture, org-recur, org-tidy, pdf-tools, toc-org
 
 ;;; Commentary:
+
 ;; Configure packages to improve and extend the Org-mode experience. Packages
 ;; are grouped into \"Task (projects & TODO)\", \"Knowledge (notes & recipes)\",
 ;; and \"miscellaneous\".
@@ -16,34 +18,30 @@
 (declare-function org-id-get-create "org-id")
 (declare-function org-id-new "org-id")
 (declare-function project-root "project.el")
-(declare-function that1guycolin/inhibit-inhibit-mouse "02-visual.el")
 (declare-function that1guycolin/org--top-drawer-id "c-org")
-
 (defvar dired-mode-map)
 (defvar dirvish-mode-map)
 (defvar org-agenda-files)
 (defvar org-capture-templates)
 (defvar org-directory)
-(defvar that1guycolin/org-functions-map)
 (defvar org-mode-map)
 (defvar org-refile-targets)
+(defvar that1guycolin/org-functions-map)
 
 ;;; Tasks:
 
-;; Conditional task completion
 (use-package org-edna
   :after (org)
   :demand t
   :functions (org-edna-mode)
   :config (org-edna-mode 1))
 
-;; Project management via Org
 (use-package org-project-capture
   :after (org-edna)
   :demand t
   :preface
   (defun that1guycolin/remove-org-todo ()
-    "If a \='TODO.org' file exists in the org directory, delete it.
+    "If a \\='TODO.org' file exists in the org directory, delete it.
 Because the org-directory is a git repo, there is a possibility of
 accidentally creating a TODO file. A TODO file in the org-directory is
 by definition redundant, since any TODO items should go in the tasks
@@ -151,7 +149,7 @@ URL, LINK will be shown instead."
 
 
 ;;; Knowledge
-;; Org metadata index
+
 (use-package org-mem
   :after (org)
   :demand t
@@ -165,7 +163,6 @@ URL, LINK will be shown instead."
         '("elpaca/" "archive/" "tasks-to-do/"))
   (org-mem-updater-mode 1))
 
-;; Fast & simple note management
 (use-package org-node
   :defer t
   :preface
@@ -230,7 +227,6 @@ and ID are automatically provided."
   :custom (org-node-backlink-do-drawers nil)
   :config (org-node-backlink-mode 1))
 
-;; View PDFs in Emacs
 (use-package pdf-tools
   :defer t
   :magic ("%PDF" . pdf-view-mode)
@@ -241,10 +237,8 @@ and ID are automatically provided."
   (pdf-info-asynchronous t)
   :config
   (unless (file-exists-p pdf-info-epdfinfo-program)
-    (pdf-tools-install))
-  (add-hook 'pdf-view-mode-hook #'that1guycolin/inhibit-inhibit-mouse))
+    (pdf-tools-install)))
 
-;; Annotate
 (use-package org-noter
   :defer t
   :preface
@@ -264,14 +258,13 @@ and ID are automatically provided."
   (org-noter-notes-search-path that1guycolin/notes-directory)
   (org-noter-default-notes-file-names '("notes.org"))
   :config (with-eval-after-load 'which-key
-            (which-key-add-keymap-based-replacements that1guycolin/org-functions-map
+            (which-key-add-keymap-based-replacements
+              that1guycolin/org-functions-map
               "n" "Noter")))
 
-;; PDF Tools ext
 (use-package nov :after (org-noter) :demand t)
 (use-package djvu :after (org-noter) :demand t)
 
-;; Annotate PDFs
 (use-package org-pdftools
   :after (org pdf-tools)
   :demand t
@@ -289,8 +282,8 @@ and ID are automatically provided."
             (if toggle-no-questions
                 (not org-noter-insert-note-no-questions)
               org-noter-insert-note-no-questions))
-           (_org-pdftools-use-isearch-link t) ; flycheck-ignore: emacs-lisp
-           (_org-pdftools-use-freepointer-annot t)) ; flycheck-ignore: emacs-lisp
+           (_org-pdftools-use-isearch-link t)
+           (_org-pdftools-use-freepointer-annot t))
        (org-noter-insert-note (org-noter--get-precise-info)))))
 
   (defun org-noter-set-start-location (&optional arg)
@@ -317,7 +310,6 @@ With a prefix ARG, remove start location."
             (add-hook 'pdf-annot-activate-handler-functions
                       #'org-noter-pdftools-jump-to-note)))
 
-;; Recipe Management
 (use-package org-chef
   :after (org)
   :demand t
@@ -333,12 +325,13 @@ With a prefix ARG, remove start location."
        "* %^{Recipe title: }\n  :PROPERTIES:\n  :source-url:\n  :servings:\n  \
 :prep-time:\n  :cook-time:\n  :ready-in:\n  :END:\n** Ingredients\n \
 %?\n** Directions\n\n")))
-  :config (setq org-capture-templates
-                (append org-capture-templates
-                        that1guycolin/org-recipe-templates)))
+  :config (mapc (lambda (tmpl) (setq org-capture-templates
+                                     (append org-capture-templates tmpl)))
+                that1guycolin/org-recipe-templates))
 
 
-;;; Babel
+;;; Babel:
+
 (use-package ob-rust
   :after (org)
   :demand t
@@ -347,7 +340,7 @@ With a prefix ARG, remove start location."
 
 
 ;;; Appearance:
-;; Improve Org appearance
+
 (use-package org-modern
   :defer t
   :hook (org-mode . org-modern-mode)
@@ -370,7 +363,6 @@ With a prefix ARG, remove start location."
   :defer t
   :hook (org-modern-mode . org-modern-indent-mode))
 
-;; Invisible drawers
 (use-package org-tidy
   :after (org)
   :defer t
@@ -431,7 +423,7 @@ then reactivate after FUNC is complete. Use as advice for
 
 
 ;;; Misc:
-;; .org from .el
+
 (use-package el2org
   :after (org)
   :defer t
@@ -449,7 +441,6 @@ then reactivate after FUNC is complete. Use as advice for
   :bind-keymap ("C-c 2" . that1guycolin/el2org-gen-map)
   :functions (el2org-generate-readme el2org-generate-html el2org-generate-org))
 
-;; Table-of-contents
 (use-package toc-org
   :after (org)
   :defer t
@@ -457,7 +448,6 @@ then reactivate after FUNC is complete. Use as advice for
               ("C-^" . toc-org-insert-toc))
   :hook (org-mode . toc-org-mode))
 
-;; Manage time
 (use-package org-pomodoro
   :after (org)
   :defer t
