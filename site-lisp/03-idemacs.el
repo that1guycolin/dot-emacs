@@ -1025,22 +1025,28 @@ a running slynk instance @ localhost:4005."
                  '((cmake-ts-mode) . ("neocmakelsp" "stdio")))))
 
 (use-package cmake-font-lock
-  :after (cmake-ts-mode)
-  :demand t
-  :functions (cmake-font-lock-activate)
+  :defer t
+  :hook (cmake-ts-mode . cmake-font-lock-activate)
   :defines (cmake-font-lock-modes)
-  :init (setq cmake-font-lock-modes nil)
-  :config (cmake-font-lock-activate))
+  :init (setq cmake-font-lock-modes nil))
+
+(use-package rtags
+  :after (cmake-ts-mode)
+  :demand t)
 
 (use-package cmake-ide
-  :after (cmake-ts-mode)
+  :after (cmake-ts-mode flycheck rtags)
   :demand t
   :functions (cmake-ide-setup)
-  :config (cmake-ide-setup))
+  :config
+  (cmake-ide-setup)
+  (flycheck-mode 1)
+  (add-hook 'cmake-ts-mode-hook #'flycheck-mode))
 
 (use-package eldoc-cmake
   :after (cmake-ts-mode)
   :demand t
+  :hook (cmake-ts-mode . eldoc-mode)
   :functions (eldoc-cmake-enable)
   :config (eldoc-cmake-enable))
 
