@@ -51,13 +51,11 @@
     (interactive)
     (let ((ts-dir (car treesit-extra-load-path)))
       (unless (file-directory-p ts-dir)
-        (mapc (lambda (g)
-                (treesit-install-language-grammar g ts-dir))
+        (mapc (lambda (lang)
+                (treesit-install-language-grammar lang ts-dir))
               (mapcar #'car treesit-language-source-alist)))))
   
   :mode ("\\.tsx\\'" . tsx-ts-mode)
-  :init (add-to-list 'treesit-extra-load-path
-                     (no-littering-expand-var-file-name "tree-sitter"))
   :custom
   (treesit-enabled-modes t)
   (treesit-font-lock-level 4)
