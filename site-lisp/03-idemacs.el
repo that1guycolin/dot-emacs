@@ -35,6 +35,7 @@
 (declare-function embark-act "embark")
 (declare-function file-directory-p "emacs")
 (declare-function no-littering-expand-var-file-name "no-littering")
+(declare-function that1guycolin/eglot-remove-mode-servers "03-idemacs")
 (declare-function that1guycolin/flycheck-vale-setup "flycheck-custom-checkers")
 (declare-function that1guycolin/setup-untabify-save "b-emacs")
 (defvar minions-prominent-modes)
@@ -49,11 +50,12 @@
   (defun that1guycolin/treesit-install-language-grammars ()
     "Install all treesit grammars for all languages."
     (interactive)
-    (let ((ts-dir (car treesit-extra-load-path)))
-      (unless (file-directory-p ts-dir)
+    (let ((ts-dir (car treesit-extra-load-path))
+          (langs (mapcar #'car treesit-language-source-alist)))
+      (unless (and (file-directory-p ts-dir)
+                   (directory-empty-p ts-dir))
         (mapc (lambda (lang)
-                (treesit-install-language-grammar lang ts-dir))
-              (mapcar #'car treesit-language-source-alist)))))
+                (treesit-install-language-grammar lang ts-dir)) langs))))
   
   :mode ("\\.tsx\\'" . tsx-ts-mode)
   :custom
@@ -254,16 +256,12 @@ For example, \"/usr/bin/bash\" becomes
   :commands (consult-eglot-symbols))
 
 (use-package consult-eglot-embark
-  :after (consult-eglot embark)
-  :demand t
-  :functions (consult-eglot-embark-mode)
-  :config (consult-eglot-embark-mode 1))
+  :defer t
+  :hook (eglot-connect . consult-eglot-embark-mode))
 
 (use-package flycheck-eglot
-  :after (flycheck eglot)
-  :demand t
-  :functions (global-flycheck-eglot-mode)
-  :config (global-flycheck-eglot-mode 1))
+  :defer t
+  :hook (eglot-connect . flycheck-eglot-mode))
 
 (use-package lsp-snippet
   :ensure (lsp-snippet
@@ -278,10 +276,8 @@ For example, \"/usr/bin/bash\" becomes
   (lsp-snippet-tempel-eglot-init))
 
 (use-package eglot-tempel
-  :after (eglot tempel)
-  :demand t
-  :functions (eglot-tempel-mode)
-  :config (eglot-tempel-mode 1))
+  :defer t
+  :hook (eglot-connect . eglot-tempel-mode))
 
 
 ;;; Code Folding:
