@@ -570,13 +570,12 @@ For example, \"/usr/bin/bash\" becomes
       (save-excursion (that1guycolin/sly-autoconnect))))
 
   (defun that1guycolin/sly-autoconnect ()
-    "Start sly based on Emacs-type.
-If \\='desktop or \\='termux, run `sly'. If \\='android-gui, connect to
-a running slynk instance @ localhost:4005."
+    "Start sly based on system type.
+If running in the Android GUI app, connect to a running slynk instance
+at localhost:4005. Otherwise, start sly normally."
     (interactive)
-    (if (eq that1guycolin/emacs-type 'android-gui)
-        (sly-connect "localhost" 4005)
-      (sly)))
+    (that1guycolin/desktop-mobile
+      (sly) (sly) (sly-connect "localhost" 4005)))
 
   :bind ("C-c l" . that1guycolin/sly-autoconnect)
   :hook ((lisp-ts-mode . sly-editing-mode)

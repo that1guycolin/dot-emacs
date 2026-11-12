@@ -8,7 +8,7 @@
 ;;; Code:
 
 (defmacro that1guycolin/emacs-set-for-type (var desk tmux gui)
-  "Set the value of VAR based on the value of `that1guycolin/emacs-type'.
+  "Set the value of VAR based on the current system.
 Use key DESK for \"desktop\" sessions, TMUX, for sessions running in
 \"termux\" on Android, and GUI for sessions running in the Android
 \"GUI\" app."
