@@ -1,6 +1,7 @@
 ;;; b-emacs.el --- Global Settings -*- lexical-binding: t -*-
 
 ;;; Commentary:
+
 ;; Define global settings using a use-package sexp for the dummy "emacs"
 ;; package.
 
@@ -11,8 +12,11 @@
 (use-package emacs
   :ensure nil
   :demand t
+
+  
+;;; Load paths:
+
   :preface
-;;;; Load paths:
   (defvar that1guycolin/projects-directory nil
     "Directory containing active projects.")
 
@@ -31,7 +35,9 @@
     (expand-file-name "~/scripts") (expand-file-name "~/scripts")
     (expand-file-name "scripts" that1guycolin/android-home))
 
-;;;; tabs-to-spaces
+  
+;;; tabs-to-spaces
+  
   (defun that1guycolin/untabify-buffer ()
     "Run `untabify' over current buffer."
     (interactive)
@@ -41,7 +47,9 @@
     "Add `that1guycolin/untabify-buffer' to buffer-local hook."
     (add-hook 'after-save-hook #'that1guycolin/untabify-buffer nil t))
 
-;;;; side window
+
+;;; side window
+
   (defun that1guycolin/toggle-side-window ()
     "Switch focus between a side window and the main window area.
 If in a side window, return to the last used window.
@@ -59,17 +67,14 @@ If not in a side window, jump to the first found side window."
        (t
         (select-window side-window)))))
 
-;;;; misc.
+  
+;;; misc.
+  
   (defun that1guycolin/check-parens-with-message ()
     "Run `check-parens'. Print a message when all parentheses match."
     (interactive)
     (when (not (check-parens))
       (message "All parentheses match!")))
-
-  (defun that1guycolin/ibuffer-hook-functions ()
-    "Group of functions to include in `ibuffer-mode-hook'."
-    (hl-line-mode 1)
-    (ibuffer-auto-mode 1))
 
   (defun that1guycolin/remove-eln-cache ()
     "Remove an accidentally created eln-cache from `user-emacs-directory.'"
@@ -77,24 +82,22 @@ If not in a side window, jump to the first found side window."
       (when (file-exists-p cache-file)
         (delete-directory cache-file t))))
 
-;;;; use-package
-  :bind (("C-TAB"   . completion-at-point)
-         ("C-c C-x" . toggle-frame-maximized)
-         ("C-c ("   . that1guycolin/check-parens-with-message)
-         ("C-c #"   . display-line-numbers-mode)
-         ("C-c C-#" . global-display-line-numbers-mode)
-         ("C-c C-$" . restart-emacs)
-         ("M-0"     . that1guycolin/toggle-side-window))
-  :functions (ibuffer-auto-mode)
-  :init
-  (add-to-list 'default-frame-alist '(fullscreen . maximized))
-  (add-hook 'elpaca-after-init-hook
-            (lambda ()
-              (run-with-timer 30 nil #'that1guycolin/remove-eln-cache)))
-  (when (eq that1guycolin/emacs-type 'android-gui)
-    (add-hook 'elpaca-after-init-hook
-              (lambda ()
-                (set-frame-font "BlexMono Nerd Font Mono" nil t t))))
+  
+;;; use-package
+  
+  :bind (("C-x <TAB>" . completion-at-point)
+         ("C-c C-x"   . toggle-frame-maximized)
+         ("C-c ("     . that1guycolin/check-parens-with-message)
+         ("C-c #"     . display-line-numbers-mode)
+         ("C-c C-#"   . global-display-line-numbers-mode)
+         ("C-c C-$"   . restart-emacs)
+         ("M-0"       . that1guycolin/toggle-side-window))
+  :hook ((elpaca-after-init . (lambda ()
+                                (run-with-timer
+                                 30 nil #'that1guycolin/remove-eln-cache)))
+         (ibuffer-mode . hl-line-mode)
+         (ibuffer-mode . ibuffer-auto-mode))
+  :init (add-to-list 'default-frame-alist '(fullscreen . maximized))
   :custom
   (auto-save-visited-interval 60)
   (enable-recursive-minibuffers t)
@@ -111,13 +114,12 @@ If not in a side window, jump to the first found side window."
          (expand-file-name "init.el" user-emacs-directory)))
   :config
   (mapc (lambda (f) (add-to-list 'trusted-content f))
-        (directory-files that1guycolin/site-lisp-dir t "\\.el\\'"))
+        (directory-files (expand-file-name "site-lisp" user-emacs-directory)
+                         t "\\.el\\'"))
   (abbrev-mode 1)
   (auto-save-visited-mode 1)
   (context-menu-mode 1)
-  (which-key-mode 1)
-
-  (add-hook 'ibuffer-mode-hook #'that1guycolin/ibuffer-hook-functions))
+  (which-key-mode 1))
 
 
 

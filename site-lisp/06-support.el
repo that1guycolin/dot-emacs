@@ -1,14 +1,15 @@
 ;;; 06-support.el --- Integrate or Emulate External Tools -*- lexical-binding: t -*-
 
 ;;; Packages included:
-;; casual, casual-avy, deadgrep, dirvish, docker, dwim-shell-command, eat,
-;; elisp-dev-mcp, ellama, emacs-everywhere, emms, emms-info-mediainfo, empv,
-;; free-keys, ghostel gptel, gptel-forge-prs, guix, htmlize, llm, llm-ollama,
+
+;; casual, casual-avy, dirvish, docker, dwim-shell-command, eat, elisp-dev-mcp,
+;; ellama, emacs-everywhere, emms, emms-info-mediainfo, empv, free-keys,
+;; ghostel, gptel, gptel-forge-prs, guix, htmlize, llm, llm-ollama,
 ;; mcp-server-lib, mistty, native-complete, notmuch, notmuch-addr,
-;; notmuch-indicator, notmuch-transient, org-mcp, ready-player, recentf, rg,
-;; telega
+;; notmuch-indicator, notmuch-transient, org-mcp, ready-player, recentf, telega
 
 ;;; Commentary:
+
 ;; This file contains use-package objects for packages that help integrate Emacs
 ;; with external applications (e.g., "podman") or packages that extend Emacs'
 ;; functionality to the extent it mirrors an external tool (e.g., "dirvish").
@@ -18,18 +19,81 @@
 (require '00-macros)
 (require '04-project-vc)
 
+(declare-function Info-history-back "Info")
+(declare-function Info-history-forward "Info")
+(declare-function Info-next "Info")
+(declare-function Info-next-reference "Info")
+(declare-function Info-prev "Info")
+(declare-function Info-prev-reference "Info")
+(declare-function Info-search "Info")
+
+(declare-function compilation-display-error "compilation-mode")
+(declare-function compilation-next-error "compilation-mode")
+(declare-function compilation-next-file "compilation-mode")
+(declare-function compilation-previous-error "compilation-mode")
+(declare-function compilation-previous-file "compilation-mode")
+
+(declare-function eww-back-url "eww")
+(declare-function eww-bookmark-browse "eww")
+(declare-function eww-browse-with-external-browser "eww")
+(declare-function eww-forward-url "eww")
+(declare-function eww-next-url "eww")
+(declare-function eww-previous-url "eww")
+
+(declare-function ibuffer-backward-filter-group "ibuffer")
+(declare-function ibuffer-backwards-next-marked "ibuffer")
+(declare-function ibuffer-forward-filter-group "ibuffer")
+(declare-function ibuffer-forward-next-marked "ibuffer")
+(declare-function ibuffer-toggle-filter-group "ibuffer")
+(declare-function ibuffer-visit-buffer "ibuffer")
+(declare-function ibuffer-visit-buffer-other-window "ibuffer")
+
+(declare-function org-agenda-clock-goto "org")
+
+(declare-function shr-next-link "eww")
+(declare-function shr-previous-link "eww")
+
+(declare-function transient-define-prefix "transient")
+
+(defvar Info-mode-map)
+(defvar calc-alg-ent-map)
+(defvar calc-mode-map)
+(defvar calendar-mode-map)
+(defvar compilation-mode-map)
+(defvar css-mode-map)
+(defvar css-ts-mode-map)
+(defvar csv-mode-map)
+(defvar emacs-lisp-mode-map)
+(defvar empv-hydra)
+(defvar eshell-mode-map)
+(defvar eww-bookmark-mode-map)
+(defvar eww-mode-map)
+(defvar grep-mode-map)
+(defvar ibuffer-mode-map)
+(defvar image-mode-map)
+(defvar isearch-mode-map)
+(defvar makefile-mode-map)
+(defvar minions-prominent-modes)
+(defvar no-littering-etc-directory)
+(defvar no-littering-var-directory)
+(defvar org-agenda-mode-map)
+(defvar org-mode-map)
+(defvar org-table-fedit-map)
+(defvar popper-reference-buffers)
+(defvar reb-lisp-mode-map)
+(defvar reb-mode-map)
+
 ;;; Terminals:
-;; Emulate A Terminal
+
 (use-package eat
   :defer t
-  :unless (eq that1guycolin/emacs-type 'android-gui)
-  :bind ("C-c t e"   . eat)
+  :unless (eq system-type 'android)
+  :bind ("C-c t e" . eat)
   :hook ((eshell-mode . eat-eshell-visual-command-mode)
          (eat-mode . (lambda () (setq-local fill-column 1000))))
   :config (with-eval-after-load 'with-editor
             (add-hook 'eat-mode-hook #'with-editor-export-editor)))
 
-;; Libghostty-based terminal shell
 (use-package ghostel
   :ensure (ghostel :source "MELPA" :package "ghostel" :id ghostel
                    :fetcher github :repo "dakra/ghostel" :type git :files
@@ -52,7 +116,6 @@
     nil
     (setq ghostel-shell "/data/data/com.termux/files/usr/bin/zsh")))
 
-;; Commit shell layer
 (use-package mistty
   :defer t
   :bind (("C-c t m" . mistty)
@@ -63,7 +126,6 @@
                ("M-<right>" . mistty-send-key)))
   :hook (mistty-mode . (lambda () (setq-local fill-column 1000))))
 
-;; Shell completion in shell buffers
 (use-package native-complete
   :defer t
   :hook (shell-mode . (lambda ()
@@ -73,24 +135,20 @@
 
 
 ;;; File explorer:
+
 (use-package recentf
   :ensure nil
   :demand t
   :preface
-  (defvar no-littering-var-directory)
-  (defvar no-littering-etc-directory)
   :bind ("C-x C-r" . recentf-open)
   :config
   (add-to-list 'recentf-exclude no-littering-var-directory)
   (add-to-list 'recentf-exclude no-littering-etc-directory)
   (recentf-mode 1))
 
-;; `Dired' with "batteries included"
 (use-package dirvish
   :defer t
   :preface
-  (declare-function transient-define-prefix "transient")
-  
   (defvar that1guycolin/dirvish-clipboard-files nil
     "Files currently staged by `dirvish-copy' or `dirvish-cut'.")
 
@@ -251,6 +309,7 @@ On directories, toggle subtree. On files, use Dirvish file outline viewer."
       "d" "Create Directory"))
   
   :bind ("C-x d" . dirvish)
+  :hook (dirvish-preview-setup . that1guycolin/dirvish-preview-read-only)
   :commands (dirvish-dwim)
   :functions (dired-create-directory
               dired-create-empty-file dired-current-directory dired-do-rename
@@ -261,18 +320,15 @@ On directories, toggle subtree. On files, use Dirvish file outline viewer."
   :defines (dirvish-mode-map)
   :init
   (dirvish-override-dired-mode 1)
-  (advice-add #'dired :override #'dirvish)
+  (advice-add #'dired :override #'dirvish-dwim)
   :custom
   (dirvish-hide-cursor nil)
   (dirvish-attributes '(subtree-state file-size file-time nerd-icons))
   (dirvish-hide-details t)
   (dirvish-reuse-session nil)
   :config
-  (mapc #'require '(dirvish-extras dirvish-subtree dirvish-yank))
+  (mapc (lambda (p) (require p)) '(dirvish-extras dirvish-subtree dirvish-yank))
   (mapc (lambda (p) (require p nil t)) '(dirvish-vc dirvish-emerge))
-  
-  (add-hook 'dirvish-preview-setup-hook
-            #'that1guycolin/dirvish-preview-read-only)
 
   (defvar that1guycolin/dirvish-dispatch)
   (transient-define-prefix that1guycolin/dirvish-dispatch ()
@@ -331,12 +387,9 @@ On directories, toggle subtree. On files, use Dirvish file outline viewer."
     (keymap-set map "RET"        #'that1guycolin/dirvish-return-dwim)
     (keymap-set map "?"          #'that1guycolin/dirvish-dispatch)))
 
-;; execute shell commands on marked files
 (use-package dwim-shell-command
   :defer t
   :preface
-  (keymap-global-unset "M-!")
-
   (defun that1guycolin/convert-ts-to-mp4 ()
     "Convert .ts files to .mp4 using FFmpeg."
     (interactive)
@@ -377,18 +430,16 @@ On directories, toggle subtree. On files, use Dirvish file outline viewer."
   (transient-append-suffix 'that1guycolin/dirvish-dispatch "c d"
     '("F" "FFmpeg Actions" that1guycolin/ffmpeg-actions-map)))
 
-;; Launch media directly from `dirvish'
 (use-package ready-player
   :defer t
   :commands (ready-player-mode))
 
 
 ;;; Email:
+
 (use-package notmuch
   :demand t
   :preface
-  (declare-function inhibit-mouse-mode "03-visual.el")
-
   (defvar that1guycolin/gmi-sendmail-path
     "/home/colin-l/scripts/bash/gmi-sendmail.sh"
     "Location of the `gmi-sendmail' bash script on device.")
@@ -419,8 +470,8 @@ On directories, toggle subtree. On files, use Dirvish file outline viewer."
                ("C-c n" . notmuch-mua-new-mail)))
   :hook ((message-send . notmuch-mua-attachment-check)
          (message-send . that1guycolin/notmuch-avoid-empty-subject))
-  :functions (message-field-value notmuch-addr-setup
-                                  message-send-mail-with-sendmail)
+  :functions (message-field-value
+              message-send-mail-with-sendmail notmuch-addr-setup)
   :custom
   (notmuch-always-prompt-for-sender t)
   (notmuch-fcc-dirs nil)
@@ -433,11 +484,10 @@ On directories, toggle subtree. On files, use Dirvish file outline viewer."
      (:name "todo"     :query "tag:todo"    :key "t" :sort-order oldest-first)
      (:name "all mail" :query "*"           :key "a" :sort-order oldest-first)))
   (sendmail-program that1guycolin/gmi-sendmail-path)
-  (sendmail-send-mail-function #'message-send-mail-with-sendmail)
-  :config (add-hook 'notmuch-hello-mode-hook
-                    (lambda () (inhibit-mouse-mode -1))))
+  (sendmail-send-mail-function #'message-send-mail-with-sendmail))
 
 (use-package notmuch-addr
+  :after (notmuch)
   :demand t
   :unless (eq system-type 'android)
   :config (notmuch-addr-setup))
@@ -458,13 +508,13 @@ On directories, toggle subtree. On files, use Dirvish file outline viewer."
 (use-package notmuch-indicator
   :after (notmuch)
   :demand t
-  :preface (defvar minions-prominent-modes)
   :unless (eq system-type 'android)
   :init (with-eval-after-load 'minions
           (add-to-list 'minions-prominent-modes 'notmuch-indicator-mode)))
 
 
 ;;; LLM:
+
 (use-package llm
   :demand t
   :unless (eq system-type 'android))
@@ -473,6 +523,7 @@ On directories, toggle subtree. On files, use Dirvish file outline viewer."
   :ensure nil
   :after (llm)
   :demand t
+  :unless (eq system-type 'android)
   :preface
   (defvar that1guycolin/ollama-alist
     `((codegemma:2b              . ,(* 1  4096))
@@ -544,7 +595,6 @@ to the user's device.")
   :unless (eq system-type 'android)
   :functions (make-llm-ollama))
 
-;; MCP:
 (use-package mcp-server-lib
   :defer t
   :unless (eq system-type 'android)
@@ -562,7 +612,6 @@ to the user's device.")
   :unless (eq system-type 'android)
   :commands (elisp-dev-mcp-enable))
 
-;; GPTel
 (use-package gptel
   :defer t
   :preface
@@ -621,7 +670,6 @@ doubles as a model-switcher."
   :unless (eq system-type 'android)
   :hook (forge-pullreq-mode . gptel-forge-prs-install))
 
-;; Ellama:
 (use-package ellama
   :defer t
   :unless (eq system-type 'android)
@@ -711,7 +759,7 @@ doubles as a model-switcher."
    ellama-chat-display-action-function #'display-buffer-full-frame
    ellama-instant-display-action-function #'display-buffer-at-bottom)
 
-  (advice-add #'pixel-scroll-precision :before #'ellama-disable-scroll)
+  (advice-add #'pixel-scroll-precision-mode :before #'ellama-disable-scroll)
   (advice-add #'end-of-buffer :after #'ellama-enable-scroll))
 
 ;; Transient:
@@ -735,6 +783,7 @@ doubles as a model-switcher."
 
 
 ;;; Media player (mpv):
+
 (use-package emms
   :defer t
   :preface
@@ -849,23 +898,23 @@ doubles as a model-switcher."
            (append '(emms-info-mediainfo) emms-info-functions)))
 
 (use-package empv
-  :defer t
-  :preface (defvar empv-hydra)
+  :defer
+  :unless (eq system-type 'android)
   :bind (("C-c v f" . empv-play-file)
          ("C-c v d" . empv-play-directory))
-  :functions(empv-embark-initialize-extra-actions
-             empv-override-quit-key empv-play-or-enqueue empv-play-file
-             empv-play-directory empv-play-video empv-play-audio empv-exit
-             empv-save-and-exit empv-playback-speed-down empv-playback-speed-up
-             empv-volume-up empv-volume-down empv-chapter-prev empv-chapter-next
-             empv-chapter-select empv-playlist-select
-             empv-playlist-load-from-file empv-playlist-shuffle
-             empv-playlist-clear empv-playlist-next empv-playlist-prev
-             empv-play-radio empv-play-random-channel
-             empv-log-current-radio-song-name empv-youtube
-             empv-youtube-last-results empv-toggle empv-toggle-video
-             empv-toggle-current-loop empv-toggle-event-display
-             empv-display-current empv-copy-path)
+  :functions(empv-chapter-next
+             empv-chapter-prev empv-chapter-select empv-copy-path
+             empv-display-current empv-embark-initialize-extra-actions
+             empv-exit empv-hydra/body empv-log-current-radio-song-name
+             empv-override-quit-key empv-play-audio empv-play-directory
+             empv-play-file empv-play-or-enqueue empv-play-random-channel
+             empv-play-video empv-playback-speed-down empv-playback-speed-up
+             empv-playlist-clear empv-playlist-load-from-file empv-playlist-next
+             empv-playlist-prev empv-playlist-select empv-playlist-shuffle
+             empv-save-and-exit empv-toggle empv-toggle-current-loop
+             empv-toggle-event-display empv-toggle-video
+             empv-volume-down empv-volume-up empv-youtube
+             empv-youtube-last-results)
   :custom
   (empv-default-dir "/mnt/that1Media/")
   (empv-max-directory-search-depth 5)
@@ -926,7 +975,7 @@ doubles as a model-switcher."
 
 
 ;;; Misc:
-;; Typing is better in Emacs
+
 (use-package emacs-everywhere
   :demand t
   :unless (eq system-type 'android)
@@ -940,47 +989,28 @@ doubles as a model-switcher."
                      :paste-command
                      '("ydotool" "key" "42:1" "110:1" "42:0" "110:0")))))
 
-;; Podman/container integration
 (use-package docker
   :defer t
   :unless (eq system-type 'android)
   :bind ("C-c d" . docker)
   :custom (docker-command "podman"))
 
-;; Show available keybinds
 (use-package free-keys
   :defer t
-  :preface (defvar popper-reference-buffers)
   :bind ("C-c C-=" . free-keys)
   :config (add-to-list 'popper-reference-buffers 'free-keys))
 
-;; GUIX
 (use-package guix
   :defer t
   :unless (eq system-type 'android)
   :bind ("C-c x" . guix))
 
-;; Convert to html
 (use-package htmlize
   :defer t
   :commands (htmlize-buffer
              htmlize-region htmlize-file htmlize-many-files
              htmlize-many-files-dired))
 
-;; Global rg integration
-(use-package deadgrep
-  :defer t
-  :bind (("C-c C-d" . deadgrep)))
-
-;; Project rg integration & more
-(use-package rg
-  :defer t
-  :bind (("C-c C-r" . rg-menu)
-         (:map isearch-mode-map
-               ("M-s r" . rg-isearch-menu)))
-  :config (require 'rg-isearch))
-
-;; Telegram in Emacs
 (use-package telega
   :defer t
   :preface
@@ -1018,66 +1048,8 @@ doubles as a model-switcher."
   (message "Telega loaded successfully."))
 
 
-;; Casual:
 (use-package casual
   :defer t
-  :preface
-  (declare-function org-agenda-clock-goto "org")
-
-  (declare-function compilation-display-error "compilation-mode")
-  (declare-function compilation-next-error "compilation-mode")
-  (declare-function compilation-next-file "compilation-mode")
-  (declare-function compilation-previous-error "compilation-mode")
-  (declare-function compilation-previous-file "compilation-mode")
-  
-  (declare-function eww-back-url "eww")
-  (declare-function eww-bookmark-browse "eww")
-  (declare-function eww-browse-with-external-browser "eww")
-  (declare-function eww-forward-url "eww")
-  (declare-function eww-next-url "eww")
-  (declare-function eww-previous-url "eww")
-  (declare-function shr-next-link "eww")
-  (declare-function shr-previous-link "eww")
-  
-  (declare-function ibuffer-backward-filter-group "ibuffer")
-  (declare-function ibuffer-backwards-next-marked "ibuffer")
-  (declare-function ibuffer-forward-filter-group "ibuffer")
-  (declare-function ibuffer-forward-next-marked "ibuffer")
-  (declare-function ibuffer-toggle-filter-group "ibuffer")
-  (declare-function ibuffer-visit-buffer "ibuffer")
-  (declare-function ibuffer-visit-buffer-other-window "ibuffer")
-  
-  (declare-function Info-history-back "Info")
-  (declare-function Info-history-forward "Info")
-  (declare-function Info-next "Info")
-  (declare-function Info-next-reference "Info")
-  (declare-function Info-prev "Info")
-  (declare-function Info-prev-reference "Info")
-  (declare-function Info-search "Info")
-  
-  (defvar calc-alg-ent-map)
-  (defvar calc-mode-map)
-  (defvar calendar-mode-map)
-  (defvar compilation-mode-map)
-  (defvar css-mode-map)
-  (defvar css-ts-mode-map)
-  (defvar csv-mode-map)
-  (defvar emacs-lisp-mode-map)
-  (defvar eshell-mode-map)
-  (defvar eww-bookmark-mode-map)
-  (defvar eww-mode-map)
-  (defvar grep-mode-map)
-  (defvar ibuffer-mode-map)
-  (defvar image-mode-map)
-  (defvar Info-mode-map)
-  (defvar isearch-mode-map)
-  (defvar makefile-mode-map)
-  (defvar org-agenda-mode-map)
-  (defvar org-mode-map)
-  (defvar org-table-fedit-map)
-  (defvar reb-lisp-mode-map)
-  (defvar reb-mode-map)
-
   :bind (("C-o" . casual-editkit-main-tmenu)
          (:map org-agenda-mode-map      ("C-o"  . casual-agenda-tmenu))
          (:map calc-mode-map            ("C-o"  . casual-calc-tmenu))
@@ -1150,6 +1122,7 @@ doubles as a model-switcher."
    ("l"         . Info-next)
    ("/"         . Info-search)
    ("B"         . bookmark-set))
+  
   (with-eval-after-load 'org
     (bind-keys
      :map org-agenda-mode-map
@@ -1178,6 +1151,7 @@ doubles as a model-switcher."
    :map Info-mode-map
    ("<double-mouse-1>"   . ibuffer-visit-buffer)
    ("M-<double-mouse-1>" . ibuffer-visit-buffer-other-window))
+
   (with-eval-after-load 'eww
     (bind-keys
      :map eww-mode-map

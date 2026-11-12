@@ -1,57 +1,63 @@
 ;;; a-elpaca.el --- Elpaca package manager -*- lexical-binding: t -*-
 
 ;;; Commentary:
-;; Load the Emacs' package manager Elpaca.
+
+;; Load Elpaca: An Elisp package manager. Also loads `elpaca-use-package' and
+;; `no-littering'.
 
 ;;; Code:
-;;; Elpaca:
 
 (require '00-macros)
 
-;; Define variables (paths for `no-littering')
-(defvar elpaca-directory (expand-file-name "var/elpaca/" user-emacs-directory))
-(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
-(defvar elpaca-sources-directory (expand-file-name "sources/" elpaca-directory))
-(defvar elpaca-queue-limit)
-(that1guycolin/emacs-set-for-type elpaca-queue-limit 8 4 4)
-(defvar elpaca-menu-org-make-manual nil)
+(declare-function elpaca                              "elpaca")
+(declare-function elpaca--read-queued                 "elpaca")
+(declare-function elpaca-build-autoloads              "elpaca")
+(declare-function elpaca-build-compile                "elpaca")
+(declare-function elpaca-build-docs                   "elpaca")
+(declare-function elpaca-build-docs-process-sentinel  "elpaca")
+(declare-function elpaca-delete                       "elpaca")
+(declare-function elpaca-fetch                        "elpaca")
+(declare-function elpaca-fetch-all                    "elpaca")
+(declare-function elpaca-generate-autoloads           "elpaca")
+(declare-function elpaca-manager                      "elpaca")
+(declare-function elpaca-merge                        "elpaca")
+(declare-function elpaca-merge-all                    "elpaca")
+(declare-function elpaca-process-queues               "elpaca")
+(declare-function elpaca-rebuild                      "elpaca")
+(declare-function elpaca-update                       "elpaca")
+(declare-function elpaca-update-all                   "elpaca")
+(declare-function elpaca-wait                         "elpaca")
+(declare-function elpaca-use-package      "elpaca-use-package")
+(declare-function elpaca-use-package-mode "elpaca-use-package")
 
-;; Avoid flycheck warnings
-(declare-function   elpaca                                "elpaca")
-(declare-function   elpaca--read-queued                   "elpaca")
-(declare-function   elpaca-build-autoloads                "elpaca")
-(declare-function   elpaca-build-compile                  "elpaca")
-(declare-function   elpaca-build-docs                     "elpaca")
-(declare-function   elpaca-build-docs-process-sentinel    "elpaca")
-(declare-function   elpaca-delete                         "elpaca")
-(declare-function   elpaca-fetch                          "elpaca")
-(declare-function   elpaca-fetch-all                      "elpaca")
-(declare-function   elpaca-generate-autoloads             "elpaca")
-(declare-function   elpaca-manager                        "elpaca")
-(declare-function   elpaca-merge                          "elpaca")
-(declare-function   elpaca-merge-all                      "elpaca")
-(declare-function   elpaca-process-queues                 "elpaca")
-(declare-function   elpaca-rebuild                        "elpaca")
-(declare-function   elpaca-update                         "elpaca")
-(declare-function   elpaca-update-all                     "elpaca")
-(declare-function   elpaca-wait                           "elpaca")
+(defvar elpaca-directory (expand-file-name "var/elpaca" user-emacs-directory))
+(defvar elpaca-builds-directory (expand-file-name "builds" elpaca-directory))
+(defvar elpaca-sources-directory (expand-file-name "sources" elpaca-directory))
 
-;; Slightly modified version of {gh}/progfolio/elpaca/doc/installer.el
 (defvar elpaca-installer-version 0.12)
+(defvar elpaca-menu-org-make-manual nil)
+(defvar elpaca-queue-limit)
+(defvar elpaca-use-package)
+(defvar use-package-always-ensure)
 
+
+;;; Elpaca:
+
+(that1guycolin/emacs-set-for-type elpaca-queue-limit 8 4 4)
+
+;; Modified from https://github/progfolio/elpaca/doc/installer.el
 (defvar elpaca-order
   '(elpaca :repo "https://github.com/progfolio/elpaca.git"
            :ref nil :depth 1 :inherit ignore
            :files (:defaults "elpaca-test.el" (:exclude "extensions"))
            :build (:not elpaca-activate)))
-(let* ((repo (expand-file-name "elpaca/" elpaca-sources-directory))
-       (build (expand-file-name "elpaca/" elpaca-builds-directory))
+(let* ((repo (expand-file-name "elpaca" elpaca-sources-directory))
+       (build (expand-file-name "elpaca" elpaca-builds-directory))
        (order (cdr elpaca-order))
        (default-directory repo))
   (add-to-list 'load-path (if (file-exists-p build) build repo))
   (unless (file-exists-p repo)
     (make-directory repo t)
-    (when (<= emacs-major-version 28) (require 'subr-x))
     (condition-case-unless-debug err
         (if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
                   ((zerop
@@ -83,15 +89,16 @@
 (elpaca `(,@elpaca-order))
 
 ;;; Custom Functions & Keymaps:
+
 (defun that1guycolin/elpaca-update-menus ()
   "Non-interactively run `elpaca-update-menus'."
   (interactive)
   (run-hook-with-args 'elpaca-menu-functions 'update))
 
-(defun that1guycolin/elpaca-build-docs (e)
-  "Build the documentation for package E."
+(defun that1guycolin/elpaca-build-docs (pkg)
+  "Build the documentation for PKG."
   (interactive (list (elpaca--read-queued "Build documentation for: ") t))
-  (elpaca-build-docs e))
+  (elpaca-build-docs pkg))
 
 (defvar-keymap that1guycolin/elpaca-options-map
   :doc "Functions for Elpaca package manager."
@@ -114,21 +121,15 @@
     "b a" "Build Autoloads"    "b d" "Build Docs"     "b c" "Build Compile"))
 (keymap-global-set "C-c e" that1guycolin/elpaca-options-map)
 
-;;; elpaca-use-package/no-littering:
-(declare-function elpaca-use-package      "elpaca-use-package")
-(declare-function elpaca-use-package-mode "elpaca-use-package")
-(defvar elpaca-use-package)
-(defvar use-package-always-ensure)
+;;; elpaca-use-package
 
-;; elpaca-use-package
 (elpaca (elpaca-use-package :wait t)
-  (elpaca-use-package-mode 1))
-(elpaca-use-package-mode 1)
-(setq use-package-always-ensure t)
+  (elpaca-use-package-mode 1)
+  (setq use-package-always-ensure t))
 
-;; no-littering
 (use-package no-littering
   :ensure (:wait t)
+  :after (elpaca-use-package)
   :demand t)
 
 

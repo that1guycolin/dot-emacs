@@ -1,6 +1,7 @@
 ;;; 00-macros.el --- Custom Macros -*- lexical-binding: t -*-
 
 ;;; Commentary:
+
 ;; This file contains all custom cl and elisp macro definitions used in this
 ;; init.
 

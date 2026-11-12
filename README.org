@@ -4,17 +4,20 @@
 #+TITLE: dot-Emacs README
 #+AUTHOR: Colin Loeffler (that1guycolin)
 #+CREATED_DATE: [2026-07-14 Tue 04:29:56]
-#+LAST_EDIT: [2026-09-27 Sun 17:27:25]
+#+LAST_EDIT: [2026-11-12 Thu 01:27:18]
 #+ID: emacs:zms5tnb090l0
 #+FILETAGS: :Emacs:elisp:config:GNU:
 
-* Packages Included 
+* Packages Included
 
-*** [[https://github.com/that1guycolin/dot-emacs/blob/languages-refactor/site-lisp/01-environment.el][01 environment]]
+- [[https://github.com/progfolio/elpaca.git][elpaca]]
+- [[https://github.com/emacscollective/no-littering][no-littering]]
+- [[https://github.com/emacsmirror/org][org]]
+
+** [[https://github/that1guycolin/dot-emacs/blob/main/site-lisp/01-environment.el][01 environment]]
 
 - [[https://gitlab.com/koral/gcmh][gcmh]]
 - [[https://github.com/purcell/exec-path-from-shell][exec-path-from-shell]]
-- [[https://github.com/purcell/envrc][envrc]]
 - [[https://github.com/magit/transient][transient]]
 - [[https://github.com/minad/tempel][tempel]]
 - [[https://github.com/Crandel/tempel-collection][tempel-collection]]
@@ -32,33 +35,14 @@
 - [[https://github.com/oantolin/embark][embark-consult]]
 - [[https://github.com/Wilfred/helpful][helpful]]
 
-*** [[https://github.com/that1guycolin/dot-emacs/blob/languages-refactor/site-lisp/02-project-vc.el][02 project vc]]
+** [[https://github/that1guycolin/dot-emacs/blob/main/site-lisp/02-visual.el][02 visual]]
 
-- [[https://github.com/aurtzy/disproject][disproject]]
-- [[https://github.com/Qkessler/consult-project-extra][consult-project-extra]]
-- [[https://github.com/alphapapa/activities.el.git][activities]]
-- [[https://github.com/magit/with-editor][with-editor]]
-- [[https://github.com/magit/magit][magit]]
-- [[https://github.com/magit/forge][forge]]
-- [[https://github.com/dgutov/diff-hl][diff-hl]]
-- [[https://github.com/danilshvalov/git-commit-ts-mode][git-commit-ts-mode]]
-- [[https://github.com/sshaw/git-link][git-link]]
-- [[https://github.com/magit/git-modes][git-modes]]
-- [[https://github.com/alphapapa/magit-todos][magit-todos]]
-- [[https://github.com/abo-abo/hydra][hydra]]
-- [[https://github.com/Alexander-Miller/treemacs][treemacs]]
-- [[https://github.com/cmccloud/project-treemacs][project-treemacs]]
-- [[https://github.com/Alexander-Miller/treemacs][treemacs-magit]]
-
-*** [[https://github.com/that1guycolin/dot-emacs/blob/languages-refactor/site-lisp/03-visual.el][03 visual]]
-
-- [[https://github.com/protesilaos/modus-themes][modus-themes]]
 - [[https://github.com/protesilaos/ef-themes][ef-themes]]
+- [[https://github.com/protesilaos/modus-themes][modus-themes]]
 - [[https://github.com/rainstormstudio/nerd-icons.el][nerd-icons]]
 - [[https://github.com/lucius-martius/tab-line-nerd-icons][tab-line-nerd-icons]]
 - [[https://github.com/LuigiPiucco/nerd-icons-corfu][nerd-icons-corfu]]
 - [[https://github.com/rainstormstudio/treemacs-nerd-icons][treemacs-nerd-icons]]
-- [[https://github.com/jamescherti/inhibit-mouse.el][inhibit-mouse]]
 - [[https://github.com/tarsius/minions][minions]]
 - [[https://github.com/karthink/popper][popper]]
 - [[https://codeberg.org/joostkremers/visual-fill-column][visual-fill-column]]
@@ -66,7 +50,7 @@
 - [[https://github.com/protesilaos/show-font][show-font]]
 - [[https://github.com/emacs-dashboard/dashboard][dashboard]]
 
-*** [[https://github.com/that1guycolin/dot-emacs/blob/languages-refactor/site-lisp/04-code-assist.el][04 code assist]]
+** [[https://github/that1guycolin/dot-emacs/blob/main/site-lisp/03-idemacs.el][03 idemacs]]
 
 - [[https://github.com/emacsmirror/gnu_elpa][adaptive-wrap]]
 - [[https://github.com/remyferre/comment-dwim-2][comment-dwim-2]]
@@ -79,9 +63,9 @@
 - [[https://github.com/flycheck/flycheck][flycheck]]
 - [[https://github.com/alexmurray/flycheck-posframe][flycheck-posframe]]
 - [[https://github.com/flycheck/flycheck-color-mode-line][flycheck-color-mode-line]]
-- [[https://github.com/purcell/flycheck-relint][flycheck-relint]]
 - [[https://github.com/minad/consult-flycheck][consult-flycheck]]
 - [[https://github.com/radian-software/apheleia][apheleia]]
+- [[https://github.com/emacs-mirror/emacs][eglot]]
 - [[https://github.com/mohkale/consult-eglot][consult-eglot]]
 - [[https://github.com/mohkale/consult-eglot][consult-eglot-embark]]
 - [[https://github.com/flycheck/flycheck-eglot][flycheck-eglot]]
@@ -92,11 +76,6 @@
 - [[https://github.com/jamescherti/kirigami.el][kirigami]]
 - [[https://github.com/d12frosted/flyspell-correct][flyspell-correct]]
 - [[https://github.com/d12frosted/flyspell-correct][flyspell-correct-avy-menu]]
-
-*** [[https://github.com/that1guycolin/dot-emacs/blob/languages-refactor/site-lisp/05-languages.el][05 languages]]
-
-- [[https://github.com/emacsmirror/gnu_elpa][csv-mode]]
-- [[https://github.com/jimhourihan/glsl-mode][glsl-mode]]
 - [[https://codeberg.org/zshaftel/lisp-ts-mode][lisp-ts-mode]]
 - [[https://github.com/emacsmirror/gnu_elpa][adjust-parens]]
 - [[https://github.com/emacs-eask/eask-mode][eask-mode]]
@@ -105,6 +84,7 @@
 - [[https://github.com/flycheck/flycheck-eask][flycheck-eask]]
 - [[https://github.com/flatwhatson/flycheck-guile][flycheck-guile]]
 - [[https://github.com/purcell/flycheck-package][flycheck-package]]
+- [[https://github.com/purcell/flycheck-relint][flycheck-relint]]
 - [[https://codeberg.org/zshaftel/gaudy-cl][gaudy-cl]]
 - [[https://codeberg.org/geiser/geiser][geiser]]
 - [[https://codeberg.org/geiser/guile][geiser-guile]]
@@ -120,6 +100,8 @@
 - [[https://github.com/joaotavora/sly][sly]]
 - [[https://github.com/joaotavora/sly-quicklisp][sly-quicklisp]]
 - [[https://github.com/mmgeorge/sly-asdf][sly-asdf]]
+- [[https://github.com/emacsmirror/gnu_elpa][csv-mode]]
+- [[https://github.com/jimhourihan/glsl-mode][glsl-mode]]
 - [[https://github.com/seagle0128/grip-mode][grip-mode]]
 - [[https://github.com/donkirkby/live-py-plugin][live-py-mode]]
 - [[https://github.com/wbolster/emacs-python-pytest][python-pytest]]
@@ -128,19 +110,44 @@
 - [[https://github.com/purcell/emacs-shfmt][shfmt]]
 - [[https://github.com/juergenhoetzel/pkgbuild-mode][pkgbuild-mode]]
 - [[https://github.com/wwwjfy/emacs-fish][fish-mode]]
+- [[https://github.com/Lindydancer/cmake-font-lock][cmake-font-lock]]
+- [[https://github.com/Andersbakken/rtags][rtags]]
+- [[https://github.com/atilaneves/cmake-ide][cmake-ide]]
 - [[https://github.com/ikirill/eldoc-cmake][eldoc-cmake]]
 - [[https://github.com/leon-barrett/just-ts-mode.el][just-ts-mode]]
 - [[https://github.com/Lindydancer/ini-mode][ini-mode]]
-- [[https://github.com/dochang/json5-ts-mode][json5-ts-mode]]
 - [[https://github.com/taquangtrung/emacs-kdl-mode][kdl-mode]]
 - [[https://github.com/holomorph/systemd-mode][systemd]]
 - [[https://github.com/emacs-vs/auto-rename-tag][auto-rename-tag]]
 - [[https://github.com/zkry/yaml-pro][yaml-pro]]
 
-*** [[https://github.com/that1guycolin/dot-emacs/blob/languages-refactor/site-lisp/06-org-config.el][06 org config]]
+** [[https://github/that1guycolin/dot-emacs/blob/main/site-lisp/04-project-vc.el][04 project vc]]
+
+- [[https://github.com/aurtzy/disproject][disproject]]
+- [[https://github.com/Qkessler/consult-project-extra][consult-project-extra]]
+- [[https://github.com/purcell/envrc][envrc]]
+- [[https://codeberg.org/mclear-tools/tabspaces][tabspaces]]
+- [[https://codeberg.org/emacs-weirdware/scratch][scratch]]
+- [[https://github.com/magit/with-editor][with-editor]]
+- [[https://github.com/magit/magit][magit]]
+- [[https://github.com/magit/forge][forge]]
+- [[https://codeberg.org/martianh/fj.el][fj]]
+- [[https://github.com/xuchunyang/shr-tag-pre-highlight.el][shr-tag-pre-highlight]]
+- [[https://github.com/dgutov/diff-hl][diff-hl]]
+- [[https://github.com/danilshvalov/git-commit-ts-mode][git-commit-ts-mode]]
+- [[https://github.com/sshaw/git-link][git-link]]
+- [[https://github.com/magit/git-modes][git-modes]]
+- [[https://github.com/alphapapa/magit-todos][magit-todos]]
+- [[https://github.com/abo-abo/hydra][hydra]]
+- [[https://github.com/Alexander-Miller/treemacs][treemacs]]
+- [[https://github.com/cmccloud/project-treemacs][project-treemacs]]
+- [[https://github.com/Alexander-Miller/treemacs][treemacs-magit]]
+
+** [[https://github/that1guycolin/dot-emacs/blob/main/site-lisp/05-org-config.el][05 org config]]
 
 - [[https://github.com/emacsmirror/gnu_elpa][org-edna]]
 - [[https://github.com/colonelpanic8/org-project-capture][org-project-capture]]
+- [[https://github.com/colonelpanic8/org-project-capture][org-category-capture]]
 - [[https://github.com/mrcnski/org-recur][org-recur]]
 - [[https://github.com/meedstrom/org-mem][org-mem]]
 - [[https://github.com/meedstrom/org-node][org-node]]
@@ -157,12 +164,13 @@
 - [[https://github.com/jxq0/org-tidy][org-tidy]]
 - [[https://github.com/awth13/org-appear][org-appear]]
 - [[https://github.com/tumashu/el2org][el2org]]
-- [[https://github.com/alphapapa/org-make-toc][org-make-toc]]
+- [[https://github.com/snosov1/toc-org][toc-org]]
 - [[https://github.com/marcinkoziej/org-pomodoro][org-pomodoro]]
 
-*** [[https://github.com/that1guycolin/dot-emacs/blob/languages-refactor/site-lisp/07-support.el][07 support]]
+** [[https://github/that1guycolin/dot-emacs/blob/main/site-lisp/06-support.el][06 support]]
 
-- [[[https://codeberg.org/akib/emacs-eat][eat]]
+- [[https://codeberg.org/akib/emacs-eat][eat]]
+- [[https://github.com/dakra/ghostel][ghostel]]
 - [[https://github.com/szermatt/mistty][mistty]]
 - [[https://github.com/CeleritasCelery/emacs-native-shell-complete][native-complete]]
 - [[https://github.com/alexluigit/dirvish][dirvish]]
@@ -187,25 +195,12 @@
 - [[https://github.com/Fuco1/free-keys][free-keys]]
 - [[https://codeberg.org/guix/emacs-guix][guix]]
 - [[https://github.com/emacsorphanage/htmlize][htmlize]]
-- [[https://github.com/Wilfred/deadgrep][deadgrep]]
-- [[https://github.com/dajva/rg.el][rg]]
 - [[https://github.com/zevlg/telega.el][telega]]
 - [[https://github.com/kickingvegas/casual][casual]]
 - [[https://github.com/kickingvegas/casual-avy][casual-avy]]
 
-*** Other
-
-- [[https://github.com/progfolio/elpaca.git][elpaca]]
-- [[https://github.com/emacscollective/no-littering][no-littering]]
-- [[https://orgmode.org/][Org Mode]]
-
-* Todo
-
-- Finish org task management pipeline
-- Explore additional packages (rec by James Cherti)
-- Macros
-
 * License
 
 [[file:LICENSE][GPL-3.0]]
+
 

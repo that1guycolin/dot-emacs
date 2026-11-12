@@ -1,8 +1,9 @@
 ;;; 03-idemacs.el --- Code Smarter, Not Harder -*- lexical-binding: t -*-
 
 ;;; Packages included:
-;; adaptive-wrap, adjust-parens, apheleia, auto-rename-tag, checkdoc,
-;; cmake-ide, cmake-ts-mode, comment-dwim-2, consult-eglot,
+
+;; adaptive-wrap, adjust-parens, apheleia, auto-rename-tag, cmake-font-lock,
+;; cmake-ide, cmake-ts-mode, comment-dwim-2, conf-mode, consult-eglot,
 ;; consult-eglot-embark, consult-flycheck, css-mode, csv-mode,
 ;; dockerfile-ts-mode, docstr, dumb-jump, eask-mode, editorconfig, eglot,
 ;; eglot-tempel, eldoc-cmake, elisp-def, emacs-lisp-mode, eros, eros-inspector,
@@ -13,11 +14,11 @@
 ;; ielm, ini-mode, inspector, json-ts-mode, just-ts-mode, kdl-mode, kirigami,
 ;; let-completion, lisp-semantic-hl, lisp-ts-mode, live-py-mode, lsp-snippet,
 ;; lua-ts-mode, macrostep, macrostep-geiser, makefile-mode, markdown-ts-mode,
-;; morlock, nxml-mode, outline, outline-indent, pkgbuild-mode, python,
-;; python-pytest, python-x, rainbow-delimiters, rust-ts-mode, rustic, scheme,
-;; sh-script, shfmt, sly, sly-asdf, sly-quicklisp, smartparens, suggest,
-;; systemd, toml-ts-mode, tree-inspector, treesit, treesit-fold, visual-regexp,
-;; visual-regexp-steroids, yaml-pro, yaml-ts-mode
+;; morlock, nxml-mode, outline, outline-indent, pkgbuild-mode, python-mode,
+;; python-pytest, python-x, rainbow-delimiters, rtags, rust-ts-mode, rustic,
+;; scheme, sh-script, shfmt, sly, sly-asdf, sly-quicklisp, smartparens,
+;; suggest, systemd, text-mode, toml-ts-mode, tree-inspector, treesit,
+;; treesit-fold, visual-regexp, visual-regexp-steroids, yaml-pro, yaml-ts-mode
 
 ;;; Commentary:
 

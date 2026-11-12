@@ -1,4 +1,5 @@
 ;;; init.el --- that1guycolin's Emacs Config -*- lexical-binding: t; -*-
+
 ;; Copyright (C) 2026  Loeffler, Colin (that1guycolin)
 
 ;; Author: Loeffler, Colin <that1guycolin@gmail.com>
@@ -20,41 +21,43 @@
 ;; along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 ;;; All packages included:
-;; activities, adaptive-wrap, adjust-parens, apheleia, auto-rename-tag, avy,
-;; bash-ts-mode, cape, casual, casual-avy, checkdoc, cmake-ts-mode,
-;; comment-dwim-2, consult, consult-eglot, consult-eglot-embark,
-;; consult-flycheck, consult-project-extra, corfu, corfu-prescient, css-ts-mode,
-;; csv-mode, dashboard, deadgrep, default-font-presets, diff-hl, dirvish,
-;; disproject, djvu, docker, dockerfile-ts-mode, docstr, dumb-jump,
-;; dwim-shell-command, eask-mode, eat, editorconfig, ef-themes, eglot,
-;; eglot-tempel, el2org, eldoc-cmake, elisp-def, elisp-dev-mcp, ellama, emacs,
-;; emacs-everywhere, emacs-lisp-mode, embark, embark-consult, emms,
-;; emms-info-mediainfo, empv, envrc, eros, eros-inspector, exec-path-from-shell,
-;; fish-mode, flycheck, flycheck-color-mode-line, flycheck-eask, flycheck-eglot,
-;; flycheck-guile, flycheck-package, flycheck-posframe, flycheck-relint,
-;; flyspell, flyspell-correct, flyspell-correct-avy-menu, forge, free-keys,
-;; gaudy-cl, gcmh, geiser, geiser-guile, ghostel, git-commit-ts-mode, git-link,
+
+;; adaptive-wrap, adjust-parens, apheleia, auto-rename-tag, avy, cape, casual,
+;; casual-avy, cmake-font-lock, cmake-ide, cmake-ts-mode, comment-dwim-2,
+;; conf-mode, consult, consult-eglot, consult-eglot-embark, consult-flycheck,
+;; consult-project-extra, corfu, corfu-prescient, css-mode, csv-mode,
+;; dashboard, default-font-presets, diff-hl, dirvish, disproject, djvu, docker,
+;; dockerfile-ts-mode, docstr, dumb-jump, dwim-shell-command, eask-mode, eat,
+;; editorconfig, ef-themes, eglot, eglot-tempel, el2org, eldoc-cmake,
+;; elisp-def, elisp-dev-mcp, ellama, elpaca, emacs-everywhere, emacs-lisp-mode,
+;; embark, embark-consult, emms, emms-info-mediainfo, empv, envrc, eros,
+;; eros-inspector, exec-path-from-shell, fish-mode, fj, flycheck,
+;; flycheck-color-mode-line, flycheck-eask, flycheck-eglot, flycheck-guile,
+;; flycheck-package, flycheck-posframe, flycheck-relint, flyspell,
+;; flyspell-correct, flyspell-correct-avy-menu, forge, free-keys, gaudy-cl,
+;; gcmh, geiser, geiser-guile, ghostel, git-commit-ts-mode, git-link,
 ;; git-modes, glsl-mode, go-ts-mode, gptel, gptel-forge-prs, grip-mode, guix,
-;; helpful, hideshow, htmlize, hydra, ielm, inhibit-mouse, ini-mode, inspector,
-;; json-ts-mode, just-ts-mode, kdl-mode, kirigami, let-completion,
-;; lisp-semantic-hl, lisp-ts-mode, live-py-mode, llm, llm-ollama, lsp-snippet,
-;; lua-ts-mode, macrostep, macrostep-geiser, magit, magit-todos, makefile-mode,
-;; marginalia, markdown-ts-mode, mcp-server-lib, minions, mistty, modus-themes,
-;; morlock, native-complete, nerd-icons, nerd-icons-corfu, no-littering,
-;; notmuch, notmuch-addr, notmuch-indicator, notmuch-transient, nov, nxml-mode,
-;; ob-rust, orderless, org, org-appear, org-category-capture, org-chef,
-;; org-edna, org-make-toc, org-mcp, org-mem, org-modern, org-modern-indent,
-;; org-node, org-node-backlink, org-noter, org-noter-pdftools, org-pdftools,
+;; helpful, hideshow, htmlize, hydra, ielm, ini-mode, inspector, json-ts-mode,
+;; just-ts-mode, kdl-mode, kirigami, let-completion, lisp-semantic-hl,
+;; lisp-ts-mode, live-py-mode, llm, llm-ollama, lsp-snippet, lua-ts-mode,
+;; macrostep, macrostep-geiser, magit, magit-todos, makefile-mode, marginalia,
+;; markdown-ts-mode, mcp-server-lib, minions, mistty, modus-themes, morlock,
+;; native-complete, nerd-icons, nerd-icons-corfu, no-littering, notmuch,
+;; notmuch-addr, notmuch-indicator, notmuch-transient, nov, nxml-mode, ob-rust,
+;; orderless, org, org, org-appear, org-category-capture, org-chef, org-edna,
+;; org-mcp, org-mem, org-modern, org-modern-indent, org-node,
+;; org-node-backlink, org-noter, org-noter-pdftools, org-pdftools,
 ;; org-pomodoro, org-project-capture, org-recur, org-tidy, outline,
 ;; outline-indent, pdf-tools, pkgbuild-mode, popper, prescient, project,
-;; project-treemacs, python-pytest, python-ts-mode, python-x,
-;; rainbow-delimiters, ready-player, recentf, rg, rust-ts-mode, rustic,
-;; savehist, scheme-mode, sh-mode, shfmt, show-font, sly, sly-asdf,
-;; sly-quicklisp, smartparens, suggest, systemd, tab-line-nerd-icons, telega,
-;; tempel, tempel-collection, toml-ts-mode, transient, tree-inspector, treemacs,
-;; treemacs-magit, treemacs-nerd-icons, treesit, treesit-fold, vertico,
-;; vertico-prescient, visual-fill-column, visual-regexp, visual-regexp-steroids,
-;; with-editor, yaml-pro, yaml-ts-mode
+;; project-treemacs, python-mode, python-pytest, python-x, rainbow-delimiters,
+;; ready-player, recentf, rtags, rust-ts-mode, rustic, savehist, scheme,
+;; scratch, sh-script, shfmt, show-font, shr-tag-pre-highlight, sly, sly-asdf,
+;; sly-quicklisp, smartparens, suggest, systemd, tab-line-nerd-icons,
+;; tabspaces, telega, tempel, tempel-collection, text-mode, toc-org,
+;; toml-ts-mode, transient, tree-inspector, treemacs, treemacs-magit,
+;; treemacs-nerd-icons, treesit, treesit-fold, vertico, vertico-prescient,
+;; visual-fill-column, visual-regexp, visual-regexp-steroids, with-editor,
+;; yaml-pro, yaml-ts-mode
 
 ;;; Commentary:
 
@@ -73,6 +76,7 @@
 (require 'subr-x)
 
 ;;; Global settings:
+
 (defgroup that1guycolin '()
   "Custom functions, macros, & variables by `that1guycolin'."
   :group 'config)
@@ -101,6 +105,7 @@ is not the same as the Emacs' native `user-lisp-directory'.")
 
 
 ;;; Modular Init:
+
 ;; Startup & Core Packages
 (require '01-environment)
 

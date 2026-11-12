@@ -1,11 +1,13 @@
 ;;; 02-visual.el --- Core UI configuration -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; dashboard, default-font-presets, ef-themes, inhibit-mouse, minions,
-;; modus-themes, nerd-icons, nerd-icons-corfu, popper, show-font,
-;; tab-line-nerd-icons, treemacs-nerd-icons, visual-fill-column
+
+;; dashboard, default-font-presets, ef-themes, minions, modus-themes,
+;; nerd-icons, nerd-icons-corfu, popper, show-font, tab-line-nerd-icons,
+;; treemacs-nerd-icons, visual-fill-column
 
 ;;; Commentary:
+
 ;; Define the user-interface. In the case of this configuration, start with
 ;; some functional, yet beautiful themes, go heavy on the nerd-icons, and finish
 ;; off with a dashboard to greet you every time you open Emacs or a new
@@ -14,73 +16,50 @@
 ;;; Code:
 
 (require '00-macros)
+(declare-function transient-define-prefix "transient")
+(defvar corfu-margin-formatters)
+(defvar that1guycolin/visual-settings-dispatch nil)
 
 ;;; Themes & Icons:
 
-;; Readable Emacs' themes
+(use-package ef-themes
+  :demand t)
+
 (use-package modus-themes
+  :after (ef-themes)
   :demand t
   :functions (modus-themes-include-derivatives-mode
-              modus-themes-load-random-dark modus-themes-load-random))
-
-;; Enhanced themes
-(use-package ef-themes
-  :demand t
+              modus-themes-load-random-dark modus-themes-load-random)
   :init (modus-themes-include-derivatives-mode 1)
   :custom
   (modus-themes-mixed-fonts t)
   (modus-themes-italic-constructs t)
-  :config (modus-themes-load-random 'dark))
+  :config (modus-themes-load-random))
 
-;; Icons
 (use-package nerd-icons
   :demand t
   :functions (nerd-icons-install-fonts)
-  :config (when (and (not (member "Symbols Nerd Font Mono" (font-family-list)))
-                     (window-system))
+  :config (when (and (window-system)
+                     (not (member "Symbols Nerd Font Mono" (font-family-list))))
             (nerd-icons-install-fonts t)))
 
 (use-package tab-line-nerd-icons
-  :after (nerd-icons)
+  :after (nerd-icons tabspaces)
   :demand t
   :functions (tab-line-nerd-icons-global-mode)
   :config (tab-line-nerd-icons-global-mode 1))
 
 (use-package nerd-icons-corfu
-  :after (nerd-icons corfu)
+  :after (corfu nerd-icons)
   :demand t
-  :preface (defvar corfu-margin-formatters)
   :config (add-to-list 'corfu-margin-formatters 'nerd-icons-corfu-formatter))
 
 (use-package treemacs-nerd-icons
-  :after (treemacs nerd-icons)
+  :after (nerd-icons treemacs)
   :demand t
   :functions (treemacs-nerd-icons-config)
   :config (treemacs-nerd-icons-config))
 
-;; DON'T MOVE THE MOUSE!
-(use-package inhibit-mouse
-  :demand t
-  :preface
-  (defun that1guycolin/inhibit-inhibit-mouse ()
-    "Deactivate `inhibit-mouse-mode'.
-Effective as hook for major-modes where you want to be able to use the mouse."
-    (interactive)
-    (inhibit-mouse-mode -1))
-  :unless (eq system-type 'android)
-  :bind ("C-c C-M-m" . inhibit-mouse-mode)
-  :custom
-  (inhibit-mouse-adjust-mouse-highlight t)
-  (inhibit-mouse-adjust-show-help-function t)
-  :config
-  (if (daemonp)
-      (add-hook 'server-after-make-frame-hook
-                #'that1guycolin/inhibit-inhibit-mouse)
-    (inhibit-mouse-mode 1))
-  (add-hook 'Info-mode-hook #'that1guycolin/inhibit-inhibit-mouse)
-  (add-hook 'org-mode-hook #'that1guycolin/inhibit-inhibit-mouse))
-
-;; Madeline:
 (use-package minions
   :demand t
   :functions (minions-mode)
@@ -89,7 +68,6 @@ Effective as hook for major-modes where you want to be able to use the mouse."
 ;; Hide (but easily unhide) certain buffers
 (use-package popper
   :demand t
-  :preface (keymap-global-unset "M-'")
   :bind (("C-'"   . popper-toggle)
          ("M-'"   . popper-cycle)
          ("C-M-'" . popper-toggle-type))
@@ -101,7 +79,6 @@ Effective as hook for major-modes where you want to be able to use the mouse."
   (popper-mode +1)
   (popper-echo-mode +1))
 
-;; Line-length:
 (use-package visual-fill-column
   :demand t
   :preface
@@ -117,7 +94,7 @@ Useful as a hook function."
 
 
 ;;; Font:
-;; Packages:
+
 (use-package default-font-presets
   :demand t
   :preface
@@ -284,65 +261,65 @@ via the function `that1guycolin/default-font-presets-set-size'."
     (setq default-font-presets--index (cdr (assoc font content))))
   (when (daemonp)
     (add-hook 'after-make-frame-functions
-              #'that1guycolin/default-font-presets--new-frame)))
+              #'that1guycolin/default-font-presets--new-frame))
 
-;; preview fonts prior to selection
+  (with-eval-after-load 'modus-themes
+    (with-eval-after-load 'transient
+      (transient-define-prefix
+        that1guycolin/visual-settings-dispatch ()
+        "Display functions that change how the user-interface looks."
+        ["Modify UI"
+         ["Theme"
+          ("t" "Switch theme"       modus-themes-select)
+          ("o" "Rotate theme"       modus-themes-rotate)
+          ("l" "Random light theme" modus-themes-load-random-light :transient t)
+          ("d" "Random dark theme"  modus-themes-load-random-dark :transient t)
+          ("x" "Random theme"       modus-themes-load-random :transient t)]
+         ["Fonts"
+          ("n" "Next font"          default-font-presets-forward :transient t)
+          ("p" "Previous font"      default-font-presets-backward
+           :transient t)
+          ("c" "Choose font"        default-font-presets-choose)
+          ("r" "Random font" that1guycolin/default-font-presets-random-font
+           :transient t)]
+         [""
+          ("s" "Set font size" that1guycolin/default-font-presets-set-size)
+          ("0" "Reset font scale"   default-font-presets-scale-reset)
+          ("f" "Show font family"   show-font-select-preview)
+          ("a" "Show Fonts (All)"   show-font-tabulated)]])
+      (keymap-global-set "C-c u" 'that1guycolin/visual-settings-dispatch))))
+
 (use-package show-font
   :defer t
   :commands (show-font-select-preview show-font-tabulated))
 
-;;; Custom visual transient
-(with-eval-after-load 'transient
-  (declare-function transient-define-prefix "transient")
-  (defvar that1guycolin/visual-settings-dispatch nil)
-  (transient-define-prefix
-    that1guycolin/visual-settings-dispatch ()
-    "Display functions that change how the user-interface looks."
-    ["Modify UI"
-     ["Theme"
-      ("t" "Switch theme"       modus-themes-select)
-      ("o" "Rotate theme"       modus-themes-rotate)
-      ("l" "Random light theme" modus-themes-load-random-light :transient t)
-      ("d" "Random dark theme"  modus-themes-load-random-dark :transient t)
-      ("x" "Random theme"       modus-themes-load-random :transient t)]
-     ["Fonts"
-      ("n" "Next font"          default-font-presets-forward :transient t)
-      ("p" "Previous font"      default-font-presets-backward :transient t)
-      ("c" "Choose font"        default-font-presets-choose)
-      ("r" "Random font"        that1guycolin/default-font-presets-random-font
-       :transient t)]
-     [""
-      ("s" "Set font size"      that1guycolin/default-font-presets-set-size)
-      ("0" "Reset font scale"   default-font-presets-scale-reset)
-      ("f" "Show font family"   show-font-select-preview)
-      ("a" "Show Fonts (All)"   show-font-tabulated)]])
-  (keymap-global-set "C-c u" 'that1guycolin/visual-settings-dispatch))
-
 
 ;;; Dashboard:
+
 (use-package dashboard
   :demand t
   :preface
   (defun that1guycolin/dashboard-setup-startup-hook ()
     "Setup post-init hooks unless a command line argument is provided."
-    (when (< (length command-line-args) 2)
+    (when (and (not (eq system-type 'android))
+               (or (daemonp)
+                   (< (length command-line-args) 2)))
       (add-hook 'window-size-change-functions #'dashboard-resize-on-hook)
       (add-hook 'window-setup-hook #'dashboard-resize-on-hook)
       (add-hook 'elpaca-after-init-hook #'dashboard-insert-startupify-lists)
-      (when (eq that1guycolin/emacs-type 'desktop)
-        (add-hook 'elpaca-after-init-hook #'dashboard-initialize)
-        (setq-default initial-buffer-choice #'dashboard-refresh-buffer))))
-  
-  (defun that1guycolin/dashboard-home-dir ()
-    "Change-directory to \"~\". Add to `dashboard-mode-hook'."
-    (interactive)
-    (setq-local default-directory "~")
-    (cd "~"))
-  
-  :functions (dashboard-resize-on-hook
-              dashboard-insert-startupify-lists dashboard-initialize
-              dashboard-setup-startup-hook dashboard-refresh-buffer
-              dashboard-display-icons-p)
+      (add-hook 'elpaca-after-init-hook #'dashboard-initialize)
+      (setq-default initial-buffer-choice #'dashboard-refresh-buffer)))
+
+  :hook ((dashboard-mode . delete-other-windows)
+         (dashboard-mode . (lambda ()
+                             (setq-local
+                              default-directory "~"
+                              fill-column 1000)
+                             (cd "~"))))
+  :functions (dashboard-display-icons-p
+              dashboard-initialize dashboard-insert-startupify-lists
+              dashboard-refresh-buffer dashboard-resize-on-hook
+              dashboard-setup-startup-hook)
   :init (that1guycolin/dashboard-setup-startup-hook)
   :custom
   (dashboard-banner-logo-title "Welcome back")
@@ -355,13 +332,7 @@ via the function `that1guycolin/default-font-presets-set-size'."
   (dashboard-set-file-icons t)
   (dashboard-set-heading-icons t)
   (dashboard-startup-banner 'logo)
-  (dashboard-vertically-center-content t)
-  :config
-  (add-hook 'dashboard-mode-hook
-            (lambda ()
-              (that1guycolin/dashboard-home-dir)
-              (delete-other-windows)
-              (setq-local fill-column 1000))))
+  (dashboard-vertically-center-content t))
 
 
 (provide '02-visual)

@@ -17,8 +17,11 @@
 (use-package org
   :ensure (:wait t)
   :demand t
-  :preface
+
+  
 ;;; Org task sequences
+  
+  :preface
   (defconst that1guycolin/org-keywords--tasks
     '(sequence "TODO(t)" "NEXT(n!)" "WAIT(w@/!)" "|"
                "DONE(d!)" "CANCELLED(c@)")
@@ -51,6 +54,7 @@ completed.")
 
   
 ;;; Capture Templates
+  
   (defconst that1guycolin/org-templates--task
     '("t" "Task" entry (file "tasks-to-do/tasks.org")
       "* TODO %^{Title}\n:PROPERTIES:\n:CREATED: %U\n:END:\n- %?"
@@ -98,6 +102,7 @@ completed.")
 
   
 ;;; `org-id-prefix' functions.
+  
   (defun that1guycolin/org-id--prefix-slug (s)
     "Turn S into a safe(-ish) `org-id-prefix'."
     (when s
@@ -156,6 +161,7 @@ creating org nodes."
 
 
 ;;; Custom header settings
+  
   (defun that1guycolin/org--get-heading-location ()
     "In an org-mode buffer, prompt user to pick a scope.
 The scope could be the entire buffer or a heading within that buffer.
@@ -261,6 +267,7 @@ The function ends with the cursor on the new line."
 
 
 ;;; Insert objects
+  
   (defun that1guycolin/org-insert-properties-drawer (&optional choice)
     "Create org properties drawer at an interactively-selected heading."
     (interactive "p")
@@ -331,6 +338,7 @@ underneath it. The header block will contain the following fields:
 
 
 ;;; Hide objects
+  
   (defvar-local that1guycolin/org-inline-source-hidden nil
     "Non-nil when inline source blocks and results are currently hidden.")
 
@@ -371,6 +379,7 @@ If they are currently hidden, make them visible. Thanks to Reddit user
 
 
 ;;; Keymap
+  
   (defvar-keymap that1guycolin/org-functions-map
     :doc "Useful functions inside and outside of Org-mode."
     "o" #'org-mode
@@ -386,6 +395,7 @@ If they are currently hidden, make them visible. Thanks to Reddit user
 
 
 ;;; Misc. functions
+  
   (defun that1guycolin/org-convert-md-links ()
     "Convert all md-style links in the current buffer to org-style."
     (interactive)
@@ -398,6 +408,7 @@ If they are currently hidden, make them visible. Thanks to Reddit user
 
   
 ;;; Bind:
+  
   :bind (:map org-mode-map
               ("C-c l"   . org-toggle-link-display)
               ("C-c C-h" . that1guycolin/org-id-all-headings)
@@ -420,6 +431,7 @@ If they are currently hidden, make them visible. Thanks to Reddit user
 
   
 ;;; Init/Custom:
+  
   :init (setq org-directory (expand-file-name "~/org"))
   :custom
   (org-agenda-files
@@ -470,6 +482,7 @@ If they are currently hidden, make them visible. Thanks to Reddit user
 
 
 ;;; Config:
+  
   :config
   (require 'org-id)
   (require 'org-protocol)

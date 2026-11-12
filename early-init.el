@@ -1,12 +1,13 @@
 ;;; early-init.el --- Load first  -*- lexical-binding: t; -*-
 
 ;;; Commentary:
+
 ;; Set initial values for variables that affect startup performance and UI.
 ;; Configures backup directories, disables package.el, sets load paths,
 ;; and applies early UI optimizations before the main config loads.
 
 ;;; Code:
-;;; no-littering
+
 (when (and (fboundp 'startup-redirect-eln-cache)
            (not (eq system-type 'android)))
   (startup-redirect-eln-cache
@@ -14,6 +15,7 @@
     (expand-file-name "var/eln-cache/" user-emacs-directory))))
 
 ;;; Set PATH so Emacs Android GUI can access Termux files
+
 (when (eq system-type 'android)
   (setenv "PATH" (format "%s:%s:%s:%s"
                          "/data/data/com.termux/files/home/.local/bin"
@@ -28,6 +30,7 @@
    initial-buffer-choice t))
 
 ;;; Modify variables for startup, then reset
+
 (defvar that1guycolin/file-name-handler-alist-backup file-name-handler-alist)
 (setq
  ;; Ignore `tramp' & `compressed'/`archive'
@@ -42,6 +45,7 @@
     inhibit-message nil)))
 
 ;;; Other Variable Mods
+
 (defvar edebug-inhibit-emacs-lisp-mode-bindings)
 (setq
  ;; No garbage collection during startup
@@ -114,6 +118,7 @@
  edebug-inhibit-emacs-lisp-mode-bindings t)
 
 ;;; Variables depending on package load
+
 (defvar ffap-machine-p-known)
 (defvar which-func-update-delay)
 (with-eval-after-load 'ffap
@@ -122,6 +127,7 @@
   (setq which-func-update-delay 0.5))
 
 ;;; Configure autosaves and backups.
+
 (let ((backup-dir (expand-file-name "~/.backups/"))
       (autosave-dir (expand-file-name "~/.auto-saves/")))
   (unless (file-exists-p backup-dir)
@@ -133,6 +139,7 @@
    auto-save-file-name-transforms `((".*" ,autosave-dir t))))
 
 ;;; Early UI optimizations
+
 (setq-default
  cursor-type 'bar
  fill-column 80

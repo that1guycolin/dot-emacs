@@ -1,11 +1,13 @@
 ;;; 01-environment.el --- Startup & Core Packages -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; avy, cape, consult, corfu, corfu-prescient, embark, embark-consult, envrc,
+
+;; avy, cape, consult, corfu, corfu-prescient, embark, embark-consult,
 ;; exec-path-from-shell, gcmh, helpful, marginalia, orderless, prescient,
 ;; savehist, tempel, tempel-collection, transient, vertico, vertico-prescient
 
 ;;; Commentary:
+
 ;; The packages in this file affect startup (gcmh), are designed to be loaded
 ;; early so they can observe/influence subsequently loaded packages
 ;; (exec-path-from-shell), or otherwise form the foundation upon which the rest
@@ -18,14 +20,22 @@
 ;; called with `:demand t'.
 
 ;;; Code:
+
+(declare-function consult-register-window "consult-register")
+(declare-function no-littering-expand-etc-file-name "no-littering")
+(defvar no-littering-etc-directory)
+(defvar register-preview-delay)
+(defvar xref-show-definitions-function)
+(defvar xref-show-xrefs-function)
+
+
 ;;; Bootstraps:
-;; Smart garbage collection
+
 (use-package gcmh
   :demand t
   :functions (gcmh-mode)
   :init (gcmh-mode 1))
 
-;; Environment
 (use-package exec-path-from-shell
   :demand t
   :preface
@@ -34,7 +44,6 @@
       "LSP_USE_PLISTS" "PKG_CONFIG_PATH" "SSH_AGENT_PID" "SSH_AUTH_SOCK" "WAYLAND_DISPLAY")
     "List of environment variables to load at Emacs start.")
   :functions (exec-path-from-shell-initialize)
-  :custom (exec-path-from-shell-shell-name "zsh")
   :config
   (mapc (lambda (v) (add-to-list 'exec-path-from-shell-variables v))
         that1guycolin/exec-path-from-shell-vars)
@@ -47,12 +56,10 @@
 
 
 ;;; Snippets:
-;; modern snippet framework with ancient roots
+
 (use-package tempel
   :demand t
   :preface
-  (defvar no-littering-etc-directory)
-  (declare-function no-littering-expand-etc-file-name "no-littering")
   (defun that1guycolin/tempel-setup-capf ()
     "Locally add relevant tempel items to `completion-at-point-functions'."
     (setq-local completion-at-point-functions
@@ -90,29 +97,27 @@ open the file in another window."
          (:map tempel-map
                ("TAB"   . tempel-next)
                ("C-TAB" . tempel-previous)))
-  :hook ((text-mode prog-mode conf-mode) . that1guycolin/tempel-setup-capf)
-  :functions (tempel-complete tempel-abbrev-mode)
+  :hook ((conf-mode prog-mode text-mode) . that1guycolin/tempel-setup-capf)
+  :functions (tempel-abbrev-mode tempel-complete)
   :init
-  (setq tempel-path
-        (directory-files
-         (no-littering-expand-etc-file-name "templates") t
-         directory-files-no-dot-files-regexp))
+  (setq
+   tempel-path
+   (directory-files (no-littering-expand-etc-file-name "templates") t
+                    directory-files-no-dot-files-regexp))
   (tempel-abbrev-mode 1))
 
-;; tempel library
 (use-package tempel-collection
   :after (tempel)
   :demand t)
 
 
 ;;; Completions:
-;; Maintain history across sessions
+
 (use-package savehist
   :ensure nil
   :demand t
   :config (savehist-mode 1))
 
-;; Fuzzy matching
 (use-package orderless
   :demand t
   :init
@@ -121,13 +126,11 @@ open the file in another window."
    completion-category-overrides '((file (styles basic partial-completion)))
    completion-category-defaults nil))
 
-;; Sort & filter completions
 (use-package prescient
   :demand t
   :init (add-to-list 'completion-styles 'prescient)
   :custom (prescient-sort-full-matches-first t))
 
-;; Minibuffer completions
 (use-package vertico
   :demand t
   :functions (vertico-mode)
@@ -142,7 +145,6 @@ open the file in another window."
   :functions (vertico-prescient-mode)
   :config (vertico-prescient-mode 1))
 
-;; Rich annotations
 (use-package marginalia
   :demand t
   :bind (:map minibuffer-local-map
@@ -152,7 +154,6 @@ open the file in another window."
   :functions (marginalia-mode)
   :config (marginalia-mode 1))
 
-;; Inline completions
 (use-package corfu
   :demand t
   :bind (:map corfu-map
@@ -164,8 +165,7 @@ open the file in another window."
               ("M-d"   . corfu-popupinfo-toggle)
               ("M-n"   . corfu-popupinfo-scroll-down)
               ("M-p"   . corfu-popupinfo-scroll-up))
-  :functions (global-corfu-mode corfu-history-mode corfu-popupinfo-mode)
-  
+  :functions (corfu-history-mode corfu-popupinfo-mode global-corfu-mode)
   :custom
   (corfu-auto t)
   (corfu-auto-prefix 4)
@@ -175,7 +175,6 @@ open the file in another window."
   (corfu-quit-no-match t)
   (corfu-on-exact-match 'insert)
   (corfu-popupinfo-delay nil)
-
   :config
   (global-corfu-mode 1)
   (corfu-history-mode 1)
@@ -188,7 +187,6 @@ open the file in another window."
   :functions (corfu-prescient-mode)
   :config (corfu-prescient-mode 1))
 
-;; Extend completion framework
 (use-package cape
   :demand t
   :bind ("C-c TAB" . cape-prefix-map)
@@ -201,19 +199,13 @@ open the file in another window."
 
 
 ;;; Additional frameworks:
-;; Jump to...
+
 (use-package avy
   :demand t)
 
-;; Gather data
 (use-package consult
   :demand t
   :preface
-  (declare-function consult-register-window "consult-register")
-  (defvar register-preview-delay)
-  (defvar xref-show-xrefs-function)
-  (defvar xref-show-definitions-function)
-
   (defun that1guycolin/info-dwim (&optional arg)
     "Run `consult-info'. If called with ARG `prefix-arg', run `info'."
     (interactive "P")
@@ -268,22 +260,16 @@ open the file in another window."
    consult-source-recent-file consult-source-project-recent-file
    :preview-key '(:debounce 0.4 any))
 
-  (setq xref-show-xrefs-function #'consult-xref
-        xref-show-definitions-function #'consult-xref))
+  (setq
+   xref-show-xrefs-function #'consult-xref
+   xref-show-definitions-function #'consult-xref))
 
-;; Mouse events on keyboard
 (use-package embark
   :demand t
-  :preface
-  (defvar completion-category-overrides)
-  (defvar display-buffer-alist)
-  (defvar eldoc-documentation-strategy)
-  (defvar prefix-help-command)
-
   :bind (("C-."   . embark-act)
          ("C-;"   . embark-dwim)
          ("C-h B" . embark-bindings))
-  :functions (embark-prefix-help-command embark-eldoc-first-target)
+  :functions (embark-eldoc-first-target embark-prefix-help-command)
   :init (setq prefix-help-command #'embark-prefix-help-command)
   :custom (eldoc-documentation-strategy #'eldoc-documentation-compose)
   :config
@@ -299,18 +285,12 @@ open the file in another window."
 
   (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target))
 
-;; Integrations
 (use-package embark-consult
-  :after (embark consult)
-  :demand t
-  :functions (consult-preview-at-point-mode)
-  :config (add-hook 'embark-collect-mode-hook #'consult-preview-at-point-mode))
+  :after (consult embark)
+  :demand t)
 
-;; Even better help
 (use-package helpful
   :demand t
-  :preface (dolist (bind '("C-h f" "C-h v" "C-h k" "C-h x" "C-h F" "C-z"))
-             (keymap-global-unset bind))
   :bind (("C-h f" . helpful-callable)
          ("C-h v" . helpful-variable)
          ("C-h k" . helpful-key)

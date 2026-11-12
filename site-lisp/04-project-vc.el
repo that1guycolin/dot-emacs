@@ -1,11 +1,14 @@
 ;;; 04-project-vc.el --- Projects & Workspaces -*- lexical-binding: t; -*-
 
 ;;; Packages included:
-;; activities, consult-project-extra, diff-hl, disproject, forge,
+
+;; consult-project-extra, diff-hl, disproject, envrc, fj, forge,
 ;; git-commit-ts-mode, git-link, git-modes, hydra, magit, magit-todos, project,
-;; project-treemacs, treemacs, treemacs-magit, with-editor
+;; project-treemacs, scratch, shr-tag-pre-highlight, tabspaces, treemacs,
+;; treemacs-magit, with-editor
 
 ;;; Commentary:
+
 ;; Packages to assist with project management in Emacs. The first section
 ;; focuses on the built-in `project.el' package, which is fortunately so robust
 ;; as-is that most of the additional packages are small quality of life
@@ -98,7 +101,6 @@
     (list user-emacs-directory org-directory "~/dotfiles"))
   :custom (project-vc-ignores '("^node_modules$" "^\\.venv$" "^\\.uv$")))
 
-;; transient dispatch for project.el
 (use-package disproject
   :after (project)
   :defer t
@@ -118,13 +120,11 @@
               '("C o" "C. P. Find Other Window"
                 consult-project-extra-find-other-window))))
 
-;; Direnv integration
 (use-package envrc
   :demand t
   :functions (envrc-global-mode)
   :config (envrc-global-mode 1))
 
-;; Save frame-state & tab-state
 (use-package tabspaces
   :defer t
   :preface
@@ -134,9 +134,9 @@
         (setq consult-buffer-list-function #'tabspaces-local-buffer-list)
       (setq consult-buffer-list-function #'buffer-list)))
   
-  :bind ("C-x TAB" . tabspaces-switch-buffer-and-tab)
-  :hook (elpaca-after-init-hook . (lambda ()
-                                    (run-with-timer 5 nil #'tabspaces-mode)))
+  :hook ((elpaca-after-init-hook . (lambda ()
+                                     (run-with-timer 5 nil #'tabspaces-mode)))
+         (tabspaces-mode . that1guycolin/consult-tabspaces))
   :functions (tabspaces-local-buffer-list
               tabspaces-mode tabspaces-open-or-create-project-and-workspace)
   :custom
@@ -157,7 +157,6 @@
   (tabspaces-todo-file-name "TODO.org")
   (tabspaces-use-filtered-buffers-as-default t)
   :config
-  (add-hook 'tabspaces-mode-hook #'that1guycolin/consult-tabspaces)
   (with-eval-after-load 'which-key
     (which-key-add-keymap-based-replacements tabspaces-command-map
       "C" "Clear Buffers"
@@ -179,7 +178,7 @@
 
 
 ;;; VC/Git:
-;; Set EDITOR to current Emacs session
+
 (use-package with-editor
   :defer t
   :commands (with-editor-export-editor))
@@ -222,12 +221,12 @@
 (use-package diff-hl
   :defer t
   :bind ("C-x v o" . diff-hl-mode)
-  :hook (((prog-mode text-mode) . diff-hl-mode)
+  :hook (((conf-mode prog-mode text-mode) . diff-hl-mode)
          (magit-post-refresh    . diff-hl-magit-post-refresh))
-  :functions (diff-hl-show-hunk
-              diff-hl-diff-goto-hunk diff-hl-stage-dwim diff-hl-revert-hunk
-              diff-hl-previous-hunk diff-hl-next-hunk diff-hl-show-hunk-previous
-              diff-hl-show-hunk-next)
+  :functions (diff-hl-diff-goto-hunk
+              diff-hl-next-hunk diff-hl-previous-hunk diff-hl-revert-hunk
+              diff-hl-show-hunk diff-hl-show-hunk-next
+              diff-hl-show-hunk-previous diff-hl-stage-dwim)
   :custom (diff-hl-show-staged-changes nil)
   :config
   (defvar-keymap that1guycolin/diff-hl-functions
@@ -281,25 +280,16 @@
   :mode ("\\.dockerignore\\'" . gitignore-mode))
 
 (use-package magit-todos
-  :after (magit)
-  :demand t
-  :functions magit-todos-mode
-  :config (magit-todos-mode 1))
+  :defer t
+  :hook (magit-mode . magit-todos-mode))
 
 
 ;;; Treemacs:
+
 (use-package hydra
   :demand t)
 
 (use-package treemacs
-  :ensure (treemacs
-           :source "MELPA" :package "treemacs" :id treemacs
-           :fetcher github :repo "that1guycolin/treemacs"
-           :branch "avoid-error-on-project-follow-mode-deactivation"
-           :files (:defaults "Changelog.org" "icons" "src/elisp/treemacs*.el"
-                             "src/scripts/treemacs*.py"
-                             (:exclude "src/extra/*"))
-           :type git :protocol https :inherit t :depth treeless :wait t)
   :defer t
   :preface
   (defun that1guycolin/treemacs-workspace-focus ()
@@ -315,7 +305,7 @@ for `treemacs-switch-workspace'."
         (select-window treemacs-win)
         (when treemacs-project-follow-mode
           (other-window 1)
-          (run-with-timer 3 nil select-window treemacs-win)))))
+          (run-with-timer 3 nil #'select-window treemacs-win)))))
 
   (defun that1guycolin/toggle-gitignored-wait-2 (&rest _args)
     "Toggle `treemacs-hide-gitignored-files-mode' if treemacs window.
@@ -352,12 +342,12 @@ If it is not active, activate it."
          :map treemacs-mode-map
          ("t p"         . that1guycolin/treemacs-toggle-project-follow-mode)
          ("<backspace>" . treemacs-root-up))
-  :commands (treemacs treemacs-refresh)
-  :functions (treemacs-git-mode
-              treemacs-git-commit-diff-mode treemacs-select-window
+  :commands (treemacs-refresh)
+  :functions (treemacs--select-workspace-by-name
+              treemacs-get-local-window treemacs-git-commit-diff-mode
+              treemacs-git-mode treemacs-hide-gitignored-files-mode
               treemacs-project-follow-mode treemacs-root-up
-              treemacs-get-local-window treemacs-hide-gitignored-files-mode
-              treemacs--select-workspace-by-name treemacs-switch-workspace)
+              treemacs-select-window treemacs-switch-workspace)
   :defines (treemacs-mode-map treemacs-project-follow-mode)
   :custom
   (treemacs-width 35)
@@ -371,7 +361,6 @@ If it is not active, activate it."
   (advice-add #'treemacs :after #'that1guycolin/toggle-gitignored-wait-2)
   (advice-add 'disproject-dispatch :before #'that1guycolin/close-treemacs))
 
-;; Integrations
 (use-package project-treemacs
   :after (treemacs)
   :demand t
