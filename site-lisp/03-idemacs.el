@@ -226,6 +226,10 @@ For example, \"/usr/bin/bash\" becomes
 ;;; Language-Server-Protocol (eglot):
 
 (use-package eglot
+  :ensure (eglot
+           :id eglot :repo "https://github.com/joaotavora/eglot.git"
+           :files (defaults (:exclude ".git" ".github" "gif-examples"))
+           :type git :protocol https :inherit t :depth treeless)
   :demand t
   :preface
   (defun that1guycolin/eglot-remove-mode-servers (mode)
@@ -256,10 +260,12 @@ For example, \"/usr/bin/bash\" becomes
   :commands (consult-eglot-symbols))
 
 (use-package consult-eglot-embark
+  :after (consult-eglot embark)
   :defer t
   :hook (eglot-connect . consult-eglot-embark-mode))
 
 (use-package flycheck-eglot
+  :after (eglot)
   :defer t
   :hook (eglot-connect . flycheck-eglot-mode))
 
@@ -276,6 +282,7 @@ For example, \"/usr/bin/bash\" becomes
   (lsp-snippet-tempel-eglot-init))
 
 (use-package eglot-tempel
+  :after (eglot tempel)
   :defer t
   :hook (eglot-connect . eglot-tempel-mode))
 
@@ -366,7 +373,7 @@ For example, \"/usr/bin/bash\" becomes
 ;;; (E)Lisp:
 
 ;; Base packages
-(use-package emacs-lisp-mode
+(use-package elisp-mode
   :ensure nil
   :defer t
   :hook ((emacs-lisp-mode . apheleia-mode)
@@ -375,7 +382,7 @@ For example, \"/usr/bin/bash\" becomes
          (emacs-lisp-mode . kirigami-mode)
          (emacs-lisp-mode . that1guycolin/setup-untabify-save)
          (emacs-lisp-mode . (lambda () (setq-local fill-column 80))))
-  :mode "\\.el\\'")
+  :mode ("\\.el\\'" . emacs-lisp-mode))
 
 (use-package lisp-ts-mode
   :defer t
