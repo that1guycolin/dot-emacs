@@ -6,19 +6,6 @@
 ;; init.
 
 ;;; Code:
-(defcustom that1guycolin/emacs-type
-  (cond
-   ((and (eq system-type 'android) (null (getenv "TERMUX_VERSION")))
-    (setq that1guycolin/emacs-type 'android-gui))
-   ((eq system-type 'android)
-    (setq that1guycolin/emacs-type 'termux))
-   (t
-    (setq that1guycolin/emacs-type 'desktop)))
-  "The type of Emacs currently running.
-Acceptable values are \\='desktop, \\='termux, or \\='android-gui."
-  :type '(symbol)
-  :options '(desktop termux android-gui)
-  :group 'that1guycolin)
 
 (defmacro that1guycolin/emacs-set-for-type (var desk tmux gui)
   "Set the value of VAR based on the value of `that1guycolin/emacs-type'.
@@ -27,15 +14,12 @@ Use key DESK for \"desktop\" sessions, TMUX, for sessions running in
 \"GUI\" app."
   (declare (indent defun))
   `(cond
-    ((eq that1guycolin/emacs-type 'android-gui)
+    ((and (eq system-type 'android) (null (getenv "TERMUX_VERSION")))
      (setq ,var ,gui))
-    ((eq that1guycolin/emacs-type 'termux)
+    ((eq system-type 'android)
      (setq ,var ,tmux))
-    ((eq that1guycolin/emacs-type 'desktop)
-     (setq ,var ,desk))
     (t
-     (error "Unsure how to set %s\nthat1guycolin/emacs-type: %s"
-            ',var that1guycolin/emacs-type))))
+     (setq ,var ,desk))))
 
 (defmacro that1guycolin/desktop-mobile (desk tmux gui)
   "Set different options depending on where Emacs is active.
@@ -44,25 +28,13 @@ DESK  - Settings for Emacs on PC/laptop.
 TMUX  - Settings for Emacs in the Android \"termux\" application.
 GUI   - Settings for the Emacs Android GUI application."
   (declare (indent defun))
-  (unless (boundp 'that1guycolin/emacs-type)
-    (error "Variable that1guycolin/emacs-type is not set"))
   `(cond
-    ((eq that1guycolin/emacs-type 'android-gui)
+    ((and (eq system-type 'android) (null (getenv "TERMUX_VERSION")))
      ,gui)
-    ((eq that1guycolin/emacs-type 'termux)
+    ((eq system-type 'android)
      ,tmux)
-    ((eq that1guycolin/emacs-type 'desktop)
-     ,desk)
-    (t (error "\"that1guycolin/emacs-type\" set to %s"
-              that1guycolin/emacs-type))))
-
-;; (defmacro that1guycolin/command-to-load (mode func)
-;;   "Add a hook for MODE to run FUNC on MODE's initial load."
-;;   `(unless (fboundp func)
-;;      (user-error "%s does not have a function definition" func))
-;;   `(let ((hook (intern (concat (symbol-name ,mode) "-hook"))))
-;;      (add-hook hook `(lambda ()
-;;                        `(unless (featurep ,mode) (func))))))
+    (t
+     ,desk)))
 
 
 (provide '00-macros)
