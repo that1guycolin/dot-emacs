@@ -432,7 +432,7 @@ If they are currently hidden, make them visible. Thanks to Reddit user
   
 ;;; Init/Custom:
   
-  :init (setq org-directory (expand-file-name "~/org"))
+  :init (setq org-directory "/storage/emulated/0/Documents/org")
   :custom
   (org-agenda-files
    (directory-files (expand-file-name "tasks-to-do/" org-directory) t
