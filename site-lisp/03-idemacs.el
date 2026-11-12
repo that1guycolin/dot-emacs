@@ -916,20 +916,15 @@ at localhost:4005. Otherwise, start sly normally."
   :ensure nil
   :defer t
   :preface
-  (defun that1guycolin/bash-ts-auto ()
-    "Activate `bash-ts-mode' when the active shell is bash."
-    (when (eq sh-shell 'bash)
-      (bash-ts-mode)))
-
   (defun that1guycolin/sh-set-checker-per-shell ()
     "Select a flycheck checker based on buffer's `sh-shell'."
     (with-eval-after-load 'flycheck
-      (if (eq sh-shell 'zsh)
-          (flycheck-select-checker 'zsh-lint)
-        (flycheck-select-checker 'sh-shellcheck))))
+      (when (eq major-mode 'sh-mode)
+        (if (eq sh-shell 'zsh)
+            (flycheck-select-checker 'zsh-lint)
+          (flycheck-select-checker 'sh-shellcheck)))))
 
-  :hook ((sh-mode . that1guycolin/bash-ts-auto)
-         (sh-mode . flycheck-mode)
+  :hook ((sh-mode . flycheck-mode)
          (sh-mode . hs-minor-mode)
          (sh-mode . kirigami-mode)
          (sh-mode . that1guycolin/setup-untabify-save)
@@ -938,7 +933,8 @@ at localhost:4005. Otherwise, start sly normally."
          (bash-ts-mode . treesit-fold-mode)
          (bash-ts-mode . kirigami-mode)
          (bash-ts-mode . that1guycolin/setup-untabify-save)
-         (bash-ts-mode . (lambda () (setq-local fill-column 80))))
+         (bash-ts-mode . (lambda () (setq-local fill-column 80)))
+         (sh-set-shell . that1guycolin/sh-set-checker-per-shell))
   :mode (("\\.bash\\'" . bash-ts-mode)
          (("\\.dash\\'" "\\.sh\\'" "\\.zsh\\'") . sh-mode))
   :defines (bash-ts-mode-map sh-mode-map))
@@ -956,22 +952,36 @@ at localhost:4005. Otherwise, start sly normally."
 
 (use-package pkgbuild-mode
   :defer t
+  :preface
+  (defun that1guycolin/pkgbuild--setup-shellcheck ()
+    "Modify \\='shellcheck' settings for editing PKGBUILD files.
+Ensures the shell is `bash', and the recommended warnings are excluded."
+    (setq-local
+     flycheck-shellcheck-infer-shell nil
+     flycheck-shellcheck-args '("--shell=bash")
+     flycheck-shellcheck-excluded-warnings '("SC2034" "SC2154" "SC2164")))
+
+  (defun that1guycolin/pkgbuild--setup-formatter ()
+    "Apply custom formatting settings for PKGBUILD files.
+Effectively disable max-line-length, and set indent to 2 spaces."
+    (setq-local
+     shfmt-arguments '("--language-dialect=bash" "--indent=2")
+     fill-column 1000))
+  
   :hook ((pkgbuild-mode . (lambda () (flymake-mode -1)))
          (pkgbuild-mode . flycheck-mode)
          (pkgbuild-mode . shfmt-on-save-mode)
-         (pkgbuild-mode . (lambda () (setq-local
-                                      fill-column 1000
-                                      flycheck-shellcheck-infer-shell nil
-                                      flycheck-shellcheck-args
-                                      '("--shell" "bash")
-                                      flycheck-shellcheck-excluded-warnings
-                                      '("SC2034" "SC2154" "SC2164")
-                                      shfmt-arguments '("-i" "2" "-ci")))))
+         (pkgbuild-mode . that1guycolin/pkgbuild--setup-shellcheck)
+         (pkgbuild-mode . that1guycolin/pkgbuild--setup-formatter))
   :mode "^PKGBUILD\\'"
   :custom (pkgbuild-update-sums-on-save nil)
-  :config (with-eval-after-load 'eglot
-            (add-to-list 'eglot-server-programs
-                         '((pkgbuild-mode) . ("termux-language-server")))))
+  :config
+  (with-eval-after-load 'eglot
+    (that1guycolin/eglot-remove-mode-servers 'sh-mode)
+    (add-to-list 'eglot-server-programs
+                 '((pkgbuild-mode) . '("termux-language-server"))))
+  (with-eval-after-load 'flycheck
+    (flycheck-add-mode 'sh-shellcheck 'pkgbuild-mode)))
 
 (use-package fish-mode
   :defer t
