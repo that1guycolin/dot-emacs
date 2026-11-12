@@ -233,6 +233,19 @@ For example, \"/usr/bin/bash\" becomes
            (lambda (cell)
              (memq mode (ensure-list (car cell))))
            eglot-server-programs)))
+
+  (defun that1guycolin/eglot--port-available-p (port)
+    "Return nil if PORT is not free to bind on localhost."
+    (condition-case nil
+        (let ((probe (make-network-process
+                      :name "eglot-port-probe"
+                      :server t
+                      :host "localhost"
+                      :service port
+                      :noquery t)))
+          (delete-process probe)
+          t)
+      (file-error nil)))
   :bind (:map ctl-x-map ("e" . eglot)))
 
 (use-package consult-eglot
@@ -375,19 +388,6 @@ For example, \"/usr/bin/bash\" becomes
     "Port used to connect to the alive-lsp Common Lisp language server."
     :type 'integer
     :group 'eglot)
-
-  (defun that1guycolin/eglot-lisp-alive--port-available-p (port)
-    "Return nil if PORT is not free to bind on localhost."
-    (condition-case nil
-        (let ((probe (make-network-process
-                      :name "eglot-lisp-alive-port-probe"
-                      :server t
-                      :host "localhost"
-                      :service port
-                      :noquery t)))
-          (delete-process probe)
-          t)
-      (file-error nil)))
   
   :hook ((lisp-ts-mode . apheleia-mode)
          (lisp-ts-mode . flycheck-mode)
@@ -409,7 +409,7 @@ For example, \"/usr/bin/bash\" becomes
      'eglot-server-programs
      '((lisp-mode lisp-ts-mode) .
        (lambda (_interactive _project)
-         (unless (that1guycolin/eglot-lisp-alive--port-available-p
+         (unless (that1guycolin/eglot--port-available-p
                   that1guycolin/eglot-lisp-alive-port)
            (error "Port %d is already in use"
                   that1guycolin/eglot-lisp-alive-port))
@@ -969,8 +969,7 @@ a running slynk instance @ localhost:4005."
   :custom (pkgbuild-update-sums-on-save nil)
   :config (with-eval-after-load 'eglot
             (add-to-list 'eglot-server-programs
-                         '((pkgbuild-mode) .
-                           ("termux-language-server" "--check")))))
+                         '((pkgbuild-mode) . ("termux-language-server")))))
 
 (use-package fish-mode
   :defer t
@@ -1018,7 +1017,12 @@ a running slynk instance @ localhost:4005."
     (setf
      (alist-get 'neocmakelsp apheleia-formatters)
      '("neocmakelsp" "format" "--inplace" buffer-file-name)
-     (alist-get 'cmake-ts-mode apheleia-mode-alist) 'neocmakelsp)))
+     (alist-get 'cmake-ts-mode apheleia-mode-alist) 'neocmakelsp))
+
+  (with-eval-after-load 'eglot
+    (that1guycolin/eglot-remove-mode-servers 'cmake-mode)
+    (add-to-list 'eglot-server-programs
+                 '((cmake-ts-mode) . ("neocmakelsp" "stdio")))))
 
 (use-package cmake-font-lock
   :after (cmake-ts-mode)
