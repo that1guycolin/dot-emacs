@@ -52,8 +52,8 @@
     (interactive)
     (let ((ts-dir (car treesit-extra-load-path))
           (langs (mapcar #'car treesit-language-source-alist)))
-      (unless (and (file-directory-p ts-dir)
-                   (directory-empty-p ts-dir))
+      (when (and (file-directory-p ts-dir)
+                 (directory-empty-p ts-dir))
         (mapc (lambda (lang)
                 (treesit-install-language-grammar lang ts-dir)) langs))))
   
