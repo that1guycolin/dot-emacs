@@ -68,10 +68,23 @@
 ;; Hide (but easily unhide) certain buffers
 (use-package popper
   :demand t
-  :bind (("C-'"   . popper-toggle)
-         ("M-'"   . popper-cycle)
-         ("C-M-'" . popper-toggle-type))
-  :functions (popper-mode popper-echo-mode)
+  :preface
+  (defvar-keymap popper-functions-map
+    :doc "Functions to interact with \"popper\" buffers."
+    "RET" #'popper-toggle
+    "n"   #'popper-cycle
+    "p"   #'popper-cycle-backwards
+    "t"   #'popper-toggle-type)
+  (with-eval-after-load 'which-key
+    (which-key-add-keymap-based-replacements popper-functions-map
+      "RET" "Toggle popper"
+      "n" "Popper cycle forward"
+      "p" "Popper cycle backwards"
+      "t" "Popper type"))
+  :bind-keymap ("C-'" . popper-functions-map)
+  :functions (popper-cycle
+              popper-cycle-backwards popper-echo-mode popper-mode popper-toggle
+              popper-toggle-type)
   :custom (popper-reference-buffers
            '("\\*Messages\\*" "Output\\*$" "\\*Async Shell Command\\*" help-mode
              helpful-mode compilation-mode))
