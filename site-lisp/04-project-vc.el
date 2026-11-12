@@ -368,12 +368,6 @@ If it is not active, activate it."
   :config (project-treemacs-mode 1))
 
 (use-package treemacs-magit
-  :ensure (treemacs-magit
-           :source "MELPA" :package "treemacs-magit" :id treemacs-magit
-           :fetcher github :repo "that1guycolin/treemacs"
-           :branch "avoid-error-on-project-follow-mode-deactivation"
-           :files ("src/extra/treemacs-magit.el") :type git :protocol https
-           :inherit t :depth treeless)
   :after (treemacs magit)
   :demand t)
 
