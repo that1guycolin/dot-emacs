@@ -54,12 +54,6 @@
   :demand t
   :config (add-to-list 'corfu-margin-formatters 'nerd-icons-corfu-formatter))
 
-(use-package treemacs-nerd-icons
-  :after (nerd-icons treemacs)
-  :demand t
-  :functions (treemacs-nerd-icons-config)
-  :config (treemacs-nerd-icons-config))
-
 (use-package minions
   :demand t
   :functions (minions-mode)

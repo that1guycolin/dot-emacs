@@ -290,6 +290,7 @@
   :demand t)
 
 (use-package treemacs
+  :after (hydra)
   :defer t
   :preface
   (defun that1guycolin/treemacs-workspace-focus ()
@@ -361,14 +362,20 @@ If it is not active, activate it."
   (advice-add #'treemacs :after #'that1guycolin/toggle-gitignored-wait-2)
   (advice-add 'disproject-dispatch :before #'that1guycolin/close-treemacs))
 
+(use-package treemacs-nerd-icons
+  :after (nerd-icons treemacs)
+  :demand t
+  :functions (treemacs-nerd-icons-config)
+  :config (treemacs-nerd-icons-config))
+
 (use-package project-treemacs
-  :after (treemacs)
+  :after (project treemacs)
   :demand t
   :functions (project-treemacs-mode)
   :config (project-treemacs-mode 1))
 
 (use-package treemacs-magit
-  :after (treemacs magit)
+  :after (magit treemacs)
   :demand t)
 
 
