@@ -190,12 +190,10 @@ open the file in another window."
 (use-package cape
   :demand t
   :bind ("C-c TAB" . cape-prefix-map)
-  :functions (cape-dabbrev cape-file cape-elisp-block cape-history)
   :init
-  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-  (add-to-list 'completion-at-point-functions #'cape-file)
-  (add-to-list 'completion-at-point-functions #'cape-elisp-block)
-  (add-to-list 'completion-at-point-functions #'cape-history))
+  (mapc (lambda (cf) (add-to-list 'completion-at-point-functions cf))
+        #'(cape-elisp-block
+           cape-history cape-file cape-elisp-symbol cape-dabbrev)))
 
 
 ;;; Additional frameworks:
