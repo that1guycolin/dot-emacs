@@ -94,16 +94,9 @@
 
 (use-package visual-fill-column
   :demand t
-  :preface
-  (defun that1guycolin/visual-fill-column-setup ()
-    "Activate `visual-line-mode' & related minor-modes.
-Useful as a hook function."
-    (display-fill-column-indicator-mode 1)
-    (visual-line-mode 1)
-    (auto-fill-mode 1))
   :hook ((visual-line-mode . visual-fill-column-for-vline)
-         ((conf-mode prog-mode text-mode) .
-          that1guycolin/visual-fill-column-setup)))
+         ((conf-mode prog-mode text-mode) . display-fill-column-indicator-mode)
+         ((conf-mode prog-mode text-mode) . visual-line-mode)))
 
 
 ;;; Font:
