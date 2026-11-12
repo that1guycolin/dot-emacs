@@ -141,10 +141,9 @@ via the function `that1guycolin/default-font-presets-set-size'."
      (list
       (read-number (format "Font Size (Current: %i): "
                            that1guycolin/default-font-presets--font-size))))
-    (set-frame-font (format "%s-%i"
-                            (that1guycolin/default-font-presets--get-font)
-                            new-size)
-                    nil t t)
+    (let* ((font-bare (that1guycolin/default-font-presets--get-font))
+           (font (format "%s-%i" font-bare new-size)))
+      (set-frame-font font nil t t))
     (setf that1guycolin/default-font-presets--font-size new-size))
 
   (defun that1guycolin/default-font-presets-random-font ()
@@ -169,12 +168,10 @@ via the function `that1guycolin/default-font-presets-set-size'."
 
   (defun that1guycolin/default-font-presets--new-frame (frame)
     (with-selected-frame frame
-      (let ((font (that1guycolin/default-font-presets--get-font)))
-        (set-face-attribute
-         'default t
-         :font (concat font "-"
-                       (number-to-string
-                        that1guycolin/default-font-presets--font-size))))))
+      (let* ((font-bare (that1guycolin/default-font-presets--get-font))
+             (size that1guycolin/default-font-presets--font-size)
+             (font (format "%s-%i" font-bare size)))
+        (set-frame-font font nil t t))))
 
   :bind (("C-+" . default-font-presets-scale-increase)
          ("C--" . default-font-presets-scale-decrease)
@@ -250,21 +247,20 @@ via the function `that1guycolin/default-font-presets-set-size'."
             "SpaceMono Nerd Font Mono" "SpaceMono Nerd Font Propo"
             "Symbols Nerd Font" "Symbols Nerd Font Mono"))
   :config
-  (let ((font "BlexMono Nerd Font Mono")
-        (size 11)
-        (content (list)))
+  (let* ((font-bare "BlexMono Nerd Font Mono")
+         (size 11)
+         (font (format "%s-%i" font-bare size))
+         (content (list)))
     (unless (daemonp)
-      (set-face-attribute
-       'default t
-       :font (concat font "-" (number-to-string size))))
+      (set-frame-font font nil t t))
     (setq that1guycolin/default-font-presets--font-size size)
     (let ((index 0))
       (dolist (font-name default-font-presets-list)
         (push (cons font-name index) content)
         (incf index)))
-    (setq content (nreverse content))
-    (default-font-presets--switch-pre)
-    (setq default-font-presets--index (cdr (assoc font content))))
+    (let ((fixed-content (nreverse content)))
+      (default-font-presets--switch-pre)
+      (setq default-font-presets--index (cdr (assoc font-bare fixed-content)))))
   (when (daemonp)
     (add-hook 'after-make-frame-functions
               #'that1guycolin/default-font-presets--new-frame))
