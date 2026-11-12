@@ -608,9 +608,10 @@ to the user's device.")
            (directory-files-recursively org-directory "\\.org\\'")))
 
 (use-package elisp-dev-mcp
-  :defer t
+  :demand t
+  :when (daemonp)
   :unless (eq system-type 'android)
-  :commands (elisp-dev-mcp-enable))
+  :config (elisp-dev-mcp-enable))
 
 (use-package gptel
   :defer t
