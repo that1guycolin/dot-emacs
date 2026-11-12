@@ -71,6 +71,18 @@
                   ((zerop
                     (call-process "git" nil buffer t "checkout"
                                   (or (plist-get order :ref) "--"))))
+                  ;; Melpa switched branch name from 'master' to 'main'.
+                  ;; Elpaca has not updated yet.
+                  ((with-current-buffer
+                       (find-file-noselect
+                        (expand-file-name "elpaca/elpaca-menu-melpa.el"
+                                          elpaca-sources-directory))
+                     (goto-char (point-min))
+                     (while (search-forward "master" nil t)
+                       (replace-match "main" t t))
+                     (save-buffer)
+                     (kill-buffer)))
+                  ;; Remove above section when Elpaca updates.
                   (emacs (concat invocation-directory invocation-name))
                   ((zerop
                     (call-process emacs nil buffer nil
