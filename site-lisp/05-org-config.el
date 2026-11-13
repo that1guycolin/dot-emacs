@@ -18,6 +18,8 @@
 (declare-function org-id-get-create "org-id")
 (declare-function org-id-new "org-id")
 (declare-function project-root "project.el")
+(declare-function that1guycolin/org--gen-header "c-org")
+(declare-function that1guycolin/org--goto-drawer-end "c-org")
 (declare-function that1guycolin/org--top-drawer-id "c-org")
 (defvar dired-mode-map)
 (defvar dirvish-mode-map)
@@ -174,7 +176,7 @@ URL, LINK will be shown instead."
     "Set a custom org-directory as default when creating a new org-node."
     (setq-local default-directory that1guycolin/org-node--new-node-dir))
   
-  (defun that1guycolin/org-node-new-file (&optional title id)
+  (defun that1guycolin/org-node-new-file (&optional title _id)
     "Create a new file for a new node.
 
 Set this function as `org-node-creation-fn'. It is based on the original
@@ -182,15 +184,11 @@ Set this function as `org-node-creation-fn'. It is based on the original
 and ID are automatically provided."
     (unless title (or (setq title org-node-proposed-title)
                       (error "Proposed title was nil")))
-    (unless id    (or (setq id org-node-proposed-id)
-                      (error "Proposed ID was nil")))
     (org-node-pop-to-fresh-file-buffer title)
     (goto-char (point-min))
-    (insert
-     ":PROPERTIES:\n:ID:       " id "\n:END:"
-     "\n#+TITLE: " title "\n#+AUTHOR: Colin Loeffler (that1guycolin)"
-     "\n#+CREATED_DATE: " (format-time-string "[%Y-%m-%d %a %H:%M:%S]")
-     "\n#+LAST_EDIT: \n#+ID:      " id "\n#+FILETAGS:\n")
+    (let ((id (org-id-get-create)))
+      (that1guycolin/org--goto-drawer-end)
+      (that1guycolin/org--gen-header title "Colin Loeffler (that1guycolin)" id))
 
     (goto-char (point-max))
     (push (current-buffer) org-node--new-unsaved-buffers)
