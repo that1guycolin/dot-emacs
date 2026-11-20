@@ -34,6 +34,36 @@ json-ts-mode
          "\"type\": \"" (p "type") "\"," n>
          "\"description\": \"" (p "description") "\"" n> "}," n>)
 
+lua-ts-mode
+(mpv-scr-head "-- " (p (file-name-base (or (buffer-file-name) (buffer-name))) file) ".lua" n n
+"-- DO NOT MODIFY THIS FILE DIRECTlY." n "-- Use the included `" file ".conf` file." n n
+"-- " (p "description") n n "-- Copyright (c) 2026 Colin Loeffler (that1guycolin)" n
+"-- This software is released under the MIT License: https://opensource.org/licenses/MIT")
+(mpkeybd "mp.add_key_binding(" (p "key") ", " (p "name") ", " (p "function") ")")
+
+pkgbuild-mode
+(templ "# Maintainer: " (p "Colin Loeffler") " <" (p "colin-l@that1archlinx") ">"
+       n "_pkgname=" (p "pkgname" pkg) n "pkgname=" (p "\"${_pkgname}-custom\"") n
+       "pkgver=0" n "pkgrel=1" n "pkgdesc=\"" (p "description") "\"" n
+       "arch=('x86_64')" n "url=\"" (p "url") "\"" n "license=('"
+       (p "GPL-3.0-only") "')" n (p "groups=('custom')") n  "depends=(" n>
+       (p "'glibc'") n> ")" n> "makedepends=(" n> (p "'git'") n> ")" n>
+       (p "checkdepends=()") n> "optdepends=(" n> (p "'pkg: reason'") n> ")" n>
+       "provides=('" pkg "')" n> "conflicts=('"pkg "-bin')" n> (p "replaces=()")
+       n> (p "options=(!debug !emptydirs lto strip)") n
+       "source=(\"${_pkgname}::git+" (p "https://github.com/author/repo.git")"\")"
+       n "sha256sums=('SKIP')" n "prepare() {" n> "cd \"$_pkgname\"" n>
+       (p "git submodule update --init --recursive") n "}" n n "pkgver() {" n>
+       "cd \"$_pkgname\"" n> "local version" n>
+       "version=\"$(git describe --tags --abbrev=0 2>/dev/null)\" || version=0" n>
+       "version=\"${version#v}\"" n> "version=\"${version//-/_}\"" n> n>
+       "local commit_count" n> "commit_count=\"$(git rev-list --count HEAD)\"" n>
+       "local commit" n> "commit=\"$(git rev-parse --short=7 HEAD)\"" n> n>
+       "printf \"%s.r%s.g%s\\n\" \"$version\" \"$commit_count\" \"$commit\"" n
+       "}" n> n> "build() {" n> (p "cmake -B build -S \"$_pkgname\"") n> "}" n> n>
+       (p "check() {") n> (p "check") n (p "}") n> n> "package() {" n>
+       (p "DESTDIR=\"$pkgdir\"") n "}")
+
 python-ts-mode
 (getat_mi "getattr(track, \"" (p "item") "\", " (p "fallback") ")")
 
@@ -110,9 +140,6 @@ toml-ts-mode
 target = \".config/mpv/scripts/" fn ".lua\", direct = true }")
 (pyoptdeps "[project.optional-dependencies]" n "dev = [\"rassumfrassum\", \"ruff\", \"ty\"]" n
            "doc = [\"sphinx\", \"furo\"]")
-
-lua-ts-mode
-(mpkeybd "mp.add_key_binding(" (p "key") ", " (p "name") ", " (p "function") ")")
 
 
 ;; Local Variables:

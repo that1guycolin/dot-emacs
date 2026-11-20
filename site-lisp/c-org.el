@@ -1,4 +1,4 @@
-;;; c-org-ensure-t.el --- Latest Org -*- lexical-binding: t -*-
+;;; c-org.el --- Latest Org -*- lexical-binding: t -*-
 
 ;;; Commentary:
 
@@ -9,13 +9,12 @@
 (defvar elpaca-menu-org-make-manual nil)
 (setq   elpaca-menu-org-make-manual nil)
 
-(require '00-macros)
 (declare-function flycheck-select-checker "flycheck")
 (declare-function sly-eval "sly")
 (defvar org-id-prefix)
 
 (use-package org
-  :ensure (:wait t)
+  :ensure (org (that1guycolin/emacs-set-for-type (:wait t) nil nil))
   :demand t
 
   
@@ -59,6 +58,13 @@ completed.")
     '("t" "Task" entry (file "tasks-to-do/tasks.org")
       "* TODO %^{Title}\n:PROPERTIES:\n:CREATED: %U\n:END:\n- %?"
       :empty-lines 1
+      :kill-buffer t))
+
+  (defconst that1guycolin/org-templates--event
+    '("e" "Event" entry (file+olp+datetree "calendar.org")
+      "** %^{Event Name/Description} %?\n<%^{Future Date}t>"
+      :time-prompt t
+      :tree-type (year month day)
       :kill-buffer t))
 
   (defconst that1guycolin/org-templates--idea
@@ -443,6 +449,7 @@ If they are currently hidden, make them visible. Thanks to Reddit user
     (format-time-string "archive/%Y.org::datetree/* %%s") org-directory))
   (org-capture-templates
    (list that1guycolin/org-templates--task
+         that1guycolin/org-templates--event
          that1guycolin/org-templates--idea
          that1guycolin/org-templates--daily-today
          that1guycolin/org-templates--daily-future
@@ -517,8 +524,8 @@ If they are currently hidden, make them visible. Thanks to Reddit user
     (setq org-babel-lisp-eval-fn 'sly)))
 
 
-(provide 'c-org-ensure-t)
-;;; c-org-ensure-t.el ends here
+(provide 'c-org)
+;;; c-org.el ends here
 
                                         ; LocalWords:  ov grp i1exdt hogmannn Za
                                         ; LocalWords:  nComments nSCHEDULED
