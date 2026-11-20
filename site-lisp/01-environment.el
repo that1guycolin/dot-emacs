@@ -54,8 +54,8 @@
     '("CC" "CXX" "GUILE_LOAD_PATH" "GUILE_LOAD_COMPILED_PATH" "INFOPATH"
       "LSP_USE_PLISTS" "PKG_CONFIG_PATH" "SSH_AGENT_PID" "SSH_AUTH_SOCK"
       "WAYLAND_DISPLAY")
-    '("CC" "CXX" "PKG_CONFIG_PATH" "SSH_AGENT_PID" "SSH_AUTH_SOCK"
-      nil)))
+    '("CC" "CXX" "PKG_CONFIG_PATH" "SSH_AGENT_PID" "SSH_AUTH_SOCK")
+    nil))
   :config
   (when that1guycolin/exec-path-from-shell-vars
     (mapc (lambda (v) (add-to-list 'exec-path-from-shell-variables v))
