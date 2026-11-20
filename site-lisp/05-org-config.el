@@ -312,20 +312,29 @@ With a prefix ARG, remove start location."
   :after (org)
   :demand t
   :preface
-  (defvar that1guycolin/org-recipe-templates
-    '(("c" "Cookbook" entry (file "~/org/cookbook.org")
-       "%(org-chef-get-recipe-from-url)"
-       :empty-lines 1)
-      ("z" "Protocol Cookbook" entry (file "~/org/cookbook.org")
-       "%(org-chef-get-recipe-string-from-url \"%:link\")"
-       :empty-lines 1)
-      ("m" "Manual Cookbook" entry (file "~/org/cookbook.org")
-       "* %^{Recipe title: }\n  :PROPERTIES:\n  :source-url:\n  :servings:\n  \
+  (defconst that1guycolin/org-templates--cookbook-url
+    '("c" "Cookbook" entry (file "~/org/cookbook.org")
+      "%(org-chef-get-recipe-from-url)"
+      :empty-lines 1))
+
+  (defconst that1guycolin/org-templates--cookbook-protocol-url
+    '("z" "Protocol Cookbook" entry (file "~/org/cookbook.org")
+      "%(org-chef-get-recipe-string-from-url \"%:link\")"
+      :empty-lines 1))
+  
+  (defconst that1guycolin/org-templates--cookbook-manual
+    '("m" "Manual Cookbook" entry (file "~/org/cookbook.org")
+      "* %^{Recipe title: }\n  :PROPERTIES:\n  :source-url:\n  :servings:\n  \
 :prep-time:\n  :cook-time:\n  :ready-in:\n  :END:\n** Ingredients\n \
-%?\n** Directions\n\n")))
-  :config (mapc (lambda (tmpl) (setq org-capture-templates
-                                     (append org-capture-templates tmpl)))
-                that1guycolin/org-recipe-templates))
+%?\n** Directions\n\n"
+      :empty-lines 1))
+  
+  :config (let ((rev-list (nreverse org-capture-templates)))
+            (mapc (lambda (tpl) (push tpl rev-list))
+                  (list that1guycolin/org-templates--cookbook-url
+                        that1guycolin/org-templates--cookbook-protocol-url
+                        that1guycolin/org-templates--cookbook-manual))
+            (setq org-capture-templates (nreverse rev-list))))
 
 
 ;;; Babel:
