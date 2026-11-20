@@ -1148,6 +1148,11 @@ package() {
 
 ;;; Config File Modes:
 
+;; Caddyfile:
+(use-package caddyfile-mode
+  :defer t
+  :mode ("Caddyfile\\'" "caddy\\.conf\\'"))
+
 ;; Conf:
 (use-package conf-mode
   :ensure nil
