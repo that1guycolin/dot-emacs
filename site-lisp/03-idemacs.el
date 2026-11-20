@@ -952,6 +952,8 @@ at localhost:4005. Otherwise, start sly normally."
   (defun that1guycolin/pkgbuild--setup-shellcheck ()
     "Modify \\='shellcheck' settings for editing PKGBUILD files.
 Ensures the shell is `bash', and the recommended warnings are excluded."
+    (flymake-mode -1)
+    (flycheck-mode)
     (setq-local
      flycheck-shellcheck-infer-shell nil
      flycheck-shellcheck-args '("--shell=bash")
@@ -963,19 +965,86 @@ Effectively disable max-line-length, and set indent to 2 spaces."
     (setq-local
      shfmt-arguments '("--language-dialect=bash" "--indent=2")
      fill-column 1000))
+
+  (defun that1guycolin/pkgbuild--extract-srcinfo-on-save ()
+    "Add a local after-save hook to extract a \\='.SRCINFO' file."
+    (unless (string= (file-name-base (buffer-file-name)) "PKGBUILD")
+      (error "Not a PKGBUILD buffer"))
+    (add-hook 'after-save-hook #'pkgbuild-update-srcinfo nil t))
   
-  :hook ((pkgbuild-mode . (lambda () (flymake-mode -1)))
-         (pkgbuild-mode . flycheck-mode)
-         (pkgbuild-mode . shfmt-on-save-mode)
+  :hook ((pkgbuild-mode . shfmt-on-save-mode)
          (pkgbuild-mode . that1guycolin/pkgbuild--setup-shellcheck)
-         (pkgbuild-mode . that1guycolin/pkgbuild--setup-formatter))
+         (pkgbuild-mode . that1guycolin/pkgbuild--setup-formatter)
+         (pkgbuild-mode . that1guycolin/pkgbuild--extract-srcinfo-on-save))
   :mode "^PKGBUILD\\'"
-  :custom (pkgbuild-update-sums-on-save nil)
+  :functions (pkgbuild-update-srcinfo)
+  :custom
+  (pkgbuild-template
+   "# Maintainer: %s <%s>
+pkgname=%s
+_pkgname=\"${pkgname%-custom}\"
+pkgver=0
+pkgrel=1
+pkgdesc=\"\"
+arch=('x86_64')
+url=\"\"
+license=('%s')
+groups=('custom')
+depends=(
+
+)
+makedepends=(
+
+)
+checkdepends=()
+optdepends=(
+
+)
+provides=()
+conflicts=()
+replaces=()
+options=(!debug !emptydirs lto strip)
+source=(\"${_pkgname}::git+URL\")
+sha256sums=('SKIP')
+
+prepare() {
+  cd \"$_pkgname\"
+  git submodule update --init --recursive
+}
+
+pkgver() {
+  cd \"$_pkgname\"
+
+  local version
+  version=\"$(git describe --tags --abbrev=0 2>/dev/null)\" || version=0
+  version=\"${version#v}\"
+  version=\"${version//-/_}\"
+
+  local commit_count
+  commit_count=\"$(git rev-list --count HEAD)\"
+  local commit
+  commit=\"$(git rev-parse --short=7 HEAD)\"
+
+  printf \"%s.r%s.g%s\n\" \"$version\" \"$commit_count\" \"$commit\"
+}
+
+build() {
+
+}
+
+check() {
+  
+}
+
+package() {
+  DESTDIR=\"$pkgdir\"
+}")
+  (pkgbuild-template-default-license-identifier "GPL-3.0-only")
+  (pkgbuild-update-sums-on-save nil)
   :config
   (with-eval-after-load 'eglot
-    (that1guycolin/eglot-remove-mode-servers 'sh-mode)
     (add-to-list 'eglot-server-programs
-                 '((pkgbuild-mode) . '("termux-language-server"))))
+                 '((pkgbuild-mode) . ("termux-language-server"))))
   (with-eval-after-load 'flycheck
     (flycheck-add-mode 'sh-shellcheck 'pkgbuild-mode)))
 
