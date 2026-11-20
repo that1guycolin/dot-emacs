@@ -7,8 +7,6 @@
 
 ;;; Code:
 
-(require '00-macros)
-
 (use-package emacs
   :ensure nil
   :demand t
@@ -17,23 +15,19 @@
 ;;; Load paths:
 
   :preface
-  (defvar that1guycolin/projects-directory nil
-    "Directory containing active projects.")
+  (defcustom that1guycolin/projects-directory nil
+    "Directory containing active projects."
+    :type 'directory
+    :group 'that1guycolin)
 
-  (defvar that1guycolin/scripts-directory nil
-    "Directory containing custom \\='one off' scripts.")
+  (defcustom that1guycolin/scripts-directory nil
+    "Directory containing custom \\='one off' scripts."
+    :type 'directory
+    :group 'that1guycolin)
 
-  (defvar that1guycolin/android-home
+  (defconst that1guycolin/android-home
     "/data/data/com.termux/files/home"
     "Termux home directory on Android.")
-
-  (that1guycolin/emacs-set-for-type that1guycolin/projects-directory
-    (expand-file-name "~/projects") (expand-file-name "~/projects")
-    (expand-file-name "projects" that1guycolin/android-home))
-
-  (that1guycolin/emacs-set-for-type that1guycolin/scripts-directory
-    (expand-file-name "~/scripts") (expand-file-name "~/scripts")
-    (expand-file-name "scripts" that1guycolin/android-home))
 
   
 ;;; tabs-to-spaces
@@ -109,6 +103,16 @@ If not in a side window, jump to the first found side window."
   (sentence-end-double-space nil)
   (tab-always-indent 'complete)
   (text-mode-ispell-word-completion nil)
+  (that1guycolin/projects-directory
+   (that1guycolin/emacs-get-for-type
+    (expand-file-name "~/projects")
+    (expand-file-name "projects" that1guycolin/android-home)
+    (expand-file-name "projects" that1guycolin/android-home)))
+  (that1guycolin/scripts-directory
+   (that1guycolin/emacs-get-for-type
+    (expand-file-name "~/scripts")
+    (expand-file-name "scripts" that1guycolin/android-home)
+    (expand-file-name "scripts" that1guycolin/android-home)))
   (trusted-content
    (list (expand-file-name "early-init.el" user-emacs-directory)
          (expand-file-name "init.el" user-emacs-directory)))

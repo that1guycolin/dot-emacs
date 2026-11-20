@@ -23,7 +23,6 @@
 
 ;;; Code:
 
-(require '00-macros)
 (declare-function no-littering-expand-etc-file-name "no-littering")
 (defvar android-home)
 (defvar elpaca-directory)

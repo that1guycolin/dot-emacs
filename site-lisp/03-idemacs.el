@@ -30,15 +30,17 @@
 
 ;;; Code:
 
-(require '00-macros)
 (declare-function corfu-mode "corfu")
 (declare-function embark-act "embark")
 (declare-function file-directory-p "emacs")
 (declare-function no-littering-expand-var-file-name "no-littering")
+(declare-function that1guycolin/emacs-run-for-type "init")
 (declare-function that1guycolin/eglot-remove-mode-servers "03-idemacs")
 (declare-function that1guycolin/flycheck-vale-setup "flycheck-custom-checkers")
+(declare-function that1guycolin/prepend-termux-prefix "init")
 (declare-function that1guycolin/setup-untabify-save "b-emacs")
 (defvar minions-prominent-modes)
+(defvar that1guycolin/scripts-directory)
 
 
 ;;; Treesit:
@@ -164,12 +166,6 @@
 (use-package flycheck
   :defer t
   :preface
-  (defun that1guycolin/prepend-termux-prefix (var)
-    "Add the Termux prefix to the start of VAR.
-For example, \"/usr/bin/bash\" becomes
-\"/data/data/com.termux/files/usr/bin/bash\"."
-    (set var (concat "/data/data/com.termux/files" (symbol-value var))))
-  
   :commands (flycheck-mode)
   :functions (flycheck-add-mode
               flycheck-error-new-at flycheck-parse-json flycheck-select-checker)
@@ -577,8 +573,8 @@ For example, \"/usr/bin/bash\" becomes
 If running in the Android GUI app, connect to a running slynk instance
 at localhost:4005. Otherwise, start sly normally."
     (interactive)
-    (that1guycolin/desktop-mobile
-      (sly) (sly) (sly-connect "localhost" 4005)))
+    (that1guycolin/emacs-run-for-type
+     #'sly #'sly (lambda () (sly-connect "localhost" 4005))))
 
   :bind ("C-c l" . that1guycolin/sly-autoconnect)
   :hook ((lisp-ts-mode . sly-editing-mode)

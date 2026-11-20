@@ -77,31 +77,70 @@
 
 ;;; Global settings:
 
-(defgroup that1guycolin '()
+(defgroup that1guycolin nil
   "Custom functions, macros, & variables by `that1guycolin'."
   :group 'config)
 
-(defconst that1guycolin/site-lisp-dir
-  (expand-file-name "site-lisp" user-emacs-directory)
-  "Directory containing .el files to be loaded at startup.
+(add-to-list 'load-path (expand-file-name "site-lisp" user-emacs-directory))
 
-Files in this directory are added to `trusted-content'. At present,
-this directory mainly consists of `use-package' S-expressions. This
-is not the same as the Emacs' native `user-lisp-directory'.")
+(defun that1guycolin/emacs-get-for-type (desk tmux gui)
+  "Return DESK, TMUX, or GUI value based on the current `system-type'."
+  (cond
+   ((and (eq system-type 'android)
+         (string-match-p "^aarch64-unknown-linux-android[0-9]\\{2\\}\\'"
+                         system-configuration))
+    gui)
+   ((eq system-type 'android)
+    tmux)
+   ((eq system-type 'gnu/linux)
+    desk)
+   (t
+    (error "This configuration is not set up for %s" system-type))))
 
-(add-to-list 'load-path that1guycolin/site-lisp-dir)
+(defun that1guycolin/emacs-run-for-type (desk tmux gui)
+  "Run the DESK, TMUX, OR GUI function based on the current `system-type'."
+  (mapc (lambda (input)
+          (unless (functionp (symbol-value input))
+            (warn "Emacs-run-for-type: %s is not a function" input)))
+        (list desk tmux gui))
+  (cond
+   ((and (eq system-type 'android)
+         (string-match-p "^aarch64-unknown-linux-android[0-9]\\{2\\}\\'"
+                         system-configuration)
+         (fuctionp gui))
+    (funcall gui))
+   ((and (eq system-type 'android)
+         (string-match-p "^aarch64-unknown-linux-android[0-9]\\{2\\}\\'"
+                         system-configuration))
+    (progn
+      (warn "Emacs-run-for-type: GUI value %s is not a function" gui)
+      gui))
+   ((and (eq system-type 'android)
+         (functionp tmux))
+    (funcall tmux))
+   ((eq system-type 'android)
+    (progn
+      (warn "Emacs-run-for-type: TMUX value - %s - is not a function" tmux)
+      tmux))
+   ((and (eq system-type 'gnu/linux)
+         (functionp desk))
+    (funcall desk))
+   ((eq system-type 'gnu/linux)
+    (progn
+      (warn "Emacs-run-for-type: DESK value - %s - is not a function" desk)
+      desk))
+   (t
+    (error "Emacs configuration not set up for system-type %s" system-type))))
 
-(require '00-macros)
+(defun that1guycolin/prepend-termux-prefix (var)
+  "Prepend the Termux prefix to VAR.
+For example, \"/usr/bin/bash\" becomes
+\"/data/data/com.termux/files/usr/bin/bash\"."
+  (set var (concat "/data/data/com.termux/files" (symbol-value var))))
 
 (require 'a-elpaca)
 (require 'b-emacs)
-(that1guycolin/desktop-mobile (require 'c-org-ensure-t)
-  (require 'c-org-ensure-nil) (require 'c-org-ensure-nil))
-
-;; Automatically load customization variables if they exist
-(when (file-exists-p custom-file)
-  (add-hook 'elpaca-after-init-hook
-            (lambda () (load custom-file t))))
+(require 'c-org)
 
 
 ;;; Modular Init:
@@ -124,6 +163,10 @@ is not the same as the Emacs' native `user-lisp-directory'.")
 ;; Integrate or Emulate External Tools
 (require '06-support)
 
+;; Automatically load customization variables if they exist
+(when (file-exists-p custom-file)
+  (add-hook 'elpaca-after-init-hook
+            (lambda () (load custom-file t))))
 
 (provide 'init)
 ;;; init.el ends here.

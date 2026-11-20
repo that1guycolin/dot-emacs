@@ -7,8 +7,6 @@
 
 ;;; Code:
 
-(require '00-macros)
-
 (declare-function elpaca                              "elpaca")
 (declare-function elpaca--read-queued                 "elpaca")
 (declare-function elpaca-build-autoloads              "elpaca")
@@ -29,6 +27,7 @@
 (declare-function elpaca-wait                         "elpaca")
 (declare-function elpaca-use-package      "elpaca-use-package")
 (declare-function elpaca-use-package-mode "elpaca-use-package")
+(declare-function that1guycolin/emacs-get-for-type      "init")
 
 (defvar elpaca-directory (expand-file-name "var/elpaca" user-emacs-directory))
 (defvar elpaca-builds-directory (expand-file-name "builds" elpaca-directory))
@@ -43,7 +42,8 @@
 
 ;;; Elpaca:
 
-(that1guycolin/emacs-set-for-type elpaca-queue-limit 8 4 4)
+(setq elpaca-queue-limit
+      (that1guycolin/emacs-get-for-type 8 4 4))
 
 ;; Modified from https://github/progfolio/elpaca/doc/installer.el
 (defvar elpaca-order

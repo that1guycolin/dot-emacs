@@ -16,7 +16,6 @@
 
 ;;; Code:
 
-(require '00-macros)
 (require '04-project-vc)
 
 (declare-function Info-history-back "Info")
@@ -104,17 +103,20 @@
   :defer t
   :bind ("C-c t g" . ghostel)
   :hook (ghostel-mode . (lambda () (setq-local fill-column 1000)))
-  :init (that1guycolin/emacs-set-for-type ghostel-module-auto-install
-          'compile 'download 'download)
+  :custom
+  (ghostel-shell
+   (that1guycolin/emacs-get-for-type
+    "/usr/bin/zsh"
+    "/data/data/com.termux/files/usr/bin/zsh"
+    "/data/data/com.termux/files/usr/bin/zsh"))
+  (ghostel-module-auto-install
+   (that1guycolin/emacs-get-for-type 'compile 'download 'download))
   :config
   (with-eval-after-load 'disproject
     (transient-append-suffix 'disproject-dispatch
       "s" '("o" "Ghostel" ghostel-project)))
-  (that1guycolin/desktop-mobile
-    (with-eval-after-load 'with-editor
-      (add-hook 'ghostel-mode-hook #'with-editor-export-editor))
-    nil
-    (setq ghostel-shell "/data/data/com.termux/files/usr/bin/zsh")))
+  (with-eval-after-load 'with-editor
+    (add-hook 'ghostel-mode-hook #'with-editor-export-editor)))
 
 (use-package mistty
   :defer t
