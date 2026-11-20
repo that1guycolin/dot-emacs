@@ -32,7 +32,6 @@
 
 (declare-function corfu-mode "corfu")
 (declare-function embark-act "embark")
-(declare-function file-directory-p "emacs")
 (declare-function no-littering-expand-var-file-name "no-littering")
 (declare-function that1guycolin/emacs-run-for-type "init")
 (declare-function that1guycolin/eglot-remove-mode-servers "03-idemacs")
@@ -81,6 +80,7 @@
                     "master" "src"))
      (json . ("https://github.com/tree-sitter/tree-sitter-json"))
      (json5 . ("https://github.com/Joakker/tree-sitter-json5"))
+     (just . ("https://github.com/casey/tree-sitter-just.git"))
      (kdl . ("https://github.com/tree-sitter-grammars/tree-sitter-kdl"))
      (lua . ("https://github.com/MunifTanjim/tree-sitter-lua"))
      (make . ("https://github.com/alemuller/tree-sitter-make"))
@@ -1348,8 +1348,8 @@ If the current `buffer-file-name' is \\='compose.ya(m)l' or
                               (string-match-p
                                "/\\(?:compose\\|docker-compose\\)\\.ya?ml\\'"
                                (buffer-file-name)))
-                         '("docker-compose-langserver" "--stdio" source)
-                       '("yaml-language-server" "--stdio" source)))))))
+                         '("docker-compose-langserver" "--stdio")
+                       '("yaml-language-server" "--stdio")))))))
 
 (use-package yaml-pro
   :defer t

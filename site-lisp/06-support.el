@@ -397,7 +397,7 @@ On directories, toggle subtree. On files, use Dirvish file outline viewer."
     "Location of the `gmi-sendmail' bash script on device.")
 
   (defvar that1guycolin/gmail-accounts
-    (list "colinloeffler" "that1guycolin" "cloudyguy4" "colinjl227")
+    '("colinloeffler" "that1guycolin" "cloudyguy4" "colinjl227")
     "A list of my various gmail usernames.")
   
   (defun that1guycolin/sendmail-via-gmi (account)
@@ -478,33 +478,9 @@ On directories, toggle subtree. On files, use Dirvish file outline viewer."
   :unless (eq system-type 'android)
   :preface
   (defvar that1guycolin/ollama-alist
-    `((codegemma:2b              . ,(* 1  4096))
-      (codegemma:7b              . ,(* 2  4096))
-      (codellama:7b-instruct     . ,(* 2  4096))
-      (cogito:3b                 . ,(* 1  4096))
-      (cogito:8b                 . ,(* 2  4096))
-      (gemma4:e2b                . ,(* 1  4096))
-      (gemma4:e4b                . ,(* 2  4096))
-      (gpt-oss:120b-cloud        . ,(* 16 4096))
-      (granite4.1:3b             . ,(* 1  4096))
-      (granite4.1:8b             . ,(* 2  4096))
-      (granite-code:3b           . ,(* 1  4096))
-      (granite-code:8b           . ,(* 2  4096))
-      (lfm2.5-thinking:1.2b      . ,(* 2  4096))
-      (llama3.1:8b               . ,(* 2  4096))
-      (llama3.2:1b               . ,(* 1  4096))
-      (llama3.2:3b               . ,(* 2  4096))
-      (nomic-embed-text:latest   . ,(* 2  4096))
-      (opencoder:1.5b            . ,(* 1  4096))
-      (opencoder:8b              . ,(* 2  4096))
-      (qwen3:0.6b                . ,(* 1  4096))
-      (qwen3:1.7b                . ,(* 1  4096))
-      (qwen3:4b                  . ,(* 2  4096))
-      (qwen3.5:cloud             . ,(* 16 4096))
-      (qwen3:8b                  . ,(* 2  4096))
-      (qwen3-coder:480b-cloud    . ,(* 16 4096))
-      (qwen3-coder-next:cloud    . ,(* 16 4096))
-      (stable-code:3b            . ,(* 1  4096)))
+    `((qwen3.5:4b ,(* 2 4096))
+      (gemma4:e2b ,(* 1 4096))
+      (gemma4:e4b ,(* 1 4096)))
     "Alist containing Ollama models and their context length.
 Models on this list are either cloud-based or have already been downloaded
 to the user's device.")
@@ -563,6 +539,7 @@ to the user's device.")
   :demand t
   :when (daemonp)
   :unless (eq system-type 'android)
+  :functions (elisp-dev-mcp-enable)
   :config (elisp-dev-mcp-enable))
 
 (use-package gptel
@@ -586,7 +563,7 @@ doubles as a model-switcher."
             (completing-read
              (format "Backend (current: %s): "
                      (gptel-backend-name gptel-backend))
-             that1guycolin/gptel--backend-map nil t))
+             that1guycolin/gptel--backend-map))
            (meta  (cdr (assoc backend-name that1guycolin/gptel--backend-map)))
            (gptel-name (plist-get meta 'name))
            (models (plist-get meta 'models))

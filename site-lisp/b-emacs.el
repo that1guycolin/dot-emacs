@@ -85,6 +85,7 @@ If not in a side window, jump to the first found side window."
          ("C-c #"     . display-line-numbers-mode)
          ("C-c C-#"   . global-display-line-numbers-mode)
          ("C-c C-$"   . restart-emacs)
+         ("M-/"       . hippie-expand)
          ("M-0"       . that1guycolin/toggle-side-window))
   :hook ((elpaca-after-init . (lambda ()
                                 (run-with-timer
