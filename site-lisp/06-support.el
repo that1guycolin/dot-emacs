@@ -128,13 +128,6 @@
                ("M-<right>" . mistty-send-key)))
   :hook (mistty-mode . (lambda () (setq-local fill-column 1000))))
 
-(use-package native-complete
-  :defer t
-  :hook (shell-mode . (lambda ()
-                        (add-to-list 'completion-at-point-functions
-                                     #'native-complete-at-point)))
-  :commands native-complete-at-point)
-
 
 ;;; File explorer:
 
@@ -388,49 +381,6 @@ On directories, toggle subtree. On files, use Dirvish file outline viewer."
     (keymap-set map "TAB"        #'that1guycolin/dirvish-tab-dwim)
     (keymap-set map "RET"        #'that1guycolin/dirvish-return-dwim)
     (keymap-set map "?"          #'that1guycolin/dirvish-dispatch)))
-
-(use-package dwim-shell-command
-  :defer t
-  :preface
-  (defun that1guycolin/convert-ts-to-mp4 ()
-    "Convert .ts files to .mp4 using FFmpeg."
-    (interactive)
-    (dwim-shell-command-on-marked-files
-     "Convert to mp4"
-     "ffmpeg -hide_banner -v quiet -stats -y -i '<<f>>' -map 0:v -map 0:a \
--c copy -movflags +faststart '<<fne>>.mp4'"
-     :utils "ffmpeg"))
-
-  (defun that1guycolin/extract-video-only ()
-    "Extract only video streams from file using FFmpeg."
-    (interactive)
-    (dwim-shell-command-on-marked-files
-     "Extract video streams."
-     "ffmpeg -hide_banner -v quiet -stats -y -i '<<f>>' -map 0:v -c copy \
--movflags +faststart '<<fne>>-video.mp4'"
-     :utils "ffmpeg"))
-
-  (defun that1guycolin/extract-audio-only ()
-    "Extract only audio streams from file using FFmpeg."
-    (interactive)
-    (dwim-shell-command-on-marked-files
-     "Extract audio streams."
-     "ffmpeg -hide_banner -v quiet -stats -y -i '<<f>>' -map 0:a -c copy \
--movflags +faststart '<<fne>>-audio.m4a'"
-     :utils "ffmpeg"))
-  
-  :bind (("M-!" . dwim-shell-command)
-         :map dirvish-mode-map
-         ("F" . that1guycolin/ffmpeg-actions-map))
-  :commands (dwim-shell-command-on-marked-files)
-  :config
-  (defvar-keymap that1guycolin/ffmpeg-actions-map
-    :doc "Keymap with FFmpeg actions to run on marked files in dired/dirvish."
-    "4" #'that1guycolin/convert-ts-to-mp4
-    "v" #'that1guycolin/extract-video-only
-    "a" #'that1guycolin/extract-audio-only)
-  (transient-append-suffix 'that1guycolin/dirvish-dispatch "c d"
-    '("F" "FFmpeg Actions" that1guycolin/ffmpeg-actions-map)))
 
 (use-package ready-player
   :defer t
