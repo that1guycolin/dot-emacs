@@ -27,7 +27,6 @@
 (declare-function elpaca-wait                         "elpaca")
 (declare-function elpaca-use-package      "elpaca-use-package")
 (declare-function elpaca-use-package-mode "elpaca-use-package")
-(declare-function that1guycolin/emacs-get-for-type      "init")
 
 (defvar elpaca-directory (expand-file-name "var/elpaca" user-emacs-directory))
 (defvar elpaca-builds-directory (expand-file-name "builds" elpaca-directory))
@@ -42,8 +41,9 @@
 
 ;;; Elpaca:
 
-(setq elpaca-queue-limit
-      (that1guycolin/emacs-get-for-type 8 4 4))
+(if (eq system-type 'gnu/linux)
+    (setq elpaca-queue-limit 8)
+  (setq elpaca-queue-limit 4))
 
 ;; Modified from https://github/progfolio/elpaca/doc/installer.el
 (defvar elpaca-order

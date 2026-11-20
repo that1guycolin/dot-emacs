@@ -99,15 +99,11 @@
 
 (defun that1guycolin/emacs-run-for-type (desk tmux gui)
   "Run the DESK, TMUX, OR GUI function based on the current `system-type'."
-  (mapc (lambda (input)
-          (unless (functionp (symbol-value input))
-            (warn "Emacs-run-for-type: %s is not a function" input)))
-        (list desk tmux gui))
   (cond
    ((and (eq system-type 'android)
          (string-match-p "^aarch64-unknown-linux-android[0-9]\\{2\\}\\'"
                          system-configuration)
-         (fuctionp gui))
+         (functionp gui))
     (funcall gui))
    ((and (eq system-type 'android)
          (string-match-p "^aarch64-unknown-linux-android[0-9]\\{2\\}\\'"
