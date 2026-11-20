@@ -166,6 +166,7 @@
 (use-package flycheck
   :defer t
   :preface
+  :hook (flycheck-mode . flycheck-annotate-mode)
   :commands (flycheck-mode)
   :functions (flycheck-add-mode
               flycheck-error-new-at flycheck-parse-json flycheck-select-checker)
@@ -193,13 +194,6 @@
 
   (with-eval-after-load 'minions
     (add-to-list 'minions-prominent-modes 'flycheck-mode)))
-
-(use-package flycheck-posframe
-  :after (flycheck)
-  :defer t
-  :hook (flycheck-mode . flycheck-posframe-mode)
-  :functions (flycheck-posframe-configure-pretty-defaults)
-  :config (flycheck-posframe-configure-pretty-defaults))
 
 (use-package flycheck-color-mode-line
   :after (flycheck)
@@ -263,7 +257,13 @@
 (use-package flycheck-eglot
   :after (eglot)
   :defer t
-  :hook (eglot-connect . flycheck-eglot-mode))
+  :preface
+  (defun that1guycolin/flycheck-eglot-if-flycheck ()
+    "Start `flycheck-eglot-mode' if `flycheck-mode' is non-nil."
+    (when flycheck-mode
+      (flycheck-eglot-mode 1)))
+  :hook (eglot-connect . that1guycolin/flycheck-eglot-if-flycheck)
+  :functions (flycheck-eglot-mode))
 
 (use-package lsp-snippet
   :ensure (lsp-snippet
