@@ -9,11 +9,11 @@ emacs-lisp-mode
 (conf-meta ";;; " (p (file-name-base (or (buffer-file-name) (buffer-name)))
                      file) ".el --- " (p "summary")
                      " -*- lexical-binding: t -*-" n n
-           ";;; Packages included:" n n
-           ";;; Commentary:" n  ";; " (p "commentary") n
-           ";;; Code:" n n n n
-           "(provide '" file ")" n
-           ";;; " file ".el ends here")
+		     ";;; Packages included:" n n
+		     ";;; Commentary:" n  ";; " (p "commentary") n
+		     ";;; Code:" n n n n
+		     "(provide '" file ")" n
+		     ";;; " file ".el ends here")
 (decf "(declare-function " (p "func") " \"" (p "pkg") "\")")
 (defkeym "(defvar-keymap " (p "keymap-name" kname) n>
          ":doc \"" (p "docstring") "\"" n>
@@ -36,12 +36,19 @@ json-ts-mode
 
 lua-ts-mode
 (mpv-scr-head "-- " (p (file-name-base (or (buffer-file-name) (buffer-name))) file) ".lua" n n
-"-- DO NOT MODIFY THIS FILE DIRECTlY." n "-- Use the included `" file ".conf` file." n n
-"-- " (p "description") n n "-- Copyright (c) 2026 Colin Loeffler (that1guycolin)" n
-"-- This software is released under the MIT License: https://opensource.org/licenses/MIT")
+	      "-- DO NOT MODIFY THIS FILE DIRECTlY." n "-- Use the included `" file ".conf` file." n n
+	      "-- " (p "description") n n "-- Copyright (c) 2026 Colin Loeffler (that1guycolin)" n
+	      "-- This software is released under the MIT License: https://opensource.org/licenses/MIT")
 (mpkeybd "mp.add_key_binding(" (p "key") ", " (p "name") ", " (p "function") ")")
 
 pkgbuild-mode
+(cmake "cmake -B build -S \"$_pkgname\" \\" n>
+       "-DCMAKE_INSTALL_PREFIX:STRING='/usr' \\" n>
+       "-DCMAKE_BUILD_TYPE:STRING=Release \\" n>
+       "-DCMAKE_C_COMPILER:STRING='clang' \\" n>
+       "-DCMAKE_CXX_COMPILER:STRING='clang++' \\" n>
+       "-DCMAKE_LINKER_TYPE:STRING='LLD' \\" n>
+       "-DCMAKE_SKIP_RPATH:BOOL=YES")
 (templ "# Maintainer: " (p "Colin Loeffler") " <" (p "colin-l@that1archlinx") ">"
        n "_pkgname=" (p "pkgname" pkg) n "pkgname=" (p "\"${_pkgname}-custom\"") n
        "pkgver=0" n "pkgrel=1" n "pkgdesc=\"" (p "description") "\"" n
@@ -74,12 +81,12 @@ scheme-mode
 
 sh-mode
 (argparse "PARSED=$(getopt -o " (p "shortflags") " -l "
-           (p "long-flags") " -- \"$@\") || { usage; exit 1; }" n>
-           "eval set -- \"$PARSED\"" n> "while true; do" n
-           "case \"$1\" in" n n> "-h | --help) usage; exit ;;" n>
-           "--) shift; break ;;" n>
-           "*) echo \"Invalid option: $1\"; usage; exit 2 ;;" n>
-           "esac" n> "done" n>)
+          (p "long-flags") " -- \"$@\") || { usage; exit 1; }" n>
+          "eval set -- \"$PARSED\"" n> "while true; do" n
+          "case \"$1\" in" n n> "-h | --help) usage; exit ;;" n>
+          "--) shift; break ;;" n>
+          "*) echo \"Invalid option: $1\"; usage; exit 2 ;;" n>
+          "esac" n> "done" n>)
 (arg-1 "-" (p "short") " | --" (p "long") ")" n> (p "variable") "=true" n>
        "shift" n> ";;")
 (arg-2 "-" (p "short") " | --" (p "long") ")" n> (p "variable") "=\"$2\""
@@ -118,10 +125,10 @@ sh-mode
     fi
 }")
 (usage "function usage {" n> "cat <<EOF" n
-        "USAGE: ${0##*/} [OPTIONS] " (p "req arguments") n n
-        (p "description") n n "OPTIONS:" n "  " (p "flag") n
-        "      " (p "flag description") n n "  -h, --help" n
-        "      Display this message and exit." n n "EOF" n "}")
+       "USAGE: ${0##*/} [OPTIONS] " (p "req arguments") n n
+       (p "description") n n "OPTIONS:" n "  " (p "flag") n
+       "      " (p "flag description") n n "  -h, --help" n
+       "      Display this message and exit." n n "EOF" n "}")
 (zinput "read -r \"" (p "var" var) "?" (p "prompt") "\"" n
         "case \"$" var "\" in" n
         (p "option") ")" (p "action") " ;;"
