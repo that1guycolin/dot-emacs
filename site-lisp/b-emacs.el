@@ -43,7 +43,6 @@
 
 
 ;;; side window
-
   (defun that1guycolin/toggle-side-window ()
     "Switch focus between a side window and the main window area.
 If in a side window, return to the last used window.
@@ -61,70 +60,116 @@ If not in a side window, jump to the first found side window."
        (t
         (select-window side-window)))))
 
+;;; eww + anubis
+  (defvar that1guycolin/eww-c-fb-domain nil
+    "The string to use if parsing the JSON for the domain value fails.")
   
+  (defun that1guycolin/eww--store-cookie (cookie)
+    "Store COOKIE in the EWW `cookie-jar'."
+    (let* ((name (alist-get 'name cookie))
+           (val (alist-get 'value cookie))
+           (domain (or (alist-get 'domain cookie) that1guycolin/eww-c-fb-domain))
+           (path (or (alist-get 'path cookie) "/"))
+           (secure (not (eq (alist-get'secure cookie) :false)))
+           (expires-raw (alist-get 'expires cookie))
+           (expires (if expires-raw
+                        (cond
+                         ((numberp expires-raw)
+                          (format-time-string "%a, %d %b %Y %H:%M:%S GMT" (seconds-to-time expires-raw t)))
+                         ((and (stringp expires-raw)
+                               (not (string-empty-p expires-raw)))
+                          expires-raw)
+                         (t nil))
+                      nil)))
+      (when (and name val)
+        (url-cookie-store name val expires domain path secure))))
+  
+  (defun that1guycolin/eww-cookies-from-json (file)
+    "Import cookies and User-Agent from an \\='anubis-fetch' JSON FILE."
+    (interactive
+     (list (read-file-name
+            "Cookie JSON: "
+            (expand-file-name "anubis-fetch/cookies/"
+                              (or (getenv "XDG_CACHE_HOME") "~/.cache")))))
+    (let* ((data (with-temp-buffer
+                   (insert-file-contents file)
+                   (json-parse-buffer
+                    :object-type 'alist :array-type 'list)))
+           (ua (alist-get 'user_agent data))
+           (cookies (alist-get 'cookies data)))
+      (when (and ua (not(string-empty-p ua)))
+        (setq
+         url-user-agent ua
+         that1guycolin/eww-c-fb-domain (file-name-base file)))
+      (mapc #'that1guycolin/eww--store-cookie cookies)
+      (url-cookie-write-file)
+      (message "Imported %d cookie(s) & updated User-Agent from %s"
+               (length cookies) (file-name-nondirectory file))))
+
+
 ;;; misc.
-  
-  (defun that1guycolin/check-parens-with-message ()
-    "Run `check-parens'. Print a message when all parentheses match."
-    (interactive)
-    (when (not (check-parens))
-      (message "All parentheses match!")))
 
-  (defun that1guycolin/remove-eln-cache ()
-    "Remove an accidentally created eln-cache from `user-emacs-directory.'"
-    (let ((cache-file (expand-file-name "eln-cache" user-emacs-directory)))
-      (when (file-exists-p cache-file)
-        (delete-directory cache-file t))))
+(defun that1guycolin/check-parens-with-message ()
+  "Run `check-parens'. Print a message when all parentheses match."
+  (interactive)
+  (when (not (check-parens))
+    (message "All parentheses match!")))
 
-  
+(defun that1guycolin/remove-eln-cache ()
+  "Remove an accidentally created eln-cache from `user-emacs-directory.'"
+  (let ((cache-file (expand-file-name "eln-cache" user-emacs-directory)))
+    (when (file-exists-p cache-file)
+      (delete-directory cache-file t))))
+
+
 ;;; use-package
-  
-  :bind (("C-x <TAB>" . completion-at-point)
-         ("C-c C-x"   . toggle-frame-maximized)
-         ("C-c ("     . that1guycolin/check-parens-with-message)
-         ("C-c #"     . display-line-numbers-mode)
-         ("C-c C-#"   . global-display-line-numbers-mode)
-         ("C-c C-$"   . restart-emacs)
-         ("M-/"       . hippie-expand)
-         ("M-0"       . that1guycolin/toggle-side-window))
-  :hook ((elpaca-after-init . (lambda ()
-                                (run-with-timer
-                                 30 nil #'that1guycolin/remove-eln-cache)))
-         (ibuffer-mode . hl-line-mode)
-         (ibuffer-mode . ibuffer-auto-mode))
-  :init (add-to-list 'default-frame-alist '(fullscreen . maximized))
-  :custom
-  (auto-save-visited-interval 60)
-  (enable-recursive-minibuffers t)
-  (minibuffer-prompt-properties
-   '(read-only t cursor-intangible t face minibuffer-prompt))
-  (native-comp-async-report-warnings-errors nil)
-  (read-extended-command-predicate #'command-completion-default-include-p)
-  (remember-data-file (no-littering-expand-etc-file-name "remember"))
-  (sentence-end-double-space nil)
-  (tab-always-indent 'complete)
-  (text-mode-ispell-word-completion nil)
-  (that1guycolin/projects-directory
-   (that1guycolin/emacs-get-for-type
-    (expand-file-name "~/projects")
-    (expand-file-name "projects" that1guycolin/android-home)
-    (expand-file-name "projects" that1guycolin/android-home)))
-  (that1guycolin/scripts-directory
-   (that1guycolin/emacs-get-for-type
-    (expand-file-name "~/scripts")
-    (expand-file-name "scripts" that1guycolin/android-home)
-    (expand-file-name "scripts" that1guycolin/android-home)))
-  (trusted-content
-   (list (expand-file-name "early-init.el" user-emacs-directory)
-         (expand-file-name "init.el" user-emacs-directory)))
-  :config
-  (mapc (lambda (f) (add-to-list 'trusted-content f))
-        (directory-files (expand-file-name "site-lisp" user-emacs-directory)
-                         t "\\.el\\'"))
-  (abbrev-mode 1)
-  (auto-save-visited-mode 1)
-  (context-menu-mode 1)
-  (which-key-mode 1))
+
+:bind (("C-x TAB"   . completion-at-point)
+       ("C-c C-x"   . toggle-frame-maximized)
+       ("C-c ("     . that1guycolin/check-parens-with-message)
+       ("C-c #"     . display-line-numbers-mode)
+       ("C-c C-#"   . global-display-line-numbers-mode)
+       ("C-c C-$"   . restart-emacs)
+       ("M-/"       . hippie-expand)
+       ("M-0"       . that1guycolin/toggle-side-window))
+:hook ((elpaca-after-init . (lambda ()
+                              (run-with-timer
+                               30 nil #'that1guycolin/remove-eln-cache)))
+       (ibuffer-mode . hl-line-mode)
+       (ibuffer-mode . ibuffer-auto-mode))
+:init (add-to-list 'default-frame-alist '(fullscreen . maximized))
+:custom
+(auto-save-visited-interval 60)
+(enable-recursive-minibuffers t)
+(minibuffer-prompt-properties
+ '(read-only t cursor-intangible t face minibuffer-prompt))
+(native-comp-async-report-warnings-errors nil)
+(read-extended-command-predicate #'command-completion-default-include-p)
+(remember-data-file (no-littering-expand-etc-file-name "remember"))
+(sentence-end-double-space nil)
+(tab-always-indent 'complete)
+(text-mode-ispell-word-completion nil)
+(that1guycolin/projects-directory
+ (that1guycolin/emacs-get-for-type
+  (expand-file-name "~/projects")
+  (expand-file-name "projects" that1guycolin/android-home)
+  (expand-file-name "projects" that1guycolin/android-home)))
+(that1guycolin/scripts-directory
+ (that1guycolin/emacs-get-for-type
+  (expand-file-name "~/scripts")
+  (expand-file-name "scripts" that1guycolin/android-home)
+  (expand-file-name "scripts" that1guycolin/android-home)))
+(trusted-content
+ (list (expand-file-name "early-init.el" user-emacs-directory)
+       (expand-file-name "init.el" user-emacs-directory)))
+:config
+(mapc (lambda (f) (add-to-list 'trusted-content f))
+      (directory-files (expand-file-name "site-lisp" user-emacs-directory)
+                       t "\\.el\\'"))
+(abbrev-mode 1)
+(auto-save-visited-mode 1)
+(context-menu-mode 1)
+(which-key-mode 1))
 
 
 
