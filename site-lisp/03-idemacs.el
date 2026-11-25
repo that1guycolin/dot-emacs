@@ -257,13 +257,7 @@
 (use-package flycheck-eglot
   :after (eglot)
   :defer t
-  :preface
-  (defun that1guycolin/flycheck-eglot-if-flycheck ()
-    "Start `flycheck-eglot-mode' if `flycheck-mode' is non-nil."
-    (when flycheck-mode
-      (flycheck-eglot-mode 1)))
-  :hook (eglot-connect . that1guycolin/flycheck-eglot-if-flycheck)
-  :functions (flycheck-eglot-mode))
+  :hook (eglot-connect . flycheck-eglot-mode))
 
 (use-package lsp-snippet
   :ensure (lsp-snippet
@@ -979,66 +973,7 @@ Effectively disable max-line-length, and set indent to 2 spaces."
   :mode "^PKGBUILD\\'"
   :functions (pkgbuild-update-srcinfo)
   :custom
-  (pkgbuild-template
-   "# Maintainer: %s <%s>
-pkgname=%s
-_pkgname=\"${pkgname%-custom}\"
-pkgver=0
-pkgrel=1
-pkgdesc=\"\"
-arch=('x86_64')
-url=\"\"
-license=('%s')
-groups=('custom')
-depends=(
-
-)
-makedepends=(
-
-)
-checkdepends=()
-optdepends=(
-
-)
-provides=()
-conflicts=()
-replaces=()
-options=(!debug !emptydirs lto strip)
-source=(\"${_pkgname}::git+URL\")
-sha256sums=('SKIP')
-
-prepare() {
-  cd \"$_pkgname\"
-  git submodule update --init --recursive
-}
-
-pkgver() {
-  cd \"$_pkgname\"
-
-  local version
-  version=\"$(git describe --tags --abbrev=0 2>/dev/null)\" || version=0
-  version=\"${version#v}\"
-  version=\"${version//-/_}\"
-
-  local commit_count
-  commit_count=\"$(git rev-list --count HEAD)\"
-  local commit
-  commit=\"$(git rev-parse --short=7 HEAD)\"
-
-  printf \"%s.r%s.g%s\n\" \"$version\" \"$commit_count\" \"$commit\"
-}
-
-build() {
-
-}
-
-check() {
-  
-}
-
-package() {
-  DESTDIR=\"$pkgdir\"
-}")
+  (pkgbuild-initialize nil)
   (pkgbuild-template-default-license-identifier "GPL-3.0-only")
   (pkgbuild-update-sums-on-save nil)
   :config

@@ -51,7 +51,8 @@
     (mapc (lambda (d)
             (let ((d-path (expand-file-name d)))
               (when (file-exists-p d-path)
-                (add-to-list var d-path)))) dir-list))
+                (add-to-list var d-path))))
+          dir-list))
   
   (defun that1guycolin/project--current-root ()
     "Return the current project's root directory or nil if not in project."
@@ -95,7 +96,7 @@
   (that1guycolin/project--add-to-list
     'that1guycolin/project--parent-directories
     (list that1guycolin/projects-directory
-          that1guycolin/scripts-directory "/var/custompkgs/pkgbuilds"))
+          that1guycolin/scripts-directory "/var/pkgbuild/custom-pkgbuilds"))
   (that1guycolin/project--add-to-list 'that1guycolin/project--standalones
     (list user-emacs-directory org-directory "~/dotfiles"))
   :custom (project-vc-ignores '("^node_modules$" "^\\.venv$" "^\\.uv$")))
