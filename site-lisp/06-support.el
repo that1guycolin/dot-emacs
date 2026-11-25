@@ -539,8 +539,7 @@ to the user's device.")
   :demand t
   :when (daemonp)
   :unless (eq system-type 'android)
-  :functions (elisp-dev-mcp-enable)
-  :config (elisp-dev-mcp-enable))
+  :commands (elisp-dev-mcp-enable))
 
 (use-package gptel
   :defer t
