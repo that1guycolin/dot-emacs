@@ -293,33 +293,16 @@
   :after (hydra)
   :defer t
   :preface
-  (defun that1guycolin/treemacs-workspace-focus ()
-    "Ensure the Treemacs' window is focused.
-
-If `treemacs-project-follow-mode' is non-nil, briefly select the other
-window before switching back to the Treemacs' window (this ensures
-treemacs displays the new project). Use this function as after advice
-for `treemacs-switch-workspace'."
-    
-    (let ((treemacs-win (treemacs-get-local-window)))
-      (when (and treemacs-win (not (eq treemacs-win (selected-window))))
-        (select-window treemacs-win)
-        (when treemacs-project-follow-mode
-          (other-window 1)
-          (run-with-timer 3 nil #'select-window treemacs-win)))))
-
   (defun that1guycolin/toggle-gitignored-wait-2 (&rest _args)
     "Toggle `treemacs-hide-gitignored-files-mode' if treemacs window.
 Wait two seconds before activating the mode."
     (pcase (treemacs-current-visibility)
       ('visible
        (run-at-time 2 nil
-                    #'(lambda ()
-                        (treemacs-hide-gitignored-files-mode 1))))
+                    (lambda () (treemacs-hide-gitignored-files-mode 1))))
       ('exists
        (run-at-time 2 nil
-                    #'(lambda ()
-                        (treemacs-hide-gitignored-files-mode 1))))
+                    (lambda () (treemacs-hide-gitignored-files-mode 1))))
       ('none (ignore))))
 
   (defun that1guycolin/treemacs-toggle-project-follow-mode ()
@@ -356,9 +339,6 @@ If it is not active, activate it."
   :config
   (treemacs-git-mode 'deferred)
   (treemacs-git-commit-diff-mode 1)
-  (treemacs-project-follow-mode 1)
-  (advice-add #'treemacs-switch-workspace
-              :after #'that1guycolin/treemacs-workspace-focus)
   (advice-add #'treemacs :after #'that1guycolin/toggle-gitignored-wait-2)
   (advice-add 'disproject-dispatch :before #'that1guycolin/close-treemacs))
 
@@ -369,10 +349,25 @@ If it is not active, activate it."
   :config (treemacs-nerd-icons-config))
 
 (use-package project-treemacs
-  :after (project treemacs)
-  :demand t
-  :functions (project-treemacs-mode)
-  :config (project-treemacs-mode 1))
+  :preface
+  (defun that1guycolin/treemacs-project-workspaces ()
+    "Ensure all project.el projects have an entry in `treemacs-workspaces'."
+    (interactive)
+    (unless (string= (buffer-name) "*Edit Treemacs Workspaces*")
+      (user-error "Only use when editing treemacs workspaces"))
+    (mapc #'that1guycolin/treemacs--workspace-entry project--list))
+
+  (defun that1guycolin/treemacs--workspace-entry (project)
+    "Create a treemacs workspace entry for PROJECT."
+    (let* ((p-location (car project))
+           (p-name (file-name-nondirectory
+                    (directory-file-name p-location))))
+      (insert "* " p-name
+              "\n** " p-name
+              "\n - path :: " p-location "\n")))
+  
+  :after (treemacs)
+  :hook (treemacs-mode . project-treemacs-mode))
 
 (use-package treemacs-magit
   :after (magit treemacs)
