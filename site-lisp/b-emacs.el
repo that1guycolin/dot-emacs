@@ -109,67 +109,75 @@ If not in a side window, jump to the first found side window."
 
 ;;; misc.
 
-(defun that1guycolin/check-parens-with-message ()
-  "Run `check-parens'. Print a message when all parentheses match."
-  (interactive)
-  (when (not (check-parens))
-    (message "All parentheses match!")))
+  (defun that1guycolin/insert-current-datetime (&optional words)
+    "Insert the current time in the format \"YYYY-MM-DD HH:MM\".
+With prefix argument, format the string \"DAY ## MON YYYY HH:MM:SS A/PM TZZ\"."
+    (interactive "P")
+    (let ((str (if words "%c" "%F %R")))
+      (insert (format-time-string str))))tt
 
-(defun that1guycolin/remove-eln-cache ()
-  "Remove an accidentally created eln-cache from `user-emacs-directory.'"
-  (let ((cache-file (expand-file-name "eln-cache" user-emacs-directory)))
-    (when (file-exists-p cache-file)
-      (delete-directory cache-file t))))
+  (defun that1guycolin/check-parens-with-message ()
+    "Run `check-parens'. Print a message when all parentheses match."
+    (interactive)
+    (when (not (check-parens))
+      (message "All parentheses match!")))
+
+  (defun that1guycolin/remove-eln-cache ()
+    "Remove an accidentally created eln-cache from `user-emacs-directory'."
+    (let ((cache-file (expand-file-name "eln-cache" user-emacs-directory)))
+      (when (file-exists-p cache-file)
+        (delete-directory cache-file t))))
 
 
 ;;; use-package
 
-:bind (("C-x TAB"   . completion-at-point)
-       ("C-c C-x"   . toggle-frame-maximized)
-       ("C-c ("     . that1guycolin/check-parens-with-message)
-       ("C-c #"     . display-line-numbers-mode)
-       ("C-c C-#"   . global-display-line-numbers-mode)
-       ("C-c C-$"   . restart-emacs)
-       ("M-/"       . hippie-expand)
-       ("M-0"       . that1guycolin/toggle-side-window))
-:hook ((elpaca-after-init . (lambda ()
-                              (run-with-timer
-                               30 nil #'that1guycolin/remove-eln-cache)))
-       (ibuffer-mode . hl-line-mode)
-       (ibuffer-mode . ibuffer-auto-mode))
-:init (add-to-list 'default-frame-alist '(fullscreen . maximized))
-:custom
-(auto-save-visited-interval 60)
-(enable-recursive-minibuffers t)
-(minibuffer-prompt-properties
- '(read-only t cursor-intangible t face minibuffer-prompt))
-(native-comp-async-report-warnings-errors nil)
-(read-extended-command-predicate #'command-completion-default-include-p)
-(remember-data-file (no-littering-expand-etc-file-name "remember"))
-(sentence-end-double-space nil)
-(tab-always-indent 'complete)
-(text-mode-ispell-word-completion nil)
-(that1guycolin/projects-directory
- (that1guycolin/emacs-get-for-type
-  (expand-file-name "~/projects")
-  (expand-file-name "projects" that1guycolin/android-home)
-  (expand-file-name "projects" that1guycolin/android-home)))
-(that1guycolin/scripts-directory
- (that1guycolin/emacs-get-for-type
-  (expand-file-name "~/scripts")
-  (expand-file-name "scripts" that1guycolin/android-home)
-  (expand-file-name "scripts" that1guycolin/android-home)))
-(trusted-content
- (list (expand-file-name "early-init.el" user-emacs-directory)
-       (expand-file-name "init.el" user-emacs-directory)))
-:config
-(mapc (lambda (f) (add-to-list 'trusted-content f))
-      (directory-files (expand-file-name "site-lisp" user-emacs-directory)
-                       t "\\.el\\'"))
-(abbrev-mode 1)
-(auto-save-visited-mode 1)
-(context-menu-mode 1)
-(which-key-mode 1))
+  :bind (("C-x TAB"   . completion-at-point)
+         ("C-c d"     . that1guycolin/insert-current-datetime)
+         ("C-c C-x"   . toggle-frame-maximized)
+         ("C-c ("     . that1guycolin/check-parens-with-message)
+         ("C-c #"     . display-line-numbers-mode)
+         ("C-c C-#"   . global-display-line-numbers-mode)
+         ("C-c C-$"   . restart-emacs)
+         ("M-/"       . hippie-expand)
+         ("M-0"       . that1guycolin/toggle-side-window))
+  :hook ((elpaca-after-init . (lambda ()
+                                (run-with-timer
+                                 30 nil #'that1guycolin/remove-eln-cache)))
+         (ibuffer-mode . hl-line-mode)
+         (ibuffer-mode . ibuffer-auto-mode))
+  :init (add-to-list 'default-frame-alist '(fullscreen . maximized))
+  :custom
+  (auto-save-visited-interval 60)
+  (enable-recursive-minibuffers t)
+  (minibuffer-prompt-properties
+   '(read-only t cursor-intangible t face minibuffer-prompt))
+  (native-comp-async-report-warnings-errors nil)
+  (read-extended-command-predicate #'command-completion-default-include-p)
+  (remember-data-file (no-littering-expand-etc-file-name "remember"))
+  (sentence-end-double-space nil)
+  (tab-always-indent 'complete)
+  (text-mode-ispell-word-completion nil)
+  (that1guycolin/projects-directory
+   (that1guycolin/emacs-get-for-type
+    (expand-file-name "~/projects")
+    (expand-file-name "projects" that1guycolin/android-home)
+    (expand-file-name "projects" that1guycolin/android-home)))
+  (that1guycolin/scripts-directory
+   (that1guycolin/emacs-get-for-type
+    (expand-file-name "~/scripts")
+    (expand-file-name "scripts" that1guycolin/android-home)
+    (expand-file-name "scripts" that1guycolin/android-home)))
+  (trusted-content
+   (list (expand-file-name "early-init.el" user-emacs-directory)
+         (expand-file-name "init.el" user-emacs-directory)))
+  :config
+  (mapc (lambda (f) (add-to-list 'trusted-content f))
+        (directory-files (expand-file-name "site-lisp" user-emacs-directory)
+                         t "\\.el\\'"))
+  (abbrev-mode 1)
+  (auto-save-visited-mode 1)
+  (context-menu-mode 1)
+  (which-key-mode 1))
 
 
 

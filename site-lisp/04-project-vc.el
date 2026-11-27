@@ -110,8 +110,6 @@
 
 (use-package consult-project-extra
   :demand t
-  :bind (("C-c p f" . consult-project-extra-find)
-         ("C-c p o" . consult-project-extra-find-other-window))
   :custom (consult-project-function #'consult-project-extra-project-fn)
   :config (with-eval-after-load 'disproject
             (transient-append-suffix 'disproject-dispatch "&"

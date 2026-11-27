@@ -921,7 +921,7 @@ doubles as a model-switcher."
 (use-package docker
   :defer t
   :unless (eq system-type 'android)
-  :bind ("C-c d" . docker)
+  :bind ("C-c p" . docker)
   :custom (docker-command "podman"))
 
 (use-package free-keys
