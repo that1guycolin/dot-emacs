@@ -467,66 +467,11 @@ On directories, toggle subtree. On files, use Dirvish file outline viewer."
 
 ;;; LLM:
 
-(use-package llm
-  :demand t
-  :unless (eq system-type 'android))
-
-(use-package llm-ollama
-  :ensure nil
-  :after (llm)
-  :demand t
-  :unless (eq system-type 'android)
-  :preface
-  (defvar that1guycolin/ollama-alist
-    `((qwen3.5:4b ,(* 2 4096))
-      (gemma4:e2b ,(* 1 4096))
-      (gemma4:e4b ,(* 1 4096)))
-    "Alist containing Ollama models and their context length.
-Models on this list are either cloud-based or have already been downloaded
-to the user's device.")
-
-  (defvar that1guycolin/ollama-models (mapcar #'car
-                                              that1guycolin/ollama-alist)
-    "List of ollama-models (without their context lengths).")
-
-  (defvar that1guycolin/openrouter-list
-    '(google/gemma-3-27b-it:free
-      meta-llama/llama-3.3-70b-instruct:free openai/gpt-oss-120b:free
-      openrouter/free qwen/qwen3-4b:free qwen/qwen3-coder:free)
-    "A list of user-selected LLMs available through OpenRouter.")
-
-  (defun that1guycolin/ensure-ollama-system-service ()
-    "Check if the system-wide Ollama service is active and start it if not."
-    (interactive)
-    (let ((status (shell-command-to-string "systemctl is-active ollama")))
-      (if (string-prefix-p "active" (string-trim status))
-          (message "Ollama system service is already running.")
-        (progn
-          (message "Ollama is down. Requesting system start...")
-          (shell-command "systemctl start ollama &")
-          (message "Ollama service start command sent.")
-          (kill-buffer "*Async Shell Command*")))))
-  
-  (defun that1guycolin/llm-ollama-model-setup (model)
-    "Setup Ollama MODEL for use with llm, ellama, etc..."
-    (interactive
-     (list
-      (completing-read "Model: " (mapcar #'car that1guycolin/ollama-alist)
-                       nil t)))
-    (unless (member model (mapcar #'car that1guycolin/ollama-alist))
-      (error "Model not in `that1guycolin/ollama-alist'"))
-    (make-llm-ollama
-     :chat-model (symbol-name model)
-     :embedding-model "nomic-embed-text"
-     :default-chat-max-tokens (cdr (assoc model
-                                          that1guycolin/ollama-alist))))
-  :unless (eq system-type 'android)
-  :functions (make-llm-ollama))
-
 (use-package mcp-server-lib
-  :defer t
+  :demand t
   :unless (eq system-type 'android)
-  :commands (mcp-server-lib-start mcp-server-lib-stop))
+  :functions (mcp-server-lib-start)
+  :config (mcp-server-lib-start))
 
 (use-package org-mcp
   :defer t
@@ -537,182 +482,47 @@ to the user's device.")
 
 (use-package elisp-dev-mcp
   :demand t
-  :when (daemonp)
   :unless (eq system-type 'android)
   :commands (elisp-dev-mcp-enable))
 
-(use-package gptel
-  :defer t
-  :preface
-  (declare-function auth-source-pick-first-password "auth-source")
-
-  (defvar that1guycolin/gptel--backend-map
-    `(("Ollama"     . (name "Ollama"  models
-                            ,(mapcar #'car that1guycolin/ollama-alist)))
-      ("OpenRouter" . (name "OpenRouter"  models
-                            that1guycolin/openrouter-list)))
-    "Alist mapping display names to backend metadata plists.")
-
-  (defun that1guycolin/gptel-switch-backend ()
-    "Interactively select a gptel backend, then select a model for it.
-The user is allowed to select their already-active backend, so this function
-doubles as a model-switcher."
-    (interactive)
-    (let* ((backend-name
-            (completing-read
-             (format "Backend (current: %s): "
-                     (gptel-backend-name gptel-backend))
-             that1guycolin/gptel--backend-map))
-           (meta  (cdr (assoc backend-name that1guycolin/gptel--backend-map)))
-           (gptel-name (plist-get meta 'name))
-           (models (plist-get meta 'models))
-           (model
-            (completing-read
-             (format "Model [%s]: " backend-name) models nil t)))
-      (setq gptel-backend (gptel-get-backend gptel-name)
-            gptel-model   (if (consp (car models))
-                              (cdr (assoc model models))
-                            (intern model)))
-      (message "[gptel] Backend → %s | Model → %s"
-               backend-name gptel-model)))
-  :unless (eq system-type 'android)
-  :commands (gptel gptel-send)
-  :functions (gptel-get-backend gptel-make-ollama gptel-make-openai)
-  :defines (gptel-backend)
-  :config
-  (that1guycolin/ensure-ollama-system-service)
-  (setq
-   gptel-backend
-   (gptel-make-ollama "Ollama"
-     :host "localhost:11434" :stream t
-     :models (mapcar #'car that1guycolin/ollama-alist))
-   gptel-model 'llama3.2:3b)
-
-  (gptel-make-openai "OpenRouter"
-    :host "openrouter.ai" :endpoint "/api/v1/chat/completions" :stream t
-    :key (lambda () (auth-source-pick-first-password
-                     :host "openrouter.ai" :user "apikey"))
-    :models that1guycolin/openrouter-list))
-
-(use-package gptel-forge-prs
-  :defer t
-  :unless (eq system-type 'android)
-  :hook (forge-pullreq-mode . gptel-forge-prs-install))
-
 (use-package ellama
   :defer t
-  :unless (eq system-type 'android)
-  :commands (ellama-transient-main-menu)
-  :functions (ellama-disable-scroll ellama-enable-scroll)
-  :init (setopt ellama-language "English")
-  :config
-  ;; -- Model Types --
-  ;; Fast:
-  (defvar that1guycolin/ellama-model-fast-chat
-    (that1guycolin/llm-ollama-model-setup 'lfm2.5-thinking:1.2b))
-
-  (defvar that1guycolin/ellama-model-fast-code
-    (that1guycolin/llm-ollama-model-setup 'cogito:3b))
-
-  ;; Balanced:
-  (defvar that1guycolin/ellama-model-balanced-chat
-    (that1guycolin/llm-ollama-model-setup 'llama3.2:3b))
-
-  (defvar that1guycolin/ellama-model-balanced-summary
-    (that1guycolin/llm-ollama-model-setup 'qwen3:4b))
-
-  (defvar that1guycolin/ellama-model-balanced-code
-    (that1guycolin/llm-ollama-model-setup 'codellama:7b-instruct))
-
-  ;; Heavy
-  (defvar that1guycolin/ellama-model-heavy-chat
-    (that1guycolin/llm-ollama-model-setup 'granite4.1:8b))
-
-  (defvar that1guycolin/ellama-model-heavy-code
-    (that1guycolin/llm-ollama-model-setup 'cogito:8b))
-
-  ;; Cloud-Based
-  (defvar that1guycolin/ellama-model-cloud-chat
-    (that1guycolin/llm-ollama-model-setup 'gpt-oss:120b-cloud))
-
-  (defvar that1guycolin/ellama-model-cloud-summary
-    (that1guycolin/llm-ollama-model-setup 'qwen3.5:cloud))
-
-  (defvar that1guycolin/ellama-model-cloud-code
-    (that1guycolin/llm-ollama-model-setup 'qwen3-coder-next:cloud))
-
-  ;; -- Functions --
-  (defun that1guycolin/ellama-set-tier (tier)
-    "Activate default models for TIER."
-    (interactive
-     (list
-      (completing-read "Tier: " '(fast heavy cloud balanced))))
-    (pcase tier
-      ('fast
-       (setopt
-        ellama-provider that1guycolin/ellama-model-fast-chat
-        ellama-coding-provider that1guycolin/ellama-model-fast-code
-        ellama-summarization-provider that1guycolin/ellama-model-fast-chat)
-       (message "Ellama tier → FAST"))
-
-      ('balanced
-       (setopt
-        ellama-provider that1guycolin/ellama-model-balanced-chat
-        ellama-coding-provider that1guycolin/ellama-model-balanced-code
-        ellama-summarization-provider
-        that1guycolin/ellama-model-balanced-summary)
-       (message "Ellama tier → BALANCED"))
-
-      ('heavy
-       (setopt
-        ellama-provider that1guycolin/ellama-model-heavy-chat
-        ellama-coding-provider that1guycolin/ellama-model-heavy-code
-        ellama-summarization-provider
-        that1guycolin/ellama-model-balanced-summary)
-       (message "Ellama tier → HEAVY"))
-
-      ('cloud
-       (setopt
-        ellama-provider that1guycolin/ellama-model-cloud-chat
-        ellama-coding-provider that1guycolin/ellama-model-cloud-code
-        ellama-summarization-provider
-        that1guycolin/ellama-model-cloud-summary)
-       (message "Ellama tier → CLOUD"))))
-  
-  ;; -- Defaults --
+  :bind ("C-c a" . ellama)
+  :functions (make-llm-openai-compatible make-llm-ollama)
+  :init
+  (require 'llm-ollama)
+  (require 'llm-openai)
   (setopt
-   ellama-provider that1guycolin/ellama-model-fast-chat
-   ellama-coding-provider that1guycolin/ellama-model-fast-code
-   ellama-summarization-provider that1guycolin/ellama-model-balanced-summary
-   ;; Display
-   ellama-chat-display-action-function #'display-buffer-full-frame
-   ellama-instant-display-action-function #'display-buffer-at-bottom)
+   ellama-auto-scroll t
+   ellama-providers `(("local" . ,(make-llm-ollama
+                                   :chat-model "qwen3.5-4b"
+                                   :embedding-model "nomic-embed-text"
+                                   :default-chat-non-standard-params
+                                   '(("num_ctx 8192"))))
+                      ("local-llama" . ,(make-llm-ollama
+                                         :chat-model "llama3.1:8b"
+                                         :embedding-model "nomic-embed-text"
+                                         :default-chat-non-standard-params
+                                         '(("num_ctx 8192"))))
+                      ("local-code" . ,(make-llm-ollama
+                                        :chat-model "qwen2.5-coder:7b"
+                                        :embedding-model "nomic-embed-text"
+                                        :default-chat-non-standard-params
+                                        '(("num_ctx 8192"))))
+                      ("openrouter" . ,(make-llm-openai-compatible
+                                        :key
+                                        :url "https://openrouter.ai/api/v1/"
+                                        :chat-model "openrouter/free"))
+                      ("huggingface" . ,(make-llm-openai-compatible
+                                         :key
+                                         :url "https://router.huggingface.co/v1/"
+                                         :chat-model "moonshotai/Kimi-K2.5:cheapest")))
+   ellama-provider (cdr (assoc "local" ellama-providers))
+   ellama-coding-provider (cdr (assoc "local-code" ellama-providers))))
 
-  (advice-add #'pixel-scroll-precision-mode :before #'ellama-disable-scroll)
-  (advice-add #'end-of-buffer :after #'ellama-enable-scroll))
-
-;; Transient:
-(unless (eq system-type 'android)
-  (with-eval-after-load 'transient
-    (declare-function transient-define-prefix "transient")
-    (defvar that1guycolin/llm-dispatch nil)
-    (transient-define-prefix that1guycolin/llm-dispatch ()
-      "Commands to interact with LLMs in Emacs."
-      ["LLM Integrations"
-       ["Gptel"
-        ("g ." "Activate @ cursor" gptel-send)
-        ("g b" "Chat buffer"       gptel)
-        ("g s" "Switch backend"    that1guycolin/gptel-switch-backend
-         :transient t)]
-       ["Ellama / MCP"
-        ("e"   "Ellama Menu"       ellama-transient-main-menu)
-        ("m s" "Server Start"      mcp-server-lib-start)
-        ("m e" "Server Stop"       mcp-server-lib-stop)]])
-    (keymap-global-set "C-c a" 'that1guycolin/llm-dispatch)))
 
 
 ;;; Media player (mpv):
-
 (use-package emms
   :defer t
   :preface
