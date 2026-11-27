@@ -52,15 +52,21 @@
   (that1guycolin/exec-path-from-shell-vars
    (that1guycolin/emacs-get-for-type
     '("CC" "CXX" "GUILE_LOAD_PATH" "GUILE_LOAD_COMPILED_PATH" "INFOPATH"
-      "LSP_USE_PLISTS" "PKG_CONFIG_PATH" "SSH_AGENT_PID" "SSH_AUTH_SOCK"
+      "LSP_USE_PLISTS" "NVM_DIR" "PKG_CONFIG_PATH" "SSH_AGENT_PID"
+      "SSH_AUTH_SOCK"
       "WAYLAND_DISPLAY")
     '("CC" "CXX" "PKG_CONFIG_PATH" "SSH_AGENT_PID" "SSH_AUTH_SOCK")
     nil))
   :config
   (when that1guycolin/exec-path-from-shell-vars
     (mapc (lambda (v) (add-to-list 'exec-path-from-shell-variables v))
-          that1guycolin/exec-path-from-shell-vars))
+          (nreverse that1guycolin/exec-path-from-shell-vars)))
   (exec-path-from-shell-initialize))
+
+(use-package nvm
+  :demand t
+  :init (unless (getenv "NVM_DIR")
+          (setq nvm-dir "~/.config/nvm/")))
 
 ;; Override-built-in version w/ package's latest version
 (use-package transient

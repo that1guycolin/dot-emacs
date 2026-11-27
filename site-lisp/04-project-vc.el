@@ -337,6 +337,7 @@ If it is not active, activate it."
   :config
   (treemacs-git-mode 'deferred)
   (treemacs-git-commit-diff-mode 1)
+  (treemacs-project-follow-mode 1)
   (advice-add #'treemacs :after #'that1guycolin/toggle-gitignored-wait-2)
   (advice-add 'disproject-dispatch :before #'that1guycolin/close-treemacs))
 
@@ -348,13 +349,6 @@ If it is not active, activate it."
 
 (use-package project-treemacs
   :preface
-  (defun that1guycolin/treemacs-project-workspaces ()
-    "Ensure all project.el projects have an entry in `treemacs-workspaces'."
-    (interactive)
-    (unless (string= (buffer-name) "*Edit Treemacs Workspaces*")
-      (user-error "Only use when editing treemacs workspaces"))
-    (mapc #'that1guycolin/treemacs--workspace-entry project--list))
-
   (defun that1guycolin/treemacs--workspace-entry (project)
     "Create a treemacs workspace entry for PROJECT."
     (let* ((p-location (car project))
@@ -364,6 +358,12 @@ If it is not active, activate it."
               "\n** " p-name
               "\n - path :: " p-location "\n")))
   
+  (defun that1guycolin/treemacs-project-workspaces ()
+    "Ensure all project.el projects have an entry in `treemacs-workspaces'."
+    (interactive)
+    (unless (string= (buffer-name) "*Edit Treemacs Workspaces*")
+      (user-error "Only use when editing treemacs workspaces"))
+    (mapc #'that1guycolin/treemacs--workspace-entry project--list))
   :after (treemacs)
   :hook (treemacs-mode . project-treemacs-mode))
 
