@@ -114,8 +114,8 @@ If not in a side window, jump to the first found side window."
 With prefix argument, format the string \"DAY ## MON YYYY HH:MM:SS A/PM TZZ\"."
     (interactive "P")
     (let ((str (if words "%c" "%F %R")))
-      (insert (format-time-string str))))tt
-
+      (insert (format-time-string str))))
+  
   (defun that1guycolin/check-parens-with-message ()
     "Run `check-parens'. Print a message when all parentheses match."
     (interactive)
